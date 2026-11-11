@@ -1,8 +1,10 @@
 // Service worker : fonctionnement hors ligne de l'interface, et en-têtes de sécurité
 // (CSP, isolation cross-origin pour le calcul multi-cœurs). Ne touche jamais aux requêtes d'autres sites.
-const VERSION = "labo-v1.0.0";
+const VERSION = "labo-v2.0.0";
 const SHELL = [
-  "./", "index.html", "css/app.css", "js/app.js", "js/audio.js", "js/phonemes.js", "js/content.js", "js/worker.js",
+  "./", "index.html", "css/app.css", "js/app.js", "js/audio.js", "js/phonemes.js", "js/content.js", "js/worker.js", "js/game.js", "js/mascot.js", "js/fx.js",
+  "fonts/barlow-condensed-latin-800-italic.woff2", "fonts/barlow-condensed-latin-900-italic.woff2",
+  "fonts/nunito-latin-400-normal.woff2", "fonts/nunito-latin-700-normal.woff2", "fonts/nunito-latin-800-normal.woff2",
   "vendor/transformers.min.js", "vendor/ort-wasm-simd-threaded.asyncify.mjs", "vendor/ort-wasm-simd-threaded.asyncify.wasm",
   "data/cmudict.json", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png"
 ];

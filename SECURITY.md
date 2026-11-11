@@ -26,7 +26,7 @@ manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; fra
 ```
 
 - Aucun script inline, aucun `eval` (seule la compilation WebAssembly est autorisée).
-- Aucun CDN : les bibliothèques sont copiées dans `vendor/` et servies par le même domaine.
+- Aucun CDN : les bibliothèques et les polices sont copiées dans `vendor/` et servies par le même domaine.
 - Toutes les données affichées dynamiquement sont échappées avant insertion (protection XSS).
 
 Autres en-têtes ajoutés par `sw.js` : `Cross-Origin-Opener-Policy: same-origin`,
@@ -43,6 +43,8 @@ Le service worker ne modifie jamais les requêtes vers d'autres domaines.
 | `vendor/ort-wasm-simd-threaded.asyncify.mjs` | npm `onnxruntime-web` (MIT) | 1.31.0-dev.20260914 | `0966b6105cd936744498aa60df7a22cbd47af3374dbc64a9ab561c08a71e3611` |
 | `vendor/ort-wasm-simd-threaded.asyncify.wasm` | npm `onnxruntime-web` (MIT) | 1.31.0-dev.20260914 | `49871f5a4409519797e127440868a6d1923339d9185907f301a5b2a1d90af082` |
 | `data/cmudict.json` | npm `cmu-pronouncing-dictionary` 3.0.0 (dictionnaire CMU, BSD) | 3.0.0 | `ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b` |
+
+| `fonts/*.woff2` | npm `@fontsource/barlow-condensed`, `@fontsource/nunito` (OFL-1.1) | 5.3.0 | voir `sha256sum fonts/*` |
 
 - Paquets installés avec `npm install --ignore-scripts` (aucun script d'installation exécuté).
 - `npm audit` : 0 vulnérabilité au moment de la construction.

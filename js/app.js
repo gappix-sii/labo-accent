@@ -1,54 +1,82 @@
-// Labo d'accent : interface. Aucune donnée ne quitte l'appareil (progression dans localStorage).
+// Labo d'accent : interface façon jeu. Aucune donnée ne quitte l'appareil (progression dans localStorage).
 import * as P from "./phonemes.js";
 import { CATEGORIES, SOUND_LESSONS, MINIMAL_PAIRS } from "./content.js";
 import { Recorder, speak, englishVoices } from "./audio.js";
+import * as G from "./game.js";
+import { poufSvg, poufSay, pick } from "./mascot.js";
+import { sfx, confetti } from "./fx.js";
 
 const COACH_URL = "https://claude.ai/artifact/NpBH4v48K7L87LiDVvxiFt";
 const STORE = "labo.v1";
 const TEST_LOCAL = ["127.0.0.1", "localhost"].includes(location.hostname) && new URLSearchParams(location.search).has("test");
 
 const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
-const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const dayKey = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const today = () => dayKey(new Date());
 const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
+const ICON = {
+  mic: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12z"/></svg>',
+  stop: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="3" fill="currentColor"/></svg>',
+  spk: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>',
+  mute: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4zm12 .4 1.4-1.4L19.4 10l2-2 1.4 1.4-2 2 2 2-1.4 1.4-2-2-2 2-1.4-1.4 2-2z"/></svg>',
+  slow: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 4a8 8 0 1 0 8 8h-2a6 6 0 1 1-6-6zm-1 3v6l5 3 1-1.7-4-2.3V7z"/></svg>',
+  close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m6.4 5 5.6 5.6L17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6 10.6 12 5 6.4z"/></svg>',
+  play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>',
+  pairs: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 7h10l-3-3 1.4-1.4L21 8l-5.6 5.4L14 12l3-3H7zm10 10H7l3 3-1.4 1.4L3 16l5.6-5.4L10 12l-3 3h10z"/></svg>',
+  review: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17 9h-1V7a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2zm-7-2a2 2 0 0 1 4 0v2h-4z"/></svg>',
+  star: on => `<svg viewBox="0 0 24 24" class="${on ? "on" : ""}" aria-hidden="true"><path fill="${on ? "#ffd23f" : "#3b2f80"}" stroke="${on ? "#c99a00" : "#1d1450"}" stroke-width="1.5" d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.6L12 17.1l-5.9 3.3 1.3-6.6-4.9-4.5 6.6-.8z"/></svg>`
+};
+
 // ---------------- Stockage local ----------------
-const DEFAULTS = { history: [], sounds: {}, days: [], goal: 10, voice: "", slow: 0.7, modelReady: false };
+const DEFAULTS = { history: [], sounds: {}, days: [], voice: "", slow: 0.7, modelReady: false, xp: 0, lessons: {}, badges: [],
+  bestCombo: 0, xpDays: {}, goalXp: 50, sfx: true, poufVoice: true, onboarded: false };
 let S = { ...DEFAULTS };
 try { S = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(STORE) || "{}") }; } catch (e) {}
 function save() { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { toast("Impossible d'enregistrer ta progression sur cet appareil."); } }
-function doneToday() { return S.history.filter(h => h.d === today()).length; }
 function streak() {
   const set = new Set(S.days); let n = 0; const d = new Date();
   if (!set.has(today())) d.setDate(d.getDate() - 1);
-  for (;;) { const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; if (set.has(k)) { n++; d.setDate(d.getDate() - 1); } else break; }
+  while (set.has(dayKey(d))) { n++; d.setDate(d.getDate() - 1); }
   return n;
 }
-function avgScore(n = 20) { const h = S.history.slice(-n); return h.length ? Math.round(h.reduce((a, x) => a + x.s, 0) / h.length) : null; }
-function weakSounds(n = 3) {
-  return Object.entries(S.sounds).filter(([, v]) => v.n >= 4).map(([p, v]) => ({ p, pct: Math.round(v.ok / v.n * 100), n: v.n }))
-    .sort((a, b) => a.pct - b.pct).slice(0, n);
+const xpToday = () => S.xpDays[today()] || 0;
+function avgScore(n = 30) { const h = S.history.slice(-n); return h.length ? Math.round(h.reduce((a, x) => a + x.s, 0) / h.length) : null; }
+function play(name) { if (S.sfx) { try { sfx[name](); } catch (e) {} } }
+function renderHud() {
+  const st = $("#hStreak"); st.querySelector("span").textContent = streak(); st.classList.toggle("off", !S.days.includes(today()));
+  $("#hXp span").textContent = S.xp;
+  const v = $("#hVoice"); v.innerHTML = S.poufVoice ? ICON.spk : ICON.mute; v.setAttribute("aria-pressed", String(S.poufVoice));
+  v.setAttribute("aria-label", S.poufVoice ? "Couper la voix de Pouf" : "Activer la voix de Pouf");
 }
+$("#hVoice").addEventListener("click", () => { S.poufVoice = !S.poufVoice; save(); renderHud(); if (!S.poufVoice && "speechSynthesis" in window) speechSynthesis.cancel(); });
 
-// ---------------- Toast & dialogue ----------------
+// ---------------- Toast, dialogues, fête ----------------
 let toastT;
-function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 3500); }
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 3200); }
 function confirmDlg(title, text, okLabel = "Confirmer") {
   const d = $("#dlg"); $("#dlgTitle").textContent = title; $("#dlgText").textContent = text; $("#dlgOk").textContent = okLabel;
   return new Promise(res => {
     const done = v => { d.close(); res(v); };
-    $("#dlgOk").onclick = () => done(true);
-    $("#dlgCancel").onclick = () => done(false);
-    d.oncancel = () => res(false);
+    $("#dlgOk").onclick = () => done(true); $("#dlgCancel").onclick = () => done(false); d.oncancel = () => res(false);
     d.showModal();
   });
 }
+function celebrate(title, text, inner = "") {
+  const d = $("#cel");
+  $("#celBody").innerHTML = `<div class="av">${poufSvg("happy")}</div><h2>${esc(title)}</h2><p>${esc(text)}</p>${inner}<button class="btn yellow block" id="celOk">Super !</button>`;
+  return new Promise(res => { $("#celOk").onclick = () => { d.close(); res(); }; d.oncancel = () => res(); d.showModal(); });
+}
+const fx = () => confetti($("#fx"));
 
 // ---------------- Dictionnaire ----------------
 let dict = null, dictLoading = null;
 function loadDict() {
   if (dict) return Promise.resolve(dict);
-  if (!dictLoading) dictLoading = fetch("data/cmudict.json").then(r => { if (!r.ok) throw new Error("dict"); return r.json(); }).then(d => (dict = d));
+  if (!dictLoading) dictLoading = fetch("data/cmudict.json").then(r => { if (!r.ok) throw new Error("dict"); return r.json(); }).then(d => (dict = d)).catch(e => { dictLoading = null; throw e; });
   return dictLoading;
 }
 
@@ -56,8 +84,8 @@ function loadDict() {
 let worker = null, engineState = "off", pending = new Map(), reqId = 0, readyWaiters = [];
 function setEngine(state, label) {
   engineState = state;
-  const el = $("#engine"); el.dataset.state = state; el.textContent = label;
-  document.dispatchEvent(new CustomEvent("engine"));
+  const el = $("#engine"); el.dataset.state = state; el.title = label;
+  document.dispatchEvent(new CustomEvent("engine", { detail: label }));
 }
 function startEngine() {
   if (worker) return;
@@ -72,7 +100,7 @@ function startEngine() {
       const txt = $("#dlTxt"); if (txt && m.total) txt.textContent = `${(m.loaded / 1e6).toFixed(0)} / ${(m.total / 1e6).toFixed(0)} Mo`;
     } else if (m.type === "ready") {
       S.modelReady = true; save();
-      setEngine("ready", m.threads > 1 ? `Moteur prêt · ${m.threads} cœurs` : "Moteur prêt");
+      setEngine("ready", m.threads > 1 ? `Moteur prêt (${m.threads} cœurs)` : "Moteur prêt");
       readyWaiters.splice(0).forEach(w => w.res());
     } else if (m.type === "result" || m.type === "error") {
       const p = pending.get(m.id);
@@ -104,267 +132,265 @@ function errorText(m) {
 }
 
 // ---------------- Navigation ----------------
-let view = "home", queue = null;
+let view = "path";
 function go(v, opts) {
   view = v;
-  document.querySelectorAll("nav.bottom button").forEach(b => b.toggleAttribute("aria-current", b.dataset.go === (v === "exercise" ? "practice" : v)));
-  document.querySelectorAll("nav.bottom button[aria-current]").forEach(b => b.setAttribute("aria-current", "page"));
+  $$("nav.bottom button").forEach(b => { if (b.dataset.go === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+  document.body.classList.toggle("in-lesson", v === "lesson" || v === "finish");
+  closeSheet();
   stopRecording(true);
-  ({ home: renderHome, practice: renderPractice, sounds: renderSounds, settings: renderSettings, exercise: () => renderExercise(opts), lesson: () => renderLesson(opts) })[v]();
-  $("#view").scrollTop = 0; window.scrollTo(0, 0);
+  ({ path: renderPath, train: renderTrain, sounds: renderSounds, profile: renderProfile, lesson: renderLesson, finish: () => renderFinish(opts) })[v]();
+  renderHud();
+  window.scrollTo(0, 0);
 }
-document.querySelectorAll("nav.bottom button").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
-document.addEventListener("engine", () => { if (view === "home") renderHome(); });
+$$("nav.bottom button").forEach(b => b.addEventListener("click", () => { play("tap"); go(b.dataset.go); }));
+document.addEventListener("engine", () => { if (view === "path") { const c = $("#setup"); if (c) { c.outerHTML = setupCard(); bindSetup(); } } });
 
-// ---------------- Accueil ----------------
+// ---------------- Parcours ----------------
 function setupCard() {
-  if (engineState === "ready") return "";
-  if (engineState === "loading") return `<section class="card accent"><h3>Préparation du moteur d'analyse</h3>
-    <p class="small">Téléchargement unique du modèle de reconnaissance des sons. Il reste ensuite sur ton appareil.</p>
-    <div class="bar signal" id="dlBar"><i></i></div><p class="small muted" id="dlTxt">Démarrage…</p></section>`;
-  return `<section class="card accent"><h3>Avant de commencer</h3>
-    <p class="small">L'analyse de ta prononciation se fait sur ton appareil, avec un modèle open source d'environ 360 Mo à télécharger une seule fois. Utilise le Wi-Fi.</p>
-    <p class="small muted">Ta voix n'est jamais envoyée sur internet.</p>
-    <button class="btn primary block" id="prep">${S.modelReady ? "Relancer le moteur" : "Préparer l'analyse (≈ 360 Mo)"}</button></section>`;
+  if (engineState === "ready") return `<div id="setup" hidden></div>`;
+  if (engineState === "loading") return `<section class="card" id="setup"><h3>Pouf prépare ses oreilles…</h3>
+    <p class="small">Téléchargement unique du moteur d'analyse des sons. Il reste ensuite sur ton appareil.</p>
+    <div class="bar xp" id="dlBar"><i></i></div><p class="small muted" id="dlTxt">Démarrage…</p></section>`;
+  return `<section class="card" id="setup"><h3>Avant de jouer</h3>
+    <p class="small">Pour écouter ta prononciation, Pouf a besoin d'un moteur d'environ 360 Mo, téléchargé une seule fois. Utilise le Wi-Fi.</p>
+    <p class="small muted">Ta voix est analysée sur ton appareil et n'est jamais envoyée sur internet.</p>
+    <button class="btn yellow block" id="prep">${S.modelReady ? "Relancer le moteur" : "Préparer le moteur (≈ 360 Mo)"}</button></section>`;
 }
-function renderHome() {
-  const avg = avgScore(), weak = weakSounds();
+function bindSetup() { const b = $("#prep"); if (b) b.onclick = () => { play("tap"); startEngine(); }; }
+
+function nodeIcon(l) {
+  if (l.kind === "sound") return esc(l.sound);
+  if (l.kind === "pairs") return ICON.pairs;
+  if (l.kind === "review") return ICON.review;
+  return ICON.mic;
+}
+const LINE_HELLO = "Salut, moi c'est Pouf ! Je vais écouter ton accent.";
+function renderPath() {
+  const cur = G.currentLessonIndex(S.lessons);
+  let gi = 0;
+  const units = G.UNITS.map(u => {
+    const done = u.lessons.filter(l => S.lessons[l.id]).length;
+    const nodes = u.lessons.map((l, k) => {
+      const idx = gi++, st = G.lessonState(S.lessons, idx), rec = S.lessons[l.id];
+      const isCur = idx === cur && st === "open";
+      return `<div class="node-wrap pos-${k % 8}">
+        ${isCur ? `<span class="start-tag">${idx ? "Continuer" : "Commencer"}</span><div class="path-pouf">${poufSvg()}</div>` : ""}
+        <button class="node ${st} ${st === "done" ? "tone-" + u.tone : ""}" data-idx="${idx}" aria-label="${esc(l.title)}${st === "locked" ? " (verrouillée)" : ""}">${st === "locked" ? ICON.lock : nodeIcon(l)}</button>
+        <div class="node-stars">${st === "done" ? [1, 2, 3].map(n => ICON.star(n <= (rec.stars || 1))).join("") : ""}</div>
+        <span class="node-label">${esc(l.title)}</span></div>`;
+    }).join("");
+    return `<div class="unit tone-${u.tone}"><div><div class="k">${esc(u.title)}</div><div class="t">${esc(u.sub)}</div></div><span class="cnt">${done}/${u.lessons.length}</span></div><div class="path">${nodes}</div>`;
+  }).join("");
+  const goalPct = Math.min(100, Math.round(xpToday() / S.goalXp * 100));
   $("#view").innerHTML = `
+    ${!S.onboarded ? `<section class="card"><div class="coach" id="hello"><div class="av">${poufSvg()}</div><div class="bubble">${esc(LINE_HELLO)}</div></div>
+      <p class="small">Je suis ton coach d'accent. Tu lis des phrases, j'écoute chaque son et je te dis quoi corriger. Gagne de l'XP, garde ta série et débloque les unités !</p></section>` : ""}
     ${setupCard()}
-    <div class="tiles">
-      <div class="tile"><b>${doneToday()}/${S.goal}</b><span>aujourd'hui</span></div>
-      <div class="tile"><b>${streak()}</b><span>jours de suite</span></div>
-      <div class="tile"><b>${avg === null ? "–" : avg}</b><span>score moyen</span></div>
-    </div>
-    <div class="bar"><i id="goalBar"></i></div>
-    <section class="card">
-      <h2>Exercice du jour</h2>
-      <p class="small muted">8 phrases variées${weak.length ? ", avec tes sons difficiles" : ""}.</p>
-      <button class="btn primary block" id="daily">Commencer</button>
-    </section>
-    <section class="card">
-      <h3>Tes sons à travailler</h3>
-      ${weak.length ? `<div class="list">${weak.map(w => `<button class="sound" data-p="${esc(w.p)}"><span class="sym">${esc(w.p)}</span><span><b>${esc(lessonTitle(w.p))}</b><br><span class="small muted">${w.n} essais</span></span><span class="pct">${w.pct} %</span></button>`).join("")}</div>`
-        : `<p class="small muted">Fais quelques exercices : l'appli repérera les sons qui te posent problème.</p>`}
-    </section>
-    <section class="card">
-      <h3>Pour discuter</h3>
-      <p class="small">La conversation se passe avec ton coach Claude (vocabulaire, corrections, jeux de rôle). Reviens ici pour travailler l'accent.</p>
-      <a class="btn block" href="${COACH_URL}" target="_blank" rel="noopener noreferrer">Ouvrir mon coach d'anglais</a>
-    </section>`;
-  const gb = $("#goalBar"); if (gb) gb.style.width = Math.min(100, doneToday() / S.goal * 100) + "%";
-  const prep = $("#prep"); if (prep) prep.onclick = () => { startEngine(); renderHome(); };
-  $("#daily").onclick = () => go("exercise", { title: "Exercice du jour", items: dailyItems() });
-  document.querySelectorAll("[data-p]").forEach(b => b.onclick = () => go("lesson", { p: b.dataset.p }));
-}
-function lessonTitle(p) { const l = SOUND_LESSONS.find(x => x.p === p); return l ? l.title : `Le son « ${p} »`; }
-function dailyItems() {
-  const all = CATEGORIES.flatMap(c => c.items.map(i => ({ en: i[0], fr: i[1] })));
-  const weak = weakSounds(2).map(w => SOUND_LESSONS.find(l => l.p === w.p)).filter(Boolean);
-  const extra = weak.flatMap(l => shuffle(l.items.filter(x => x.includes(" "))).slice(0, 2).map(en => ({ en, fr: "" })));
-  return shuffle([...shuffle(all).slice(0, 8 - extra.length), ...extra]);
-}
-
-// ---------------- Exercices ----------------
-function renderPractice() {
-  $("#view").innerHTML = `
-    <h2>Exercices</h2>
-    <section class="card"><div class="list">
-      ${CATEGORIES.map(c => `<button class="item" data-cat="${c.id}"><span><span class="t">${esc(c.title)}</span><br><span class="s">${esc(c.sub)} · ${c.items.length} phrases</span></span><span class="chev">›</span></button>`).join("")}
-      <button class="item" data-cat="pairs"><span><span class="t">Paires minimales</span><br><span class="s">ship / sheep, think / sink… · ${MINIMAL_PAIRS.length} paires</span></span><span class="chev">›</span></button>
-    </div></section>
-    <section class="card">
-      <h3>Sons difficiles</h3>
-      <div class="list">${SOUND_LESSONS.map(l => `<button class="sound" data-p="${esc(l.p)}"><span class="sym">${esc(l.p)}</span><span><b>${esc(l.title)}</b><br><span class="small muted">${esc(l.tip)}</span></span><span class="chev">›</span></button>`).join("")}</div>
-    </section>
-    <section class="card">
-      <h3>Ta propre phrase</h3>
-      <label class="f" for="free">Écris une phrase en anglais (par exemple une phrase vue avec ton coach)</label>
-      <input type="text" id="free" maxlength="140" autocomplete="off" placeholder="I would like a coffee, please.">
-      <button class="btn primary" id="freeGo">S'entraîner</button>
-    </section>`;
-  document.querySelectorAll("[data-cat]").forEach(b => b.onclick = () => {
-    if (b.dataset.cat === "pairs") return go("exercise", { title: "Paires minimales", items: MINIMAL_PAIRS.flatMap(([a, c]) => [{ en: a, fr: `paire : ${a} / ${c}` }, { en: c, fr: `paire : ${a} / ${c}` }]) });
-    const c = CATEGORIES.find(x => x.id === b.dataset.cat);
-    go("exercise", { title: c.title, items: c.items.map(i => ({ en: i[0], fr: i[1] })) });
+    <section class="card"><div class="row between"><h3>Objectif du jour</h3><span class="xpfloat">${xpToday()} / ${S.goalXp} XP</span></div><div class="bar xp"><i id="goalBar"></i></div></section>
+    ${units}
+    <section class="card"><h3>Pour discuter</h3><p class="small">Conversation, vocabulaire et corrections avec ton coach Claude.</p>
+      <a class="btn cyan block" href="${COACH_URL}" target="_blank" rel="noopener noreferrer">Ouvrir mon coach</a></section>`;
+  $("#goalBar").style.width = goalPct + "%";
+  bindSetup();
+  $$(".node").forEach(b => b.onclick = () => {
+    const idx = +b.dataset.idx, st = G.lessonState(S.lessons, idx);
+    if (st === "locked") { play("bad"); toast(pick("locked")); return; }
+    play("tap"); startLesson(G.ALL_LESSONS[idx]);
   });
-  document.querySelectorAll("[data-p]").forEach(b => b.onclick = () => go("lesson", { p: b.dataset.p }));
-  const free = () => { const t = $("#free").value.trim(); if (t) go("exercise", { title: "Ta phrase", items: [{ en: t, fr: "" }] }); };
-  $("#freeGo").onclick = free;
-  $("#free").addEventListener("keydown", e => { if (e.key === "Enter") free(); });
+  if (!S.onboarded) { S.onboarded = true; save(); }
+  const curNode = $(".node.open"); if (curNode && S.history.length) setTimeout(() => curNode.scrollIntoView({ block: "center", behavior: "smooth" }), 100);
 }
 
-function renderLesson({ p }) {
-  const l = SOUND_LESSONS.find(x => x.p === p);
-  const st = S.sounds[p];
-  const items = l ? l.items : [];
-  $("#view").innerHTML = `
-    <button class="btn ghost" id="back">‹ Retour</button>
-    <section class="card">
-      <div class="row between"><h2>${esc(l ? l.title : `Le son « ${p} »`)}</h2><span class="ipa">/${esc(p)}/</span></div>
-      <p>${esc(l ? l.tip : (P.FR_HINT[p] || ""))}</p>
-      <p class="small muted">En français : ${esc(P.FR_HINT[p] || "")}</p>
-      ${st ? `<p class="small">Ta réussite sur ce son : <b>${Math.round(st.ok / st.n * 100)} %</b> sur ${st.n} essais</p>` : ""}
-      ${items.length ? `<button class="btn primary block" id="go">S'entraîner sur ce son (${items.length})</button>` : `<p class="small muted">Pas encore d'exercice dédié à ce son. Il revient dans les phrases des autres exercices.</p>`}
-    </section>`;
-  $("#back").onclick = () => go("practice");
-  const g = $("#go"); if (g) g.onclick = () => go("exercise", { title: l.title, items: items.map(en => ({ en, fr: "" })) });
+// ---------------- Leçon ----------------
+let L = null; // session de leçon en cours
+function startLesson(lesson) {
+  const items = lesson.kind === "review" ? G.reviewItems(lesson, S.history) : lesson.items;
+  if (!items.length) { toast("Rien à réviser pour l'instant."); return; }
+  L = { lesson, items, i: 0, best: [], combo: 0, maxCombo: 0, xp: 0, startLevel: G.levelOf(S.xp).level };
+  if (engineState === "off") startEngine();
+  go("lesson");
 }
 
-// ---------------- Écran d'exercice ----------------
-let rec = null, lastAudioUrl = null, lastOffset = 0, lastResult = null, busy = false, autoStopping = false;
-const MIC_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12z"/></svg>';
-const STOP_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>';
-
-function renderExercise(opts) {
-  if (opts) queue = { title: opts.title, items: opts.items, i: 0, scores: [] };
-  const it = queue.items[queue.i];
-  lastResult = null;
+let rec = null, lastAudioUrl = null, lastOffset = 0, lastResult = null, busy = false, autoStopping = false, ref = null;
+function renderLesson() {
+  const it = L.items[L.i];
+  lastResult = null; ref = null;
+  const intro = L.i === 0 && L.lesson.tip ? L.lesson.tip : pick("listen");
   $("#view").innerHTML = `
-    <div class="ex-head"><button class="btn ghost" id="quit">‹ Quitter</button><span class="small muted">${esc(queue.title)} · ${queue.i + 1}/${queue.items.length}</span></div>
-    <div class="bar signal"><i id="qBar"></i></div>
+    <div class="ltop"><button class="iconbtn" id="quit" aria-label="Quitter la leçon">${ICON.close}</button><div class="bar"><i id="lBar"></i></div><span class="combo" id="combo">${L.combo > 1 ? "×" + L.combo : ""}</span></div>
+    <div class="coach" id="coach"><div class="av">${poufSvg()}</div><div class="bubble">${esc(intro)}</div></div>
     <section class="card">
-      <div class="sentence" id="sentence">${P.splitDisplayWords(it.en).map((w, i) => `<button class="word" data-wi="${i}">${esc(w)}</button>`).join("")}</div>
+      <div class="sentence">${P.splitDisplayWords(it.en).map((w, i) => `<button class="word" data-wi="${i}">${esc(w)}</button>`).join("")}</div>
       <p class="ipa" id="ipa"></p>
       ${it.fr ? `<p class="fr">${esc(it.fr)}</p>` : ""}
-      <div class="row">
-        <button class="btn" id="listen">Écouter</button>
-        <button class="btn" id="slow">Lentement</button>
-      </div>
+      <div class="listen"><button class="btn cyan sm" id="listen">${ICON.spk}Écouter</button><button class="btn ghost sm" id="slow">${ICON.slow}Lentement</button></div>
     </section>
-    <section class="card">
-      <div class="recwrap">
-        <button class="rec" id="rec" aria-label="Enregistrer">${MIC_SVG}</button>
-        <p class="status" id="status">Écoute le modèle, puis appuie et lis la phrase.</p>
-      </div>
-      <div id="result"></div>
-    </section>`;
-  $("#qBar").style.width = (queue.i / queue.items.length * 100) + "%";
-  $("#quit").onclick = () => go(queue.title === "Exercice du jour" ? "home" : "practice");
+    <div class="mic-wrap"><button class="mic" id="rec" aria-label="Enregistrer">${ICON.mic}</button><p class="status" id="status">Appuie et lis la phrase à voix haute.</p></div>
+    <div class="spacer" id="spacer"></div>`;
+  $("#lBar").style.width = (L.i / L.items.length * 100) + "%";
+  $("#quit").onclick = async () => { if ((L.i === 0 && !L.best.length) || await confirmDlg("Quitter la leçon ?", "Tu perdras l'XP de cette leçon en cours.", "Quitter")) go(L.lesson.id ? "path" : "train"); };
   $("#listen").onclick = () => speak(it.en, { voiceURI: S.voice, rate: 0.95 });
   $("#slow").onclick = () => speak(it.en, { voiceURI: S.voice, rate: S.slow });
   $("#rec").onclick = toggleRecording;
-  document.querySelectorAll(".word").forEach(b => b.onclick = () => wordDetail(+b.dataset.wi));
+  $$(".word").forEach(b => b.onclick = () => wordDetail(+b.dataset.wi));
+  poufSay($("#coach"), intro, { voice: S.poufVoice && L.i === 0 });
   loadDict().then(d => {
-    const ref = P.buildReference(d, it.en);
-    queue.ref = ref;
+    ref = P.buildReference(d, it.en);
     $("#ipa").textContent = "/" + ref.map(w => w.prons ? P.ipaString(w.prons[0]) : "?").join(" ") + "/";
     const unknown = ref.filter(w => w.norm && !w.prons).map(w => w.display);
-    if (unknown.length) $("#status").textContent = `Mots inconnus du dictionnaire, non notés : ${unknown.join(", ")}`;
+    if (unknown.length) $("#status").textContent = `Mots non notés (inconnus du dictionnaire) : ${unknown.join(", ")}`;
   }).catch(() => toast("Impossible de charger le dictionnaire. Vérifie ta connexion."));
-  if (engineState === "off") startEngine();
 }
 
 async function toggleRecording() {
   if (busy) return;
   if (rec && rec.active) return stopRecording(false);
   if (!navigator.mediaDevices || !window.MediaRecorder) { toast("Ce navigateur ne permet pas d'enregistrer le micro. Essaie Chrome, Edge, Firefox ou Safari récent."); return; }
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  closeSheet();
   const btn = $("#rec");
   rec = new Recorder({
-    onLevel: lv => { if (btn) btn.style.boxShadow = `0 0 0 ${Math.round(lv * 18)}px color-mix(in srgb, var(--bad) 35%, transparent)`; },
+    onLevel: lv => { if (btn) btn.style.boxShadow = `0 8px 0 #bdb3f0, 0 0 0 ${Math.round(lv * 22)}px rgba(255,84,112,.35)`; },
     onAutoStop: () => { if (!autoStopping) { autoStopping = true; stopRecording(false); } }
   });
-  try {
-    await rec.start();
-  } catch (e) {
-    toast(e && e.name === "NotAllowedError" ? "Accès au micro refusé. Autorise le micro pour ce site dans ton navigateur." : "Micro introuvable ou déjà utilisé.");
-    rec = null; return;
-  }
+  try { await rec.start(); }
+  catch (e) { toast(e && e.name === "NotAllowedError" ? "Accès au micro refusé. Autorise le micro pour ce site dans ton navigateur." : "Micro introuvable ou déjà utilisé."); rec = null; return; }
   autoStopping = false;
-  btn.classList.add("on"); btn.innerHTML = STOP_SVG; btn.setAttribute("aria-label", "Arrêter");
-  $("#status").textContent = "Je t'écoute… (arrêt automatique quand tu as fini)";
+  btn.classList.add("on"); btn.innerHTML = ICON.stop; btn.setAttribute("aria-label", "Arrêter");
+  $$(".word").forEach(b => b.className = "word");
+  $("#status").textContent = "Je t'écoute… (arrêt automatique)";
 }
 
 async function stopRecording(discard) {
   if (!rec || !rec.active) return;
   const r = rec; rec = null;
   const btn = $("#rec");
-  if (btn) { btn.classList.remove("on"); btn.innerHTML = MIC_SVG; btn.style.boxShadow = ""; btn.setAttribute("aria-label", "Enregistrer"); }
+  if (btn) { btn.classList.remove("on"); btn.innerHTML = ICON.mic; btn.style.boxShadow = ""; btn.setAttribute("aria-label", "Enregistrer"); }
   let out;
   try { out = await r.stop(); } catch (e) { if (!discard) toast("Impossible de lire l'enregistrement. Réessaie."); return; }
-  if (discard || view !== "exercise") return;
-  if (!out || !out.heardSpeech || !out.pcm || out.pcm.samples.length < 8000) { $("#status").textContent = "Je n'ai rien entendu. Rapproche-toi du micro et parle un peu plus fort."; return; }
+  if (discard || view !== "lesson") return;
+  if (!out || !out.heardSpeech || !out.pcm || out.pcm.samples.length < 8000) { $("#status").textContent = "Je n'ai rien entendu. Rapproche-toi du micro et parle plus fort."; return; }
   if (lastAudioUrl) URL.revokeObjectURL(lastAudioUrl);
   lastAudioUrl = URL.createObjectURL(out.blob); lastOffset = out.pcm.offsetSec;
   busy = true; btn.disabled = true;
   try {
-    if (engineState !== "ready") { $("#status").textContent = "Le moteur se prépare, ton enregistrement sera analysé juste après…"; if (!worker) startEngine(); await whenReady(); }
-    $("#status").textContent = "Analyse de ta prononciation…";
+    if (engineState !== "ready") { $("#status").textContent = "Pouf prépare ses oreilles, ton essai sera analysé juste après…"; if (!worker) startEngine(); await whenReady(); }
+    $("#status").textContent = "Pouf écoute ta prononciation…";
     await loadDict();
-    if (!queue.ref) queue.ref = P.buildReference(dict, queue.items[queue.i].en);
+    if (!ref) ref = P.buildReference(dict, L.items[L.i].en);
     const res = await analyze(out.pcm.samples);
-    const result = P.evaluate(queue.ref, res.segs);
-    showResult(result, res.ms);
-  } catch (e) {
-    toast(errorText(String(e && e.message || e)));
-    $("#status").textContent = "Réessaie.";
-  } finally { busy = false; const b = $("#rec"); if (b) b.disabled = false; }
+    showResult(P.evaluate(ref, res.segs));
+  } catch (e) { toast(errorText(String(e && e.message || e))); $("#status").textContent = "Réessaie."; }
+  finally { busy = false; const b = $("#rec"); if (b) b.disabled = false; }
 }
 
-function ring(score) {
-  const r = 34, c = 2 * Math.PI * r, col = score >= 85 ? "good" : score >= 60 ? "ok" : "bad";
-  return `<svg class="ring" viewBox="0 0 84 84" role="img" aria-label="Score ${score} sur 100"><circle class="track" cx="42" cy="42" r="${r}" fill="none" stroke-width="8"/>
-    <circle class="arc ${col}" cx="42" cy="42" r="${r}" fill="none" stroke-width="8" stroke-linecap="round" stroke-dasharray="${(score / 100 * c).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 42 42)"/>
-    <text x="42" y="50" text-anchor="middle">${score}</text></svg>`;
-}
-
-function showResult(result, ms) {
+function closeSheet() { const s = $("#sheet"); if (s) s.remove(); const sp = $("#spacer"); if (sp) sp.style.height = "0"; }
+function syncSpacer() { const sh = $("#sheet"), sp = $("#spacer"); if (sh && sp) sp.style.height = sh.offsetHeight + "px"; }
+function showResult(result) {
   lastResult = result;
-  const it = queue.items[queue.i];
-  // couleur des mots
-  document.querySelectorAll(".word").forEach(b => { const w = result.words[+b.dataset.wi]; b.className = "word " + (w ? w.level : ""); });
-  const tips = P.tipsFor(result);
-  const label = result.score >= 90 ? "Excellent, très clair !" : result.score >= 75 ? "Bien ! Quelques sons à peaufiner." : result.score >= 50 ? "Compréhensible. Travaille les mots en rouge." : "Difficile à comprendre. Écoute lentement et réessaie.";
+  const it = L.items[L.i];
+  $$(".word").forEach(b => { const w = result.words[+b.dataset.wi]; b.className = "word " + (w ? w.level : ""); });
   $("#status").textContent = "";
-  $("#result").innerHTML = `
-    <div class="score">${ring(result.score)}<div><b>${esc(label)}</b><p class="small muted">Touche un mot pour voir chaque son.</p></div></div>
-    <div class="legend"><span class="lg">bien prononcé</span><span class="lo">presque</span><span class="lb">à corriger</span></div>
-    ${tips.length ? `<ul class="tips">${tips.map(t => `<li><b>${esc(t.word)}</b>${esc(t.text)}</li>`).join("")}</ul>` : ""}
-    <div id="detail"></div>
-    <div class="row">
-      <button class="btn" id="mine">Écouter ma voix</button>
-      <button class="btn" id="again">Réessayer</button>
-      <button class="btn primary" id="next">${queue.i + 1 < queue.items.length ? "Suivant" : "Terminer"}</button>
-    </div>
-    <p class="small muted">Entendu : /${esc(result.heardIpa.replace(/ /g, ""))}/ · analysé en ${(ms / 1000).toFixed(1)} s</p>`;
-  $("#mine").onclick = () => playMine();
-  $("#again").onclick = () => { $("#result").innerHTML = ""; document.querySelectorAll(".word").forEach(b => b.className = "word"); toggleRecording(); };
-  $("#next").onclick = nextItem;
-  // progression
-  queue.scores.push(result.score);
-  S.history.push({ d: today(), s: result.score, t: it.en.slice(0, 80) });
+  L.best[L.i] = Math.max(L.best[L.i] ?? 0, result.score);
+  S.history.push({ d: today(), s: result.score, t: it.en.slice(0, 120) });
   if (S.history.length > 500) S.history = S.history.slice(-500);
   if (!S.days.includes(today())) S.days.push(today());
   S.sounds = P.updateSoundStats(S.sounds, result);
-  save();
+  save(); renderHud();
+  const sc = result.score, mood = sc >= 85 ? "great" : sc >= 55 ? "meh" : "bad";
+  const line = pick(sc >= 95 ? "great" : sc >= 85 ? "good" : sc >= 55 ? "meh" : "bad");
+  const title = sc >= 95 ? "Parfait !" : sc >= 85 ? "Bien joué !" : sc >= 55 ? "Presque !" : "On réessaie ?";
+  const tips = P.tipsFor(result, 3);
+  const gain = G.xpForScore(L.best[L.i], L.best[L.i] >= 85 ? L.combo + 1 : 0);
+  const sheet = document.createElement("div");
+  sheet.id = "sheet"; sheet.className = "sheet " + mood;
+  sheet.innerHTML = `<div class="sheet-in">
+    <div class="head"><div class="av" id="sheetPouf">${poufSvg(mood === "great" ? "happy" : mood === "bad" ? "sad" : "")}</div>
+      <div><div class="title">${esc(title)}</div><p class="small">${esc(line)}</p></div><span class="score-big">${sc}</span></div>
+    <div class="scroll">${tips.length ? `<ul class="tips">${tips.map(t => `<li><b>${esc(t.word)}</b> · ${esc(t.text)}</li>`).join("")}</ul>` : ""}
+    <div id="detail"></div></div>
+    <div class="row between actions">
+      <div class="row"><button class="btn ghost sm" id="mine">${ICON.play}Ma voix</button><button class="btn ghost sm" id="again">${ICON.review}Réessayer</button></div>
+      <button class="btn ${mood === "great" ? "green" : mood === "meh" ? "orange" : "red"}" id="next">Continuer <span class="small">+${gain} XP</span></button>
+    </div></div>`;
+  document.body.appendChild(sheet);
+  play(mood === "great" ? "great" : mood === "meh" ? "good" : "bad");
+  if (S.poufVoice) { const svg = $("#sheetPouf .pouf"); svg.classList.add("talk"); speak(line, { lang: "fr", rate: 1.05, pitch: 1.5 }).then(() => svg.classList.remove("talk")); }
+  $("#mine").onclick = () => playMine();
+  $("#again").onclick = () => { closeSheet(); toggleRecording(); };
+  $("#next").onclick = nextItem;
   const worst = result.words.map((w, i) => ({ w, i })).filter(x => x.w.level === "bad" || x.w.level === "ok").sort((a, b) => a.w.score - b.w.score)[0];
   if (worst) wordDetail(worst.i);
+  syncSpacer();
 }
 
 function nextItem() {
-  if (queue.i + 1 < queue.items.length) { queue.i++; queue.ref = null; renderExercise(); return; }
-  const avg = Math.round(queue.scores.reduce((a, b) => a + b, 0) / Math.max(1, queue.scores.length));
-  $("#view").innerHTML = `<section class="card"><h2>Série terminée</h2>
-    <div class="score">${ring(avg)}<div><b>Score moyen : ${avg}/100</b><p class="small muted">${queue.scores.length} essai(s) · ${doneToday()} aujourd'hui</p></div></div>
-    <div class="row"><button class="btn" id="redo">Recommencer</button><button class="btn primary" id="home">Accueil</button></div></section>`;
-  $("#redo").onclick = () => go("exercise", { title: queue.title, items: queue.items });
-  $("#home").onclick = () => go("home");
+  const best = L.best[L.i] ?? 0;
+  L.combo = best >= 85 ? L.combo + 1 : 0;
+  L.maxCombo = Math.max(L.maxCombo, L.combo);
+  L.xp += G.xpForScore(best, L.combo);
+  if (L.combo >= 3) toast(pick("combo") + ` ×${L.combo}`);
+  closeSheet();
+  if (L.i + 1 < L.items.length) { L.i++; play("tap"); renderLesson(); const c = $("#combo"); if (c && L.combo > 1) c.classList.add("hot"); return; }
+  finishLesson();
+}
+
+function finishLesson() {
+  const scores = L.items.map((_, i) => L.best[i] ?? 0);
+  const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+  const st = G.stars(avg);
+  const bonus = 20 + (scores.every(s => s >= 85) ? 10 : 0);
+  const total = L.xp + bonus;
+  const before = xpToday();
+  S.xp += total; S.xpDays[today()] = before + total;
+  S.bestCombo = Math.max(S.bestCombo || 0, L.maxCombo);
+  if (L.lesson.id) { const prev = S.lessons[L.lesson.id] || { stars: 0, best: 0 }; S.lessons[L.lesson.id] = { stars: Math.max(prev.stars, st), best: Math.max(prev.best, avg), d: today() }; }
+  const lv = G.levelOf(S.xp).level;
+  const earned = G.newBadges(S, { streak: streak() });
+  S.badges.push(...earned);
+  save();
+  go("finish", { avg, st, total, combo: L.maxCombo, levelUp: lv > L.startLevel ? lv : 0, earned, goalReached: before < S.goalXp && xpToday() >= S.goalXp });
+}
+
+function renderFinish(o) {
+  $("#view").innerHTML = `<section class="card finish">
+    <div class="coach" id="finCoach"><div class="av">${poufSvg("happy")}</div><div class="bubble"></div></div>
+    <h2>Leçon terminée !</h2>
+    <div class="bigstars">${[1, 2, 3].map(n => ICON.star(n <= o.st)).join("")}</div>
+    <div class="tiles">
+      <div class="tile y"><span class="l">XP gagnés</span><span class="v">+${o.total}</span></div>
+      <div class="tile g"><span class="l">Précision</span><span class="v">${o.avg}%</span></div>
+      <div class="tile o"><span class="l">Combo max</span><span class="v">×${o.combo}</span></div>
+    </div>
+    <p class="small muted">${esc(L.lesson.title)} · série de ${streak()} jour${streak() > 1 ? "s" : ""}</p>
+    <div class="row center"><button class="btn ghost" id="redo">Rejouer</button><button class="btn green" id="cont">Continuer</button></div>
+  </section>`;
+  fx(); play("done");
+  poufSay($("#finCoach"), pick("done"), { voice: S.poufVoice, mood: "happy" });
+  $("#redo").onclick = () => startLesson(L.lesson);
+  $("#cont").onclick = async () => {
+    if (o.goalReached) { fx(); await celebrate("Objectif du jour atteint !", `${xpToday()} XP aujourd'hui. Ta série continue !`); }
+    if (o.levelUp) { play("level"); fx(); await celebrate(`Niveau ${o.levelUp} !`, `Tu es maintenant « ${G.levelTitle(o.levelUp)} ».`); }
+    for (const id of o.earned) { const b = G.BADGES.find(x => x.id === id); fx(); await celebrate("Nouveau badge !", b.desc, `<div class="bdg got"><div class="md">${esc(b.sym)}</div>${esc(b.title)}</div>`); }
+    go(L.lesson.id ? "path" : "train");
+  };
 }
 
 function wordDetail(wi) {
-  const it = queue.items[queue.i];
+  const it = L.items[L.i];
   const word = P.splitDisplayWords(it.en)[wi];
-  const box = $("#detail");
-  const w = lastResult && lastResult.words[wi];
   const clean = P.normWord(word);
-  if (!w) { speak(clean || word, { voiceURI: S.voice, rate: 0.9 }); return; }
-  if (!box) return;
+  const w = lastResult && lastResult.words[wi];
+  const box = $("#detail");
+  if (!w || !box) { speak(clean || word, { voiceURI: S.voice, rate: 0.9 }); return; }
   box.innerHTML = `<div class="detail">
     <div class="row between"><h3>${esc(word)}</h3>${w.score !== null ? `<span class="pill ${w.level}">${w.score} %</span>` : `<span class="pill">non noté</span>`}</div>
     ${w.phones.length ? `<div class="phones">${w.phones.map(ph => `<span class="ph ${ph.status}" title="${esc(P.FR_HINT[ph.p] || "")}">${esc(ph.p)}<small>${ph.status === "bad" ? (ph.heard ? "entendu " + esc(ph.heard) : "absent") : ph.status === "ok" ? "presque" : "ok"}</small></span>`).join("")}</div>` : ""}
-    <div class="row"><button class="btn" id="wRef">Écouter le mot</button>${w.start !== null ? `<button class="btn" id="wMine">Mon mot</button>` : ""}</div></div>`;
+    <div class="row"><button class="btn cyan sm" id="wRef">${ICON.spk}Le mot</button>${w.start !== null ? `<button class="btn ghost sm" id="wMine">${ICON.play}Mon mot</button>` : ""}</div></div>`;
   $("#wRef").onclick = () => speak(clean, { voiceURI: S.voice, rate: 0.85 });
   const m = $("#wMine"); if (m) m.onclick = () => playMine(w.start, w.end);
+  syncSpacer();
 }
 
 let player = null;
@@ -380,68 +406,104 @@ function playMine(start, end) {
   player.load();
 }
 
+// ---------------- Entraînement libre ----------------
+function renderTrain() {
+  $("#view").innerHTML = `
+    <h2>Entraînement libre</h2>
+    <p class="small muted">Tout est ouvert ici, sans déblocage. L'XP compte quand même.</p>
+    <section class="card"><div class="list">
+      ${CATEGORIES.map(c => `<button class="item" data-cat="${c.id}"><span><span class="t">${esc(c.title)}</span><br><span class="s">${esc(c.sub)} · ${c.items.length} phrases</span></span><span class="chev">›</span></button>`).join("")}
+      <button class="item" data-cat="pairs"><span><span class="t">Paires minimales</span><br><span class="s">ship / sheep, think / sink… · 5 paires au hasard</span></span><span class="chev">›</span></button>
+    </div></section>
+    <section class="card"><h3>Sons difficiles</h3><div class="list">${SOUND_LESSONS.map(l => `<button class="sound" data-p="${esc(l.p)}"><span class="sym">${esc(l.p)}</span><span><b>${esc(l.title)}</b><br><span class="small muted">${esc(l.tip)}</span></span><span class="chev">›</span></button>`).join("")}</div></section>
+    <section class="card"><h3>Ta propre phrase</h3>
+      <label class="f" for="free">Une phrase en anglais (par exemple vue avec ton coach)</label>
+      <input type="text" id="free" maxlength="140" autocomplete="off" placeholder="I would like a coffee, please.">
+      <button class="btn yellow" id="freeGo">S'entraîner</button></section>`;
+  $$("[data-cat]").forEach(b => b.onclick = () => {
+    play("tap");
+    if (b.dataset.cat === "pairs") return startLesson({ id: null, kind: "pairs", title: "Paires minimales", items: shuffle(MINIMAL_PAIRS).slice(0, 5).flatMap(([a, c]) => [{ en: a, fr: `${a} / ${c}` }, { en: c, fr: `${a} / ${c}` }]) });
+    const c = CATEGORIES.find(x => x.id === b.dataset.cat);
+    startLesson({ id: null, kind: "free", title: c.title, items: c.items.map(i => ({ en: i[0], fr: i[1] })) });
+  });
+  $$("[data-p]").forEach(b => b.onclick = () => { play("tap"); soundDrill(b.dataset.p); });
+  const free = () => { const t = $("#free").value.trim(); if (t) startLesson({ id: null, kind: "free", title: "Ta phrase", items: [{ en: t, fr: "" }] }); };
+  $("#freeGo").onclick = free;
+  $("#free").addEventListener("keydown", e => { if (e.key === "Enter") free(); });
+}
+function soundDrill(p) {
+  const l = SOUND_LESSONS.find(x => x.p === p);
+  if (!l) { toast("Ce son revient dans les phrases des leçons."); return; }
+  startLesson({ id: null, kind: "sound", sound: p, title: l.title, tip: l.tip, items: l.items.map(en => ({ en, fr: "" })) });
+}
+
 // ---------------- Mes sons ----------------
 function renderSounds() {
   const all = Object.keys(P.FR_HINT).filter(p => p !== "ɾ");
+  const title = p => { const l = SOUND_LESSONS.find(x => x.p === p); return l ? l.title : `Le son « ${p} »`; };
   const rows = all.map(p => { const v = S.sounds[p]; return { p, pct: v && v.n ? Math.round(v.ok / v.n * 100) : null, n: v ? v.n : 0 }; })
     .sort((a, b) => (a.pct === null) - (b.pct === null) || (a.pct ?? 0) - (b.pct ?? 0));
   $("#view").innerHTML = `<h2>Mes sons</h2>
-    <p class="small muted">Ta réussite sur chaque son anglais, calculée sur tous tes essais. Touche un son pour le travailler.</p>
+    <p class="small muted">Ta réussite sur chaque son anglais, sur tous tes essais. Les plus faibles sont en haut : touche-les pour t'entraîner.</p>
     <section class="card"><div class="list">${rows.map(r => `<button class="sound" data-p="${esc(r.p)}"><span class="sym">${esc(r.p)}</span>
-      <span><b>${esc(lessonTitle(r.p))}</b><br><span class="small muted">${esc(P.FR_HINT[r.p] || "")}</span><span class="bar"><i data-w="${r.pct ?? 0}"></i></span></span>
-      <span class="pct">${r.pct === null ? "–" : r.pct + " %"}</span></button>`).join("")}</div></section>`;
-  document.querySelectorAll(".bar > i[data-w]").forEach(i => { i.style.width = i.dataset.w + "%"; const v = +i.dataset.w; i.style.background = v >= 85 ? "var(--good)" : v >= 60 ? "var(--ok)" : "var(--bad)"; });
-  document.querySelectorAll("[data-p]").forEach(b => b.onclick = () => go("lesson", { p: b.dataset.p }));
+      <span><b>${esc(title(r.p))}</b><br><span class="small muted">${esc(P.FR_HINT[r.p] || "")}${r.n ? ` · ${r.n} essais` : ""}</span><span class="bar"><i data-w="${r.pct ?? 0}"></i></span></span>
+      <span class="pct">${r.pct === null ? "–" : r.pct + "%"}</span></button>`).join("")}</div></section>`;
+  $$(".bar > i[data-w]").forEach(i => { const v = +i.dataset.w; i.style.width = v + "%"; if (v < 85) i.classList.add(v >= 60 ? "ok" : "bad"); });
+  $$("[data-p]").forEach(b => b.onclick = () => { play("tap"); soundDrill(b.dataset.p); });
 }
 
-// ---------------- Réglages ----------------
-function renderSettings() {
-  const voices = englishVoices();
-  $("#view").innerHTML = `<h2>Réglages</h2>
-    <section class="card">
-      <label class="f" for="voice">Voix anglaise du modèle</label>
-      <select id="voice">${voices.length ? voices.map(v => `<option value="${esc(v.voiceURI)}" ${v.voiceURI === S.voice ? "selected" : ""}>${esc(v.name)} (${esc(v.lang)})</option>`).join("") : `<option value="">Voix par défaut</option>`}</select>
-      <button class="btn" id="tryVoice">Tester la voix</button>
-      <label class="f" for="slowR">Vitesse « Lentement » : <span id="slowV">${Math.round(S.slow * 100)} %</span></label>
-      <input type="range" id="slowR" min="0.5" max="0.9" step="0.05" value="${S.slow}">
-      <label class="f" for="goal">Objectif quotidien</label>
-      <select id="goal">${[5, 10, 15, 20, 30].map(n => `<option ${n === S.goal ? "selected" : ""}>${n}</option>`).join("")}</select>
+// ---------------- Profil & réglages ----------------
+function renderProfile() {
+  const lv = G.levelOf(S.xp), voices = englishVoices(), avg = avgScore();
+  $("#view").innerHTML = `
+    <section class="card"><div class="lvl"><div class="badge-lv">${lv.level}</div><div class="grow"><h3>${esc(G.levelTitle(lv.level))}</h3>
+      <div class="bar xp"><i id="lvBar"></i></div><span class="small muted">${lv.into} / ${lv.need} XP vers le niveau ${lv.level + 1}</span></div></div>
+      <div class="tiles"><div class="tile o"><span class="l">Série</span><span class="v">${streak()}j</span></div><div class="tile y"><span class="l">XP total</span><span class="v">${S.xp}</span></div><div class="tile c"><span class="l">Score moyen</span><span class="v">${avg === null ? "–" : avg}</span></div></div></section>
+    <section class="card"><h3>Badges · ${S.badges.length}/${G.BADGES.length}</h3>
+      <div class="badges">${G.BADGES.map(b => `<div class="bdg ${S.badges.includes(b.id) ? "got" : ""}"><div class="md">${esc(b.sym)}</div>${esc(b.title)}<span class="ds">${esc(b.desc)}</span></div>`).join("")}</div></section>
+    <section class="card"><h3>Réglages</h3>
+      <label class="switch" for="optVoice">Pouf parle à voix haute <input type="checkbox" id="optVoice" ${S.poufVoice ? "checked" : ""}></label>
+      <label class="switch" for="optSfx">Effets sonores <input type="checkbox" id="optSfx" ${S.sfx ? "checked" : ""}></label>
+      <label class="f" for="goal">Objectif quotidien
+        <select id="goal">${[[20, "Tranquille · 20 XP"], [50, "Normal · 50 XP"], [100, "Sérieux · 100 XP"], [150, "Intense · 150 XP"]].map(([v, t]) => `<option value="${v}" ${v === S.goalXp ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+      <label class="f" for="voice">Voix anglaise des modèles
+        <select id="voice">${voices.length ? voices.map(v => `<option value="${esc(v.voiceURI)}" ${v.voiceURI === S.voice ? "selected" : ""}>${esc(v.name)} (${esc(v.lang)})</option>`).join("") : `<option value="">Voix par défaut</option>`}</select></label>
+      <button class="btn ghost sm" id="tryVoice">${ICON.spk}Tester la voix</button>
+      <label class="f" for="slowR">Vitesse « Lentement » : <span id="slowV">${Math.round(S.slow * 100)} %</span>
+        <input type="range" id="slowR" min="0.5" max="0.9" step="0.05" value="${S.slow}"></label>
     </section>
-    <section class="card">
-      <h3>Confidentialité et sécurité</h3>
-      <ul class="small">
-        <li>Ta voix est analysée sur ton appareil. Elle n'est jamais envoyée sur internet.</li>
-        <li>Seul échange réseau : le téléchargement du modèle depuis Hugging Face, à une version figée.</li>
-        <li>Aucun compte, aucune publicité, aucun traceur. Ta progression reste dans ce navigateur.</li>
-      </ul>
-      <p class="small muted">Moteur : ${esc($("#engine").textContent)} · ${self.crossOriginIsolated ? "calcul multi-cœurs actif" : "calcul sur un cœur"}</p>
-    </section>
-    <section class="card">
-      <h3>Données</h3>
-      <button class="btn" id="export">Copier ma progression (sauvegarde)</button>
-      <button class="btn" id="delModel">Supprimer le modèle téléchargé</button>
-      <button class="btn danger" id="delData">Effacer ma progression</button>
-    </section>`;
+    <section class="card"><h3>Confidentialité</h3>
+      <ul class="plain"><li>Ta voix est analysée sur ton appareil, jamais envoyée sur internet.</li>
+        <li>Seul échange réseau : le téléchargement du moteur depuis Hugging Face, à une version figée.</li>
+        <li>Aucun compte, aucune pub, aucun traceur. Ta progression reste dans ce navigateur.</li></ul>
+      <p class="small muted">${esc($("#engine").title)} · ${self.crossOriginIsolated ? "calcul multi-cœurs actif" : "calcul sur un cœur"}</p></section>
+    <section class="card"><h3>Données</h3>
+      <button class="btn ghost sm" id="export">Copier ma progression (sauvegarde)</button>
+      <button class="btn ghost sm" id="delModel">Supprimer le moteur téléchargé</button>
+      <button class="btn red sm" id="delData">Effacer ma progression</button></section>`;
+  $("#lvBar").style.width = Math.round(lv.into / lv.need * 100) + "%";
+  $("#optVoice").onchange = e => { S.poufVoice = e.target.checked; save(); renderHud(); };
+  $("#optSfx").onchange = e => { S.sfx = e.target.checked; save(); play("tap"); };
+  $("#goal").onchange = e => { S.goalXp = +e.target.value; save(); };
   $("#voice").onchange = e => { S.voice = e.target.value; save(); };
   $("#tryVoice").onclick = () => speak("Hello! How are you today?", { voiceURI: S.voice });
   $("#slowR").oninput = e => { S.slow = +e.target.value; $("#slowV").textContent = Math.round(S.slow * 100) + " %"; save(); };
-  $("#goal").onchange = e => { S.goal = +e.target.value; save(); };
   $("#export").onclick = async () => { try { await navigator.clipboard.writeText(JSON.stringify(S)); toast("Progression copiée dans le presse-papiers."); } catch (e) { toast("Copie impossible sur ce navigateur."); } };
   $("#delModel").onclick = async () => {
-    if (!await confirmDlg("Supprimer le modèle ?", "Le modèle (≈ 360 Mo) sera retiré de ton appareil. Il faudra le retélécharger pour analyser ta prononciation. Ta progression est conservée.", "Supprimer le modèle")) return;
+    if (!await confirmDlg("Supprimer le moteur ?", "Le moteur (≈ 360 Mo) sera retiré de ton appareil. Il faudra le retélécharger pour jouer. Ta progression est conservée.", "Supprimer")) return;
     try { await caches.delete("transformers-cache"); } catch (e) {}
     if (worker) { worker.terminate(); worker = null; }
-    S.modelReady = false; save(); setEngine("off", "Moteur : non préparé"); toast("Modèle supprimé.");
+    S.modelReady = false; save(); setEngine("off", "Moteur : non préparé"); toast("Moteur supprimé.");
   };
   $("#delData").onclick = async () => {
-    if (!await confirmDlg("Effacer ta progression ?", "Ton historique, tes scores et ta série de jours seront effacés de cet appareil. Cette action est définitive.", "Tout effacer")) return;
-    const keep = { voice: S.voice, slow: S.slow, goal: S.goal, modelReady: S.modelReady };
-    S = { ...DEFAULTS, ...keep }; save(); toast("Progression effacée.");
+    if (!await confirmDlg("Effacer ta progression ?", "XP, niveaux, badges, leçons, historique et série seront effacés de cet appareil. C'est définitif.", "Tout effacer")) return;
+    const keep = { voice: S.voice, slow: S.slow, goalXp: S.goalXp, modelReady: S.modelReady, sfx: S.sfx, poufVoice: S.poufVoice, onboarded: true };
+    S = { ...DEFAULTS, ...keep }; save(); renderHud(); toast("Progression effacée."); renderProfile();
   };
 }
-if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => { if (view === "settings") renderSettings(); };
+if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => { if (view === "profile") renderProfile(); };
 
-// ---------------- Service worker (hors-ligne + isolation pour le calcul multi-cœurs) ----------------
+// ---------------- Service worker ----------------
 if ("serviceWorker" in navigator && !TEST_LOCAL) {
   navigator.serviceWorker.register("sw.js").then(() => {
     if (!self.crossOriginIsolated && !sessionStorage.getItem("coiReload")) {
@@ -452,4 +514,4 @@ if ("serviceWorker" in navigator && !TEST_LOCAL) {
 
 // ---------------- Démarrage ----------------
 if (S.modelReady) startEngine();
-go("home");
+go("path");

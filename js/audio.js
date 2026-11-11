@@ -88,22 +88,27 @@ function trimAndNormalize(x) {
 }
 
 // ---------- Synthèse vocale (voix de l'appareil) ----------
-export function englishVoices() {
+export function englishVoices() { return voicesFor("en"); }
+export function voicesFor(lang) {
   if (!("speechSynthesis" in window)) return [];
-  return speechSynthesis.getVoices().filter(v => /^en[-_]/i.test(v.lang));
+  const re = new RegExp("^" + lang + "([-_]|$)", "i");
+  return speechSynthesis.getVoices().filter(v => re.test(v.lang));
 }
 
-export function speak(text, { voiceURI = "", rate = 1 } = {}) {
+export function speak(text, { voiceURI = "", rate = 1, pitch = 1, lang = "en" } = {}) {
   if (!("speechSynthesis" in window)) return Promise.resolve(false);
   return new Promise(res => {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    const voices = englishVoices();
-    const v = voices.find(x => x.voiceURI === voiceURI) || voices.find(x => /en-US/i.test(x.lang)) || voices[0];
+    const voices = voicesFor(lang);
+    const pref = lang === "en" ? /en-US/i : /fr-FR/i;
+    const v = voices.find(x => x.voiceURI === voiceURI) || voices.find(x => pref.test(x.lang)) || voices[0];
     if (v) u.voice = v;
-    u.lang = v ? v.lang : "en-US";
-    u.rate = rate;
-    u.onend = () => res(true); u.onerror = () => res(false);
+    u.lang = v ? v.lang : (lang === "en" ? "en-US" : "fr-FR");
+    u.rate = rate; u.pitch = pitch;
+    let done = false; const fin = ok => { if (!done) { done = true; res(ok); } };
+    u.onend = () => fin(true); u.onerror = () => fin(false);
+    setTimeout(() => fin(false), 400 + text.length * 120); // certains navigateurs n'envoient jamais onend
     speechSynthesis.speak(u);
   });
 }

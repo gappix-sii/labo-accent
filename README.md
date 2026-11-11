@@ -9,12 +9,13 @@ Tout se passe **dans ton navigateur** : aucun serveur, aucun abonnement, et ta v
 
 ## Fonctions
 
-- Exercices : en couple, voyage, quotidien, passé en -ed, paires minimales (ship / sheep…), et ta propre phrase.
-- 12 leçons sur les sons difficiles pour un Français (th, h, i court / long, æ, r, w, ng…).
-- Détail son par son de chaque mot, écoute du modèle (normal ou lent) et de ta propre voix, mot par mot.
-- « Mes sons » : ta réussite sur chaque son, pour savoir quoi travailler.
-- Série de jours, objectif quotidien, exercice du jour adapté à tes points faibles.
-- Installable sur l'écran d'accueil du téléphone, fonctionne hors ligne une fois le modèle téléchargé.
+- **Parcours façon jeu** : 4 unités (Se présenter, En couple, Voyager, Raconter), 28 leçons à débloquer, de 1 à 3 étoiles par leçon, révisions des phrases ratées.
+- **Pouf**, le putois coach au casque orange : il t'encourage, réagit à chaque essai et parle à voix haute (désactivable).
+- **XP, niveaux, combo, série de jours, objectif quotidien et 13 badges** ; sons et confettis (désactivables).
+- Analyse **son par son** : chaque mot en vert, orange ou rouge, conseil en français pour chaque son raté, écoute du modèle (normal ou lent) et de ta propre voix, mot par mot.
+- **Entraînement libre** : toutes les phrases, paires minimales (ship / sheep…), 12 sons difficiles, et ta propre phrase.
+- **Mes sons** : ta réussite sur chaque son anglais.
+- Installable sur l'écran d'accueil du téléphone, fonctionne hors ligne une fois le moteur téléchargé.
 
 ## Mise en ligne gratuite sur GitHub Pages (10 minutes)
 
@@ -62,6 +63,10 @@ puis ouvre `http://localhost:8000` dans Chrome. (Le micro exige `https` ou `loca
 | `js/worker.js` | Chargement du modèle et inférence, dans un thread séparé |
 | `js/phonemes.js` | Dictionnaire → sons, décodage CTC, alignement, score, conseils |
 | `js/content.js` | Phrases et leçons |
+| `js/game.js` | Parcours, XP, niveaux, étoiles, badges |
+| `js/mascot.js` | Pouf (dessin, humeurs, répliques) |
+| `js/fx.js` | Sons synthétisés et confettis |
+| `fonts/` | Polices auto-hébergées (Barlow Condensed, Nunito) |
 | `sw.js` | Hors ligne et en-têtes de sécurité |
 | `vendor/` | Bibliothèques auto-hébergées (aucun CDN) |
 | `data/cmudict.json` | Dictionnaire de prononciation CMU |
