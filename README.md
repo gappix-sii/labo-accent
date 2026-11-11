@@ -9,6 +9,7 @@ Tout se passe **dans ton navigateur** : aucun serveur, aucun abonnement, et ta v
 
 ## Fonctions
 
+- **Conversation** (onglet Pratique) : 10 jeux de rôle guidés (café, hôtel, dîner en amoureux, pharmacie, vol annulé, support informatique…) avec tâches à accomplir et indices ; Pouf joue le personnage, tu réponds au micro et chaque réponse est notée son par son. Exercice d'écoute : entends le dialogue et touche les mots reconnus.
 - **Séances chronométrées** de 15, 30, 45 min ou 1 h : Pouf compose un programme (vocabulaire, leçon du parcours, son faible, paires minimales, révision) avec minuteur.
 - **Vocabulaire par niveau du CECRL** (A1 à C1, environ 500 mots) : cartes français → anglais à dire au micro, répétition espacée.
 - **Parcours façon jeu** : 9 unités (Se présenter, En couple, Voyager, Raconter, Au travail, Sortir, Santé et imprévus, Loisirs et opinions, Au téléphone), 49 leçons à débloquer, de 1 à 3 étoiles par leçon, révisions des phrases ratées.
@@ -67,6 +68,7 @@ puis ouvre `http://localhost:8000` dans Chrome. (Le micro exige `https` ou `loca
 | `js/content.js` | Phrases et leçons |
 | `js/game.js` | Parcours, XP, niveaux, étoiles, badges, séances, répétition espacée |
 | `js/vocab.js` | Vocabulaire A1 à C1 |
+| `js/dialogues.js` | Jeux de rôle guidés |
 | `js/mascot.js` | Pouf (dessin, humeurs, répliques) |
 | `js/fx.js` | Sons synthétisés et confettis |
 | `fonts/` | Polices auto-hébergées (Barlow Condensed, Nunito) |

@@ -6,6 +6,7 @@ import * as G from "./game.js";
 import { poufSvg, poufSay, pick } from "./mascot.js";
 import { sfx, confetti } from "./fx.js";
 import { VOCAB, LEVELS, sayText } from "./vocab.js";
+import { DIALOGUES, STOP } from "./dialogues.js";
 
 const COACH_URL = "https://claude.ai/artifact/NpBH4v48K7L87LiDVvxiFt";
 const STORE = "labo.v1";
@@ -34,7 +35,7 @@ const ICON = {
 
 // ---------------- Stockage local ----------------
 const DEFAULTS = { history: [], sounds: {}, days: [], voice: "", slow: 0.7, modelReady: false, xp: 0, lessons: {}, badges: [],
-  bestCombo: 0, xpDays: {}, goalXp: 50, sfx: true, poufVoice: true, onboarded: false, vocab: {}, vocabLevel: "A1", sessions: [], sessMin: 15 };
+  bestCombo: 0, xpDays: {}, goalXp: 50, sfx: true, poufVoice: true, onboarded: false, vocab: {}, vocabLevel: "A1", sessions: [], sessMin: 15, dialogues: {} };
 let S = { ...DEFAULTS };
 try { S = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(STORE) || "{}") }; } catch (e) {}
 function save() { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { toast("Impossible d'enregistrer ta progression sur cet appareil."); } }
@@ -136,14 +137,16 @@ function errorText(m) {
 let view = "path";
 function go(v, opts) {
   view = v;
-  const tab = { sounds: "train", block: "session", send: "session", vcard: "vocab", vfinish: "vocab" }[v] || v;
+  const tab = { sounds: "train", block: "session", send: "session", vcard: "vocab", vfinish: "vocab", dialog: "train", dlisten: "train", dfinish: "train" }[v] || v;
   $$("nav.bottom button").forEach(b => { if (b.dataset.go === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
-  document.body.classList.toggle("in-lesson", ["lesson", "finish", "vcard", "vfinish", "block", "send"].includes(v));
+  document.body.classList.toggle("in-lesson", ["lesson", "finish", "vcard", "vfinish", "block", "send", "dialog", "dlisten", "dfinish"].includes(v));
   document.body.dataset.view = v;
+  if (v !== "dialog") document.body.classList.remove("hide-fr");
   closeSheet();
   stopRecording(true);
   ({ path: renderPath, train: renderTrain, sounds: renderSounds, profile: renderProfile, lesson: renderLesson, finish: () => renderFinish(opts),
-     session: renderSession, block: renderBlock, send: () => renderSessionEnd(opts), vocab: renderVocabHome, vcard: renderVocabCard, vfinish: () => renderVocabFinish(opts) })[v]();
+     session: renderSession, block: renderBlock, send: () => renderSessionEnd(opts), vocab: renderVocabHome, vcard: renderVocabCard, vfinish: () => renderVocabFinish(opts),
+     dialog: renderDialog, dlisten: renderListen, dfinish: () => renderDialogFinish(opts) })[v]();
   renderHud();
   window.scrollTo(0, 0);
 }
@@ -281,7 +284,7 @@ async function stopRecording(discard) {
   if (btn) { btn.classList.remove("on"); btn.innerHTML = ICON.mic; btn.style.boxShadow = ""; btn.setAttribute("aria-label", "Enregistrer"); }
   let out;
   try { out = await r.stop(); } catch (e) { if (!discard) toast("Impossible de lire l'enregistrement. Réessaie."); return; }
-  if (discard || !["lesson", "vcard"].includes(view)) return;
+  if (discard || !["lesson", "vcard", "dialog"].includes(view)) return;
   if (!out || !out.heardSpeech || !out.pcm || out.pcm.samples.length < 8000) { $("#status").textContent = "Je n'ai rien entendu. Rapproche-toi du micro et parle plus fort."; return; }
   if (lastAudioUrl) URL.revokeObjectURL(lastAudioUrl);
   lastAudioUrl = URL.createObjectURL(out.blob); lastOffset = out.pcm.offsetSec;
@@ -292,7 +295,7 @@ async function stopRecording(discard) {
     await loadDict();
     if (!ref) ref = P.buildReference(dict, TARGET.text);
     const res = await analyze(out.pcm.samples);
-    TARGET.onResult(P.evaluate(ref, res.segs));
+    TARGET.onResult(P.evaluate(ref, res.segs), res.segs);
   } catch (e) { toast(errorText(String(e && e.message || e))); $("#status").textContent = "Réessaie."; }
   finally { busy = false; const b = $("#rec"); if (b) b.disabled = false; }
 }
@@ -433,6 +436,11 @@ function playMine(start, end) {
 // ---------------- Entraînement libre ----------------
 function renderTrain() {
   $("#view").innerHTML = `
+    <h2>Conversation</h2>
+    <p class="small muted">Jeux de rôle à l'oral, comme une vraie discussion : Pouf joue un personnage, tu réponds au micro. Ou écoute d'abord le dialogue.</p>
+    <div class="dgrid">${DIALOGUES.map(d => { const r = S.dialogues[d.id]; return `<section class="card dcard"><div class="row between"><span class="pill ok">${esc(d.level)}</span>${r ? `<span class="pill good">${r.best} %</span>` : ""}</div>
+      <h3>${esc(d.title)}</h3><p class="small muted">${esc(d.goal)}</p>
+      <div class="row"><button class="btn green sm" data-role="${d.id}">${ICON.mic}Jeu de rôle</button><button class="btn ghost sm" data-listen="${d.id}">${ICON.spk}Écouter</button></div></section>`; }).join("")}</div>
     <h2>Entraînement libre</h2>
     <p class="small muted">Tout est ouvert ici, sans déblocage. L'XP compte quand même.</p>
     <section class="card"><div class="row between"><span><b>Mes sons</b><br><span class="small muted">Ta réussite sur chaque son anglais</span></span><button class="btn cyan sm" id="toSounds">Voir</button></div></section>
@@ -453,6 +461,8 @@ function renderTrain() {
   });
   $$("[data-p]").forEach(b => b.onclick = () => { play("tap"); soundDrill(b.dataset.p); });
   $("#toSounds").onclick = () => go("sounds");
+  $$("[data-role]").forEach(b => b.onclick = () => { play("tap"); startDialog(b.dataset.role); });
+  $$("[data-listen]").forEach(b => b.onclick = () => { play("tap"); startListen(b.dataset.listen); });
   const free = () => { const t = $("#free").value.trim(); if (t) startLesson({ id: null, kind: "free", title: "Ta phrase", items: [{ en: t, fr: "" }] }); };
   $("#freeGo").onclick = free;
   $("#free").addEventListener("keydown", e => { if (e.key === "Enter") free(); });
@@ -546,6 +556,7 @@ function blockLabel(b, k = 0) {
   if (b.type === "path") return { t: "Leçon du parcours", s: k ? "La leçon suivante" : `« ${nextPathLesson().title} »` };
   if (b.type === "sound") { const w = weakSoundList()[k] ; const l = SOUND_LESSONS.find(x => x.p === w); return { t: "Son à travailler", s: l ? l.title : "Un son difficile au hasard" }; }
   if (b.type === "pairs") return { t: "Paires minimales", s: `${b.count / 2} paires (ship / sheep…)` };
+  if (b.type === "dialogue") return { t: "Conversation", s: `Jeu de rôle « ${pickDialogue().title} »` };
   return { t: "Révision", s: `${b.count} phrases que tu as ratées` };
 }
 function renderSession() {
@@ -603,6 +614,7 @@ function renderBlock() {
 }
 function runBlock(b) {
   if (b.type === "vocab") return startVocab(S.vocabLevel, b.count);
+  if (b.type === "dialogue") return startDialog(pickDialogue().id);
   if (b.type === "path") return startLesson(nextPathLesson());
   if (b.type === "sound") {
     const w = weakSoundList()[SESS.sound++];
@@ -770,13 +782,204 @@ function renderVocabFinish(o) {
   $("#vfOk").onclick = async () => { await rewards(o); if (SESS) sessionNext(); else go("vocab"); };
 }
 
+// ---------------- Conversation : jeux de rôle guidés et écoute ----------------
+let D = null;
+const meTurns = d => d.turns.filter(t => t.me).length;
+function pickDialogue() {
+  const order = ["A1", "A2", "B1"];
+  const list = [...DIALOGUES].sort((a, b) => order.indexOf(a.level) - order.indexOf(b.level));
+  return list.find(d => !S.dialogues[d.id]) || list.sort((a, b) => S.dialogues[a.id].best - S.dialogues[b.id].best)[0];
+}
+function startDialog(id) {
+  const d = DIALOGUES.find(x => x.id === id);
+  D = { d, t: 0, log: [], done: new Set(), scores: [], xp: 0, startLevel: G.levelOf(S.xp).level, busyAi: false };
+  if (engineState === "off") startEngine();
+  loadDict().catch(() => {});
+  go("dialog");
+}
+function renderDialog() {
+  const d = D.d;
+  $("#view").innerHTML = `
+    <div class="ltop"><button class="iconbtn" id="quit" aria-label="Quitter">${ICON.close}</button><div class="bar"><i id="lBar"></i></div><span class="pill ok">${esc(d.level)}</span></div>
+    <section class="card"><div class="row between"><h3>${esc(d.title)}</h3><span class="small muted">${esc(d.role)}</span></div>
+      <p class="small">${esc(d.goal)}</p>
+      <ul class="tasks" id="tasks">${d.tasks.map((t, i) => `<li data-t="${i}">${esc(t)}</li>`).join("")}</ul>
+      <label class="switch small" for="dFr">Afficher la traduction <input type="checkbox" id="dFr" checked></label></section>
+    <div class="chat" id="chat"></div>
+    <section class="card" id="turn"></section>
+    <div class="spacer" id="spacer"></div>`;
+  $("#quit").onclick = () => quitActivity(D.t === 0, "train");
+  $("#dFr").onchange = e => document.body.classList.toggle("hide-fr", !e.target.checked);
+  document.body.classList.remove("hide-fr");
+  updateDialogBar();
+  advance();
+}
+function updateDialogBar() { const b = $("#lBar"); if (b) b.style.width = Math.round(D.scores.length / meTurns(D.d) * 100) + "%"; }
+function addBubble(who, en, fr, extra = "") {
+  const chat = $("#chat"); if (!chat) return;
+  const el = document.createElement("div");
+  el.className = "msg " + who;
+  el.innerHTML = `${who === "ai" ? `<div class="av">${poufSvg()}</div>` : ""}<div class="bub"><div class="en">${extra || esc(en)}</div>${fr ? `<div class="tr">${esc(fr)}</div>` : ""}
+    ${who === "ai" ? `<button class="iconbtn sm" aria-label="Réécouter">${ICON.spk}</button>` : ""}</div>`;
+  const rb = el.querySelector("button.iconbtn"); if (rb) rb.onclick = () => speak(en, { voiceURI: S.voice, rate: 0.95 });
+  chat.appendChild(el);
+  D.log.push({ who, en, fr });
+  el.scrollIntoView({ block: "end", behavior: "smooth" });
+  return el;
+}
+async function aiSpeak(el, text) {
+  const svg = el && el.querySelector(".pouf");
+  if (svg) svg.classList.add("talk");
+  await speak(text, { voiceURI: S.voice, rate: 0.95 });
+  if (svg) svg.classList.remove("talk");
+}
+async function advance() {
+  const turns = D.d.turns;
+  D.busyAi = true;
+  while (D.t < turns.length && turns[D.t].ai && view === "dialog") {
+    const tu = turns[D.t]; D.t++;
+    const el = addBubble("ai", tu.ai, tu.fr);
+    await aiSpeak(el, tu.ai);
+  }
+  D.busyAi = false;
+  if (view !== "dialog") return;
+  if (D.t >= turns.length) return finishDialog();
+  showTurn();
+}
+function showTurn() {
+  const tu = D.d.turns[D.t];
+  TARGET = { text: tu.me[0][0], onResult: dialogResult }; ref = null; lastResult = null;
+  $("#turn").innerHTML = `<p class="hintline"><b>À toi :</b> ${esc(tu.hint)}</p>
+    <div id="opts" hidden><p class="small muted">Idées de réponse (tu peux aussi les adapter) :</p>${tu.me.map(o => `<div class="opt"><button class="iconbtn" data-say="${esc(o[0])}" aria-label="Écouter">${ICON.spk}</button><span><b>${esc(o[0])}</b><br><span class="small muted tr">${esc(o[1])}</span></span></div>`).join("")}</div>
+    <button class="btn ghost sm" id="dHint">Indice : voir des réponses possibles</button>
+    <div class="mic-wrap"><button class="mic" id="rec" aria-label="Répondre au micro">${ICON.mic}</button><p class="status" id="status">Réponds à voix haute.</p>
+    <p class="kbd-hint"><b>Espace</b> parler · <b>H</b> indice · <b>L</b> réécouter</p></div>`;
+  $("#dHint").onclick = () => { $("#opts").hidden = false; $("#dHint").remove(); };
+  $$("#opts [data-say]").forEach(b => b.onclick = () => speak(b.dataset.say, { voiceURI: S.voice, rate: 0.9 }));
+  $("#rec").onclick = () => { if (!D.busyAi) toggleRecording(); };
+  syncSpacer();
+}
+function dialogResult(_first, segs) {
+  const tu = D.d.turns[D.t];
+  const res = tu.me.map(o => P.evaluate(P.buildReference(dict, o[0]), segs));
+  let k = 0; res.forEach((r, i) => { if (r.score > res[k].score) k = i; });
+  const best = res[k], opt = tu.me[k];
+  if (TEST_LOCAL && new URLSearchParams(location.search).has("accept")) best.score = 90; // test local uniquement
+  if (best.score < 40) {
+    play("bad");
+    $("#status").textContent = "Je n'ai pas bien compris. Essaie une des réponses proposées, ou articule un peu plus.";
+    const o = $("#opts"); if (o) o.hidden = false; const h = $("#dHint"); if (h) h.remove();
+    return;
+  }
+  lastResult = best;
+  recordAttempt(opt[0], best);
+  D.scores.push(best.score);
+  D.xp += G.xpForScore(best.score, 0);
+  if (tu.task !== undefined) { D.done.add(tu.task); const li = $(`#tasks li[data-t="${tu.task}"]`); if (li) li.classList.add("done"); }
+  const words = P.splitDisplayWords(opt[0]).map((w, i) => `<span class="word ${best.words[i] ? best.words[i].level : ""}">${esc(w)}</span>`).join(" ");
+  const el = addBubble("me", opt[0], opt[1], `${words} <span class="pill ${best.score >= 85 ? "good" : best.score >= 55 ? "ok" : "bad"}">${best.score}</span>`);
+  const tips = P.tipsFor(best, 1);
+  if (tips.length && best.score < 85) { const tip = document.createElement("div"); tip.className = "tr small"; tip.textContent = "Conseil : " + tips[0].word + " · " + tips[0].text; el.querySelector(".bub").appendChild(tip); }
+  play(best.score >= 85 ? "great" : best.score >= 55 ? "good" : "bad");
+  D.t++;
+  updateDialogBar();
+  $("#turn").innerHTML = `<p class="status">${esc(pick(best.score >= 85 ? "great" : best.score >= 55 ? "good" : "meh"))}</p>`;
+  if (opt[2]) { const el2 = addBubble("ai", opt[2], ""); aiSpeak(el2, opt[2]).then(() => setTimeout(advance, 300)); }
+  else setTimeout(advance, 700);
+}
+function finishDialog() {
+  const avg = D.scores.length ? Math.round(D.scores.reduce((a, b) => a + b, 0) / D.scores.length) : 0;
+  const prev = S.dialogues[D.d.id];
+  S.dialogues[D.d.id] = { best: Math.max(prev ? prev.best : 0, avg), d: today() };
+  const total = D.xp + 20;
+  go("dfinish", { avg, total, tasks: D.done.size, ntasks: D.d.tasks.length, ...gainXp(total, D.startLevel) });
+}
+function renderDialogFinish(o) {
+  $("#view").innerHTML = `<section class="card finish">
+    <div class="coach" id="dfCoach"><div class="av">${poufSvg("happy")}</div><div class="bubble"></div></div>
+    <h2>Conversation réussie !</h2>
+    <div class="tiles">
+      <div class="tile g"><span class="l">Tâches</span><span class="v">${o.tasks}/${o.ntasks}</span></div>
+      <div class="tile c"><span class="l">Prononciation</span><span class="v">${o.avg}%</span></div>
+      <div class="tile y"><span class="l">XP gagnés</span><span class="v">+${o.total}</span></div>
+    </div>
+    <details class="transcript"><summary>Revoir le dialogue</summary>${D.log.map(l => `<p><b>${l.who === "ai" ? esc(D.d.role) : "Toi"} :</b> ${esc(l.en)}${l.fr ? `<br><span class="small muted">${esc(l.fr)}</span>` : ""}</p>`).join("")}</details>
+    <div class="row center">${SESS ? "" : `<button class="btn ghost" id="dRe">Rejouer</button>`}<button class="btn green" id="dOk">Continuer</button></div></section>`;
+  fx(); play("done");
+  poufSay($("#dfCoach"), o.avg >= 80 ? "Tu as géré cette conversation comme un pro !" : "Bien joué ! Rejoue-la pour améliorer ta prononciation.", { voice: S.poufVoice, mood: "happy" });
+  const re = $("#dRe"); if (re) re.onclick = () => startDialog(D.d.id);
+  $("#dOk").onclick = async () => { await rewards(o); if (SESS) sessionNext(); else go("train"); };
+}
+
+// Écoute : on entend le dialogue et on touche les mots reconnus (comme l'exercice d'écoute de Google Traduction).
+let LS = null;
+function dialogueLines(d) { return d.turns.map(t => t.ai ? { who: "ai", en: t.ai, fr: t.fr } : { who: "me", en: t.me[0][0], fr: t.me[0][1] }); }
+function wordsOf(text) { return P.splitDisplayWords(text).map(P.normWord).filter(w => w.length >= 3 && !STOP.has(w)); }
+function startListen(id) {
+  const d = DIALOGUES.find(x => x.id === id), lines = dialogueLines(d);
+  const present = [...new Set(lines.flatMap(l => wordsOf(l.en)))];
+  const others = [...new Set(DIALOGUES.filter(x => x.id !== id).flatMap(x => dialogueLines(x).flatMap(l => wordsOf(l.en))))].filter(w => !present.includes(w));
+  const pick7 = shuffle(present).slice(0, 7), dis = shuffle(others).slice(0, 5);
+  LS = { d, lines, chips: shuffle([...pick7, ...dis]), present: new Set(present), sel: new Set(), checked: false, playing: false, startLevel: G.levelOf(S.xp).level };
+  go("dlisten");
+}
+function renderListen() {
+  const d = LS.d;
+  $("#view").innerHTML = `
+    <div class="ltop"><button class="iconbtn" id="quit" aria-label="Quitter">${ICON.close}</button><h3 class="grow">${esc(d.title)} · écoute</h3><span class="pill ok">${esc(d.level)}</span></div>
+    <section class="card"><div class="coach"><div class="av">${poufSvg()}</div><div class="bubble">Écoute le dialogue, puis touche tous les mots que tu as entendus.</div></div>
+      <div class="row"><button class="btn cyan" id="lPlay">${ICON.play}Écouter le dialogue</button><button class="btn ghost sm" id="lSlow">${ICON.slow}Plus lentement</button></div></section>
+    <section class="card"><h3>Quels mots as-tu entendus ?</h3>
+      <div class="wchips" id="chips">${LS.chips.map(w => `<button class="wchip" data-w="${esc(w)}" aria-pressed="false">${esc(w)}</button>`).join("")}</div>
+      <button class="btn green block" id="lCheck">Vérifier</button><div id="lRes"></div></section>`;
+  $("#quit").onclick = () => { speechSynthesis.cancel(); LS.playing = false; if (SESS) quitActivity(false, "train"); else go("train"); };
+  $("#lPlay").onclick = () => playDialogue(0.95);
+  $("#lSlow").onclick = () => playDialogue(0.75);
+  $$(".wchip").forEach(c => c.onclick = () => {
+    if (LS.checked) { speak(c.dataset.w, { voiceURI: S.voice, rate: 0.85 }); return; }
+    const w = c.dataset.w; if (LS.sel.has(w)) LS.sel.delete(w); else LS.sel.add(w);
+    c.setAttribute("aria-pressed", String(LS.sel.has(w))); play("tap");
+  });
+  $("#lCheck").onclick = checkListen;
+}
+async function playDialogue(rate) {
+  if (LS.playing) { speechSynthesis.cancel(); LS.playing = false; return; }
+  LS.playing = true;
+  const voices = englishVoices(), vA = S.voice || (voices[0] && voices[0].voiceURI) || "", vB = (voices.find(v => v.voiceURI !== vA) || {}).voiceURI || vA;
+  for (const l of LS.lines) { if (!LS.playing || view !== "dlisten") break; await speak(l.en, { voiceURI: l.who === "ai" ? vA : vB, rate }); await new Promise(r => setTimeout(r, 250)); }
+  LS.playing = false;
+}
+function checkListen() {
+  if (LS.checked) return;
+  LS.checked = true; speechSynthesis.cancel(); LS.playing = false;
+  let hit = 0, wrong = 0, missed = 0;
+  $$(".wchip").forEach(c => {
+    const w = c.dataset.w, sel = LS.sel.has(w), pres = LS.present.has(w);
+    c.classList.add(sel && pres ? "hit" : sel && !pres ? "wrong" : pres ? "missed" : "neutral");
+    if (sel && pres) hit++; else if (sel) wrong++; else if (pres) missed++;
+  });
+  const total = hit + missed, score = total ? Math.max(0, Math.round((hit - wrong) / total * 100)) : 0;
+  const xp = 5 + hit * 2;
+  const r = gainXp(xp, LS.startLevel);
+  if (!S.days.includes(today())) { S.days.push(today()); save(); }
+  play(score >= 80 ? "great" : score >= 50 ? "good" : "bad");
+  $("#lRes").innerHTML = `<p class="hintline"><b>${score} %</b> · ${hit} trouvé${hit > 1 ? "s" : ""}, ${missed} manqué${missed > 1 ? "s" : ""}, ${wrong} en trop · <span class="xpfloat">+${xp} XP</span></p>
+    <p class="small muted">Vert : bien entendu · orange : présent mais manqué · rouge : n'était pas dans le dialogue. Touche un mot pour l'écouter.</p>
+    <details class="transcript" open><summary>Le dialogue</summary>${LS.lines.map(l => `<p><b>${l.who === "ai" ? esc(LS.d.role) : "Toi"} :</b> ${esc(l.en)}<br><span class="small muted">${esc(l.fr)}</span></p>`).join("")}</details>
+    <div class="row center"><button class="btn green" id="lRole">${ICON.mic}Jouer ce dialogue</button><button class="btn ghost" id="lDone">${SESS ? "Continuer" : "Terminer"}</button></div>`;
+  $("#lCheck").remove();
+  $("#lRole").onclick = () => startDialog(LS.d.id);
+  $("#lDone").onclick = async () => { await rewards(r); if (SESS) sessionNext(); else go("train"); };
+}
+
 // ---------------- Raccourcis clavier (mode ordinateur) ----------------
 document.addEventListener("keydown", e => {
-  if (!["lesson", "vcard"].includes(view) || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (!["lesson", "vcard", "dialog"].includes(view) || e.ctrlKey || e.metaKey || e.altKey) return;
   if (document.querySelector("dialog[open]") || /INPUT|SELECT|TEXTAREA/.test(document.activeElement && document.activeElement.tagName)) return;
   if (e.code === "Space") { e.preventDefault(); toggleRecording(); }
   else if (e.code === "KeyL") { const b = $("#listen"); if (b) b.click(); }
   else if (e.code === "KeyH" && $("#reveal")) { $("#reveal").click(); }
+  else if (e.code === "KeyH" && $("#dHint")) { $("#dHint").click(); }
   else if (e.code === "KeyR" && $("#sheet")) { $("#again").click(); }
   else if (e.code === "Enter" && $("#sheet")) { e.preventDefault(); $("#next").click(); }
 });

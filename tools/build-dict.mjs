@@ -5,6 +5,7 @@ import { createHash } from "node:crypto";
 import { CATEGORIES, SOUND_LESSONS, MINIMAL_PAIRS } from "../js/content.js";
 import { normWord, splitDisplayWords } from "../js/phonemes.js";
 import { VOCAB, sayText } from "../js/vocab.js";
+import { DIALOGUES } from "../js/dialogues.js";
 
 const src = process.argv[2];
 const { dictionary } = await import(src);
@@ -24,7 +25,8 @@ const texts = [
   ...CATEGORIES.flatMap(c => c.items.map(i => i[0])),
   ...SOUND_LESSONS.flatMap(l => l.items),
   ...MINIMAL_PAIRS.flat(),
-  ...Object.values(VOCAB).flat().map(sayText)
+  ...Object.values(VOCAB).flat().map(sayText),
+  ...DIALOGUES.flatMap(d => d.turns.flatMap(t => t.me ? t.me.map(o => o[0]) : [t.ai]))
 ];
 const missing = new Set();
 for (const t of texts) for (const w of splitDisplayWords(t)) { const n = normWord(w); if (n && !out[n]) missing.add(n); }

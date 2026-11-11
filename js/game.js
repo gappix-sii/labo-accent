@@ -116,13 +116,13 @@ export function pickVocab(words, vstate, n, newMax, day) {
 // ---- Séances chronométrées ----
 export const DURATIONS = [15, 30, 45, 60];
 // Durées moyennes observées : ~1,2 min par phrase (écoute, essai, retour), ~0,45 min par mot.
-export const estMinutes = b => Math.round(b.type === "vocab" ? b.count * 0.45 : b.count * 1.2);
+export const estMinutes = b => Math.round(b.type === "vocab" ? b.count * 0.45 : b.type === "dialogue" ? b.count * 1.5 + 2 : b.count * 1.2);
 export function planSession(min) {
   const P = {
     15: [["vocab", 10], ["path", 5], ["review", 4]],
-    30: [["vocab", 20], ["path", 5], ["sound", 6], ["review", 6]],
-    45: [["vocab", 20], ["path", 5], ["sound", 6], ["path", 5], ["pairs", 8], ["review", 6]],
-    60: [["vocab", 25], ["path", 5], ["sound", 6], ["path", 5], ["pairs", 8], ["sound", 6], ["review", 6], ["vocab", 15]]
+    30: [["vocab", 15], ["path", 5], ["dialogue", 4], ["sound", 6]],
+    45: [["vocab", 20], ["path", 5], ["dialogue", 4], ["sound", 6], ["path", 5], ["review", 6]],
+    60: [["vocab", 25], ["path", 5], ["dialogue", 4], ["sound", 6], ["path", 5], ["pairs", 8], ["dialogue", 4], ["review", 4]]
   }[min];
   return P.map(([type, count]) => ({ type, count }));
 }
