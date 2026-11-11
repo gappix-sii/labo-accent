@@ -6,6 +6,8 @@ import { CATEGORIES, SOUND_LESSONS, MINIMAL_PAIRS } from "../js/content.js";
 import { normWord, splitDisplayWords } from "../js/phonemes.js";
 import { VOCAB, sayText } from "../js/vocab.js";
 import { DIALOGUES } from "../js/dialogues.js";
+import { GRAMMAR } from "../js/grammar.js";
+import { ALL_MISTAKES } from "../js/mistakes.js";
 
 const src = process.argv[2];
 const { dictionary } = await import(src);
@@ -26,7 +28,9 @@ const texts = [
   ...SOUND_LESSONS.flatMap(l => l.items),
   ...MINIMAL_PAIRS.flat(),
   ...Object.values(VOCAB).flat().map(sayText),
-  ...DIALOGUES.flatMap(d => d.turns.flatMap(t => t.me ? t.me.map(o => o[0]) : [t.ai]))
+  ...DIALOGUES.flatMap(d => d.turns.flatMap(t => t.me ? t.me.map(o => o[0]) : [t.ai])),
+  ...GRAMMAR.flatMap(g => [...g.examples.map(e => e[0]), ...g.ex.map(x => x[0] === "c" ? x[1].replace("___", x[2][x[3]]) : x[0] === "o" ? x[1] : x[2])]),
+  ...ALL_MISTAKES.map(m => m.right)
 ];
 const missing = new Set();
 for (const t of texts) for (const w of splitDisplayWords(t)) { const n = normWord(w); if (n && !out[n]) missing.add(n); }

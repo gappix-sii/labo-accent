@@ -7,6 +7,8 @@ import { poufSvg, poufSay, pick } from "./mascot.js";
 import { sfx, confetti } from "./fx.js";
 import { VOCAB, LEVELS, sayText } from "./vocab.js";
 import { DIALOGUES, STOP } from "./dialogues.js";
+import { GRAMMAR, GLEVELS } from "./grammar.js";
+import { MISTAKE_CATS, ALL_MISTAKES } from "./mistakes.js";
 
 const COACH_URL = "https://claude.ai/artifact/NpBH4v48K7L87LiDVvxiFt";
 const STORE = "labo.v1";
@@ -35,7 +37,7 @@ const ICON = {
 
 // ---------------- Stockage local ----------------
 const DEFAULTS = { history: [], sounds: {}, days: [], voice: "", slow: 0.7, modelReady: false, xp: 0, lessons: {}, badges: [],
-  bestCombo: 0, xpDays: {}, goalXp: 50, sfx: true, poufVoice: true, onboarded: false, vocab: {}, vocabLevel: "A1", sessions: [], sessMin: 15, dialogues: {} };
+  bestCombo: 0, xpDays: {}, goalXp: 50, sfx: true, poufVoice: true, onboarded: false, vocab: {}, vocabLevel: "A1", sessions: [], sessMin: 15, dialogues: {}, grammar: {}, mistakes: {}, gLevel: "A1" };
 let S = { ...DEFAULTS };
 try { S = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(STORE) || "{}") }; } catch (e) {}
 function save() { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { toast("Impossible d'enregistrer ta progression sur cet appareil."); } }
@@ -137,16 +139,17 @@ function errorText(m) {
 let view = "path";
 function go(v, opts) {
   view = v;
-  const tab = { sounds: "train", block: "session", send: "session", vcard: "vocab", vfinish: "vocab", dialog: "train", dlisten: "train", dfinish: "train" }[v] || v;
+  const tab = { sounds: "train", block: "session", send: "session", vcard: "vocab", vfinish: "vocab", dialog: "train", dlisten: "train", dfinish: "train", grammar: "vocab", gpoint: "vocab", mistakes: "vocab", mcard: "vocab", done: "vocab" }[v] || v;
   $$("nav.bottom button").forEach(b => { if (b.dataset.go === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
-  document.body.classList.toggle("in-lesson", ["lesson", "finish", "vcard", "vfinish", "block", "send", "dialog", "dlisten", "dfinish"].includes(v));
+  document.body.classList.toggle("in-lesson", ["lesson", "finish", "vcard", "vfinish", "block", "send", "dialog", "dlisten", "dfinish", "gpoint", "mcard", "done"].includes(v));
   document.body.dataset.view = v;
   if (v !== "dialog") document.body.classList.remove("hide-fr");
   closeSheet();
   stopRecording(true);
   ({ path: renderPath, train: renderTrain, sounds: renderSounds, profile: renderProfile, lesson: renderLesson, finish: () => renderFinish(opts),
      session: renderSession, block: renderBlock, send: () => renderSessionEnd(opts), vocab: renderVocabHome, vcard: renderVocabCard, vfinish: () => renderVocabFinish(opts),
-     dialog: renderDialog, dlisten: renderListen, dfinish: () => renderDialogFinish(opts) })[v]();
+     dialog: renderDialog, dlisten: renderListen, dfinish: () => renderDialogFinish(opts),
+     grammar: renderGrammarHome, gpoint: renderGrammarPoint, mistakes: renderMistakesHome, mcard: renderMistakeCard, done: () => renderDone(opts) })[v]();
   renderHud();
   window.scrollTo(0, 0);
 }
@@ -258,12 +261,13 @@ function renderLesson() {
   }).catch(() => toast("Impossible de charger le dictionnaire. Vérifie ta connexion."));
 }
 
+function setStatus(t) { const el = $("#status") || $("#sayRes"); if (el) el.textContent = t; }
 async function toggleRecording() {
   if (busy) return;
   if (rec && rec.active) return stopRecording(false);
   if (!navigator.mediaDevices || !window.MediaRecorder) { toast("Ce navigateur ne permet pas d'enregistrer le micro. Essaie Chrome, Edge, Firefox ou Safari récent."); return; }
   if ("speechSynthesis" in window) speechSynthesis.cancel();
-  closeSheet();
+  if (!["gpoint", "mcard"].includes(view)) closeSheet();
   const btn = $("#rec");
   rec = new Recorder({
     onLevel: lv => { if (btn) btn.style.boxShadow = `0 8px 0 #bdb3f0, 0 0 0 ${Math.round(lv * 22)}px rgba(255,84,112,.35)`; },
@@ -274,7 +278,7 @@ async function toggleRecording() {
   autoStopping = false;
   btn.classList.add("on"); btn.innerHTML = ICON.stop; btn.setAttribute("aria-label", "Arrêter");
   $$(".word").forEach(b => b.className = "word");
-  $("#status").textContent = "Je t'écoute… (arrêt automatique)";
+  setStatus("Je t'écoute… (arrêt automatique)");
 }
 
 async function stopRecording(discard) {
@@ -284,19 +288,19 @@ async function stopRecording(discard) {
   if (btn) { btn.classList.remove("on"); btn.innerHTML = ICON.mic; btn.style.boxShadow = ""; btn.setAttribute("aria-label", "Enregistrer"); }
   let out;
   try { out = await r.stop(); } catch (e) { if (!discard) toast("Impossible de lire l'enregistrement. Réessaie."); return; }
-  if (discard || !["lesson", "vcard", "dialog"].includes(view)) return;
-  if (!out || !out.heardSpeech || !out.pcm || out.pcm.samples.length < 8000) { $("#status").textContent = "Je n'ai rien entendu. Rapproche-toi du micro et parle plus fort."; return; }
+  if (discard || !["lesson", "vcard", "dialog", "gpoint", "mcard"].includes(view)) return;
+  if (!out || !out.heardSpeech || !out.pcm || out.pcm.samples.length < 8000) { setStatus("Je n'ai rien entendu. Rapproche-toi du micro et parle plus fort."); return; }
   if (lastAudioUrl) URL.revokeObjectURL(lastAudioUrl);
   lastAudioUrl = URL.createObjectURL(out.blob); lastOffset = out.pcm.offsetSec;
   busy = true; btn.disabled = true;
   try {
-    if (engineState !== "ready") { $("#status").textContent = "Pouf prépare ses oreilles, ton essai sera analysé juste après…"; if (!worker) startEngine(); await whenReady(); }
-    $("#status").textContent = "Pouf écoute ta prononciation…";
+    if (engineState !== "ready") { setStatus("Pouf prépare ses oreilles, ton essai sera analysé juste après…"); if (!worker) startEngine(); await whenReady(); }
+    setStatus("Pouf écoute ta prononciation…");
     await loadDict();
     if (!ref) ref = P.buildReference(dict, TARGET.text);
     const res = await analyze(out.pcm.samples);
     TARGET.onResult(P.evaluate(ref, res.segs), res.segs);
-  } catch (e) { toast(errorText(String(e && e.message || e))); $("#status").textContent = "Réessaie."; }
+  } catch (e) { toast(errorText(String(e && e.message || e))); setStatus("Réessaie."); }
   finally { busy = false; const b = $("#rec"); if (b) b.disabled = false; }
 }
 
@@ -557,6 +561,8 @@ function blockLabel(b, k = 0) {
   if (b.type === "sound") { const w = weakSoundList()[k] ; const l = SOUND_LESSONS.find(x => x.p === w); return { t: "Son à travailler", s: l ? l.title : "Un son difficile au hasard" }; }
   if (b.type === "pairs") return { t: "Paires minimales", s: `${b.count / 2} paires (ship / sheep…)` };
   if (b.type === "dialogue") return { t: "Conversation", s: `Jeu de rôle « ${pickDialogue().title} »` };
+  if (b.type === "grammar") return { t: "Grammaire", s: `« ${nextGrammarPoint().title} »` };
+  if (b.type === "mistakes") return { t: "Fautes à éviter", s: `${b.count} pièges de francophones` };
   return { t: "Révision", s: `${b.count} phrases que tu as ratées` };
 }
 function renderSession() {
@@ -615,6 +621,8 @@ function renderBlock() {
 function runBlock(b) {
   if (b.type === "vocab") return startVocab(S.vocabLevel, b.count);
   if (b.type === "dialogue") return startDialog(pickDialogue().id);
+  if (b.type === "grammar") return startGrammar(nextGrammarPoint().id);
+  if (b.type === "mistakes") return startMistakes(null, b.count);
   if (b.type === "path") return startLesson(nextPathLesson());
   if (b.type === "sound") {
     const w = weakSoundList()[SESS.sound++];
@@ -661,7 +669,7 @@ function levelStats(lv) {
 }
 function renderVocabHome() {
   const lv = S.vocabLevel, info = LEVELS.find(l => l.id === lv), st = levelStats(lv);
-  $("#view").innerHTML = `
+  $("#view").innerHTML = `${learnTabs("vocab")}
     <h2>Vocabulaire</h2>
     <div class="chips" role="tablist" aria-label="Niveau">${LEVELS.map(l => { const x = levelStats(l.id); return `<button class="chip ${l.id === lv ? "on" : ""}" role="tab" aria-selected="${l.id === lv}" data-lv="${l.id}">${l.id} <span class="small">${x.mastered}/${x.total}</span></button>`; }).join("")}</div>
     <section class="card"><div class="row between"><h3>${esc(info.title)}</h3><span class="xpfloat">${st.mastered}/${st.total}</span></div>
@@ -672,6 +680,7 @@ function renderVocabHome() {
       <p class="small muted">Pouf te montre le mot en français : dis-le en anglais au micro. Les mots ratés reviennent demain, les mots réussis de plus en plus tard (répétition espacée).</p></section>
     <section class="card"><h3>Liste ${lv} · ${st.total} mots</h3><div class="vlist">${VOCAB[lv].map(w => { const s2 = G.vocabStatus(S.vocab[w.id]); return `<div class="vrow">${`<button class="iconbtn" data-say="${esc(sayText(w))}" aria-label="Écouter ${esc(w.en)}">${ICON.spk}</button>`}<span><b>${esc(w.en)}</b><br><span class="small muted">${esc(w.fr)}</span></span><span class="pill ${s2 === "mastered" ? "good" : s2 === "learning" ? "ok" : ""}">${s2 === "mastered" ? "maîtrisé" : s2 === "learning" ? "en cours" : "nouveau"}</span></div>`; }).join("")}</div></section>`;
   $("#vBar").style.width = Math.round(st.mastered / st.total * 100) + "%";
+  bindLearnTabs();
   $$(".chip[data-lv]").forEach(c => c.onclick = () => { play("tap"); S.vocabLevel = c.dataset.lv; save(); renderVocabHome(); });
   $$("[data-say]").forEach(b => b.onclick = () => speak(b.dataset.say, { voiceURI: S.voice, rate: 0.9 }));
   $("#vGo").onclick = () => { play("tap"); startVocab(lv, 10); };
@@ -970,6 +979,184 @@ function checkListen() {
   $("#lCheck").remove();
   $("#lRole").onclick = () => startDialog(LS.d.id);
   $("#lDone").onclick = async () => { await rewards(r); if (SESS) sessionNext(); else go("train"); };
+}
+
+// ---------------- Apprendre : grammaire et fautes typiques ----------------
+function learnTabs(active) {
+  return `<div class="seg" role="tablist" aria-label="Apprendre">${[["vocab", "Vocabulaire"], ["grammar", "Grammaire"], ["mistakes", "Fautes à éviter"]].map(([v, t]) => `<button role="tab" aria-selected="${v === active}" class="${v === active ? "on" : ""}" data-seg="${v}">${t}</button>`).join("")}</div>`;
+}
+function bindLearnTabs() { $$("[data-seg]").forEach(b => b.onclick = () => { play("tap"); go(b.dataset.seg); }); }
+const normSent = t => String(t).toLowerCase().replace(/[’]/g, "'").replace(/[^a-z0-9' ]+/g, " ").replace(/\s+/g, " ").trim();
+
+function nextGrammarPoint() { return GRAMMAR.find(g => !S.grammar[g.id]) || [...GRAMMAR].sort((a, b) => S.grammar[a.id].best - S.grammar[b.id].best)[0]; }
+function renderGrammarHome() {
+  const lv = S.gLevel || "A1";
+  $("#view").innerHTML = `${learnTabs("grammar")}
+    <h2>Grammaire</h2>
+    <p class="small muted">Une règle à la fois : l'explication en français, beaucoup d'exemples, le piège des francophones, puis des exercices du plus simple au plus actif.</p>
+    <div class="chips">${GLEVELS.map(l => { const n = GRAMMAR.filter(g => g.level === l).length, d = GRAMMAR.filter(g => g.level === l && S.grammar[g.id]).length; return `<button class="chip ${l === lv ? "on" : ""}" data-gl="${l}">${l} <span class="small">${d}/${n}</span></button>`; }).join("")}</div>
+    <div class="dgrid">${GRAMMAR.filter(g => g.level === lv).map(g => { const r = S.grammar[g.id]; return `<section class="card dcard"><div class="row between"><span class="pill ok">${g.level}</span>${r ? `<span class="pill ${r.best >= 80 ? "good" : "ok"}">${r.best} %</span>` : ""}</div>
+      <h3>${esc(g.title)}</h3><p class="small muted">${esc(g.rule.slice(0, 110))}${g.rule.length > 110 ? "…" : ""}</p>
+      <button class="btn ${r ? "ghost" : "green"} sm" data-g="${g.id}">${r ? "Revoir" : "Apprendre"}</button></section>`; }).join("")}</div>`;
+  bindLearnTabs();
+  $$("[data-gl]").forEach(c => c.onclick = () => { play("tap"); S.gLevel = c.dataset.gl; save(); renderGrammarHome(); });
+  $$("[data-g]").forEach(b => b.onclick = () => { play("tap"); startGrammar(b.dataset.g); });
+}
+
+let GR = null;
+function startGrammar(id) {
+  GR = { g: GRAMMAR.find(x => x.id === id), i: -1, ok: 0, xp: 0, startLevel: G.levelOf(S.xp).level };
+  loadDict().catch(() => {});
+  go("gpoint");
+}
+function renderGrammarPoint() {
+  const g = GR.g;
+  if (GR.i < 0) {
+    $("#view").innerHTML = `
+      <div class="ltop"><button class="iconbtn" id="quit" aria-label="Quitter">${ICON.close}</button><h3 class="grow">${esc(g.title)}</h3><span class="pill ok">${g.level}</span></div>
+      <section class="card"><div class="coach"><div class="av">${poufSvg()}</div><div class="bubble">Lis bien la règle et écoute les exemples.</div></div>
+        <h3>La règle</h3><p class="rule">${esc(g.rule)}</p></section>
+      <section class="card"><h3>Exemples</h3>${g.examples.map(e => `<div class="opt"><button class="iconbtn" data-say="${esc(e[0])}" aria-label="Écouter">${ICON.spk}</button><span><b>${esc(e[0])}</b><br><span class="small muted">${esc(e[1])}</span></span></div>`).join("")}</section>
+      <section class="card trap"><h3>Le piège des Français</h3><p>${esc(g.trap)}</p></section>
+      <button class="btn green block" id="gStart">Passer aux exercices (${g.ex.length})</button>`;
+    $("#quit").onclick = () => quitActivity(true, "grammar");
+    $$("[data-say]").forEach(b => b.onclick = () => speak(b.dataset.say, { voiceURI: S.voice, rate: 0.9 }));
+    $("#gStart").onclick = () => { GR.i = 0; renderGrammarPoint(); };
+    poufSay($(".coach"), "Lis bien la règle et écoute les exemples.", { voice: S.poufVoice });
+    return;
+  }
+  const x = g.ex[GR.i];
+  const head = `<div class="ltop"><button class="iconbtn" id="quit" aria-label="Quitter">${ICON.close}</button><div class="bar"><i id="lBar"></i></div><span class="combo">${GR.i + 1}/${g.ex.length}</span></div>`;
+  let body = "";
+  if (x[0] === "c") {
+    const [a, b] = x[1].split("___");
+    body = `<section class="card"><p class="small muted">Choisis la bonne forme</p><p class="gq">${esc(a)}<span class="blank">___</span>${esc(b)}</p>
+      <div class="gopts">${x[2].map((o, i) => `<button class="gopt" data-o="${i}">${esc(o)}</button>`).join("")}</div></section>`;
+  } else if (x[0] === "f") {
+    GR.opts = shuffle([x[2], ...x[3]]);
+    body = `<section class="card"><p class="small muted">Cette phrase est fausse. Trouve la bonne version.</p><p class="gq wrongs">${esc(x[1])}</p>
+      <div class="gopts col">${GR.opts.map((o, i) => `<button class="gopt" data-o="${i}">${esc(o)}</button>`).join("")}</div></section>`;
+  } else {
+    const words = P.splitDisplayWords(x[1]).map((w, i) => { w = w.replace(/[.,!?;:]+$/, ""); return i === 0 && !/^I($|')/.test(w) ? w.charAt(0).toLowerCase() + w.slice(1) : w; });
+    GR.pool = shuffle(words.map((w, i) => ({ w, i }))); GR.ans = [];
+    body = `<section class="card"><p class="small muted">Remets les mots dans l'ordre : « ${esc(x[2])} »</p>
+      <div class="ansline" id="ansline"></div><div class="wchips" id="pool"></div>
+      <button class="btn green block" id="oCheck" disabled>Vérifier</button></section>`;
+  }
+  $("#view").innerHTML = head + body + `<div id="gfb"></div><div class="spacer" id="spacer"></div>`;
+  $("#lBar").style.width = (GR.i / g.ex.length * 100) + "%";
+  $("#quit").onclick = () => quitActivity(false, "grammar");
+  if (x[0] === "c") $$(".gopt").forEach(b => b.onclick = () => gradeGrammar(+b.dataset.o === x[3], x[1].replace("___", x[2][x[3]]), x[4], b));
+  else if (x[0] === "f") $$(".gopt").forEach(b => b.onclick = () => gradeGrammar(GR.opts[+b.dataset.o] === x[2], x[2], x[4], b));
+  else { renderOrder(); $("#oCheck").onclick = () => { const said = GR.ans.map(t => t.w).join(" "); gradeGrammar(normSent(said) === normSent(x[1]), x[1], "", null, said); }; }
+}
+function renderOrder() {
+  $("#ansline").innerHTML = GR.ans.map((t, k) => `<button class="wchip on" data-a="${k}">${esc(t.w)}</button>`).join("") || `<span class="small muted">Touche les mots ci-dessous…</span>`;
+  $("#pool").innerHTML = GR.pool.map((t, k) => `<button class="wchip" data-p="${k}">${esc(t.w)}</button>`).join("");
+  $$("#ansline [data-a]").forEach(b => b.onclick = () => { GR.pool.push(GR.ans.splice(+b.dataset.a, 1)[0]); play("tap"); renderOrder(); });
+  $$("#pool [data-p]").forEach(b => b.onclick = () => { GR.ans.push(GR.pool.splice(+b.dataset.p, 1)[0]); play("tap"); renderOrder(); });
+  const c = $("#oCheck"); if (c) c.disabled = GR.pool.length > 0;
+}
+function gradeGrammar(ok, full, why, btn, said) {
+  if ($("#gfb").dataset.done) return;
+  $("#gfb").dataset.done = "1";
+  $$(".gopt").forEach(b => b.disabled = true);
+  if (btn) btn.classList.add(ok ? "good" : "bad");
+  if (!ok) $$(".gopt").forEach(b => { if (b.textContent === (GR.g.ex[GR.i][0] === "c" ? GR.g.ex[GR.i][2][GR.g.ex[GR.i][3]] : full)) b.classList.add("good"); });
+  const oc = $("#oCheck"); if (oc) oc.remove();
+  if (ok) { GR.ok++; GR.xp += 3; }
+  play(ok ? "great" : "bad");
+  showFeedbackSheet({ ok, full, why: why || (ok ? "" : `Tu as proposé : « ${said} »`), next: () => { GR.i++; if (GR.i < GR.g.ex.length) renderGrammarPoint(); else finishGrammar(); } });
+}
+// Panneau de correction commun (grammaire, fautes) avec « Dis-la à voix haute ».
+function showFeedbackSheet({ ok, full, why, next }) {
+  TARGET = { text: full, onResult: r => { recordAttempt(full, r); const o = $("#sayRes"); if (o) o.innerHTML = `<span class="pill ${r.score >= 85 ? "good" : r.score >= 55 ? "ok" : "bad"}">Prononciation ${r.score}</span> ${esc((P.tipsFor(r, 1)[0] || {}).text || "")}`; } };
+  ref = null; loadDict().then(d => { ref = P.buildReference(d, full); }).catch(() => {});
+  const sheet = document.createElement("div");
+  sheet.id = "sheet"; sheet.className = "sheet " + (ok ? "great" : "bad");
+  sheet.innerHTML = `<div class="sheet-in">
+    <div class="head"><div class="av">${poufSvg(ok ? "happy" : "sad")}</div><div><div class="title">${ok ? "Correct !" : "Pas tout à fait"}</div><p><b>${esc(full)}</b></p></div></div>
+    <div class="scroll">${why ? `<p class="small">${esc(why)}</p>` : ""}<p class="small" id="sayRes"></p></div>
+    <div class="row between actions">
+      <div class="row"><button class="btn ghost sm" id="fbListen">${ICON.spk}Écouter</button><button class="btn ghost sm" id="rec">${ICON.mic}Dis-la</button></div>
+      <button class="btn ${ok ? "green" : "red"}" id="next">Continuer</button></div></div>`;
+  document.body.appendChild(sheet);
+  $("#fbListen").onclick = () => speak(full, { voiceURI: S.voice, rate: 0.9 });
+  $("#rec").onclick = () => { if (engineState === "off") startEngine(); toggleRecording(); };
+  $("#next").onclick = () => { stopRecording(true); closeSheet(); next(); };
+  speak(full, { voiceURI: S.voice, rate: 0.95 });
+  syncSpacer();
+}
+function finishGrammar() {
+  const g = GR.g, pct = Math.round(GR.ok / g.ex.length * 100), prev = S.grammar[g.id];
+  S.grammar[g.id] = { best: Math.max(prev ? prev.best : 0, pct), d: today() };
+  const total = GR.xp + 15;
+  go("done", { title: "Règle travaillée !", tiles: [["g", "Bonnes réponses", `${GR.ok}/${g.ex.length}`], ["c", "Réussite", pct + "%"], ["y", "XP gagnés", "+" + total]],
+    line: pct >= 80 ? "Cette règle n'a plus de secret pour toi !" : "Refais-la demain, ça va rentrer.", back: "grammar", ...gainXp(total, GR.startLevel) });
+}
+
+// Fautes typiques
+function renderMistakesHome() {
+  const d = today(), st = S.mistakes || {};
+  const due = ALL_MISTAKES.filter(m => st[m.id] && st[m.id].due <= d).length, mastered = ALL_MISTAKES.filter(m => st[m.id] && st[m.id].box >= G.MASTERED_BOX).length;
+  $("#view").innerHTML = `${learnTabs("mistakes")}
+    <h2>Fautes à éviter</h2>
+    <section class="card"><div class="coach"><div class="av">${poufSvg()}</div><div class="bubble">Ces fautes viennent presque toutes d'une traduction mot à mot du français. On les chasse une par une !</div></div>
+      <div class="tiles"><div class="tile c"><span class="l">Fautes</span><span class="v">${ALL_MISTAKES.length}</span></div><div class="tile o"><span class="l">À revoir</span><span class="v">${due}</span></div><div class="tile g"><span class="l">Corrigées</span><span class="v">${mastered}</span></div></div>
+      <button class="btn green block" id="mGo">S'entraîner (10 fautes)</button></section>
+    ${MISTAKE_CATS.map(c => `<section class="card"><div class="row between"><h3>${esc(c.title)}</h3><button class="btn ghost sm" data-mc="${c.id}">S'entraîner</button></div>
+      ${c.items.map(([w, r, why]) => `<div class="mrow"><button class="iconbtn" data-say="${esc(r)}" aria-label="Écouter">${ICON.spk}</button><span><span class="wrongs">${esc(w)}</span><br><b class="rights">${esc(r)}</b><br><span class="small muted">${esc(why)}</span></span></div>`).join("")}</section>`).join("")}`;
+  bindLearnTabs();
+  $$("[data-say]").forEach(b => b.onclick = () => speak(b.dataset.say, { voiceURI: S.voice, rate: 0.9 }));
+  $("#mGo").onclick = () => startMistakes(null, 10);
+  $$("[data-mc]").forEach(b => b.onclick = () => startMistakes(b.dataset.mc, 10));
+}
+let MQ = null;
+function startMistakes(cat, n) {
+  S.mistakes = S.mistakes || {};
+  const pool = ALL_MISTAKES.filter(m => !cat || m.cat === cat);
+  let cards = G.pickVocab(pool, S.mistakes, n, n, today());
+  if (cards.length < n) cards = [...cards, ...shuffle(pool.filter(m => !cards.includes(m)))].slice(0, n);
+  MQ = { cards, i: 0, ok: 0, xp: 0, startLevel: G.levelOf(S.xp).level };
+  loadDict().catch(() => {});
+  go("mcard");
+}
+function renderMistakeCard() {
+  const m = MQ.cards[MQ.i];
+  const opts = shuffle([m.right, m.wrong.replace(/\s*\(.*\)\s*$/, "")]);
+  $("#view").innerHTML = `
+    <div class="ltop"><button class="iconbtn" id="quit" aria-label="Quitter">${ICON.close}</button><div class="bar"><i id="lBar"></i></div><span class="combo">${MQ.i + 1}/${MQ.cards.length}</span></div>
+    <div class="coach"><div class="av">${poufSvg()}</div><div class="bubble">Laquelle est correcte ?</div></div>
+    <section class="card"><div class="gopts col">${opts.map((o, i) => `<button class="gopt" data-o="${i}">${esc(o)}</button>`).join("")}</div></section>
+    <div id="gfb"></div><div class="spacer" id="spacer"></div>`;
+  $("#lBar").style.width = (MQ.i / MQ.cards.length * 100) + "%";
+  $("#quit").onclick = () => quitActivity(MQ.i === 0, "mistakes");
+  $$(".gopt").forEach(b => b.onclick = () => {
+    if ($("#gfb").dataset.done) return; $("#gfb").dataset.done = "1";
+    const ok = opts[+b.dataset.o] === m.right;
+    $$(".gopt").forEach(x => { x.disabled = true; if (x.textContent === m.right) x.classList.add("good"); });
+    if (!ok) b.classList.add("bad");
+    play(ok ? "great" : "bad");
+    if (ok) { MQ.ok++; MQ.xp += 3; }
+    const prev = S.mistakes[m.id]; S.mistakes[m.id] = G.gradeVocab(prev, ok, today()); save();
+    showFeedbackSheet({ ok, full: m.right, why: m.why, next: () => { MQ.i++; if (MQ.i < MQ.cards.length) renderMistakeCard(); else finishMistakes(); } });
+  });
+}
+function finishMistakes() {
+  const total = MQ.xp + 10;
+  if (!S.days.includes(today())) S.days.push(today());
+  go("done", { title: "Fautes chassées !", tiles: [["g", "Bonnes réponses", `${MQ.ok}/${MQ.cards.length}`], ["o", "À revoir", String(MQ.cards.length - MQ.ok)], ["y", "XP gagnés", "+" + total]],
+    line: MQ.ok >= MQ.cards.length * 0.8 ? "Bravo, tu ne tombes plus dans le piège !" : "Les fautes ratées reviendront demain.", back: "mistakes", ...gainXp(total, MQ.startLevel) });
+}
+function renderDone(o) {
+  $("#view").innerHTML = `<section class="card finish">
+    <div class="coach" id="doCoach"><div class="av">${poufSvg("happy")}</div><div class="bubble"></div></div>
+    <h2>${esc(o.title)}</h2>
+    <div class="tiles">${o.tiles.map(([c, l, v]) => `<div class="tile ${c}"><span class="l">${esc(l)}</span><span class="v">${esc(v)}</span></div>`).join("")}</div>
+    <button class="btn green block" id="doOk">Continuer</button></section>`;
+  fx(); play("done");
+  poufSay($("#doCoach"), o.line, { voice: S.poufVoice, mood: "happy" });
+  $("#doOk").onclick = async () => { await rewards(o); if (SESS) sessionNext(); else go(o.back); };
 }
 
 // ---------------- Raccourcis clavier (mode ordinateur) ----------------

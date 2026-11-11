@@ -85,6 +85,8 @@ export const BADGES = [
   { id: "unit2", sym: "U2", title: "Unité 2", desc: "Finir l'unité En couple", test: s => UNITS[1].lessons.every(l => s.lessons[l.id]) },
   { id: "unit3", sym: "U3", title: "Unité 3", desc: "Finir l'unité Voyager", test: s => UNITS[2].lessons.every(l => s.lessons[l.id]) },
   { id: "unit4", sym: "U4", title: "Unité 4", desc: "Finir l'unité Raconter", test: s => UNITS[3].lessons.every(l => s.lessons[l.id]) },
+  { id: "grammar5", sym: "Gr", title: "Grammairien", desc: "Réussir 5 règles de grammaire à 80 %", test: s => Object.values(s.grammar || {}).filter(g => g.best >= 80).length >= 5 },
+  { id: "mistakes20", sym: "✗", title: "Chasseur de fautes", desc: "Corriger 20 fautes typiques", test: s => Object.values(s.mistakes || {}).filter(m => m.box >= MASTERED_BOX).length >= 20 },
   { id: "allunits", sym: "★", title: "Parcours fini", desc: "Terminer toutes les unités", test: s => ALL_LESSONS.every(l => s.lessons[l.id]) },
   { id: "vocab50", sym: "50", title: "Dico de poche", desc: "Maîtriser 50 mots de vocabulaire", test: s => masteredCount(s.vocab) >= 50 },
   { id: "vocab200", sym: "200", title: "Dico ambulant", desc: "Maîtriser 200 mots de vocabulaire", test: s => masteredCount(s.vocab) >= 200 },
@@ -116,13 +118,13 @@ export function pickVocab(words, vstate, n, newMax, day) {
 // ---- Séances chronométrées ----
 export const DURATIONS = [15, 30, 45, 60];
 // Durées moyennes observées : ~1,2 min par phrase (écoute, essai, retour), ~0,45 min par mot.
-export const estMinutes = b => Math.round(b.type === "vocab" ? b.count * 0.45 : b.type === "dialogue" ? b.count * 1.5 + 2 : b.count * 1.2);
+export const estMinutes = b => Math.round(b.type === "vocab" ? b.count * 0.45 : b.type === "dialogue" ? b.count * 1.5 + 2 : b.type === "grammar" ? 5 : b.type === "mistakes" ? b.count * 0.6 : b.count * 1.2);
 export function planSession(min) {
   const P = {
-    15: [["vocab", 10], ["path", 5], ["review", 4]],
-    30: [["vocab", 15], ["path", 5], ["dialogue", 4], ["sound", 6]],
-    45: [["vocab", 20], ["path", 5], ["dialogue", 4], ["sound", 6], ["path", 5], ["review", 6]],
-    60: [["vocab", 25], ["path", 5], ["dialogue", 4], ["sound", 6], ["path", 5], ["pairs", 8], ["dialogue", 4], ["review", 4]]
+    15: [["vocab", 10], ["path", 5], ["grammar", 1]],
+    30: [["vocab", 15], ["path", 5], ["dialogue", 4], ["grammar", 1], ["mistakes", 5]],
+    45: [["vocab", 20], ["path", 5], ["dialogue", 4], ["grammar", 1], ["sound", 6], ["mistakes", 6], ["path", 5]],
+    60: [["vocab", 25], ["path", 5], ["dialogue", 4], ["grammar", 1], ["sound", 6], ["path", 5], ["mistakes", 6], ["dialogue", 4], ["review", 4]]
   }[min];
   return P.map(([type, count]) => ({ type, count }));
 }

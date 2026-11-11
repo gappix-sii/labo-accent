@@ -9,6 +9,8 @@ Tout se passe **dans ton navigateur** : aucun serveur, aucun abonnement, et ta v
 
 ## Fonctions
 
+- **Grammaire** (onglet Apprendre) : 24 règles de A1 à B2, chacune avec la règle en français, des exemples à écouter, le piège typique des francophones, puis 4 à 5 exercices progressifs (choisir la bonne forme, corriger une phrase, remettre les mots dans l'ordre) et la phrase à prononcer.
+- **Fautes à éviter** : 46 fautes typiques des Français (grammaire, faux amis, prépositions, expressions), en quiz avec répétition espacée.
 - **Conversation** (onglet Pratique) : 10 jeux de rôle guidés (café, hôtel, dîner en amoureux, pharmacie, vol annulé, support informatique…) avec tâches à accomplir et indices ; Pouf joue le personnage, tu réponds au micro et chaque réponse est notée son par son. Exercice d'écoute : entends le dialogue et touche les mots reconnus.
 - **Séances chronométrées** de 15, 30, 45 min ou 1 h : Pouf compose un programme (vocabulaire, leçon du parcours, son faible, paires minimales, révision) avec minuteur.
 - **Vocabulaire par niveau du CECRL** (A1 à C1, environ 500 mots) : cartes français → anglais à dire au micro, répétition espacée.
@@ -69,6 +71,8 @@ puis ouvre `http://localhost:8000` dans Chrome. (Le micro exige `https` ou `loca
 | `js/game.js` | Parcours, XP, niveaux, étoiles, badges, séances, répétition espacée |
 | `js/vocab.js` | Vocabulaire A1 à C1 |
 | `js/dialogues.js` | Jeux de rôle guidés |
+| `js/grammar.js` | Règles de grammaire et exercices |
+| `js/mistakes.js` | Fautes typiques des francophones |
 | `js/mascot.js` | Pouf (dessin, humeurs, répliques) |
 | `js/fx.js` | Sons synthétisés et confettis |
 | `fonts/` | Polices auto-hébergées (Barlow Condensed, Nunito) |

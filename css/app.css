@@ -345,3 +345,32 @@ body.hide-fr .tr{display:none}
   body[data-view="train"] main > h2,body[data-view="train"] main > p{grid-column:1 / -1}
 }
 .msg.me .pill{background:rgba(0,0,0,.3);color:#fff}
+
+/* ---------- Apprendre : onglets, grammaire, fautes ---------- */
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:rgba(0,0,0,.3);border:2px solid var(--line);border-radius:16px;padding:4px}
+.seg button{border:0;background:none;border-radius:12px;padding:10px 6px;font-weight:800;color:var(--muted);cursor:pointer;font-size:.92rem}
+.seg button.on{background:var(--yellow);color:#2a1a00}
+.gq{font-family:var(--font-display);font-style:italic;font-weight:800;font-size:1.9rem;line-height:1.2}
+.gq .blank{display:inline-block;min-width:80px;border-bottom:4px solid var(--yellow);color:var(--yellow);text-align:center;margin:0 6px}
+.gq.wrongs{color:var(--red);text-decoration:line-through;text-decoration-thickness:3px}
+.gopts{display:flex;flex-wrap:wrap;gap:10px}
+.gopts.col{flex-direction:column}
+.gopt{border:2px solid var(--line);background:rgba(0,0,0,.25);border-radius:14px;padding:12px 16px;font-weight:800;font-size:1.05rem;cursor:pointer;text-align:left;box-shadow:0 4px 0 rgba(0,0,0,.3)}
+.gopt:hover:not(:disabled){border-color:var(--cyan)}
+.gopt.good{background:var(--green);border-color:var(--green);color:#06311a}
+.gopt.bad{background:var(--red);border-color:var(--red);color:#fff}
+.gopt:disabled{cursor:default}
+.ansline{min-height:56px;border-bottom:3px dashed var(--line);display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-bottom:8px}
+.wchip.on{background:#fff;color:#1c1240;border-color:#fff}
+.card.trap{border-color:var(--orange);box-shadow:inset 5px 0 0 var(--orange),0 6px 0 rgba(0,0,0,.25)}
+.card.trap h3{color:var(--orange)}
+.mrow{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:10px 0;border-bottom:2px solid rgba(255,255,255,.06)}
+.mrow:last-child{border-bottom:0}
+.wrongs{color:var(--red);text-decoration:line-through}
+.rights{color:var(--green)}
+@media (min-width:1024px){
+  body[data-view="grammar"] main,body[data-view="mistakes"] main,body[data-view="vocab"] main{max-width:1180px}
+  body[data-view="mistakes"] main{display:grid;grid-template-columns:1fr 1fr;align-items:start}
+  body[data-view="mistakes"] main > .seg,body[data-view="mistakes"] main > h2,body[data-view="mistakes"] main > .card:nth-of-type(1){grid-column:1 / -1}
+}
+.rule{font-size:1.08rem;font-weight:700;line-height:1.5}

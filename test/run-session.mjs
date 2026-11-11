@@ -30,6 +30,11 @@ while (steps++ < 80) {
   if (v==='lesson') { await p.click('#rec'); const ok=await p.waitForSelector('#sheet',{timeout:25000}).then(()=>1).catch(()=>0); if(!ok){logs.push('no sheet');break;} await p.click('#next'); await p.waitForTimeout(250); continue; }
   if (v==='vfinish'||v==='finish') { if(!shots[v]){shots[v]=1; await p.screenshot({path:`${out}/${tag}-${v}.png`});} await p.click(v==='vfinish'?'#vfOk':'#cont'); await p.waitForTimeout(400);
     while (await p.$('#cel[open]')) { await p.click('#celOk'); await p.waitForTimeout(250); } continue; }
+  if (v==='gpoint') { if (await p.$('#gStart')) { await p.click('#gStart'); await p.waitForTimeout(150); continue; }
+    if (await p.$('#pool')) { while (await p.$('#pool [data-p]')) await p.click('#pool [data-p]'); await p.click('#oCheck'); } else await p.click('.gopt');
+    await p.waitForSelector('#sheet'); await p.click('#next'); await p.waitForTimeout(150); continue; }
+  if (v==='mcard') { await p.click('.gopt'); await p.waitForSelector('#sheet'); await p.click('#next'); await p.waitForTimeout(150); continue; }
+  if (v==='done') { await p.click('#doOk'); await p.waitForTimeout(400); while (await p.$('#cel[open]')) { await p.click('#celOk'); await p.waitForTimeout(250); } continue; }
   if (v==='send') { await p.screenshot({path:`${out}/${tag}-send.png`}); await p.click('#seOk'); await p.waitForTimeout(400); while (await p.$('#cel[open]')) { await p.click('#celOk'); await p.waitForTimeout(250); } break; }
   logs.push('unexpected view '+v); break;
 }
