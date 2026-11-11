@@ -5,6 +5,7 @@ import { Recorder, speak, englishVoices } from "./audio.js";
 import * as G from "./game.js";
 import { poufSvg, poufSay, pick } from "./mascot.js";
 import { sfx, confetti } from "./fx.js";
+import { VOCAB, LEVELS, sayText } from "./vocab.js";
 
 const COACH_URL = "https://claude.ai/artifact/NpBH4v48K7L87LiDVvxiFt";
 const STORE = "labo.v1";
@@ -33,7 +34,7 @@ const ICON = {
 
 // ---------------- Stockage local ----------------
 const DEFAULTS = { history: [], sounds: {}, days: [], voice: "", slow: 0.7, modelReady: false, xp: 0, lessons: {}, badges: [],
-  bestCombo: 0, xpDays: {}, goalXp: 50, sfx: true, poufVoice: true, onboarded: false };
+  bestCombo: 0, xpDays: {}, goalXp: 50, sfx: true, poufVoice: true, onboarded: false, vocab: {}, vocabLevel: "A1", sessions: [], sessMin: 15 };
 let S = { ...DEFAULTS };
 try { S = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(STORE) || "{}") }; } catch (e) {}
 function save() { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { toast("Impossible d'enregistrer ta progression sur cet appareil."); } }
@@ -135,12 +136,14 @@ function errorText(m) {
 let view = "path";
 function go(v, opts) {
   view = v;
-  $$("nav.bottom button").forEach(b => { if (b.dataset.go === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
-  document.body.classList.toggle("in-lesson", v === "lesson" || v === "finish");
+  const tab = { sounds: "train", block: "session", send: "session", vcard: "vocab", vfinish: "vocab" }[v] || v;
+  $$("nav.bottom button").forEach(b => { if (b.dataset.go === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+  document.body.classList.toggle("in-lesson", ["lesson", "finish", "vcard", "vfinish", "block", "send"].includes(v));
   document.body.dataset.view = v;
   closeSheet();
   stopRecording(true);
-  ({ path: renderPath, train: renderTrain, sounds: renderSounds, profile: renderProfile, lesson: renderLesson, finish: () => renderFinish(opts) })[v]();
+  ({ path: renderPath, train: renderTrain, sounds: renderSounds, profile: renderProfile, lesson: renderLesson, finish: () => renderFinish(opts),
+     session: renderSession, block: renderBlock, send: () => renderSessionEnd(opts), vocab: renderVocabHome, vcard: renderVocabCard, vfinish: () => renderVocabFinish(opts) })[v]();
   renderHud();
   window.scrollTo(0, 0);
 }
@@ -221,10 +224,10 @@ function startLesson(lesson) {
   go("lesson");
 }
 
-let rec = null, lastAudioUrl = null, lastOffset = 0, lastResult = null, busy = false, autoStopping = false, ref = null;
+let rec = null, lastAudioUrl = null, lastOffset = 0, lastResult = null, busy = false, autoStopping = false, ref = null, TARGET = null;
 function renderLesson() {
   const it = L.items[L.i];
-  lastResult = null; ref = null;
+  lastResult = null; ref = null; TARGET = { text: it.en, onResult: showResult };
   const intro = L.i === 0 && L.lesson.tip ? L.lesson.tip : pick("listen");
   $("#view").innerHTML = `
     <div class="ltop"><button class="iconbtn" id="quit" aria-label="Quitter la leçon">${ICON.close}</button><div class="bar"><i id="lBar"></i></div><span class="combo" id="combo">${L.combo > 1 ? "×" + L.combo : ""}</span></div>
@@ -238,7 +241,7 @@ function renderLesson() {
     <div class="mic-wrap"><button class="mic" id="rec" aria-label="Enregistrer">${ICON.mic}</button><p class="status" id="status">Appuie et lis la phrase à voix haute.</p><p class="kbd-hint"><b>Espace</b> enregistrer · <b>L</b> écouter · <b>R</b> réessayer · <b>Entrée</b> continuer</p></div>
     <div class="spacer" id="spacer"></div>`;
   $("#lBar").style.width = (L.i / L.items.length * 100) + "%";
-  $("#quit").onclick = async () => { if ((L.i === 0 && !L.best.length) || await confirmDlg("Quitter la leçon ?", "Tu perdras l'XP de cette leçon en cours.", "Quitter")) go(L.lesson.id ? "path" : "train"); };
+  $("#quit").onclick = () => quitActivity(L.i === 0 && !L.best.length, L.lesson.id ? "path" : "train");
   $("#listen").onclick = () => speak(it.en, { voiceURI: S.voice, rate: 0.95 });
   $("#slow").onclick = () => speak(it.en, { voiceURI: S.voice, rate: S.slow });
   $("#rec").onclick = toggleRecording;
@@ -278,7 +281,7 @@ async function stopRecording(discard) {
   if (btn) { btn.classList.remove("on"); btn.innerHTML = ICON.mic; btn.style.boxShadow = ""; btn.setAttribute("aria-label", "Enregistrer"); }
   let out;
   try { out = await r.stop(); } catch (e) { if (!discard) toast("Impossible de lire l'enregistrement. Réessaie."); return; }
-  if (discard || view !== "lesson") return;
+  if (discard || !["lesson", "vcard"].includes(view)) return;
   if (!out || !out.heardSpeech || !out.pcm || out.pcm.samples.length < 8000) { $("#status").textContent = "Je n'ai rien entendu. Rapproche-toi du micro et parle plus fort."; return; }
   if (lastAudioUrl) URL.revokeObjectURL(lastAudioUrl);
   lastAudioUrl = URL.createObjectURL(out.blob); lastOffset = out.pcm.offsetSec;
@@ -287,13 +290,20 @@ async function stopRecording(discard) {
     if (engineState !== "ready") { $("#status").textContent = "Pouf prépare ses oreilles, ton essai sera analysé juste après…"; if (!worker) startEngine(); await whenReady(); }
     $("#status").textContent = "Pouf écoute ta prononciation…";
     await loadDict();
-    if (!ref) ref = P.buildReference(dict, L.items[L.i].en);
+    if (!ref) ref = P.buildReference(dict, TARGET.text);
     const res = await analyze(out.pcm.samples);
-    showResult(P.evaluate(ref, res.segs));
+    TARGET.onResult(P.evaluate(ref, res.segs));
   } catch (e) { toast(errorText(String(e && e.message || e))); $("#status").textContent = "Réessaie."; }
   finally { busy = false; const b = $("#rec"); if (b) b.disabled = false; }
 }
 
+function recordAttempt(text, result) {
+  S.history.push({ d: today(), s: result.score, t: text.slice(0, 120) });
+  if (S.history.length > 500) S.history = S.history.slice(-500);
+  if (!S.days.includes(today())) S.days.push(today());
+  S.sounds = P.updateSoundStats(S.sounds, result);
+  save(); renderHud();
+}
 function closeSheet() { const s = $("#sheet"); if (s) s.remove(); const sp = $("#spacer"); if (sp) sp.style.height = "0"; }
 function syncSpacer() { const sh = $("#sheet"), sp = $("#spacer"); if (sh && sp) sp.style.height = sh.offsetHeight + "px"; }
 function showResult(result) {
@@ -302,11 +312,7 @@ function showResult(result) {
   $$(".word").forEach(b => { const w = result.words[+b.dataset.wi]; b.className = "word " + (w ? w.level : ""); });
   $("#status").textContent = "";
   L.best[L.i] = Math.max(L.best[L.i] ?? 0, result.score);
-  S.history.push({ d: today(), s: result.score, t: it.en.slice(0, 120) });
-  if (S.history.length > 500) S.history = S.history.slice(-500);
-  if (!S.days.includes(today())) S.days.push(today());
-  S.sounds = P.updateSoundStats(S.sounds, result);
-  save(); renderHud();
+  recordAttempt(it.en, result);
   const sc = result.score, mood = sc >= 85 ? "great" : sc >= 55 ? "meh" : "bad";
   const line = pick(sc >= 95 ? "great" : sc >= 85 ? "good" : sc >= 55 ? "meh" : "bad");
   const title = sc >= 95 ? "Parfait !" : sc >= 85 ? "Bien joué !" : sc >= 55 ? "Presque !" : "On réessaie ?";
@@ -351,15 +357,9 @@ function finishLesson() {
   const st = G.stars(avg);
   const bonus = 20 + (scores.every(s => s >= 85) ? 10 : 0);
   const total = L.xp + bonus;
-  const before = xpToday();
-  S.xp += total; S.xpDays[today()] = before + total;
   S.bestCombo = Math.max(S.bestCombo || 0, L.maxCombo);
   if (L.lesson.id) { const prev = S.lessons[L.lesson.id] || { stars: 0, best: 0 }; S.lessons[L.lesson.id] = { stars: Math.max(prev.stars, st), best: Math.max(prev.best, avg), d: today() }; }
-  const lv = G.levelOf(S.xp).level;
-  const earned = G.newBadges(S, { streak: streak() });
-  S.badges.push(...earned);
-  save();
-  go("finish", { avg, st, total, combo: L.maxCombo, levelUp: lv > L.startLevel ? lv : 0, earned, goalReached: before < S.goalXp && xpToday() >= S.goalXp });
+  go("finish", { avg, st, total, combo: L.maxCombo, ...gainXp(total, L.startLevel) });
 }
 
 function renderFinish(o) {
@@ -377,13 +377,28 @@ function renderFinish(o) {
   </section>`;
   fx(); play("done");
   poufSay($("#finCoach"), pick("done"), { voice: S.poufVoice, mood: "happy" });
-  $("#redo").onclick = () => startLesson(L.lesson);
-  $("#cont").onclick = async () => {
-    if (o.goalReached) { fx(); await celebrate("Objectif du jour atteint !", `${xpToday()} XP aujourd'hui. Ta série continue !`); }
-    if (o.levelUp) { play("level"); fx(); await celebrate(`Niveau ${o.levelUp} !`, `Tu es maintenant « ${G.levelTitle(o.levelUp)} ».`); }
-    for (const id of o.earned) { const b = G.BADGES.find(x => x.id === id); fx(); await celebrate("Nouveau badge !", b.desc, `<div class="bdg got"><div class="md">${esc(b.sym)}</div>${esc(b.title)}</div>`); }
-    go(L.lesson.id ? "path" : "train");
-  };
+  const redo = $("#redo"); if (SESS) redo.remove(); else redo.onclick = () => startLesson(L.lesson);
+  $("#cont").onclick = async () => { await rewards(o); if (SESS) sessionNext(); else go(L.lesson.id ? "path" : "train"); };
+}
+async function rewards(o) {
+  if (o.goalReached) { fx(); await celebrate("Objectif du jour atteint !", `${xpToday()} XP aujourd'hui. Ta série continue !`); }
+  if (o.levelUp) { play("level"); fx(); await celebrate(`Niveau ${o.levelUp} !`, `Tu es maintenant « ${G.levelTitle(o.levelUp)} ».`); }
+  for (const id of o.earned || []) { const b = G.BADGES.find(x => x.id === id); fx(); await celebrate("Nouveau badge !", b.desc, `<div class="bdg got"><div class="md">${esc(b.sym)}</div>${esc(b.title)}</div>`); }
+}
+function gainXp(total, startLevel) {
+  const before = xpToday();
+  S.xp += total; S.xpDays[today()] = before + total;
+  const lv = G.levelOf(S.xp).level;
+  const earned = G.newBadges(S, { streak: streak() }); S.badges.push(...earned);
+  save();
+  return { levelUp: lv > startLevel ? lv : 0, earned, goalReached: before < S.goalXp && xpToday() >= S.goalXp };
+}
+async function quitActivity(noConfirm, back) {
+  if (SESS) {
+    if (!await confirmDlg("Arrêter la séance ?", "Tu garderas l'XP des blocs déjà terminés.", "Arrêter")) return;
+    endSession(false); return;
+  }
+  if (noConfirm || await confirmDlg("Quitter ?", "Tu perdras l'XP de l'exercice en cours.", "Quitter")) go(back);
 }
 
 function wordDetail(wi) {
@@ -420,6 +435,7 @@ function renderTrain() {
   $("#view").innerHTML = `
     <h2>Entraînement libre</h2>
     <p class="small muted">Tout est ouvert ici, sans déblocage. L'XP compte quand même.</p>
+    <section class="card"><div class="row between"><span><b>Mes sons</b><br><span class="small muted">Ta réussite sur chaque son anglais</span></span><button class="btn cyan sm" id="toSounds">Voir</button></div></section>
     <section class="card"><div class="list">
       ${CATEGORIES.map(c => `<button class="item" data-cat="${c.id}"><span><span class="t">${esc(c.title)}</span><br><span class="s">${esc(c.sub)} · ${c.items.length} phrases</span></span><span class="chev">›</span></button>`).join("")}
       <button class="item" data-cat="pairs"><span><span class="t">Paires minimales</span><br><span class="s">ship / sheep, think / sink… · 5 paires au hasard</span></span><span class="chev">›</span></button>
@@ -436,6 +452,7 @@ function renderTrain() {
     startLesson({ id: null, kind: "free", title: c.title, items: c.items.map(i => ({ en: i[0], fr: i[1] })) });
   });
   $$("[data-p]").forEach(b => b.onclick = () => { play("tap"); soundDrill(b.dataset.p); });
+  $("#toSounds").onclick = () => go("sounds");
   const free = () => { const t = $("#free").value.trim(); if (t) startLesson({ id: null, kind: "free", title: "Ta phrase", items: [{ en: t, fr: "" }] }); };
   $("#freeGo").onclick = free;
   $("#free").addEventListener("keydown", e => { if (e.key === "Enter") free(); });
@@ -512,12 +529,254 @@ function renderProfile() {
 }
 if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => { if (view === "profile") renderProfile(); };
 
+// ---------------- Séances chronométrées ----------------
+let SESS = null, timerT = null;
+const fmt = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+function weakSoundList() {
+  return Object.entries(S.sounds).filter(([p, v]) => v.n >= 4 && SOUND_LESSONS.some(l => l.p === p))
+    .map(([p, v]) => ({ p, pct: v.ok / v.n })).sort((a, b) => a.pct - b.pct).map(x => x.p);
+}
+function nextPathLesson() {
+  const i = G.currentLessonIndex(S.lessons), l = G.ALL_LESSONS[i];
+  if (!S.lessons[l.id]) return l;
+  return [...G.ALL_LESSONS].sort((a, b) => (S.lessons[a.id]?.stars || 0) - (S.lessons[b.id]?.stars || 0))[0];
+}
+function blockLabel(b, k = 0) {
+  if (b.type === "vocab") return { t: `Vocabulaire ${S.vocabLevel}`, s: `${b.count} mots (révisions puis nouveaux)` };
+  if (b.type === "path") return { t: "Leçon du parcours", s: k ? "La leçon suivante" : `« ${nextPathLesson().title} »` };
+  if (b.type === "sound") { const w = weakSoundList()[k] ; const l = SOUND_LESSONS.find(x => x.p === w); return { t: "Son à travailler", s: l ? l.title : "Un son difficile au hasard" }; }
+  if (b.type === "pairs") return { t: "Paires minimales", s: `${b.count / 2} paires (ship / sheep…)` };
+  return { t: "Révision", s: `${b.count} phrases que tu as ratées` };
+}
+function renderSession() {
+  const sel = S.sessMin || 15, plan = G.planSession(sel);
+  const counters = { path: 0, sound: 0 };
+  const recent = (S.sessions || []).slice(-5).reverse();
+  $("#view").innerHTML = `
+    <h2>Séance chronométrée</h2>
+    <section class="card"><div class="coach"><div class="av">${poufSvg()}</div><div class="bubble">Tu as combien de temps aujourd'hui ? Je prépare une séance sur mesure.</div></div>
+      <div class="chips" role="radiogroup" aria-label="Durée">${G.DURATIONS.map(m => `<button class="chip ${m === sel ? "on" : ""}" role="radio" aria-checked="${m === sel}" data-min="${m}">${m === 60 ? "1 h" : m + " min"}</button>`).join("")}</div></section>
+    <section class="card"><h3>Au programme · ${sel === 60 ? "1 h" : sel + " min"}</h3>
+      <ol class="plan">${plan.map(b => { const k = b.type in counters ? counters[b.type]++ : 0; const lb = blockLabel(b, k); return `<li><span><b>${esc(lb.t)}</b><br><span class="small muted">${esc(lb.s)}</span></span><span class="small muted">≈ ${G.estMinutes(b)} min</span></li>`; }).join("")}</ol>
+      <label class="f" for="sLevel">Niveau du vocabulaire
+        <select id="sLevel">${LEVELS.map(l => `<option value="${l.id}" ${l.id === S.vocabLevel ? "selected" : ""}>${esc(l.title)}</option>`).join("")}</select></label>
+      <button class="btn green block" id="sGo">Lancer la séance</button>
+      <p class="small muted">Tu peux passer un bloc ou arrêter quand tu veux. Quand le temps est écoulé, la séance s'arrête après le bloc en cours.</p></section>
+    ${recent.length ? `<section class="card"><h3>Dernières séances</h3><div class="list">${recent.map(x => `<div class="item"><span><span class="t">${x.planned === 60 ? "1 h" : x.planned + " min"}</span><br><span class="s">${esc(x.d)}</span></span><span class="xpfloat">${x.real} min · +${x.xp} XP</span></div>`).join("")}</div></section>` : ""}`;
+  $$(".chip[data-min]").forEach(c => c.onclick = () => { play("tap"); S.sessMin = +c.dataset.min; save(); renderSession(); });
+  $("#sLevel").onchange = e => { S.vocabLevel = e.target.value; save(); renderSession(); };
+  $("#sGo").onclick = () => startSession(sel);
+}
+function startSession(min) {
+  SESS = { min, blocks: G.planSession(min), bi: -1, start: Date.now(), xp0: S.xp, done: 0, sound: 0, warned: false };
+  if (engineState === "off") startEngine();
+  clearInterval(timerT); timerT = setInterval(tickTimer, 1000); tickTimer();
+  sessionNext(false);
+}
+function tickTimer() {
+  const t = $("#hTimer");
+  if (!SESS) { t.hidden = true; return; }
+  const el = Date.now() - SESS.start, left = SESS.min * 60000 - el;
+  t.hidden = false; t.querySelector("span").textContent = left > 0 ? fmt(left) : "0:00";
+  t.classList.toggle("over", left <= 0);
+  if (left <= 0 && !SESS.warned) { SESS.warned = true; toast("Temps écoulé ! Termine ce bloc, puis la séance s'arrête."); }
+}
+function sessionNext(countDone = true) {
+  if (!SESS) return;
+  if (countDone) SESS.done++;
+  SESS.bi++;
+  if (SESS.bi >= SESS.blocks.length || Date.now() - SESS.start >= SESS.min * 60000) return endSession(true);
+  go("block");
+}
+function renderBlock() {
+  const b = SESS.blocks[SESS.bi];
+  const lb = blockLabel(b, b.type === "sound" ? SESS.sound : 0);
+  $("#view").innerHTML = `<section class="card finish">
+    <span class="pill good">Bloc ${SESS.bi + 1} / ${SESS.blocks.length}</span>
+    <div class="coach"><div class="av">${poufSvg(SESS.bi ? "happy" : "")}</div><div class="bubble">${esc(SESS.bi ? "Bien joué ! On enchaîne ?" : "C'est parti pour ta séance !")}</div></div>
+    <h2>${esc(lb.t)}</h2><p class="muted">${esc(lb.s)} · ≈ ${G.estMinutes(b)} min</p>
+    <div class="row center"><button class="btn ghost sm" id="bSkip">Passer ce bloc</button><button class="btn ghost sm" id="bStop">Terminer la séance</button></div>
+    <button class="btn green block" id="bGo">C'est parti</button></section>`;
+  $("#bGo").onclick = () => runBlock(b);
+  $("#bSkip").onclick = () => sessionNext(false);
+  $("#bStop").onclick = () => endSession(true);
+}
+function runBlock(b) {
+  if (b.type === "vocab") return startVocab(S.vocabLevel, b.count);
+  if (b.type === "path") return startLesson(nextPathLesson());
+  if (b.type === "sound") {
+    const w = weakSoundList()[SESS.sound++];
+    const l = SOUND_LESSONS.find(x => x.p === w) || shuffle(SOUND_LESSONS)[0];
+    return startLesson({ id: null, kind: "sound", sound: l.p, title: l.title, tip: l.tip, items: l.items.map(en => ({ en, fr: "" })) });
+  }
+  if (b.type === "pairs") return startLesson({ id: null, kind: "pairs", title: "Paires minimales", items: shuffle(MINIMAL_PAIRS).slice(0, b.count / 2).flatMap(([a, c]) => [{ en: a, fr: `${a} / ${c}` }, { en: c, fr: `${a} / ${c}` }]) });
+  const unit = G.ALL_LESSONS[G.currentLessonIndex(S.lessons)].unit;
+  return startLesson({ id: null, kind: "free", title: "Révision", items: G.reviewItems({ unit }, S.history, b.count) });
+}
+function endSession(completed) {
+  clearInterval(timerT); timerT = null;
+  const s = SESS; SESS = null; tickTimer();
+  if (!s) return;
+  const real = Math.max(1, Math.round((Date.now() - s.start) / 60000)), xp = S.xp - s.xp0;
+  if (completed && s.done > 0) {
+    S.sessions = [...(S.sessions || []), { d: today(), planned: s.min, real, xp }].slice(-100);
+    const earned = G.newBadges(S, { streak: streak() }); S.badges.push(...earned); save();
+    go("send", { real, xp, done: s.done, total: s.blocks.length, planned: s.min, earned });
+  } else go("session");
+}
+function renderSessionEnd(o) {
+  $("#view").innerHTML = `<section class="card finish">
+    <div class="coach" id="seCoach"><div class="av">${poufSvg("happy")}</div><div class="bubble"></div></div>
+    <h2>Séance terminée !</h2>
+    <div class="tiles">
+      <div class="tile c"><span class="l">Durée</span><span class="v">${o.real} min</span></div>
+      <div class="tile y"><span class="l">XP gagnés</span><span class="v">+${o.xp}</span></div>
+      <div class="tile g"><span class="l">Blocs</span><span class="v">${o.done}/${o.total}</span></div>
+    </div>
+    <button class="btn green block" id="seOk">Continuer</button></section>`;
+  fx(); play("done");
+  poufSay($("#seCoach"), o.real >= o.planned ? "Séance complète, bravo ! Tu as tenu jusqu'au bout." : "Belle séance ! Chaque minute compte.", { voice: S.poufVoice, mood: "happy" });
+  $("#seOk").onclick = async () => { await rewards({ earned: o.earned }); go("path"); };
+}
+
+// ---------------- Vocabulaire ----------------
+let V = null;
+function levelStats(lv) {
+  const words = VOCAB[lv], d = today();
+  let fresh = 0, learning = 0, mastered = 0, due = 0;
+  for (const w of words) { const r = S.vocab[w.id], st = G.vocabStatus(r); if (st === "new") fresh++; else if (st === "mastered") mastered++; else learning++; if (r && r.due <= d) due++; }
+  return { total: words.length, fresh, learning, mastered, due };
+}
+function renderVocabHome() {
+  const lv = S.vocabLevel, info = LEVELS.find(l => l.id === lv), st = levelStats(lv);
+  $("#view").innerHTML = `
+    <h2>Vocabulaire</h2>
+    <div class="chips" role="tablist" aria-label="Niveau">${LEVELS.map(l => { const x = levelStats(l.id); return `<button class="chip ${l.id === lv ? "on" : ""}" role="tab" aria-selected="${l.id === lv}" data-lv="${l.id}">${l.id} <span class="small">${x.mastered}/${x.total}</span></button>`; }).join("")}</div>
+    <section class="card"><div class="row between"><h3>${esc(info.title)}</h3><span class="xpfloat">${st.mastered}/${st.total}</span></div>
+      <p class="small muted">${esc(info.sub)}</p>
+      <div class="bar"><i id="vBar"></i></div>
+      <div class="tiles"><div class="tile c"><span class="l">Nouveaux</span><span class="v">${st.fresh}</span></div><div class="tile o"><span class="l">En cours</span><span class="v">${st.learning}</span></div><div class="tile g"><span class="l">Maîtrisés</span><span class="v">${st.mastered}</span></div></div>
+      <button class="btn green block" id="vGo">${st.due ? `Réviser ${Math.min(st.due, 10)} mot${st.due > 1 ? "s" : ""}` : "Apprendre 10 mots"}</button>
+      <p class="small muted">Pouf te montre le mot en français : dis-le en anglais au micro. Les mots ratés reviennent demain, les mots réussis de plus en plus tard (répétition espacée).</p></section>
+    <section class="card"><h3>Liste ${lv} · ${st.total} mots</h3><div class="vlist">${VOCAB[lv].map(w => { const s2 = G.vocabStatus(S.vocab[w.id]); return `<div class="vrow">${`<button class="iconbtn" data-say="${esc(sayText(w))}" aria-label="Écouter ${esc(w.en)}">${ICON.spk}</button>`}<span><b>${esc(w.en)}</b><br><span class="small muted">${esc(w.fr)}</span></span><span class="pill ${s2 === "mastered" ? "good" : s2 === "learning" ? "ok" : ""}">${s2 === "mastered" ? "maîtrisé" : s2 === "learning" ? "en cours" : "nouveau"}</span></div>`; }).join("")}</div></section>`;
+  $("#vBar").style.width = Math.round(st.mastered / st.total * 100) + "%";
+  $$(".chip[data-lv]").forEach(c => c.onclick = () => { play("tap"); S.vocabLevel = c.dataset.lv; save(); renderVocabHome(); });
+  $$("[data-say]").forEach(b => b.onclick = () => speak(b.dataset.say, { voiceURI: S.voice, rate: 0.9 }));
+  $("#vGo").onclick = () => { play("tap"); startVocab(lv, 10); };
+}
+function startVocab(lv, n) {
+  const words = VOCAB[lv];
+  let cards = G.pickVocab(words, S.vocab, n, n, today());
+  if (!cards.length) cards = shuffle(words).slice(0, n);
+  V = { level: lv, cards, i: 0, correct: 0, newly: 0, xp: 0, requeued: new Set(), startLevel: G.levelOf(S.xp).level, revealed: false };
+  if (engineState === "off") startEngine();
+  go("vcard");
+}
+function renderVocabCard() {
+  const c = V.cards[V.i];
+  V.revealed = false; lastResult = null; ref = null; TARGET = { text: sayText(c), onResult: showVocabResult };
+  $("#view").innerHTML = `
+    <div class="ltop"><button class="iconbtn" id="quit" aria-label="Quitter">${ICON.close}</button><div class="bar"><i id="lBar"></i></div><span class="combo">${V.i + 1}/${V.cards.length}</span></div>
+    <div class="coach" id="coach"><div class="av">${poufSvg()}</div><div class="bubble">Comment dit-on ça en anglais ?</div></div>
+    <section class="card"><span class="pill ok">${esc(c.level)}${S.vocab[c.id] ? " · à revoir" : " · nouveau"}</span>
+      <p class="vfr">${esc(c.fr)}</p>
+      <div id="ans" hidden></div>
+      <button class="btn ghost sm" id="reveal">Je ne sais pas, montre-moi</button></section>
+    <div class="mic-wrap"><button class="mic" id="rec" aria-label="Enregistrer">${ICON.mic}</button><p class="status" id="status">Dis le mot en anglais.</p>
+      <p class="kbd-hint"><b>Espace</b> enregistrer · <b>H</b> voir la réponse · <b>Entrée</b> continuer</p></div>
+    <div class="spacer" id="spacer"></div>`;
+  $("#lBar").style.width = (V.i / V.cards.length * 100) + "%";
+  $("#quit").onclick = () => quitActivity(V.i === 0, "vocab");
+  $("#reveal").onclick = revealVocab;
+  $("#rec").onclick = toggleRecording;
+  loadDict().then(d => { ref = P.buildReference(d, TARGET.text); }).catch(() => toast("Impossible de charger le dictionnaire."));
+}
+function revealVocab() {
+  const c = V.cards[V.i];
+  V.revealed = true;
+  const ans = $("#ans"); ans.hidden = false;
+  const ipa = ref ? "/" + ref.map(w => w.prons ? P.ipaString(w.prons[0]) : "?").join(" ") + "/" : "";
+  ans.innerHTML = `<p class="sentence">${esc(c.en)}</p><p class="ipa">${esc(ipa)}</p>
+    <div class="listen"><button class="btn cyan sm" id="listen">${ICON.spk}Écouter</button><button class="btn ghost sm" id="slow">${ICON.slow}Lentement</button></div>
+    <div class="row"><button class="btn ghost sm" id="knew">Je le savais</button><button class="btn ghost sm" id="didnt">À revoir</button></div>`;
+  const r = $("#reveal"); if (r) r.remove();
+  $("#listen").onclick = () => speak(TARGET.text, { voiceURI: S.voice, rate: 0.9 });
+  $("#slow").onclick = () => speak(TARGET.text, { voiceURI: S.voice, rate: S.slow });
+  $("#knew").onclick = () => vocabNext(true);
+  $("#didnt").onclick = () => vocabNext(false);
+  $("#status").textContent = "Écoute, puis répète-le au micro.";
+  const b = $("#coach .bubble"); if (b) b.textContent = "Écoute bien et répète !";
+  speak(TARGET.text, { voiceURI: S.voice, rate: 0.9 });
+}
+function showVocabResult(result) {
+  const c = V.cards[V.i];
+  lastResult = result;
+  recordAttempt(TARGET.text, result);
+  const sc = result.score, wasRevealed = V.revealed;
+  const correct = !wasRevealed && sc >= 60;
+  V.lastCorrect = correct;
+  if (!wasRevealed && !correct) revealVocab();
+  const mood = correct || (wasRevealed && sc >= 75) ? "great" : sc >= 50 ? "meh" : "bad";
+  const title = correct ? "Bonne réponse !" : wasRevealed ? (sc >= 75 ? "Bien répété !" : "Encore un effort") : "Ce n'est pas ça…";
+  const line = correct ? pick(sc >= 85 ? "great" : "good") : wasRevealed ? pick(sc >= 75 ? "good" : "meh") : "Voilà le bon mot. Écoute-le et répète !";
+  const tips = P.tipsFor(result, 2);
+  const phones = result.words.filter(w => w.scored).flatMap(w => w.phones);
+  const sheet = document.createElement("div");
+  sheet.id = "sheet"; sheet.className = "sheet " + mood;
+  sheet.innerHTML = `<div class="sheet-in">
+    <div class="head"><div class="av" id="sheetPouf">${poufSvg(mood === "great" ? "happy" : mood === "bad" ? "sad" : "")}</div>
+      <div><div class="title">${esc(title)}</div><p class="small"><b>${esc(c.en)}</b> = ${esc(c.fr)}</p></div><span class="score-big">${sc}</span></div>
+    <div class="scroll">${tips.length ? `<ul class="tips">${tips.map(t => `<li><b>${esc(t.word)}</b> · ${esc(t.text)}</li>`).join("")}</ul>` : ""}
+      ${phones.length ? `<div class="detail"><div class="phones">${phones.map(ph => `<span class="ph ${ph.status}">${esc(ph.p)}<small>${ph.status === "bad" ? (ph.heard ? "entendu " + esc(ph.heard) : "absent") : ph.status === "ok" ? "presque" : "ok"}</small></span>`).join("")}</div></div>` : ""}</div>
+    <div class="row between actions">
+      <div class="row"><button class="btn ghost sm" id="mine">${ICON.play}Ma voix</button><button class="btn ghost sm" id="again">${ICON.review}Réessayer</button></div>
+      <button class="btn ${mood === "great" ? "green" : mood === "meh" ? "orange" : "red"}" id="next">Continuer</button>
+    </div></div>`;
+  document.body.appendChild(sheet);
+  play(mood === "great" ? "great" : mood === "meh" ? "good" : "bad");
+  if (S.poufVoice) { const svg = $("#sheetPouf .pouf"); svg.classList.add("talk"); speak(line, { lang: "fr", rate: 1.05, pitch: 1.5 }).then(() => svg.classList.remove("talk")); }
+  $("#mine").onclick = () => playMine();
+  $("#again").onclick = () => { closeSheet(); toggleRecording(); };
+  $("#next").onclick = () => vocabNext(V.lastCorrect);
+  syncSpacer();
+}
+function vocabNext(correct) {
+  const c = V.cards[V.i], prev = S.vocab[c.id];
+  closeSheet();
+  if (!V.requeued.has(c.id) || correct) S.vocab[c.id] = G.gradeVocab(prev, correct, today());
+  if (correct) { V.correct++; V.xp += 5; if (!prev) V.newly++; }
+  else { V.xp += 2; if (!V.requeued.has(c.id)) { V.requeued.add(c.id); V.cards.push(c); } }
+  if (!S.days.includes(today())) S.days.push(today());
+  save();
+  V.i++;
+  if (V.i < V.cards.length) { play("tap"); renderVocabCard(); return; }
+  const total = V.xp + 10;
+  const uniq = new Set(V.cards.map(x => x.id)).size;
+  go("vfinish", { total, correct: V.correct, count: uniq, newly: V.newly, ...gainXp(total, V.startLevel) });
+}
+function renderVocabFinish(o) {
+  $("#view").innerHTML = `<section class="card finish">
+    <div class="coach" id="vfCoach"><div class="av">${poufSvg("happy")}</div><div class="bubble"></div></div>
+    <h2>Vocabulaire terminé !</h2>
+    <div class="tiles">
+      <div class="tile g"><span class="l">Réussis</span><span class="v">${o.correct}/${o.count}</span></div>
+      <div class="tile c"><span class="l">Nouveaux mots</span><span class="v">${o.newly}</span></div>
+      <div class="tile y"><span class="l">XP gagnés</span><span class="v">+${o.total}</span></div>
+    </div>
+    <p class="small muted">${G.masteredCount(S.vocab)} mots maîtrisés en tout</p>
+    <button class="btn green block" id="vfOk">Continuer</button></section>`;
+  fx(); play("done");
+  poufSay($("#vfCoach"), o.correct >= o.count * 0.8 ? "Quelle mémoire ! Ces mots sont à toi." : "Les mots ratés reviendront demain, c'est comme ça qu'on retient.", { voice: S.poufVoice, mood: "happy" });
+  $("#vfOk").onclick = async () => { await rewards(o); if (SESS) sessionNext(); else go("vocab"); };
+}
+
 // ---------------- Raccourcis clavier (mode ordinateur) ----------------
 document.addEventListener("keydown", e => {
-  if (view !== "lesson" || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (!["lesson", "vcard"].includes(view) || e.ctrlKey || e.metaKey || e.altKey) return;
   if (document.querySelector("dialog[open]") || /INPUT|SELECT|TEXTAREA/.test(document.activeElement && document.activeElement.tagName)) return;
   if (e.code === "Space") { e.preventDefault(); toggleRecording(); }
   else if (e.code === "KeyL") { const b = $("#listen"); if (b) b.click(); }
+  else if (e.code === "KeyH" && $("#reveal")) { $("#reveal").click(); }
   else if (e.code === "KeyR" && $("#sheet")) { $("#again").click(); }
   else if (e.code === "Enter" && $("#sheet")) { e.preventDefault(); $("#next").click(); }
 });

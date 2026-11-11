@@ -46,6 +46,66 @@ export const CATEGORIES = [
     ["He wanted to stay home.", "Il voulait rester à la maison."],
     ["I stopped and asked for help.", "Je me suis arrêté et j'ai demandé de l'aide."],
     ["We played tennis on Sunday.", "On a joué au tennis dimanche."]
+  ]},
+  { id: "work", title: "Au travail", sub: "Bureau, informatique, réunions", items: [
+    ["I'm a system and network administrator.", "Je suis administrateur système et réseau."],
+    ["The server is down again.", "Le serveur est encore en panne."],
+    ["Did you restart the router?", "Tu as redémarré le routeur ?"],
+    ["I need to update the software tonight.", "Je dois mettre à jour le logiciel ce soir."],
+    ["Can you send me the report by email?", "Tu peux m'envoyer le rapport par e-mail ?"],
+    ["The meeting starts at nine thirty.", "La réunion commence à neuf heures et demie."],
+    ["Please change your password every month.", "Change ton mot de passe tous les mois."],
+    ["We made a backup before the update.", "On a fait une sauvegarde avant la mise à jour."],
+    ["I'm working from home on Friday.", "Je télétravaille vendredi."],
+    ["Could you share your screen, please?", "Tu peux partager ton écran ?"]
+  ]},
+  { id: "out", title: "Sortir", sub: "Restaurant, café, magasins", items: [
+    ["Can we see the menu, please?", "On peut voir la carte, s'il vous plaît ?"],
+    ["I'll have the chicken with rice.", "Je vais prendre le poulet avec du riz."],
+    ["Is this dish spicy?", "Ce plat est épicé ?"],
+    ["Could I have some water, please?", "Je pourrais avoir de l'eau ?"],
+    ["Do you have this in a bigger size?", "Vous l'avez dans une taille plus grande ?"],
+    ["Can I try it on?", "Je peux l'essayer ?"],
+    ["How much does this cost?", "Combien ça coûte ?"],
+    ["I'm just looking, thank you.", "Je regarde seulement, merci."],
+    ["Keep the change.", "Gardez la monnaie."],
+    ["That was delicious, thank you!", "C'était délicieux, merci !"]
+  ]},
+  { id: "health", title: "Santé et imprévus", sub: "Pharmacie, médecin, urgences", items: [
+    ["I have a terrible headache.", "J'ai un terrible mal de tête."],
+    ["I need to see a doctor.", "J'ai besoin de voir un médecin."],
+    ["Where is the nearest pharmacy?", "Où est la pharmacie la plus proche ?"],
+    ["I think I have a fever.", "Je crois que j'ai de la fièvre."],
+    ["I'm allergic to peanuts.", "Je suis allergique aux cacahuètes."],
+    ["I lost my phone and my wallet.", "J'ai perdu mon téléphone et mon portefeuille."],
+    ["Can you call a taxi for me?", "Pouvez-vous m'appeler un taxi ?"],
+    ["My train was cancelled.", "Mon train a été annulé."],
+    ["Is there a bank near here?", "Il y a une banque près d'ici ?"],
+    ["Please help me, it's urgent.", "Aidez-moi, s'il vous plaît, c'est urgent."]
+  ]},
+  { id: "fun", title: "Loisirs et opinions", sub: "Donner son avis, parler de ses goûts", items: [
+    ["I really like playing video games.", "J'aime beaucoup jouer aux jeux vidéo."],
+    ["What kind of music do you listen to?", "Quel genre de musique tu écoutes ?"],
+    ["In my opinion, the book was better.", "À mon avis, le livre était meilleur."],
+    ["I don't agree with you.", "Je ne suis pas d'accord avec toi."],
+    ["That sounds like a great idea.", "Ça a l'air d'être une super idée."],
+    ["I've never been to Australia.", "Je ne suis jamais allé en Australie."],
+    ["Have you ever tried sushi?", "Tu as déjà goûté les sushis ?"],
+    ["I'd rather stay home tonight.", "Je préfère rester à la maison ce soir."],
+    ["It depends on the weather.", "Ça dépend de la météo."],
+    ["What are you doing this weekend?", "Tu fais quoi ce week-end ?"]
+  ]},
+  { id: "phone", title: "Au téléphone", sub: "Appeler, réserver, se faire comprendre", items: [
+    ["Hello, this is Alex speaking.", "Bonjour, c'est Alex à l'appareil."],
+    ["Could you repeat that, please?", "Pourriez-vous répéter, s'il vous plaît ?"],
+    ["Sorry, the line is very bad.", "Désolé, la ligne est très mauvaise."],
+    ["I'd like to book a table for Saturday.", "Je voudrais réserver une table pour samedi."],
+    ["Can I leave a message?", "Je peux laisser un message ?"],
+    ["I'll call you back later.", "Je te rappelle plus tard."],
+    ["Could you spell your name, please?", "Pourriez-vous épeler votre nom ?"],
+    ["What time do you open tomorrow?", "À quelle heure ouvrez-vous demain ?"],
+    ["Thanks for calling.", "Merci d'avoir appelé."],
+    ["Talk to you soon!", "À bientôt !"]
   ]}
 ];
 
@@ -74,7 +134,19 @@ export const SOUND_LESSONS = [
   { p: "ə", title: "Le son faible (schwa)", tip: "Les syllabes non accentuées se réduisent à un « e » faible. Accentue une seule syllabe.",
     items: ["banana", "about", "today", "problem", "A cup of coffee, please.", "What about tomorrow?"] },
   { p: "eɪ", title: "Le son « éï »", tip: "Le son glisse de « é » vers « i ».",
-    items: ["day", "name", "wait", "great", "Wait for me at the gate.", "Have a great day."] }
+    items: ["day", "name", "wait", "great", "Wait for me at the gate.", "Have a great day."] },
+  { p: "z", title: "Le z (s qui vibre)", tip: "Beaucoup de « s » anglais se prononcent « z » : is, was, these, easy. Fais vibrer la gorge.",
+    items: ["is", "was", "easy", "busy", "These shoes are always cheap.", "Is it easy to use?"] },
+  { p: "v", title: "Le v", tip: "Dents du haut posées sur la lèvre du bas, et ça vibre. Pas de « w ».",
+    items: ["very", "visit", "voice", "never", "I have a very good view.", "We visited Venice in November."] },
+  { p: "ʃ", title: "Le ch (sh)", tip: "Avance les lèvres comme pour « chut ». Attention, « ch » anglais se dit souvent « tch ».",
+    items: ["she", "shop", "wish", "station", "She should push the shopping cart.", "I wish you a nice vacation."] },
+  { p: "ʤ", title: "Le dj (j anglais)", tip: "Commence par un petit « d » : « dj ». Le j anglais n'est jamais un « j » français.",
+    items: ["job", "just", "jacket", "orange", "I just changed my job.", "John enjoys orange juice."] },
+  { p: "aɪ", title: "Le son « aï »", tip: "Le i anglais en syllabe ouverte se dit souvent « aï » : I, my, time, nice.",
+    items: ["I", "my", "time", "nice", "I like my new bike.", "It's time to fly to Miami."] },
+  { p: "ɝ", title: "Le son « eur » (bird)", tip: "Langue repliée vers l'arrière, lèvres un peu arrondies : bird, work, her, first.",
+    items: ["bird", "work", "her", "first", "Her first word was bird.", "I work on Thursday."] }
 ];
 
 // Paires minimales : deux mots qui ne diffèrent que par un son.

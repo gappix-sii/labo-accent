@@ -4,6 +4,7 @@ import { writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { CATEGORIES, SOUND_LESSONS, MINIMAL_PAIRS } from "../js/content.js";
 import { normWord, splitDisplayWords } from "../js/phonemes.js";
+import { VOCAB, sayText } from "../js/vocab.js";
 
 const src = process.argv[2];
 const { dictionary } = await import(src);
@@ -22,7 +23,8 @@ console.log("entrées:", Object.keys(out).length, "taille:", (json.length / 1e6)
 const texts = [
   ...CATEGORIES.flatMap(c => c.items.map(i => i[0])),
   ...SOUND_LESSONS.flatMap(l => l.items),
-  ...MINIMAL_PAIRS.flat()
+  ...MINIMAL_PAIRS.flat(),
+  ...Object.values(VOCAB).flat().map(sayText)
 ];
 const missing = new Set();
 for (const t of texts) for (const w of splitDisplayWords(t)) { const n = normWord(w); if (n && !out[n]) missing.add(n); }
