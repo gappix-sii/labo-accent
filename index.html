@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.co; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self'; font-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#13213a">
+<meta name="description" content="Entraînement à la prononciation anglaise, analyse son par son, 100 % dans le navigateur.">
+<title>Labo d'accent</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+<script type="module" src="js/app.js"></script>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div>
+      <h1>Labo d'accent</h1>
+      <p class="sub">Parle, et vois chaque son que tu prononces</p>
+    </div>
+    <span class="engine" id="engine" data-state="off">Moteur : non préparé</span>
+  </div>
+</header>
+
+<main id="view" tabindex="-1">
+  <noscript><p class="card">Cette appli a besoin de JavaScript.</p></noscript>
+  <p class="card muted">Chargement…</p>
+</main>
+
+<nav class="bottom" aria-label="Sections">
+  <button data-go="home" aria-current="page"><span class="ico" aria-hidden="true">⌂</span>Accueil</button>
+  <button data-go="practice"><span class="ico" aria-hidden="true">◉</span>Exercices</button>
+  <button data-go="sounds"><span class="ico" aria-hidden="true">▦</span>Mes sons</button>
+  <button data-go="settings"><span class="ico" aria-hidden="true">⚙</span>Réglages</button>
+</nav>
+
+<dialog id="dlg">
+  <div class="dlg">
+    <h2 id="dlgTitle">Confirmer</h2>
+    <p id="dlgText"></p>
+    <div class="row end">
+      <button type="button" class="btn" id="dlgCancel">Annuler</button>
+      <button type="button" class="btn danger" id="dlgOk">Confirmer</button>
+    </div>
+  </div>
+</dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

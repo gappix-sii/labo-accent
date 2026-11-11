@@ -1,0 +1,10 @@
+import { chromium } from '/opt/npm-tools/node_modules/playwright/index.mjs';
+const b = await chromium.launch({ executablePath: '/usr/bin/google-chrome', args:['--no-sandbox'] });
+const ctx = await b.newContext(); const p = await ctx.newPage();
+const reqs=[]; ctx.on('request', r=>{ if(!r.url().startsWith('http://127.0.0.1')) reqs.push(r.url()); });
+ctx.on('requestfailed', r=>{ if(!r.url().startsWith('http://127.0.0.1')) reqs.push('FAILED '+r.url()+' '+(r.failure()||{}).errorText); });
+await p.goto(process.argv[2]); await p.waitForTimeout(3000);
+await p.click('#prep'); await p.waitForTimeout(6000);
+console.log('toast:', await p.textContent('#toast'));
+console.log(reqs.join('\n'));
+await b.close();
