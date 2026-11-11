@@ -7,3 +7,4 @@
 - **Modèle** `robg/speako-phoneme-recognizer` (téléchargé à l'exécution, non inclus) : Apache License 2.0, export ONNX de `vitouphy/wav2vec2-xls-r-300m-timit-phoneme`.
 - **Polices** Barlow Condensed et Nunito (`fonts/`) : SIL Open Font License 1.1. Texte : `fonts/LICENSE-OFL.txt`.
 - **Pouf**, la mascotte, est un personnage original créé pour cette appli.
+- **Modèles de conversation** (téléchargés à l'exécution, non inclus) : Whisper base.en (MIT, OpenAI) ; Gemma 3 1B (conditions d'utilisation Gemma de Google).

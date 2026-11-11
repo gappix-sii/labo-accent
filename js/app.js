@@ -1,7 +1,7 @@
 // Labo d'accent : interface façon jeu. Aucune donnée ne quitte l'appareil (progression dans localStorage).
 import * as P from "./phonemes.js";
 import { CATEGORIES, SOUND_LESSONS, MINIMAL_PAIRS } from "./content.js";
-import { Recorder, speak, englishVoices } from "./audio.js";
+import { Recorder, speak, englishVoices, wavBase64 } from "./audio.js";
 import * as G from "./game.js";
 import { poufSvg, poufSay, pick } from "./mascot.js";
 import { sfx, confetti } from "./fx.js";
@@ -9,6 +9,7 @@ import { VOCAB, LEVELS, sayText } from "./vocab.js";
 import { DIALOGUES, STOP } from "./dialogues.js";
 import { GRAMMAR, GLEVELS } from "./grammar.js";
 import { MISTAKE_CATS, ALL_MISTAKES } from "./mistakes.js";
+import { SCENES, systemPrompt } from "./scenes.js";
 
 const COACH_URL = "https://claude.ai/artifact/NpBH4v48K7L87LiDVvxiFt";
 const STORE = "labo.v1";
@@ -139,17 +140,18 @@ function errorText(m) {
 let view = "path";
 function go(v, opts) {
   view = v;
-  const tab = { sounds: "train", block: "session", send: "session", vcard: "vocab", vfinish: "vocab", dialog: "train", dlisten: "train", dfinish: "train", grammar: "vocab", gpoint: "vocab", mistakes: "vocab", mcard: "vocab", done: "vocab" }[v] || v;
+  const tab = { sounds: "train", block: "session", send: "session", vcard: "vocab", vfinish: "vocab", dialog: "train", dlisten: "train", dfinish: "train", grammar: "vocab", gpoint: "vocab", mistakes: "vocab", mcard: "vocab", done: "vocab", chatsetup: "train", chat: "train" }[v] || v;
   $$("nav.bottom button").forEach(b => { if (b.dataset.go === tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
-  document.body.classList.toggle("in-lesson", ["lesson", "finish", "vcard", "vfinish", "block", "send", "dialog", "dlisten", "dfinish", "gpoint", "mcard", "done"].includes(v));
+  document.body.classList.toggle("in-lesson", ["lesson", "finish", "vcard", "vfinish", "block", "send", "dialog", "dlisten", "dfinish", "gpoint", "mcard", "done", "chatsetup", "chat"].includes(v));
   document.body.dataset.view = v;
-  if (v !== "dialog") document.body.classList.remove("hide-fr");
+  if (v !== "dialog" && v !== "chat") document.body.classList.remove("hide-fr");
+  if (v !== "chat" && chatRec && chatRec.active) { chatRec.stop().catch(() => {}); chatRec = null; }
   closeSheet();
   stopRecording(true);
   ({ path: renderPath, train: renderTrain, sounds: renderSounds, profile: renderProfile, lesson: renderLesson, finish: () => renderFinish(opts),
      session: renderSession, block: renderBlock, send: () => renderSessionEnd(opts), vocab: renderVocabHome, vcard: renderVocabCard, vfinish: () => renderVocabFinish(opts),
      dialog: renderDialog, dlisten: renderListen, dfinish: () => renderDialogFinish(opts),
-     grammar: renderGrammarHome, gpoint: renderGrammarPoint, mistakes: renderMistakesHome, mcard: renderMistakeCard, done: () => renderDone(opts) })[v]();
+     grammar: renderGrammarHome, gpoint: renderGrammarPoint, mistakes: renderMistakesHome, mcard: renderMistakeCard, done: () => renderDone(opts), chatsetup: renderChatSetup, chat: renderChat })[v]();
   renderHud();
   window.scrollTo(0, 0);
 }
@@ -440,6 +442,8 @@ function playMine(start, end) {
 // ---------------- Entraînement libre ----------------
 function renderTrain() {
   $("#view").innerHTML = `
+    <section class="card free-chat"><div class="coach"><div class="av">${poufSvg()}</div><div class="bubble">Envie de parler librement ? Dis ce que tu veux, l'IA te répond et corrige tes fautes.</div></div>
+      <button class="btn yellow block" id="toChat">${ICON.mic}Conversation libre avec l'IA</button></section>
     <h2>Conversation</h2>
     <p class="small muted">Jeux de rôle à l'oral, comme une vraie discussion : Pouf joue un personnage, tu réponds au micro. Ou écoute d'abord le dialogue.</p>
     <div class="dgrid">${DIALOGUES.map(d => { const r = S.dialogues[d.id]; return `<section class="card dcard"><div class="row between"><span class="pill ok">${esc(d.level)}</span>${r ? `<span class="pill good">${r.best} %</span>` : ""}</div>
@@ -465,6 +469,7 @@ function renderTrain() {
   });
   $$("[data-p]").forEach(b => b.onclick = () => { play("tap"); soundDrill(b.dataset.p); });
   $("#toSounds").onclick = () => go("sounds");
+  $("#toChat").onclick = () => { play("tap"); go("chatsetup"); };
   $$("[data-role]").forEach(b => b.onclick = () => { play("tap"); startDialog(b.dataset.role); });
   $$("[data-listen]").forEach(b => b.onclick = () => { play("tap"); startListen(b.dataset.listen); });
   const free = () => { const t = $("#free").value.trim(); if (t) startLesson({ id: null, kind: "free", title: "Ta phrase", items: [{ en: t, fr: "" }] }); };
@@ -1157,6 +1162,213 @@ function renderDone(o) {
   fx(); play("done");
   poufSay($("#doCoach"), o.line, { voice: S.poufVoice, mood: "happy" });
   $("#doOk").onclick = async () => { await rewards(o); if (SESS) sessionNext(); else go(o.back); };
+}
+
+// ---------------- Conversation libre avec une IA (pour les amis) ----------------
+// Deux moteurs au choix : IA locale (WebGPU, rien ne sort de l'appareil) ou Gemini avec la clé gratuite de l'utilisateur.
+const GEMINI_HOST = "https://generativelanguage.googleapis.com";
+const KEY_STORE = "labo.gkey";
+let sessionKey = "";
+function geminiKey() { try { return sessionKey || localStorage.getItem(KEY_STORE) || ""; } catch (e) { return sessionKey; } }
+function chatCfg() { S.chat = S.chat || { engine: "", model: "gemini-3.8-flash", level: "A2" }; return S.chat; }
+let chatWorker = null, chatState = "off", chatPending = new Map(), chatReq = 0, chatWaiters = [];
+function startChatEngine() {
+  if (chatWorker) return;
+  chatWorker = new Worker(new URL("./chat-worker.js", import.meta.url), { type: "module" });
+  chatState = "loading";
+  chatWorker.onmessage = e => {
+    const m = e.data;
+    if (m.type === "progress") { const pct = m.total ? Math.round(m.loaded / m.total * 100) : 0; const b = $("#cdBar > i"); if (b) b.style.width = pct + "%"; const t = $("#cdTxt"); if (t && m.total) t.textContent = `${(m.loaded / 1e6).toFixed(0)} / ${(m.total / 1e6).toFixed(0)} Mo`; }
+    else if (m.type === "ready") { chatState = "ready"; S.chatModelReady = true; save(); chatWaiters.splice(0).forEach(w => w.res()); if (view === "chatsetup") renderChatSetup(); }
+    else if (m.type === "text" || m.type === "error") {
+      const p = chatPending.get(m.id);
+      if (m.type === "error" && !p) { chatState = "error"; chatWorker.terminate(); chatWorker = null; chatWaiters.splice(0).forEach(w => w.rej(new Error(m.message))); toast(m.message === "no_webgpu" ? "Ce navigateur ou cet appareil n'a pas WebGPU : utilise Gemini, ou Chrome/Edge récent sur PC." : "Le chargement de l'IA locale a échoué. Vérifie ta connexion et la mémoire disponible."); if (view === "chatsetup") renderChatSetup(); return; }
+      if (p) { chatPending.delete(m.id); m.type === "text" ? p.res(m.text) : p.rej(new Error(m.message)); }
+    }
+  };
+  chatWorker.postMessage({ type: "init" });
+}
+function chatWhenReady() { return chatState === "ready" ? Promise.resolve() : new Promise((res, rej) => chatWaiters.push({ res, rej })); }
+function chatCall(msg, transfer) { const id = ++chatReq; return new Promise((res, rej) => { chatPending.set(id, { res, rej }); chatWorker.postMessage({ ...msg, id }, transfer || []); }); }
+
+const LOCAL_FORMAT = "\nAnswer EXACTLY in this format, nothing else:\nREPLY: <your answer in English>\nCORRECT: <the learner's last message corrected, or OK if it is correct>\nEXPLAIN: <short explanation of the errors in French, or nothing>";
+function parseLocal(t) {
+  const g = re => { const m = t.match(re); return m ? m[1].trim() : ""; };
+  const reply = g(/REPLY:\s*([\s\S]*?)(?:\n\s*CORRECT:|$)/i) || t.trim();
+  let corrected = g(/CORRECT:\s*([\s\S]*?)(?:\n\s*EXPLAIN:|$)/i);
+  const explanation_fr = g(/EXPLAIN:\s*([\s\S]*)$/i);
+  const ok = !corrected || /^ok\.?$/i.test(corrected);
+  if (ok) corrected = "";
+  return { reply, reply_fr: "", ok, corrected, explanation_fr, natural: "", pron_fr: "" };
+}
+async function chatTurn({ text, samples }) {
+  const cfg = chatCfg(), scene = CH.scene, sys = systemPrompt(scene, cfg.level);
+  const hist = CH.turns.slice(-10);
+  if (cfg.engine === "test") {
+    await new Promise(r => setTimeout(r, 300));
+    return { heard: text || "I would like a coffee please", reply: text === null ? "Hi! How can I help you today?" : "Sure! Anything else?", reply_fr: "Bien sûr ! Autre chose ?", ok: false, corrected: "I'd like a coffee, please.", explanation_fr: "Test : correction factice.", natural: "", pron_fr: "" };
+  }
+  if (cfg.engine === "local") {
+    if (chatState !== "ready") { startChatEngine(); await chatWhenReady(); }
+    let heard = text;
+    if (samples) heard = await chatCall({ type: "transcribe", audio: samples }, [samples.buffer]);
+    if (heard !== null && !heard) return { heard: "", reply: "", empty: true };
+    const msgs = [{ role: "user", content: sys + LOCAL_FORMAT + "\n\nStart the conversation now, in your role." }];
+    hist.forEach(h => msgs.push(h.who === "ai" ? { role: "assistant", content: "REPLY: " + h.text } : { role: "user", content: "Learner: " + h.text }));
+    if (heard !== null) msgs.push({ role: "user", content: "Learner: " + heard });
+    const out = await chatCall({ type: "generate", messages: msgs });
+    return { heard, ...parseLocal(out) };
+  }
+  // Gemini
+  const key = geminiKey();
+  if (!key) throw new Error("no_key");
+  const fmt = `\nReturn ONLY one JSON object: {"heard":"exact transcription of the learner's last message (empty at the start)","reply":"your answer in English","reply_fr":"French translation of reply","ok":true,"corrected":"the learner's message corrected, or empty if correct","explanation_fr":"short friendly explanation in French of each error, or empty","natural":"how a native would say it, or empty","pron_fr":"if you received audio: a short French note on a clearly mispronounced word, else empty"}`;
+  const contents = hist.map(h => ({ role: h.who === "ai" ? "model" : "user", parts: [{ text: h.text }] }));
+  if (text === null && !samples) contents.push({ role: "user", parts: [{ text: "Start the conversation now, in your role." }] });
+  else if (samples) contents.push({ role: "user", parts: [{ inlineData: { mimeType: "audio/wav", data: wavBase64(samples) } }, { text: "(The learner said this out loud. Transcribe it in \"heard\", then answer and correct it.)" }] });
+  else contents.push({ role: "user", parts: [{ text }] });
+  const r = await fetch(`${GEMINI_HOST}/v1beta/models/${encodeURIComponent(cfg.model)}:generateContent`, {
+    method: "POST", referrerPolicy: "no-referrer", credentials: "omit",
+    headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+    body: JSON.stringify({ systemInstruction: { parts: [{ text: sys + fmt }] }, contents, generationConfig: { responseMimeType: "application/json", temperature: 0.7 } })
+  });
+  if (!r.ok) throw new Error("gemini_" + r.status);
+  const data = await r.json();
+  const raw = (((data.candidates || [])[0] || {}).content || {}).parts?.map(p => p.text || "").join("") || "";
+  let j; try { j = JSON.parse(raw.match(/\{[\s\S]*\}/)[0]); } catch (e) { j = { reply: raw }; }
+  return { heard: j.heard ?? text, reply: j.reply || "", reply_fr: j.reply_fr || "", ok: !!j.ok || !j.corrected, corrected: j.corrected || "", explanation_fr: j.explanation_fr || "", natural: j.natural || "", pron_fr: j.pron_fr || "" };
+}
+function chatError(e) {
+  const m = String(e && e.message || e);
+  if (m === "no_key") return "Ajoute ta clé Gemini dans la configuration.";
+  if (/gemini_(400|401|403)/.test(m)) return "Google refuse la clé. Vérifie qu'elle est correcte et autorisée pour ce site.";
+  if (/gemini_404/.test(m)) return "Ce modèle Gemini n'existe pas ou plus. Change le nom du modèle dans la configuration.";
+  if (/gemini_429/.test(m)) return "Quota gratuit de Google atteint pour le moment. Réessaie dans une minute (ou demain).";
+  if (/gemini_5/.test(m)) return "Les serveurs de Google ne répondent pas. Réessaie dans un instant.";
+  if (m === "no_webgpu") return "WebGPU indisponible : passe en mode Gemini, ou utilise Chrome/Edge récent sur PC.";
+  return "L'IA n'a pas pu répondre. Réessaie.";
+}
+
+function renderChatSetup() {
+  const cfg = chatCfg();
+  if (TEST_LOCAL && !cfg.engine) cfg.engine = "test";
+  const hasGpu = !!navigator.gpu, key = geminiKey();
+  const localStatus = chatState === "ready" ? `<span class="pill good">prête</span>` : chatState === "loading" ? `<span class="pill ok">chargement</span>` : S.chatModelReady ? `<span class="pill good">téléchargée</span>` : "";
+  $("#view").innerHTML = `
+    <div class="ltop"><button class="iconbtn" id="back" aria-label="Retour">${ICON.close}</button><h3 class="grow">Conversation libre avec l'IA</h3></div>
+    <section class="card"><div class="coach"><div class="av">${poufSvg()}</div><div class="bubble">Réponds ce que tu veux, avec tes mots. L'IA joue le rôle et corrige chacune de tes phrases.</div></div></section>
+    <section class="card"><h3>1. Choisis le moteur</h3>
+      <div class="engines">
+        <button class="engine-card ${cfg.engine === "local" ? "on" : ""}" data-eng="local" ${hasGpu ? "" : "disabled"}><b>IA locale ${localStatus}</b><span class="small">Gratuite et privée : rien ne quitte ton appareil. PC récent avec Chrome ou Edge, ≈ 1,2 Go à télécharger une fois. Corrections plus approximatives.</span>${hasGpu ? "" : `<span class="small bad-t">WebGPU indisponible sur cet appareil.</span>`}</button>
+        <button class="engine-card ${cfg.engine === "gemini" ? "on" : ""}" data-eng="gemini"><b>Gemini (Google) ${key ? `<span class="pill good">clé enregistrée</span>` : ""}</b><span class="small">Meilleure qualité, marche aussi sur téléphone. Il faut ta propre clé gratuite Google. Ta voix et tes messages sont envoyés à Google.</span></button>
+      </div>
+      ${cfg.engine === "local" && chatState !== "ready" ? `<div id="cdl"><div class="bar xp" id="cdBar"><i></i></div><p class="small muted" id="cdTxt">${chatState === "loading" ? "Téléchargement…" : "Pas encore téléchargée."}</p>${chatState !== "loading" ? `<button class="btn yellow sm" id="cdGo">Télécharger l'IA locale (≈ 1,2 Go)</button>` : ""}</div>` : ""}
+      ${cfg.engine === "gemini" ? `<div class="gform">
+        <p class="small">1) Crée une clé gratuite sur <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com/apikey</a>. 2) Dans Google Cloud, limite-la au site <b>${esc(location.host)}</b> (restriction « Sites Web / référents HTTP ») et à l'API « Generative Language ». 3) Colle-la ici.</p>
+        <label class="f" for="gKey">Clé API Gemini<input type="password" id="gKey" autocomplete="off" spellcheck="false" placeholder="${key ? "•••••••• (déjà enregistrée)" : "AIza…"}"></label>
+        <label class="switch small" for="gRemember">Mémoriser la clé sur cet appareil <input type="checkbox" id="gRemember" ${localStorage.getItem(KEY_STORE) || !sessionKey ? "checked" : ""}></label>
+        <label class="f" for="gModel">Modèle<input type="text" id="gModel" value="${esc(cfg.model)}" spellcheck="false"></label>
+        <div class="row"><button class="btn yellow sm" id="gSave">Enregistrer</button>${key ? `<button class="btn ghost sm" id="gDel">Effacer la clé</button>` : ""}</div>
+        <p class="small muted">Avec l'offre gratuite, Google peut utiliser ce que tu envoies pour améliorer ses produits. N'y mets rien de personnel. La clé n'est envoyée qu'à Google, jamais ailleurs.</p></div>` : ""}
+    </section>
+    <section class="card"><h3>2. Ton niveau</h3><div class="chips">${["A1", "A2", "B1", "B2"].map(l => `<button class="chip ${l === cfg.level ? "on" : ""}" data-cl="${l}">${l}</button>`).join("")}</div></section>
+    <section class="card"><h3>3. Choisis une situation</h3>
+      <div class="scenes">${SCENES.map(s => `<button class="scene" data-sc="${s.id}"><b>${esc(s.title)}</b><span class="small muted">${esc(s.sub)}</span></button>`).join("")}</div>
+      <label class="f" for="cCustom">Ou décris ta propre situation (en français)<input type="text" id="cCustom" maxlength="200" placeholder="Ex : je suis dans un bar à Londres et je cherche les toilettes"></label>
+      <button class="btn green" id="cCustomGo">Jouer cette situation</button></section>`;
+  $("#back").onclick = () => go("train");
+  $$("[data-eng]").forEach(b => b.onclick = () => { cfg.engine = b.dataset.eng; save(); renderChatSetup(); });
+  $$("[data-cl]").forEach(b => b.onclick = () => { cfg.level = b.dataset.cl; save(); renderChatSetup(); });
+  const dl = $("#cdGo"); if (dl) dl.onclick = () => { startChatEngine(); renderChatSetup(); };
+  const gs = $("#gSave"); if (gs) gs.onclick = () => {
+    const k = $("#gKey").value.trim(), rem = $("#gRemember").checked;
+    cfg.model = $("#gModel").value.trim() || "gemini-3.8-flash"; save();
+    if (k) { if (!/^[A-Za-z0-9_\-]{20,}$/.test(k)) { toast("Cette clé n'a pas le bon format."); return; } sessionKey = k; try { if (rem) localStorage.setItem(KEY_STORE, k); else localStorage.removeItem(KEY_STORE); } catch (e) {} }
+    toast("Configuration enregistrée."); renderChatSetup();
+  };
+  const gd = $("#gDel"); if (gd) gd.onclick = async () => {
+    if (!await confirmDlg("Effacer la clé ?", "La clé Gemini sera retirée de cet appareil. Il faudra la recoller pour utiliser ce moteur.", "Effacer")) return;
+    sessionKey = ""; try { localStorage.removeItem(KEY_STORE); } catch (e) {} toast("Clé effacée."); renderChatSetup();
+  };
+  const ready = () => { if (!cfg.engine) { toast("Choisis d'abord un moteur."); return false; } if (cfg.engine === "gemini" && !geminiKey()) { toast("Ajoute ta clé Gemini."); return false; } return true; };
+  $$("[data-sc]").forEach(b => b.onclick = () => { if (ready()) startChat(SCENES.find(s => s.id === b.dataset.sc)); });
+  $("#cCustomGo").onclick = () => { const t = $("#cCustom").value.trim(); if (!t || !ready()) return; startChat({ id: "custom", title: t.slice(0, 50), sub: "", role: "the most natural other person in this situation (choose the role yourself and stay in it)", situation: `The learner described this real-life situation in French: ${JSON.stringify(t)}. Play it realistically.` }); };
+}
+
+let CH = null, chatRec = null;
+function startChat(scene) {
+  CH = { scene, turns: [], corrections: 0, msgs: 0, busy: false, startLevel: G.levelOf(S.xp).level };
+  go("chat");
+  chatSend(null);
+}
+function renderChat() {
+  $("#view").innerHTML = `
+    <div class="ltop"><button class="iconbtn" id="quit" aria-label="Terminer">${ICON.close}</button><h3 class="grow">${esc(CH.scene.title)}</h3><span class="pill ok">${esc(chatCfg().engine === "gemini" ? "Gemini" : chatCfg().engine === "local" ? "IA locale" : "test")}</span></div>
+    <label class="switch small" for="cFr">Afficher la traduction <input type="checkbox" id="cFr" checked></label>
+    <div class="chat" id="chat"></div>
+    <p class="status" id="cStatus"></p>
+    <section class="card composer-card">
+      <div class="mic-wrap"><button class="mic" id="cMic" aria-label="Parler">${ICON.mic}</button><p class="small muted">Appuie et parle. Arrêt automatique quand tu as fini.</p></div>
+      <div class="row"><label class="sr" for="cText">Ou écris ta réponse</label><input type="text" id="cText" maxlength="300" placeholder="Ou écris ta réponse en anglais…" autocomplete="off"><button class="btn cyan sm" id="cSend">Envoyer</button></div>
+      <button class="btn ghost sm" id="cEnd">Terminer la conversation</button>
+    </section>`;
+  document.body.classList.remove("hide-fr");
+  $("#cFr").onchange = e => document.body.classList.toggle("hide-fr", !e.target.checked);
+  $("#quit").onclick = endChat; $("#cEnd").onclick = endChat;
+  $("#cSend").onclick = () => { const t = $("#cText").value.trim(); if (t) { $("#cText").value = ""; chatSend(t); } };
+  $("#cText").addEventListener("keydown", e => { if (e.key === "Enter") $("#cSend").click(); });
+  $("#cMic").onclick = chatMic;
+}
+async function chatMic() {
+  if (CH.busy) return;
+  const btn = $("#cMic");
+  if (chatRec && chatRec.active) { const r = chatRec; chatRec = null; btn.classList.remove("on"); btn.innerHTML = ICON.mic; const out = await r.stop(); if (!out || !out.heardSpeech || !out.pcm) { $("#cStatus").textContent = "Je n'ai rien entendu."; return; } chatSend(undefined, out.pcm.samples); return; }
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  chatRec = new Recorder({ onAutoStop: () => chatMic() });
+  try { await chatRec.start(); } catch (e) { chatRec = null; toast("Accès au micro refusé ou micro introuvable."); return; }
+  btn.classList.add("on"); btn.innerHTML = ICON.stop; $("#cStatus").textContent = "Je t'écoute…";
+}
+function chatBubble(who, html, speakText) {
+  const chat = $("#chat"); if (!chat) return null;
+  const el = document.createElement("div"); el.className = "msg " + who;
+  el.innerHTML = `${who === "ai" ? `<div class="av">${poufSvg()}</div>` : ""}<div class="bub">${html}${speakText ? `<button class="iconbtn sm" aria-label="Réécouter">${ICON.spk}</button>` : ""}</div>`;
+  const b = el.querySelector("button.iconbtn"); if (b) b.onclick = () => speak(speakText, { voiceURI: S.voice, rate: 0.95 });
+  chat.appendChild(el); el.scrollIntoView({ block: "end", behavior: "smooth" });
+  return el;
+}
+async function chatSend(text, samples) {
+  if (CH.busy) return;
+  CH.busy = true;
+  const st = $("#cStatus");
+  if (st) st.textContent = chatCfg().engine === "local" && chatState !== "ready" ? "Chargement de l'IA locale… (la première fois peut être longue)" : "Pouf réfléchit…";
+  const mic = $("#cMic"); if (mic) mic.disabled = true;
+  try {
+    const r = await chatTurn({ text: text === undefined ? null : text, samples });
+    if (r.empty) { if (st) st.textContent = "Je n'ai pas compris. Réessaie ou écris ta réponse."; return; }
+    if (r.heard !== null && r.heard !== undefined && (text !== null || samples)) {
+      CH.msgs++; CH.turns.push({ who: "me", text: r.heard });
+      let corr = "";
+      if (r.ok && !r.corrected) corr = `<div class="corrbox ok"><span class="pill good">Parfait !</span>${r.natural ? ` Plus naturel : <b>${esc(r.natural)}</b>` : ""}</div>`;
+      else { CH.corrections++; corr = `<div class="corrbox"><span class="pill bad">Correction</span> <b>${esc(r.corrected)}</b><br>${esc(r.explanation_fr)}${r.natural ? `<br><span class="small">Plus naturel : ${esc(r.natural)}</span>` : ""}</div>`; }
+      if (r.pron_fr) corr += `<div class="corrbox pr"><span class="pill ok">Prononciation</span> ${esc(r.pron_fr)}</div>`;
+      chatBubble("me", `<div class="en">${esc(r.heard)}</div>${corr}`);
+      if (!S.days.includes(today())) { S.days.push(today()); save(); }
+    }
+    CH.turns.push({ who: "ai", text: r.reply });
+    const el = chatBubble("ai", `<div class="en">${esc(r.reply)}</div>${r.reply_fr ? `<div class="tr">${esc(r.reply_fr)}</div>` : ""}`, r.reply);
+    if (st) st.textContent = "";
+    const svg = el && el.querySelector(".pouf"); if (svg) svg.classList.add("talk");
+    speak(r.reply, { voiceURI: S.voice, rate: 0.95 }).then(() => { if (svg) svg.classList.remove("talk"); });
+  } catch (e) { if (st) st.textContent = chatError(e); }
+  finally { CH.busy = false; const m = $("#cMic"); if (m) m.disabled = false; }
+}
+function endChat() {
+  if (chatRec && chatRec.active) { chatRec.stop().catch(() => {}); chatRec = null; }
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  if (!CH || CH.msgs === 0) { go("train"); return; }
+  const total = CH.msgs * 5 + 10;
+  go("done", { title: "Conversation terminée !", tiles: [["c", "Tes messages", String(CH.msgs)], ["o", "Corrections", String(CH.corrections)], ["y", "XP gagnés", "+" + total]],
+    line: CH.corrections === 0 ? "Aucune faute, impressionnant !" : "Relis les corrections : ce sont tes points à travailler.", back: "train", ...gainXp(total, CH.startLevel) });
 }
 
 // ---------------- Raccourcis clavier (mode ordinateur) ----------------

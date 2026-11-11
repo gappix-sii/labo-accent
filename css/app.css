@@ -374,3 +374,21 @@ body.hide-fr .tr{display:none}
   body[data-view="mistakes"] main > .seg,body[data-view="mistakes"] main > h2,body[data-view="mistakes"] main > .card:nth-of-type(1){grid-column:1 / -1}
 }
 .rule{font-size:1.08rem;font-weight:700;line-height:1.5}
+
+/* ---------- Conversation libre IA ---------- */
+.free-chat{border-color:var(--yellow)}
+.engines{display:grid;gap:10px}
+.engine-card{display:flex;flex-direction:column;gap:6px;text-align:left;border:2px solid var(--line);background:rgba(0,0,0,.25);border-radius:16px;padding:14px;cursor:pointer}
+.engine-card.on{border-color:var(--yellow);box-shadow:inset 0 0 0 2px var(--yellow)}
+.engine-card:disabled{opacity:.55;cursor:not-allowed}
+.engine-card b{font-size:1.05rem}
+.bad-t{color:var(--red);font-weight:800}
+.gform{display:flex;flex-direction:column;gap:10px;border-top:2px solid rgba(255,255,255,.06);padding-top:12px}
+input[type=password]{border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:rgba(0,0,0,.25);min-height:48px}
+.scenes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scene{display:flex;flex-direction:column;gap:2px;text-align:left;border:2px solid var(--line);background:rgba(0,0,0,.2);border-radius:14px;padding:10px 12px;cursor:pointer}
+.scene:hover{border-color:var(--cyan)}
+.corrbox{margin-top:6px;background:rgba(0,0,0,.18);border-radius:10px;padding:6px 8px;font-size:.88rem}
+.composer-card .row input{flex:1;min-width:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (min-width:1024px){ .engines{grid-template-columns:1fr 1fr} .scenes{grid-template-columns:repeat(4,1fr)} body[data-view="chatsetup"] main,body[data-view="chat"] main{max-width:900px} }

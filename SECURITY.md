@@ -14,13 +14,18 @@ Seule requête externe : le téléchargement du modèle depuis Hugging Face, **�
 Une modification du dépôt du modèle ne peut donc pas changer ce que l'appli exécute.
 Vérifié : en test, les seules URL externes appelées sont `huggingface.co/robg/speako-phoneme-recognizer/resolve/<révision>/…`.
 
+### Conversation libre (optionnelle)
+
+- **IA locale** : `onnx-community/whisper-base.en@51eefc0af78b103839eda9e7e4f4186acc6517fe` et `onnx-community/gemma-3-1b-it-ONNX@a58439f40017d3b99c7d378ff525e54e0ba08ebf`, révisions figées, téléchargés depuis Hugging Face. Audio et texte restent sur l'appareil.
+- **Gemini** : uniquement si l'utilisateur choisit ce moteur et colle **sa propre clé**. Aucune clé n'est présente dans le dépôt. La clé est stockée dans `localStorage` (ou seulement en mémoire si « Mémoriser » est décoché) et envoyée uniquement à `generativelanguage.googleapis.com` dans l'en-tête `x-goog-api-key`, sans cookie ni référent. L'audio (WAV 16 kHz) et le texte de la conversation sont alors envoyés à Google ; avec l'offre gratuite, Google peut les utiliser pour améliorer ses produits. Recommandation affichée : restreindre la clé au domaine du site et à l'API Generative Language.
+
 ## Politique de sécurité du contenu (CSP)
 
 Appliquée par balise `<meta>` et, une fois le service worker actif, par en-tête HTTP (y compris pour les workers) :
 
 ```
 default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self';
-connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.co;
+connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.co https://generativelanguage.googleapis.com;
 img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self'; font-src 'self';
 manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
 ```

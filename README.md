@@ -9,6 +9,7 @@ Tout se passe **dans ton navigateur** : aucun serveur, aucun abonnement, et ta v
 
 ## Fonctions
 
+- **Conversation libre avec l'IA** (onglet Pratique) : 11 situations réelles (se présenter, où sont les toilettes, restaurant, taxi, médecin…) ou ta propre situation ; tu réponds librement à l'oral ou à l'écrit, l'IA joue le rôle et corrige chaque phrase. Deux moteurs au choix : **IA locale** (Gemma 3 1B + Whisper dans le navigateur, gratuite et privée, PC avec WebGPU, ≈ 1,2 Go) ou **Gemini** (clé gratuite Google de chaque utilisateur, meilleure qualité, marche sur téléphone).
 - **Grammaire** (onglet Apprendre) : 24 règles de A1 à B2, chacune avec la règle en français, des exemples à écouter, le piège typique des francophones, puis 4 à 5 exercices progressifs (choisir la bonne forme, corriger une phrase, remettre les mots dans l'ordre) et la phrase à prononcer.
 - **Fautes à éviter** : 46 fautes typiques des Français (grammaire, faux amis, prépositions, expressions), en quiz avec répétition espacée.
 - **Conversation** (onglet Pratique) : 10 jeux de rôle guidés (café, hôtel, dîner en amoureux, pharmacie, vol annulé, support informatique…) avec tâches à accomplir et indices ; Pouf joue le personnage, tu réponds au micro et chaque réponse est notée son par son. Exercice d'écoute : entends le dialogue et touche les mots reconnus.
@@ -73,6 +74,8 @@ puis ouvre `http://localhost:8000` dans Chrome. (Le micro exige `https` ou `loca
 | `js/dialogues.js` | Jeux de rôle guidés |
 | `js/grammar.js` | Règles de grammaire et exercices |
 | `js/mistakes.js` | Fautes typiques des francophones |
+| `js/scenes.js` | Situations de conversation libre |
+| `js/chat-worker.js` | IA locale : Whisper + Gemma 3 1B (WebGPU) |
 | `js/mascot.js` | Pouf (dessin, humeurs, répliques) |
 | `js/fx.js` | Sons synthétisés et confettis |
 | `fonts/` | Polices auto-hébergées (Barlow Condensed, Nunito) |
