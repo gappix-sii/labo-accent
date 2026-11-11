@@ -137,6 +137,7 @@ function go(v, opts) {
   view = v;
   $$("nav.bottom button").forEach(b => { if (b.dataset.go === v) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
   document.body.classList.toggle("in-lesson", v === "lesson" || v === "finish");
+  document.body.dataset.view = v;
   closeSheet();
   stopRecording(true);
   ({ path: renderPath, train: renderTrain, sounds: renderSounds, profile: renderProfile, lesson: renderLesson, finish: () => renderFinish(opts) })[v]();
@@ -183,14 +184,22 @@ function renderPath() {
     return `<div class="unit tone-${u.tone}"><div><div class="k">${esc(u.title)}</div><div class="t">${esc(u.sub)}</div></div><span class="cnt">${done}/${u.lessons.length}</span></div><div class="path">${nodes}</div>`;
   }).join("");
   const goalPct = Math.min(100, Math.round(xpToday() / S.goalXp * 100));
-  $("#view").innerHTML = `
+  const lv = G.levelOf(S.xp);
+  $("#view").innerHTML = `<div class="cols">
+    <aside class="side">
     ${!S.onboarded ? `<section class="card"><div class="coach" id="hello"><div class="av">${poufSvg()}</div><div class="bubble">${esc(LINE_HELLO)}</div></div>
       <p class="small">Je suis ton coach d'accent. Tu lis des phrases, j'écoute chaque son et je te dis quoi corriger. Gagne de l'XP, garde ta série et débloque les unités !</p></section>` : ""}
     ${setupCard()}
     <section class="card"><div class="row between"><h3>Objectif du jour</h3><span class="xpfloat">${xpToday()} / ${S.goalXp} XP</span></div><div class="bar xp"><i id="goalBar"></i></div></section>
-    ${units}
-    <section class="card"><h3>Pour discuter</h3><p class="small">Conversation, vocabulaire et corrections avec ton coach Claude.</p>
-      <a class="btn cyan block" href="${COACH_URL}" target="_blank" rel="noopener noreferrer">Ouvrir mon coach</a></section>`;
+    <section class="card desk-only"><div class="lvl"><div class="badge-lv">${lv.level}</div><div class="grow"><h3>${esc(G.levelTitle(lv.level))}</h3>
+      <div class="bar xp"><i id="sideLv"></i></div><span class="small muted">${lv.into} / ${lv.need} XP · ${S.badges.length} badge${S.badges.length > 1 ? "s" : ""}</span></div></div></section>
+    <section class="card desk-only"><div class="coach"><div class="av">${poufSvg()}</div><div class="bubble">${esc(pick("hello"))}</div></div>
+      <p class="small muted">Raccourcis clavier en leçon : <b>Espace</b> enregistrer, <b>L</b> écouter, <b>Entrée</b> continuer.</p></section>
+    <section class="card coach-link"><h3>Pour discuter</h3><p class="small">Conversation, vocabulaire et corrections avec ton coach Claude.</p>
+      <a class="btn cyan block" href="${COACH_URL}" target="_blank" rel="noopener noreferrer">Ouvrir mon coach</a></section>
+    </aside>
+    <div class="colmain">${units}</div></div>`;
+  const sl = $("#sideLv"); if (sl) sl.style.width = Math.round(lv.into / lv.need * 100) + "%";
   $("#goalBar").style.width = goalPct + "%";
   bindSetup();
   $$(".node").forEach(b => b.onclick = () => {
@@ -226,7 +235,7 @@ function renderLesson() {
       ${it.fr ? `<p class="fr">${esc(it.fr)}</p>` : ""}
       <div class="listen"><button class="btn cyan sm" id="listen">${ICON.spk}Écouter</button><button class="btn ghost sm" id="slow">${ICON.slow}Lentement</button></div>
     </section>
-    <div class="mic-wrap"><button class="mic" id="rec" aria-label="Enregistrer">${ICON.mic}</button><p class="status" id="status">Appuie et lis la phrase à voix haute.</p></div>
+    <div class="mic-wrap"><button class="mic" id="rec" aria-label="Enregistrer">${ICON.mic}</button><p class="status" id="status">Appuie et lis la phrase à voix haute.</p><p class="kbd-hint"><b>Espace</b> enregistrer · <b>L</b> écouter · <b>R</b> réessayer · <b>Entrée</b> continuer</p></div>
     <div class="spacer" id="spacer"></div>`;
   $("#lBar").style.width = (L.i / L.items.length * 100) + "%";
   $("#quit").onclick = async () => { if ((L.i === 0 && !L.best.length) || await confirmDlg("Quitter la leçon ?", "Tu perdras l'XP de cette leçon en cours.", "Quitter")) go(L.lesson.id ? "path" : "train"); };
@@ -502,6 +511,16 @@ function renderProfile() {
   };
 }
 if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => { if (view === "profile") renderProfile(); };
+
+// ---------------- Raccourcis clavier (mode ordinateur) ----------------
+document.addEventListener("keydown", e => {
+  if (view !== "lesson" || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (document.querySelector("dialog[open]") || /INPUT|SELECT|TEXTAREA/.test(document.activeElement && document.activeElement.tagName)) return;
+  if (e.code === "Space") { e.preventDefault(); toggleRecording(); }
+  else if (e.code === "KeyL") { const b = $("#listen"); if (b) b.click(); }
+  else if (e.code === "KeyR" && $("#sheet")) { $("#again").click(); }
+  else if (e.code === "Enter" && $("#sheet")) { e.preventDefault(); $("#next").click(); }
+});
 
 // ---------------- Service worker ----------------
 if ("serviceWorker" in navigator && !TEST_LOCAL) {
