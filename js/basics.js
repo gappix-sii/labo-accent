@@ -1,10 +1,58 @@
 // Les bases : jours, mois, nombres, ordinaux et dates. Contenu original.
 // pron : prononciation écrite « à la française », la syllabe accentuée en MAJUSCULES (« th » = langue entre les dents).
-// note : le piège à connaître. Les phrases servent à l'entraînement au micro.
+// note : le piège à connaître ; ex : un exemple [anglais, français]. Les phrases servent à l'entraînement au micro.
 
-const it = (en, fr, pron, note = "") => ({ en, fr, pron, note });
+const it = (en, fr, pron, note = "", ex = null) => ({ en, fr, pron, note, ex });
 
 export const BASICS = [
+  { id: "questions", title: "Les mots-questions", short: "Questions", sub: "What, Where, When, How… pour poser toutes tes questions",
+    tips: [
+      "L'ordre : mot-question + auxiliaire (do, does, did, can…) + sujet + verbe. Where do you live? (jamais « Where you live? »).",
+      "Avec be, pas de do : Where is the station? How are you?",
+      "Quand who ou what est le sujet, pas de do non plus : Who called you?",
+      "« wh » se dit « ou » (what = « ouot »), sauf dans who et whose où c'est un h soufflé (« hou »).",
+      "La voix descend à la fin d'une question en Wh- (Where do you live? ↘) et monte pour une question oui/non (Do you live here? ↗)."
+    ],
+    groups: [
+      { title: "Les 8 mots-questions", items: [
+        it("what", "quoi, que, quel", "OUOT", "Pour une chose. Veut aussi dire « quel » : What time? What colour?", ["What is your name?", "Comment tu t'appelles ?"]),
+        it("who", "qui", "HOU", "Le w est muet : « hou ».", ["Who is your best friend?", "Qui est ton meilleur ami ?"]),
+        it("where", "où", "OUÈR", "Ne pas confondre avec were (« oueur »).", ["Where do you live?", "Où habites-tu ?"]),
+        it("when", "quand", "OUÈN", "", ["When is your birthday?", "C'est quand, ton anniversaire ?"]),
+        it("why", "pourquoi", "OUAÏ", "On répond avec because (parce que).", ["Why are you late?", "Pourquoi es-tu en retard ?"]),
+        it("how", "comment", "HAOU", "Le h se souffle.", ["How do you say this in English?", "Comment on dit ça en anglais ?"]),
+        it("which", "lequel, quel (dans un choix)", "OUITCH", "Quand on choisit parmi quelques possibilités : Which one? (lequel ?)", ["Which bus goes to the airport?", "Quel bus va à l'aéroport ?"]),
+        it("whose", "à qui", "HOUZ", "Se prononce comme who's (who is).", ["Whose phone is this?", "À qui est ce téléphone ?"]),
+      ] },
+      { title: "Les questions avec How", items: [
+        it("how much", "combien (quantité, prix)", "haou MEUTCH", "Pour ce qui ne se compte pas (money, water, time) et pour un prix.", ["How much is this coffee?", "Combien coûte ce café ?"]),
+        it("how many", "combien (nombre)", "haou MÈ-ni", "Pour ce qui se compte, au pluriel : people, days.", ["How many brothers do you have?", "Combien de frères as-tu ?"]),
+        it("how old", "quel âge", "haou ÔLD", "On répond : I'm thirty (years old).", ["How old are you?", "Quel âge as-tu ?"]),
+        it("how long", "combien de temps", "haou LONG", "", ["How long is the film?", "Combien de temps dure le film ?"]),
+        it("how often", "à quelle fréquence", "haou O-feun", "Le t est souvent muet : « o-feun ».", ["How often do you play football?", "Tu joues au foot tous les combien ?"]),
+        it("how far", "à quelle distance", "haou FAR", "", ["How far is the beach?", "La plage est à quelle distance ?"]),
+      ] },
+      { title: "Les questions de tous les jours", items: [
+        it("What time is it?", "Quelle heure est-il ?", "ouot TAÏM iz it"),
+        it("Where are you from?", "D'où viens-tu ?", "ouèr ar iou FROM", "On répond : I'm from France."),
+        it("How are you?", "Comment vas-tu ?", "haou AR iou", "On répond : I'm fine, thanks. And you?"),
+        it("What do you do?", "Qu'est-ce que tu fais dans la vie ?", "ouot dou iou DOU", "C'est une question sur le métier, pas sur ce que tu fais en ce moment."),
+        it("What does it mean?", "Qu'est-ce que ça veut dire ?", "ouot deuz it MIIN"),
+        it("Can you repeat, please?", "Tu peux répéter, s'il te plaît ?", "kann iou ri-PIIT, PLIIZ", "Très utile quand on n'a pas compris !"),
+      ] }
+    ],
+    quiz: "order",
+    sentences: [
+      ["Where do you live?", "Où habites-tu ?"],
+      ["What do you want to eat?", "Qu'est-ce que tu veux manger ?"],
+      ["When does the train leave?", "Quand part le train ?"],
+      ["Why is she so happy?", "Pourquoi est-elle si heureuse ?"],
+      ["Who wants a coffee?", "Qui veut un café ?"],
+      ["Which one do you prefer?", "Lequel préfères-tu ?"],
+      ["How much does it cost?", "Combien ça coûte ?"],
+      ["How many people are coming?", "Combien de personnes viennent ?"],
+      ["How long have you lived here?", "Depuis combien de temps habites-tu ici ?"]
+    ] },
   { id: "days", title: "Jours de la semaine", short: "Jours", sub: "Monday, Tuesday… et parler de ta semaine",
     tips: [
       "Toujours une majuscule : Monday, Friday.",

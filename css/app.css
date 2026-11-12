@@ -168,6 +168,12 @@ body.in-lesson main{padding-bottom:40px}
 .bx-en{font-size:1.08rem}
 .frpron{font-weight:800;color:var(--yellow);letter-spacing:.02em;margin:2px 0}
 .bx-txt .frpron{display:inline}
+.bx-ex{display:flex;gap:8px;align-items:flex-start;text-align:left;margin:6px 0 0;padding:6px 10px;border-radius:12px;border:2px solid var(--soft);background:var(--well);color:var(--ink);font:inherit;font-size:.9rem;cursor:pointer;width:100%}
+.bx-ex svg{width:18px;height:18px;flex:none;margin-top:2px;color:var(--cyan)} .bx-ex:hover{border-color:var(--cyan)}
+.bq-fr{font-size:1.15rem;font-weight:700;margin:4px 0 10px}
+.ord-built{min-height:56px;padding:12px;border-radius:14px;border:2px dashed var(--line);background:var(--well);font-size:1.25rem;font-weight:800;margin-bottom:10px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap}
+.ord-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:10px}
+.chip.ord{font-size:1.05rem;padding:10px 14px;text-transform:none;font-family:inherit;font-style:normal;font-weight:800;letter-spacing:0} .chip.ord:disabled{opacity:.25}
 .bx-note{margin:4px 0 0;color:var(--muted);border-left:3px solid var(--pink,#ff6fae);padding-left:8px}
 .bq .listen{justify-content:center}
 .bq-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 6px}
@@ -644,6 +650,22 @@ body.hide-fr .tr{display:none}
 
 /* ================= Conversation libre IA ================= */
 .free-chat{border-color:var(--yellow)}
+/* ================= Pratique ================= */
+.tr-head{margin-top:6px} .tr-head h3,.tr-sec{margin:8px 2px 0;font-size:1.15rem}
+.tr-hero .sym,.snd-tile .sym{font-family:var(--font-ipa);font-weight:700;display:grid;place-items:center;background:var(--soft);border-radius:14px;color:var(--yellow)}
+.tr-hero .sym.big{width:72px;height:72px;font-size:2rem;flex:none}
+.snd-tile .sym{width:48px;height:48px;font-size:1.5rem}
+.tr-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tcat{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;cursor:pointer;color:var(--ink);font:inherit;animation:rise .35s both;animation-delay:calc(var(--i,0) * 30ms);transition:transform .15s,border-color .2s}
+.tcat:hover{transform:translateY(-3px);border-color:var(--cyan)}
+.tcat b{font-size:1.05rem} .tcat .pill{margin-top:auto}
+.snd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.snd-tile{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;padding:12px;border-radius:18px;border:2px solid var(--line);background:linear-gradient(180deg,var(--panel2),var(--panel));color:var(--ink);cursor:pointer;font:inherit;transition:transform .15s}
+.snd-tile:hover{transform:translateY(-3px)} .snd-tile .bar{width:100%}
+#mine .row{flex-wrap:nowrap} #mine input{flex:1;min-width:0}
+#snd,#mine{scroll-margin-top:80px}
+@media (min-width:1024px){.tr-tiles{grid-template-columns:repeat(4,1fr)} .theme-grid{grid-template-columns:repeat(4,1fr)}}
 .engines{display:grid;gap:10px}
 .engine-card{display:flex;flex-direction:column;gap:6px;text-align:left;border:2px solid var(--line);background:var(--well);border-radius:16px;padding:14px;cursor:pointer;color:var(--ink);transition:border-color .2s}
 .engine-card.on{border-color:var(--yellow);box-shadow:inset 0 0 0 2px var(--yellow)}
@@ -778,8 +800,7 @@ body.hide-fr .tr{display:none}
   .path-pouf{width:110px;height:110px;right:-128px}
   .pos-1 .path-pouf,.pos-2 .path-pouf,.pos-3 .path-pouf{left:-128px}
   .bossnode{width:150px;height:150px}
-  body[data-view="train"] main,body[data-view="profile"] main,body[data-view="session"] main,body[data-view="mistakes"] main{display:grid;grid-template-columns:1fr 1fr;align-items:start;max-width:1180px}
-  body[data-view="train"] main > h2,body[data-view="train"] main > p,body[data-view="train"] main > .dgrid,body[data-view="train"] main > .free-chat,
+  body[data-view="profile"] main,body[data-view="session"] main,body[data-view="mistakes"] main{display:grid;grid-template-columns:1fr 1fr;align-items:start;max-width:1180px}
   body[data-view="profile"] main > .card:first-child,body[data-view="profile"] main > .card:nth-child(2),
   body[data-view="session"] main > h2,
   body[data-view="mistakes"] main > .seg,body[data-view="mistakes"] main > h2,body[data-view="mistakes"] main > .card:nth-of-type(1){grid-column:1 / -1}

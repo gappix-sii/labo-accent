@@ -6,8 +6,8 @@
 //    CSP du document (Trusted Types, pas de script externe), CSP des workers, isolation cross-origin, anti-iframe.
 // 3. Ne touche jamais aux requêtes vers d'autres sites (les modèles sont vérifiés dans les workers, voir js/integrity.js).
 /* BUILD:BEGIN */
-const VERSION = "labo-d320b838dbff";
-const MANIFEST = {"css/app.css":{"h":"2b48c94725f3624b97cd558bf22edc4511ea344261696f6216ab9910b4aeb2e4","n":84994},
+const VERSION = "labo-5c7919be6bc8";
+const MANIFEST = {"css/app.css":{"h":"fa67b80f585d0222e4c5c7401c309fcbb0019642ef7a3f7fb7c07720a722f286","n":87313},
   "data/cmudict.json":{"h":"ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b","n":4114306},
   "fonts/barlow-condensed-latin-800-italic.woff2":{"h":"59b48100622b2dea5b10bbf9e98d02eecf20ea8ae000821877f2d470ec16ee55","n":23780},
   "fonts/barlow-condensed-latin-900-italic.woff2":{"h":"b58672f4b405724353d140e19cfead74fefc9004271e846d4884cd9b76f36dbf","n":23212},
@@ -18,11 +18,11 @@ const MANIFEST = {"css/app.css":{"h":"2b48c94725f3624b97cd558bf22edc4511ea344261
   "icons/icon-512.png":{"h":"6d46b0b296865b477d8c78fc94bee366ff4b40341313ae12e7c1eadfc777207d","n":12913},
   "icons/icon.svg":{"h":"4047b4dcbd186860a3cfb5f7f2dc9c98952f2a47118e9812100d0ded42c84708","n":400},
   "index.html":{"h":"d0f1ce3303bcf0a70a3ab4d2d6171414b6b2aa784e3ebcc6b2b9936d92e30bd8","n":6542},
-  "js/app.js":{"h":"33bcd6268f0af8d393e9b0a940e34af78a9cbf2f35d6aa1916d45533d044663c","n":158210},
+  "js/app.js":{"h":"35fffb1d1e3836cd4516505c149922e8c0a349911cf30655d300eb71aef67543","n":163823},
   "js/art.js":{"h":"2c9a402ba01e48e371275a8e8210acfd05e7ce43658d972907fb4c2a3fbd6d46","n":7111},
   "js/audio.js":{"h":"3ed9fe642351caf208cb9fd8842bfacd557bdedc5e13a968f27966515f619b01","n":5998},
   "js/avatar.js":{"h":"13f903a38031257621a9a4cd220a7672b64e20de8bdafe9e098a104ae423bcff","n":76221},
-  "js/basics.js":{"h":"422a0f0ff523c3d93767541bb8ab889a474947034e3d02a0d44c2c65f0818912","n":13542},
+  "js/basics.js":{"h":"8589f931d501039d46ce32d7f7c57fe0ca5acc5123b999ab4bd3670220e9e93f","n":17876},
   "js/chat-worker.js":{"h":"8395e917acf223292e5f793a8d2224b1a75b82aae9efe69f0083875d81b9076f","n":2959},
   "js/chrono.js":{"h":"3f8acd26be32cc5abbc5f40cf0585b82a61b79d4e16cef0793400b39d52a5b9c","n":2067},
   "js/content.js":{"h":"b5b839bf38c93db4d2d1f7d7c0d29a363f8319068f96fd7de7ae534413c8b836","n":12140},

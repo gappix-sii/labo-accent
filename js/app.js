@@ -796,27 +796,50 @@ function playMine(start, end) {
 }
 
 // ---------------- Pratique ----------------
+// Pratique : deux onglets clairs. « Conversation » pour parler (IA libre, jeux de rôle par niveau),
+// « Prononciation » pour travailler les sons, avec une suggestion basée sur ton point faible.
+let TR = { tab: "talk", lv: "" };
+const soundPct = p => { const v = S.sounds[p]; return v && v.n ? Math.round(v.ok / v.n * 100) : null; };
 function renderTrain() {
-  render($("#view"), html`
-    <section class="card free-chat glow"><div class="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">Envie de parler librement ? Dis ce que tu veux, l'IA te répond et corrige tes fautes.</div></div>
-      <button class="btn yellow block shine" id="toChat">${ICON.mic}Conversation libre avec l'IA</button></section>
-    <h2>Conversation</h2>
-    <p class="small muted">Jeux de rôle à l'oral, comme une vraie discussion : ${S.avatar.name} joue un personnage, tu réponds au micro. Ou écoute d'abord le dialogue.</p>
-    <div class="dgrid">${DIALOGUES.map((d, k) => { const r = S.dialogues[d.id]; return html`<section class="card dcard" data-css="--i:${k}"><div class="row between"><span class="pill ok">${d.level}</span>${r ? html`<span class="pill good">${r.best} %</span>` : ""}</div>
-      <h3>${d.title}</h3><p class="small muted">${d.goal}</p>
-      <div class="row"><button class="btn green sm" data-role="${d.id}">${ICON.mic}Jeu de rôle</button><button class="btn ghost sm" data-listen="${d.id}">${ICON.spk}Écouter</button></div></section>`; })}</div>
-    <h2>Entraînement libre</h2>
-    <p class="small muted">Tout est ouvert ici, sans déblocage. L'XP compte quand même.</p>
-    <section class="card"><div class="row between"><span><b>Mes sons</b><br><span class="small muted">Ta réussite sur chaque son anglais</span></span><button class="btn cyan sm" id="toSounds">Voir</button></div></section>
-    <section class="card"><div class="list">
-      ${CATEGORIES.map(c => html`<button class="item" data-cat="${c.id}"><span><span class="t">${c.title}</span><br><span class="s">${c.sub} · ${c.items.length} phrases</span></span><span class="chev">›</span></button>`)}
-      <button class="item" data-cat="pairs"><span><span class="t">Paires minimales</span><br><span class="s">ship / sheep, think / sink… · 5 paires au hasard</span></span><span class="chev">›</span></button>
-    </div></section>
-    <section class="card"><h3>Sons difficiles</h3><div class="list">${SOUND_LESSONS.map(l => html`<button class="sound" data-p="${l.p}"><span class="sym">${l.p}</span><span><b>${l.title}</b><br><span class="small muted">${l.tip}</span></span><span class="chev">›</span></button>`)}</div></section>
-    <section class="card"><h3>Ta propre phrase</h3>
-      <label class="f" for="free">Une phrase en anglais (par exemple vue avec ton coach)</label>
-      <input type="text" id="free" maxlength="140" autocomplete="off" placeholder="I would like a coffee, please.">
-      <button class="btn yellow" id="freeGo">S'entraîner</button></section>`);
+  const tabs = html`<div class="seg" role="tablist" aria-label="Pratique">${[["talk", "Conversation"], ["pron", "Prononciation"]].map(([t, l]) => html`<button role="tab" aria-selected="${TR.tab === t}" class="${TR.tab === t ? "on" : ""}" data-trtab="${t}">${l}</button>`)}</div>`;
+  let body;
+  if (TR.tab === "talk") {
+    const lvls = [...new Set(DIALOGUES.map(d => d.level))], list = DIALOGUES.filter(d => !TR.lv || d.level === TR.lv);
+    body = html`
+      <section class="card free-chat glow"><div class="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">Envie de parler librement ? Dis ce que tu veux, l'IA te répond et corrige tes fautes.</div></div>
+        <button class="btn yellow block shine" id="toChat">${ICON.mic}Conversation libre avec l'IA</button></section>
+      <div class="row between tr-head"><h3>Jeux de rôle</h3><span class="small muted">${DIALOGUES.filter(d => S.dialogues[d.id]).length}/${DIALOGUES.length} faits</span></div>
+      <p class="small muted">${S.avatar.name} joue un personnage, tu réponds au micro. Pas sûr ? Écoute d'abord le dialogue en entier.</p>
+      <div class="chips" role="tablist" aria-label="Niveau">${[["", "Tous"], ...lvls.map(l => [l, l])].map(([v, t]) => html`<button class="chip ${TR.lv === v ? "on" : ""}" data-trlv="${v}">${t}</button>`)}</div>
+      <div class="dgrid">${list.map((d, k) => { const r = S.dialogues[d.id]; return html`<section class="card dcard" data-css="--i:${k}"><div class="row between"><span class="pill ok">${d.level}</span>${r ? html`<span class="pill good">${r.best} %</span>` : html`<span class="pill">nouveau</span>`}</div>
+        <h3>${d.title}</h3><p class="small muted">${d.goal}</p>
+        <div class="row"><button class="btn green sm" data-role="${d.id}">${ICON.mic}Jouer</button><button class="btn ghost sm" data-listen="${d.id}">${ICON.spk}Écouter</button></div></section>`; })}</div>`;
+  } else {
+    // Point faible : le son le moins réussi (au moins 5 essais) qui a un exercice dédié
+    const weak = SOUND_LESSONS.map(l => ({ l, pct: soundPct(l.p), n: (S.sounds[l.p] || {}).n || 0 })).filter(x => x.n >= 5).sort((a, b) => a.pct - b.pct)[0];
+    body = html`
+      <section class="card glow tr-hero">${weak
+        ? html`<div class="row"><span class="sym big">${weak.l.p}</span><div class="grow"><span class="small muted">Ton point faible du moment</span><h3>${weak.l.title}</h3><p class="small">${weak.pct} % de réussite sur ${weak.n} essais. ${weak.l.tip}</p></div></div>
+          <button class="btn green block shine" data-p="${weak.l.p}">S'entraîner sur ce son</button>`
+        : html`<div class="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">Fais quelques leçons : je repérerai les sons qui te posent problème et je te proposerai le bon exercice ici.</div></div>`}</section>
+      <div class="tr-tiles">
+        <button class="vgame trio" data-go2="snd"><b>Sons difficiles</b><span>${SOUND_LESSONS.length} sons anglais</span></button>
+        <button class="vgame rush" data-cat="pairs"><b>Paires minimales</b><span>ship / sheep, think / sink…</span></button>
+        <button class="vgame write" id="toSounds"><b>Mes sons</b><span>Ta réussite son par son</span></button>
+        <button class="vgame say" data-go2="mine"><b>Ma phrase</b><span>Celle que tu veux</span></button>
+      </div>
+      <h3 class="tr-sec">Phrases par thème</h3>
+      <div class="theme-grid">${CATEGORIES.map((c, k) => html`<button class="card tcat" data-cat="${c.id}" data-css="--i:${k}"><b>${c.title}</b><span class="small muted">${c.sub}</span><span class="pill">${c.items.length} phrases</span></button>`)}</div>
+      <h3 class="tr-sec" id="snd">Sons difficiles</h3>
+      <div class="snd-grid">${SOUND_LESSONS.map(l => { const pct = soundPct(l.p); return html`<button class="snd-tile" data-p="${l.p}"><span class="sym">${l.p}</span><b>${l.title}</b>${pct === null ? html`<span class="small muted">pas encore travaillé</span>` : html`<span class="bar sm"><i data-css="--p:${pct}%"></i></span><span class="small muted">${pct} % de réussite</span>`}</button>`; })}</div>
+      <section class="card" id="mine"><h3>Ta propre phrase</h3>
+        <label class="f" for="free">Une phrase en anglais (par exemple vue avec ton coach)</label>
+        <div class="row"><input type="text" id="free" maxlength="140" autocomplete="off" placeholder="I would like a coffee, please."><button class="btn yellow" id="freeGo">S'entraîner</button></div></section>`;
+  }
+  render($("#view"), html`<h2>Pratique</h2>${tabs}${body}`);
+  $$("[data-trtab]").forEach(b => b.onclick = () => { play("tap"); TR.tab = b.dataset.trtab; renderTrain(); });
+  $$("[data-trlv]").forEach(b => b.onclick = () => { play("tap"); TR.lv = b.dataset.trlv; renderTrain(); });
+  $$("[data-go2]").forEach(b => b.onclick = () => { play("tap"); const t = document.getElementById(b.dataset.go2); if (t) { t.scrollIntoView({ block: "start", behavior: FX.reduced() ? "auto" : "smooth" }); const i = $("#free"); if (b.dataset.go2 === "mine" && i) setTimeout(() => i.focus(), 400); } });
   $$("[data-cat]").forEach(b => b.onclick = () => {
     play("tap");
     if (b.dataset.cat === "pairs") return startLesson({ id: null, kind: "pairs", title: "Paires minimales", items: shuffle(MINIMAL_PAIRS).slice(0, 5).flatMap(([a, c]) => [{ en: a, fr: `${a} / ${c}` }, { en: c, fr: `${a} / ${c}` }]) });
@@ -824,13 +847,16 @@ function renderTrain() {
     startLesson({ id: null, kind: "free", title: c.title, items: c.items.map(i => ({ en: i[0], fr: i[1] })) });
   });
   $$("[data-p]").forEach(b => b.onclick = () => { play("tap"); soundDrill(b.dataset.p); });
-  $("#toSounds").onclick = () => go("sounds");
-  $("#toChat").onclick = () => { play("tap"); go("chatsetup"); };
+  const ts = $("#toSounds"); if (ts) ts.onclick = () => go("sounds");
+  const tc = $("#toChat"); if (tc) tc.onclick = () => { play("tap"); go("chatsetup"); };
   $$("[data-role]").forEach(b => b.onclick = () => { play("tap"); startDialog(b.dataset.role); });
   $$("[data-listen]").forEach(b => b.onclick = () => { play("tap"); startListen(b.dataset.listen); });
-  const free = () => { const t = cleanText($("#free").value, 140); if (t) startLesson({ id: null, kind: "free", title: "Ta phrase", items: [{ en: t, fr: "" }] }); };
-  $("#freeGo").onclick = free;
-  $("#free").addEventListener("keydown", e => { if (e.key === "Enter") free(); });
+  const fi = $("#free");
+  if (fi) {
+    const free = () => { const t = cleanText(fi.value, 140); if (t) startLesson({ id: null, kind: "free", title: "Ta phrase", items: [{ en: t, fr: "" }] }); };
+    $("#freeGo").onclick = free;
+    fi.addEventListener("keydown", e => { if (e.key === "Enter") free(); });
+  }
 }
 function soundDrill(p) {
   const l = SOUND_LESSONS.find(x => x.p === p);
@@ -1099,7 +1125,7 @@ function renderSessionEnd(o) {
 
 // ---------------- Dates & nombres ----------------
 // Fiches (prononciation à la française + phonétique + écoute), cartes au micro, quiz d'écoute, phrases à prononcer.
-let BX = { theme: "days" }, BQ = null;
+let BX = { theme: "questions" }, BQ = null;
 const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
 const MONTHS = BASICS_BY_ID.months.groups[0].items.map(w => w.en);
 const rnd = n => Math.floor(Math.random() * n);
@@ -1107,16 +1133,16 @@ function renderBasics() {
   const b = BASICS_BY_ID[BX.theme] || BASICS[0], best = (S.basics[b.id] || {}).best;
   const row = (w, k) => { const st2 = G.vocabStatus(S.vocab[basicsCardId(b, w)]);
     return html`<div class="bxrow" data-css="--i:${Math.min(k, 12)}"><div class="bx-say"><button class="iconbtn" data-say="${w.en}" aria-label="Écouter ${w.en}">${ICON.spk}</button><button class="iconbtn slow" data-slow="${w.en}" aria-label="Écouter lentement ${w.en}">${ICON.slow}</button></div>
-      <div class="bx-txt"><div class="bx-line"><b class="bx-en">${w.en}</b> <span class="muted">= ${w.fr}</span>${st2 === "new" ? "" : html`<span class="pill sm ${st2 === "mastered" ? "good" : "ok"}">${st2 === "mastered" ? "maîtrisé" : "en cours"}</span>`}</div><span class="frpron">« ${w.pron} »</span> <span class="ipa" data-ipa="${w.en}"></span>${w.note ? html`<p class="small bx-note">${w.note}</p>` : ""}</div></div>`; };
+      <div class="bx-txt"><div class="bx-line"><b class="bx-en">${w.en}</b> <span class="muted">= ${w.fr}</span>${st2 === "new" ? "" : html`<span class="pill sm ${st2 === "mastered" ? "good" : "ok"}">${st2 === "mastered" ? "maîtrisé" : "en cours"}</span>`}</div><span class="frpron">« ${w.pron} »</span> <span class="ipa" data-ipa="${w.en}"></span>${w.note ? html`<p class="small bx-note">${w.note}</p>` : ""}${w.ex ? html`<button class="bx-ex" data-say="${w.ex[0]}" aria-label="Écouter l'exemple">${ICON.spk}<span><b>${w.ex[0]}</b><br><span class="muted">${w.ex[1]}</span></span></button>` : ""}</div></div>`; };
   render($("#view"), html`${learnTabs("basics")}
-    <h2>Jours, mois et nombres</h2>
+    <h2>Vocabulaire par thème</h2>
     <div class="chips" role="tablist" aria-label="Thème">${BASICS.map(x => html`<button class="chip ${x.id === b.id ? "on" : ""}" role="tab" aria-selected="${x.id === b.id}" data-bx="${x.id}">${x.short}</button>`)}</div>
     <section class="card glow"><div class="row between"><h3>${b.title}</h3>${best !== undefined ? html`<span class="pill good">Quiz : ${best} %</span>` : ""}</div>
       <p class="small muted">${b.sub}</p>
-      <div class="bx-actions"><button class="btn green shine" id="bxCards">Apprendre au micro</button><button class="btn cyan" id="bxQuiz">${b.quiz === "dictation" ? "Dictée de nombres" : "Quiz d'écoute"}</button><button class="btn ghost" id="bxSay">Prononcer des phrases</button></div>
+      <div class="bx-actions"><button class="btn green shine" id="bxCards">Apprendre au micro</button><button class="btn cyan" id="bxQuiz">${b.quiz === "dictation" ? "Dictée de nombres" : b.quiz === "order" ? "Remets dans l'ordre" : "Quiz d'écoute"}</button><button class="btn ghost" id="bxSay">Prononcer des phrases</button></div>
       <h4 class="bx-h">Comment bien les prononcer</h4>
       <ul class="bx-tips">${b.tips.map(t => html`<li>${t}</li>`)}</ul>
-      <p class="small muted">« MAJUSCULES » = la syllabe à accentuer · « th » = langue entre les dents · touche le haut-parleur pour écouter, la tortue pour écouter lentement.</p></section>
+      <p class="small muted">« MAJUSCULES » = la syllabe à accentuer · « th » = langue entre les dents · touche le haut-parleur pour écouter, la tortue pour écouter lentement${b.groups.some(g => g.items.some(w => w.ex)) ? ", un exemple pour l'entendre en entier" : ""}.</p></section>
     ${b.groups.map(g => html`<section class="card"><h3>${g.title}</h3><div class="bxlist">${g.items.map(row)}</div></section>`)}
     <section class="card"><h3>Phrases pour s'entraîner</h3><div class="bxlist">${b.sentences.map(([en, fr]) => html`<div class="bxrow"><div class="bx-say"><button class="iconbtn" data-say="${en}" aria-label="Écouter">${ICON.spk}</button></div><div class="bx-txt"><b>${en}</b><br><span class="small muted">${fr}</span></div></div>`)}</div></section>`);
   bindLearnTabs();
@@ -1138,6 +1164,13 @@ function startBasicsCards(b) {
 }
 // Une question : say = ce qu'on entend ; answer = la bonne réponse ; options (QCM) ou saisie de chiffres.
 function basicsQuestion(b) {
+  if (b.quiz === "order") {
+    const pool = [...basicsItems(b).filter(w => w.ex).map(w => w.ex), ...b.sentences];
+    const [en, fr] = pool[rnd(pool.length)], words = en.split(" ");
+    let mixed = shuffle(words.map((t, i) => ({ t, i })));
+    if (mixed.every((x, k) => x.i === k)) mixed = [...mixed.slice(1), mixed[0]];
+    return { kind: "order", say: en, answer: en, fr, words: en, chips: mixed, built: [] };
+  }
   if (b.quiz === "dictation") {
     const tier = rnd(6);
     const n = tier === 0 ? rnd(21) : tier === 1 ? (rnd(2) ? 13 + rnd(7) : (3 + rnd(7)) * 10) : tier === 2 ? 21 + rnd(79) : tier === 3 ? 100 + rnd(900) : tier === 4 ? 1000 + rnd(9000) : 1950 + rnd(80);
@@ -1163,21 +1196,29 @@ function renderBasicsQuiz() {
   const q = BQ.q, b = BQ.b;
   render($("#view"), html`
     <div class="ltop"><button class="iconbtn" id="quit" aria-label="Quitter">${ICON.close}</button><div class="bar"><i data-css="--p:${BQ.i / BQ.n * 100}%"></i></div><span class="combo">${BQ.i + 1}/${BQ.n}</span></div>
-    <div class="coach" id="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">${q.kind === "type" ? "Écoute et écris le nombre en chiffres." : "Écoute : c'est lequel ?"}</div></div>
+    <div class="coach" id="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">${q.kind === "type" ? "Écoute et écris le nombre en chiffres." : q.kind === "order" ? "Remets les mots dans l'ordre pour faire la question." : "Écoute : c'est lequel ?"}</div></div>
     <section class="card center bq">
-      <div class="listen"><button class="btn cyan" id="bqPlay">${ICON.spk}Écouter</button><button class="btn ghost" id="bqSlow">${ICON.slow}Lentement</button></div>
+      ${q.kind === "order" ? html`<p class="bq-fr">${q.fr}</p>` : html`<div class="listen"><button class="btn cyan" id="bqPlay">${ICON.spk}Écouter</button><button class="btn ghost" id="bqSlow">${ICON.slow}Lentement</button></div>`}
       ${q.hint ? html`<p class="small muted">${q.hint}</p>` : ""}
-      ${q.kind === "type" ? html`<form id="bqForm" class="bq-form"><input id="bqIn" inputmode="numeric" autocomplete="off" maxlength="9" aria-label="Le nombre en chiffres" placeholder="ex. 47"><button class="btn green" id="bqOk">Valider</button></form>`
+      ${q.kind === "order" ? html`<div class="ord-built" id="ordBuilt" aria-live="polite"><span class="muted small">Touche les mots dans le bon ordre</span></div><div class="ord-chips">${q.chips.map((c, k) => html`<button class="chip ord" data-ord="${k}">${c.t}</button>`)}</div><button class="btn ghost sm" id="ordUndo">Effacer le dernier mot</button>`
+        : q.kind === "type" ? html`<form id="bqForm" class="bq-form"><input id="bqIn" inputmode="numeric" autocomplete="off" maxlength="9" aria-label="Le nombre en chiffres" placeholder="ex. 47"><button class="btn green" id="bqOk">Valider</button></form>`
         : html`<div class="bq-opts">${q.options.map(o => html`<button class="btn ghost bq-opt" data-opt="${o}">${o}</button>`)}</div>`}
       <div id="bqRes"></div></section>`);
   const say = r => speak(q.say, { voiceURI: S.voice, rate: r });
-  $("#bqPlay").onclick = () => say(0.9); $("#bqSlow").onclick = () => say(S.slow);
+  if (q.kind !== "order") { $("#bqPlay").onclick = () => say(0.9); $("#bqSlow").onclick = () => say(S.slow); }
   $("#quit").onclick = () => quitActivity(BQ.i === 0, "basics");
+  if (q.kind === "order") {
+    const draw = () => { const el = $("#ordBuilt"); el.textContent = q.built.map(k => q.chips[k].t).join(" ") || "…"; $$("[data-ord]").forEach(b => { b.disabled = q.built.includes(+b.dataset.ord); }); };
+    $$("[data-ord]").forEach(b => b.onclick = () => { if (BQ.done) return; play("tap"); q.built.push(+b.dataset.ord); draw();
+      if (q.built.length === q.chips.length) { const got = q.built.map(k => q.chips[k].t).join(" "); answerBasics(got === q.answer, got); } });
+    $("#ordUndo").onclick = () => { if (BQ.done) return; q.built.pop(); draw(); };
+    return;
+  }
   if (q.kind === "type") {
     $("#bqForm").onsubmit = e => { e.preventDefault(); const v = $("#bqIn").value.replace(/[\s.,]/g, ""); if (v) answerBasics(v === q.answer, v); };
     setTimeout(() => { const i = $("#bqIn"); if (i) i.focus(); }, 50);
   } else $$("[data-opt]").forEach(x => x.onclick = () => answerBasics(x.dataset.opt === q.answer, x.dataset.opt, x));
-  setTimeout(() => say(0.9), 250);
+  if (q.kind !== "order") setTimeout(() => say(0.9), 250);
 }
 function answerBasics(ok, given, btn) {
   if (BQ.done) return;
@@ -1188,10 +1229,12 @@ function answerBasics(ok, given, btn) {
   $$("[data-opt]").forEach(x => { x.disabled = true; if (x.dataset.opt === q.answer) x.classList.add("good"); else if (x === btn) x.classList.add("bad"); });
   const f = $("#bqForm"); if (f) f.querySelectorAll("input,button").forEach(x => { x.disabled = true; });
   if (ok) FX.floatText("+4 XP", btn || $("#bqRes"), "gold");
-  render($("#bqRes"), html`<div class="bq-fb ${ok ? "ok" : "ko"}"><b>${ok ? "Bravo !" : `Non : c'était ${q.answer}`}</b>
-    <p><b>${q.words}</b>${q.kind === "type" ? html` = ${Number(q.answer).toLocaleString("fr-FR")}` : ""}</p><p class="frpron">« ${q.pron || pronOf(q.words)} »</p>${q.note ? html`<p class="small bx-note">${q.note}</p>` : ""}
+  render($("#bqRes"), html`<div class="bq-fb ${ok ? "ok" : "ko"}"><b>${ok ? "Bravo !" : q.kind === "order" ? "Pas tout à fait, voici l'ordre :" : `Non : c'était ${q.answer}`}</b>
+    ${q.kind === "order" ? html`<p><b>${q.answer}</b><br><span class="muted">${q.fr}</span></p><div class="row"><button class="btn cyan sm" id="bqHear">${ICON.spk}Écouter la question</button></div>`
+      : html`<p><b>${q.words}</b>${q.kind === "type" ? html` = ${Number(q.answer).toLocaleString("fr-FR")}` : ""}</p><p class="frpron">« ${q.pron || pronOf(q.words)} »</p>`}${q.note ? html`<p class="small bx-note">${q.note}</p>` : ""}
     <button class="btn ${ok ? "green" : "orange"} block" id="bqNext">${BQ.i + 1 < BQ.n ? "Suivant" : "Terminer"}</button></div>`);
   $("#bqNext").onclick = nextBasics;
+  const hq = $("#bqHear"); if (hq) { hq.onclick = () => speak(q.answer, { voiceURI: S.voice, rate: 0.9 }); speak(q.answer, { voiceURI: S.voice, rate: 0.9 }); }
   $("#bqNext").focus();
 }
 function nextBasics() {
@@ -1214,7 +1257,7 @@ function levelStats(lv) {
   return { total: words.length, fresh, learning, mastered, due };
 }
 function learnTabs(active) {
-  return html`<div class="seg" role="tablist" aria-label="Apprendre">${[["vocab", "Vocabulaire"], ["verbs", "Verbes"], ["basics", "Dates & nombres"], ["grammar", "Grammaire"], ["mistakes", "Fautes"]].map(([v, t]) => html`<button role="tab" aria-selected="${v === active}" class="${v === active ? "on" : ""}" data-seg="${v}">${t}</button>`)}</div>`;
+  return html`<div class="seg" role="tablist" aria-label="Apprendre">${[["vocab", "Vocabulaire"], ["basics", "Thèmes"], ["verbs", "Verbes"], ["grammar", "Grammaire"], ["mistakes", "Fautes"]].map(([v, t]) => html`<button role="tab" aria-selected="${v === active}" class="${v === active ? "on" : ""}" data-seg="${v}">${t}</button>`)}</div>`;
 }
 function bindLearnTabs() { $$("[data-seg]").forEach(b => b.onclick = () => { play("tap"); go(b.dataset.seg); }); }
 function renderVocabHome() {
@@ -1228,11 +1271,14 @@ function renderVocabHome() {
       <div class="tiles"><div class="tile c"><span class="l">Nouveaux</span><span class="v">${st.fresh}</span></div><div class="tile o"><span class="l">En cours</span><span class="v">${st.learning}</span></div><div class="tile g"><span class="l">Maîtrisés</span><span class="v">${st.mastered}</span></div></div>
       <button class="btn green block shine" id="vGo">${st.due ? `Réviser ${Math.min(st.due, 10)} mot${st.due > 1 ? "s" : ""}` : "Apprendre 10 mots"}</button>
       <p class="small muted">${S.avatar.name} te montre le mot en français : dis-le en anglais au micro. Les mots ratés reviennent demain, les mots réussis de plus en plus tard (répétition espacée).</p></section>
+    <section class="card theme-short"><h3>Par thème</h3><p class="small muted">Avec la prononciation, des exemples et un jeu pour chaque thème.</p>
+      <div class="chips">${BASICS.map(b => html`<button class="chip" data-gobx="${b.id}">${b.title}</button>`)}</div></section>
     <section class="card"><h3>Liste ${lv} · ${st.total} mots</h3><div class="vlist">${VOCAB[lv].map(w => { const s2 = G.vocabStatus(S.vocab[w.id]); return html`<div class="vrow"><button class="iconbtn" data-say="${sayText(w)}" aria-label="Écouter ${w.en}">${ICON.spk}</button><span><b>${w.en}</b><br><span class="small muted">${w.fr}</span></span><span class="pill ${s2 === "mastered" ? "good" : s2 === "learning" ? "ok" : ""}">${s2 === "mastered" ? "maîtrisé" : s2 === "learning" ? "en cours" : "nouveau"}</span></div>`; })}</div></section>`);
   bindLearnTabs();
   $$(".chip[data-lv]").forEach(c => c.onclick = () => { play("tap"); S.vocabLevel = c.dataset.lv; save(); renderVocabHome(); });
   $$("[data-say]").forEach(b => b.onclick = () => speak(b.dataset.say, { voiceURI: S.voice, rate: 0.9 }));
   $("#vGo").onclick = () => { play("tap"); startVocab(lv, 10); };
+  $$("[data-gobx]").forEach(b => b.onclick = () => { play("tap"); BX.theme = b.dataset.gobx; go("basics"); });
 }
 function startVocab(lv, n) {
   const words = VOCAB[lv];

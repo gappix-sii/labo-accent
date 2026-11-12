@@ -9,6 +9,7 @@ const logs = [], check = (c, m) => logs.push((c ? 'OK   ' : 'FAIL ') + m);
 // Réponses attendues à partir de ce que l'appli fait dire à la voix de synthèse
 const NUM = new Map(); for (let n = 0; n < 10000; n++) { NUM.set(numberWords(n), String(n)); if (n >= 1950 && n < 2030) NUM.set(yearWords(n), String(n)); }
 const DAYFR = new Map(basicsItems(BASICS_BY_ID.days).map(w => [w.en, w.fr]));
+const QB = BASICS_BY_ID.questions, QFR = new Map([...basicsItems(QB).filter(w => w.ex).map(w => [w.ex[1], w.ex[0]]), ...QB.sentences.map(([en, fr]) => [fr, en])]);
 const celebrations = async p => { for (let k = 0; k < 6; k++) { await p.waitForTimeout(400); if (await p.$('#cel[open] #celOk')) await p.click('#cel[open] #celOk'); else if (await p.$('body[data-view=basics]')) return; } };
 for (const [tag, vp] of [['mob', { width: 390, height: 844 }], ['desk', { width: 1440, height: 900 }]]) {
   const ctx = await b.newContext({ viewport: vp });
@@ -23,11 +24,27 @@ for (const [tag, vp] of [['mob', { width: 390, height: 844 }], ['desk', { width:
   await p.goto(url); await p.waitForTimeout(800);
   await p.click('nav.bottom button[data-go=vocab]'); await p.waitForTimeout(300);
   await p.click('[data-seg=basics]'); await p.waitForTimeout(800);
-  await p.screenshot({ path: `${out}/${tag}-days.png`, fullPage: tag === 'mob' });
-  for (const t of ['months', 'numbers', 'dates']) { await p.click(`[data-bx=${t}]`); await p.waitForTimeout(500); await p.screenshot({ path: `${out}/${tag}-${t}.png`, fullPage: tag === 'mob' }); }
+  await p.screenshot({ path: `${out}/${tag}-questions.png` });
+  check((await p.$$('.bx-ex')).length >= 14, `${tag} : exemples affichés pour les mots-questions`);
+  for (const t of ['days', 'months', 'numbers', 'dates']) { await p.click(`[data-bx=${t}]`); await p.waitForTimeout(500); await p.screenshot({ path: `${out}/${tag}-${t}.png`, fullPage: tag === 'mob' }); }
   const ipa = await p.$$eval('[data-ipa]', els => els.filter(e => e.textContent.startsWith('/')).length), rows = await p.$$eval('[data-ipa]', e => e.length);
   check(ipa === rows && rows >= 15, `${tag} : phonétique affichée pour ${ipa}/${rows} mots (onglet Dates)`);
   if (tag === 'desk') break;
+  // Remets la question dans l'ordre : une erreur puis tout juste
+  await p.click('[data-bx=questions]'); await p.waitForTimeout(300); await p.click('#bxQuiz');
+  let okOrd = 0;
+  for (let k = 0; k < 8; k++) {
+    await p.waitForSelector('[data-ord]'); await p.waitForTimeout(300);
+    const en = QFR.get(await p.textContent('.bq-fr')), words = en.split(' ');
+    const seq = k === 0 ? [...words].reverse() : words;
+    for (const w of seq) { const chips = await p.$$('[data-ord]:not([disabled])'); for (const c of chips) if ((await c.textContent()) === w) { await c.click(); break; } }
+    await p.waitForSelector('.bq-fb');
+    if (k === 0) { check(/l'ordre/.test(await p.textContent('.bq-fb')), 'ordre : la mauvaise question est corrigée'); await p.screenshot({ path: `${out}/${tag}-order.png` }); }
+    else if (/Bravo/.test(await p.textContent('.bq-fb'))) okOrd++;
+    await p.click('#bqNext');
+  }
+  check(okOrd === 7, `ordre : ${okOrd}/7 questions bien construites`);
+  await p.waitForSelector('body[data-view=done]'); await p.click('#doOk'); await celebrations(p);
   // Quiz d'écoute des jours, en répondant juste
   await p.click('[data-bx=days]'); await p.waitForTimeout(300); await p.click('#bxQuiz');
   for (let k = 0; k < 8; k++) {
@@ -59,6 +76,14 @@ for (const [tag, vp] of [['mob', { width: 390, height: 844 }], ['desk', { width:
   await p.click('#bxCards'); await p.waitForSelector('#reveal'); await p.click('#reveal'); await p.waitForTimeout(400);
   check(!!(await p.$('#ans .frpron')), 'carte : prononciation à la française affichée');
   await p.screenshot({ path: `${out}/${tag}-card.png` });
+  // Pratique : deux onglets, sons en tuiles, thèmes en cartes
+  await p.goto(url); await p.waitForTimeout(800); await p.click('nav.bottom button[data-go=train]'); await p.waitForTimeout(500);
+  check(!!(await p.$('#toChat')) && (await p.$$('.dcard')).length > 5, 'Pratique · Conversation : IA et jeux de rôle');
+  await p.click('[data-trlv=A1]'); await p.waitForTimeout(200); const a1 = (await p.$$('.dcard')).length;
+  await p.click('[data-trtab=pron]'); await p.waitForTimeout(500);
+  await p.screenshot({ path: `${out}/${tag}-pratique.png` }); await p.screenshot({ path: `${out}/${tag}-pratique-full.png`, fullPage: true });
+  check(a1 >= 1 && (await p.$$('.snd-tile')).length >= 5 && (await p.$$('.tcat')).length >= 4, `Pratique · Prononciation : tuiles et thèmes (filtre A1 : ${a1})`);
+  await p.click('.tcat'); await p.waitForTimeout(500); check(await p.$('body[data-view=lesson]') !== null, 'un thème lance la leçon');
   await ctx.close();
 }
 console.log(logs.join('\n'));
