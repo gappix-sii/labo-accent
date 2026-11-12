@@ -203,6 +203,6 @@ export function setupFriends(app) {
   app.defView("friends", renderFriends, { tab: "arena" });
   app.defView("friend", renderFriend, { tab: "arena" });
   app.defView("duelend", renderDuelEnd, { tab: "arena", full: true });
-  app.social = { arenaCard, bindArenaCard, duelFinished, receive };
+  app.social = { arenaCard, bindArenaCard, duelFinished, receive, shareMyCard };
   return app.social;
 }

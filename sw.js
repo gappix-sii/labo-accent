@@ -6,8 +6,8 @@
 //    CSP du document (Trusted Types, pas de script externe), CSP des workers, isolation cross-origin, anti-iframe.
 // 3. Ne touche jamais aux requêtes vers d'autres sites (les modèles sont vérifiés dans les workers, voir js/integrity.js).
 /* BUILD:BEGIN */
-const VERSION = "labo-13afa79c6a50";
-const MANIFEST = {"css/app.css":{"h":"cfb318b89e112eb8827a45d279f5d91c1fc13b501f3e9588d1690c9ae655b0db","n":89657},
+const VERSION = "labo-b84048efb83a";
+const MANIFEST = {"css/app.css":{"h":"68b49ca0232eec745aee84baeeec974c74ac83002716fd0ec9f63fc1e5f68abd","n":93258},
   "data/cmudict.json":{"h":"ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b","n":4114306},
   "fonts/barlow-condensed-latin-800-italic.woff2":{"h":"59b48100622b2dea5b10bbf9e98d02eecf20ea8ae000821877f2d470ec16ee55","n":23780},
   "fonts/barlow-condensed-latin-900-italic.woff2":{"h":"b58672f4b405724353d140e19cfead74fefc9004271e846d4884cd9b76f36dbf","n":23212},
@@ -18,7 +18,7 @@ const MANIFEST = {"css/app.css":{"h":"cfb318b89e112eb8827a45d279f5d91c1fc13b501f
   "icons/icon-512.png":{"h":"6d46b0b296865b477d8c78fc94bee366ff4b40341313ae12e7c1eadfc777207d","n":12913},
   "icons/icon.svg":{"h":"4047b4dcbd186860a3cfb5f7f2dc9c98952f2a47118e9812100d0ded42c84708","n":400},
   "index.html":{"h":"d0f1ce3303bcf0a70a3ab4d2d6171414b6b2aa784e3ebcc6b2b9936d92e30bd8","n":6542},
-  "js/app.js":{"h":"390187f016651d960928ec60cb927ed48d3937715ff4df061731db9239d06f3a","n":165198},
+  "js/app.js":{"h":"71fc8f8ef42a1ac0401e6343a1a5d093aa522e125c1aced1c462c840b57e153f","n":171614},
   "js/art.js":{"h":"2c9a402ba01e48e371275a8e8210acfd05e7ce43658d972907fb4c2a3fbd6d46","n":7111},
   "js/audio.js":{"h":"3ed9fe642351caf208cb9fd8842bfacd557bdedc5e13a968f27966515f619b01","n":5998},
   "js/avatar.js":{"h":"13f903a38031257621a9a4cd220a7672b64e20de8bdafe9e098a104ae423bcff","n":76221},
@@ -45,7 +45,7 @@ const MANIFEST = {"css/app.css":{"h":"cfb318b89e112eb8827a45d279f5d91c1fc13b501f
   "js/sha256.js":{"h":"a5031526d8129eafe51967778287a21f65727f1cf39da08ffa0977163fd28570","n":4206},
   "js/social.js":{"h":"60fff7e0d856cdc83fe2ba33649b463a874f39e9e14fb8fe5fec178ae76fad27","n":8800},
   "js/views/arena.js":{"h":"26792dd4886fb4c591bd3fd1a3757666354b34815e5d47196b8f56561d2b82ce","n":15422},
-  "js/views/friends.js":{"h":"cb3beb9d0bb0fc625017a16dbbb959663e0bdd705b9efecc950e27629d777121","n":19385},
+  "js/views/friends.js":{"h":"f92857eb385a9f45c2f87701179be5ed498d0f13669c072817ccd4b55dc5894d","n":19398},
   "js/views/locker.js":{"h":"afbea92a75303b3e63300adf451149e2587cdcfc169284f3524afe6198ede287","n":17132},
   "js/views/lootbox.js":{"h":"eafc6f72b4f6e76f9920954d9471468adaf1058b0ac756db88374e3a305f1aaa","n":9516},
   "js/views/verbs.js":{"h":"fe8b8efa9150700b40beba384e9b28acf016eb07bf0a9854e1d5281df4093120","n":19022},

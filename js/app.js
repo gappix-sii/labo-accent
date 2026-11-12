@@ -889,27 +889,67 @@ function shownTitle() {
   const b = S.title && G.BADGES.find(x => x.id === S.title);
   return b ? b.title : G.levelTitle(levelNow().level);
 }
+// Profil : en-tête avec le compagnon, puis 3 onglets (Profil · Amis · Réglages).
+let PF = { tab: "me" };
 function renderProfile() {
   const lv = levelNow(), voices = englishVoices(), avg = avgScore(), rank = M.rankOf(S.trophies);
   const bestChrono = S.chrono.best[0] ? S.chrono.best[0].score : 0;
+  const fr = S.social.friends, today0 = today(), mastered = pre => Object.entries(S.vocab).filter(([k, v]) => (pre ? k.startsWith(pre) : !k.startsWith("IV:")) && G.vocabStatus(v) === "mastered").length;
+  const since = S.days.length ? [...S.days].sort()[0] : today0, sinceTxt = new Date(since + "T12:00:00").toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+  const rushBest = Math.max(0, ...Object.values(S.irr).map(x => x.rush || 0));
+  const owned = S.owned.length, got = G.BADGES.filter(b => S.badges.includes(b.id)), notYet = G.BADGES.filter(b => !S.badges.includes(b.id));
+  // Calendrier d'activité : les 12 dernières semaines, du lundi au dimanche
+  const dow = (new Date(today0 + "T12:00:00").getDay() + 6) % 7, first = M.addDays(today0, -(7 * 11 + dow));
+  const cells = Array.from({ length: 7 * 11 + dow + 1 }, (_, k) => { const d = M.addDays(first, k), xp = S.xpDays[d] || 0; return { d, xp, l: !xp ? 0 : xp < S.goalXp ? 1 : xp < 2 * S.goalXp ? 2 : 3 }; });
+  const active12 = cells.filter(c => c.xp).length;
+  const stat = (cls, label, v, sub = "") => html`<div class="pstat ${cls}"><span class="v">${v}</span><span class="l">${label}</span>${sub ? html`<span class="s">${sub}</span>` : ""}</div>`;
+  const tabs = [["me", "Profil"], ["friends", `Amis${fr.length ? " · " + fr.length : ""}`], ["settings", "Réglages"]];
   render($("#view"), html`
-    <section class="card player glow">
-      <div class="player-av av live">${avatarSvg(S.avatar)}</div>
-      <div class="grow player-info">
-        <span class="player-name"></span>
-        <span class="player-title"></span>
-        <div class="lvl"><div class="badge-lv">${lv.level}</div><div class="grow"><b>${G.levelTitle(lv.level)}</b><div class="bar xp"><i data-css="--p:${Math.round(lv.into / lv.need * 100)}%"></i></div><span class="small muted">${lv.into} / ${lv.need} XP vers le niveau ${lv.level + 1}</span></div></div>
-        <div class="row rank-mini">${emblemSvg(rank, "sm")}<span><b>${rank.name} ${rank.div}</b><br><span class="small muted">${S.trophies} trophées</span></span></div>
-        <div class="row"><button class="btn yellow sm shine" id="toLocker">Personnaliser ${S.avatar.name}</button>${S.chests.length ? html`<button class="btn cyan sm" id="openChest">${CHEST_ICO} Ouvrir un coffre (${S.chests.length})</button>` : ""}</div>
+    <section class="card pro-hero glow">
+      <div class="pro-av av live">${avatarSvg(S.avatar, { cls: "happy" })}</div>
+      <div class="pro-id">
+        <h2 class="player-name"></h2>
+        <span class="player-title small"></span>
+        <span class="small muted">Membre depuis ${sinceTxt} · ${S.avatar.name} le ${SPECIES.find(x => x.id === S.avatar.species).name.toLowerCase()}</span>
+        <div class="pro-lvl"><div class="badge-lv">${lv.level}</div><div class="grow"><b>${G.levelTitle(lv.level)}</b><div class="bar xp"><i data-css="--p:${Math.round(lv.into / lv.need * 100)}%"></i></div><span class="small muted">${lv.into} / ${lv.need} XP pour le niveau ${lv.level + 1}</span></div></div>
+        <div class="pro-actions"><button class="btn yellow sm shine" id="toLocker">Personnaliser</button><button class="btn cyan sm" id="pShare">Partager ma carte</button>${S.chests.length ? html`<button class="btn ghost sm" id="openChest">${CHEST_ICO} ${S.chests.length} coffre${S.chests.length > 1 ? "s" : ""}</button>` : ""}</div>
       </div></section>
-    <section class="card"><div class="tiles six">
-      <div class="tile o"><span class="l">Série</span><span class="v">${streak()}j</span></div><div class="tile y"><span class="l">XP total</span><span class="v">${S.xp}</span></div>
-      <div class="tile y"><span class="l">Pièces</span><span class="v">${S.coins}</span></div><div class="tile c"><span class="l">Score moyen</span><span class="v">${avg === null ? "–" : avg}</span></div>
-      <div class="tile g"><span class="l">Boss battus</span><span class="v">${bossesWon()}/9</span></div><div class="tile c"><span class="l">Record chrono</span><span class="v">${bestChrono}</span></div></div></section>
-    ${questsCard()}
-    <section class="card"><h3>Badges · ${S.badges.length}/${G.BADGES.length}</h3>
-      <div class="badges">${G.BADGES.map(b => html`<div class="bdg ${S.badges.includes(b.id) ? "got" : ""}"><div class="md">${b.sym}</div>${b.title}<span class="ds">${b.desc}</span></div>`)}</div></section>
-    <section class="card"><h3>Réglages</h3>
+    <div class="seg pro-tabs" role="tablist" aria-label="Profil">${tabs.map(([t, l]) => html`<button role="tab" aria-selected="${PF.tab === t}" class="${PF.tab === t ? "on" : ""}" data-ptab="${t}">${l}</button>`)}</div>
+
+    <div class="pro-panel" data-panel="me" ${PF.tab === "me" ? "" : "hidden"}>
+      <section class="card"><h3>Statistiques</h3><div class="pstats">
+        ${stat("o", "jours de série", streak())}${stat("y", "XP au total", S.xp.toLocaleString("fr-FR"))}
+        <div class="pstat c rank"><span class="v">${emblemSvg(rank, "sm")}</span><span class="l">${rank.name} ${rank.div}</span><span class="s">${S.trophies} trophées</span></div>
+        ${stat("g", "leçons", Object.keys(S.lessons).length, `${Object.values(S.lessons).reduce((t, l) => t + (l.stars || 0), 0)} étoiles`)}
+        ${stat("c", "mots maîtrisés", mastered(""))}${stat("o", "verbes maîtrisés", mastered("IV:"), "sur 67")}
+        ${stat("y", "boss battus", `${bossesWon()}/9`)}${stat("g", "score moyen", avg === null ? "–" : avg, "prononciation")}
+      </div></section>
+      <section class="card"><div class="row between"><h3>Activité</h3><span class="small muted">${active12} jour${active12 > 1 ? "s" : ""} actif${active12 > 1 ? "s" : ""} sur 12 semaines</span></div>
+        <div class="heat" role="img" aria-label="Calendrier d'activité des 12 dernières semaines">${cells.map(c => html`<i class="h${c.l} ${c.d === today0 ? "now" : ""}" title="${c.d.slice(8)}/${c.d.slice(5, 7)} : ${c.xp} XP"></i>`)}</div>
+        <div class="heat-key small muted">Moins <i class="h0"></i><i class="h1"></i><i class="h2"></i><i class="h3"></i> Plus · objectif ${S.goalXp} XP par jour</div></section>
+      <section class="card"><h3>Records personnels</h3><div class="precs">
+        <div><span class="l">Défi chrono</span><b>${bestChrono.toLocaleString("fr-FR")}</b></div><div><span class="l">Verb Rush</span><b>${rushBest.toLocaleString("fr-FR")}</b></div>
+        <div><span class="l">Meilleur combo</span><b>×${S.bestCombo || 0}</b></div><div><span class="l">Défi du jour</span><b>${S.chrono.daily.day === today0 ? S.chrono.daily.score.toLocaleString("fr-FR") : "–"}</b></div></div></section>
+      <section class="card"><div class="row between"><h3>Succès</h3><span class="pill good">${got.length}/${G.BADGES.length}</span></div>
+        <div class="bar"><i data-css="--p:${Math.round(got.length / G.BADGES.length * 100)}%"></i></div>
+        <div class="badges shelf">${[...got, ...notYet].map((b, k) => html`<div class="bdg ${S.badges.includes(b.id) ? "got" : ""} ${k >= got.length + 6 ? "more" : ""}" ${k >= got.length + 6 ? "hidden" : ""}><div class="md">${b.sym}</div>${b.title}<span class="ds">${b.desc}</span></div>`)}</div>
+        ${notYet.length > 6 ? html`<button class="btn ghost sm" id="pMoreBadges">Voir les ${notYet.length - 6} autres succès</button>` : ""}</section>
+      <section class="card"><div class="row between"><h3>Collection</h3><span class="small muted">${owned} objets</span></div>
+        <p class="small muted">${EXCLUSIVES.filter(id => S.owned.includes(id)).length}/${EXCLUSIVES.length} exclusivités des boîtes · ${S.coins.toLocaleString("fr-FR")} pièces</p>
+        <div class="row"><button class="btn ghost sm" id="pLocker">Ma tenue</button><button class="btn ghost sm" id="pShop">Le Shop</button></div></section>
+    </div>
+
+    <div class="pro-panel" data-panel="friends" ${PF.tab === "friends" ? "" : "hidden"}>
+      <section class="card"><h3>Ajouter un ami</h3><p class="small muted">Envoie-lui ta carte avec « Partager ma carte », ou colle ici le lien qu'il t'a envoyé.</p>
+        <form id="pfForm" class="row"><input id="pfIn" autocomplete="off" spellcheck="false" maxlength="6000" placeholder="Colle le lien ou le code" aria-label="Lien ou code d'ami"><button class="btn green" id="pfAdd">Ajouter</button></form></section>
+      <section class="card"><div class="row between"><h3>Mes amis</h3><span class="small muted">${fr.length} ami${fr.length > 1 ? "s" : ""}</span></div>
+        ${fr.length ? html`<div class="pfriends">${[...fr].sort((a, b) => b.xp - a.xp).map(f => html`<button class="pfriend" data-pf="${f.id}"><span class="pf-av">${avatarSvg(f.avatar, { cls: "still" })}</span><b>${f.name}</b><span class="small muted">niv. ${f.level} · série ${f.streak} j</span></button>`)}</div>`
+          : html`<div class="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">Pas encore d'amis ici. Partage ta carte : dès qu'un ami t'envoie la sienne, il apparaît ici avec son compagnon.</div></div>`}
+        <button class="btn cyan block" id="pBoard">Classement et défis entre amis</button></section>
+    </div>
+
+    <div class="pro-panel" data-panel="settings" ${PF.tab === "settings" ? "" : "hidden"}>
+    <section class="card"><h3>Mon profil et l'appli</h3>
       <label class="f" for="player">Ton pseudo (pour partager tes scores)<input type="text" id="player" maxlength="20" autocomplete="off" value="${S.player}" placeholder="Pseudo"></label>
       <label class="f" for="titleSel">Titre affiché<select id="titleSel">${titleOptions().map(([v, t]) => html`<option value="${v}" ${v === S.title ? "selected" : ""}>${t}</option>`)}</select></label>
       <label class="switch" for="optVoice">${S.avatar.name} parle à voix haute <input type="checkbox" id="optVoice" ${S.poufVoice ? "checked" : ""}></label>
@@ -937,7 +977,16 @@ function renderProfile() {
       <label class="btn ghost sm filebtn" for="importFile">Restaurer une sauvegarde<input type="file" id="importFile" accept="application/json,.json"></label></div>
       <button class="btn ghost sm" id="delModel">Supprimer le moteur de prononciation</button>
       <button class="btn ghost sm" id="delChat">Supprimer l'IA locale de conversation</button>
-      <button class="btn red sm" id="delData">Effacer ma progression</button></section>`);
+      <button class="btn red sm" id="delData">Effacer ma progression</button></section>
+    </div>`);
+  $$("[data-ptab]").forEach(b => b.onclick = () => { play("tap"); PF.tab = b.dataset.ptab; $$("[data-ptab]").forEach(x => { const on = x.dataset.ptab === PF.tab; x.classList.toggle("on", on); x.setAttribute("aria-selected", on); }); $$(".pro-panel").forEach(p => { p.hidden = p.dataset.panel !== PF.tab; }); });
+  $("#pShare").onclick = () => { play("tap"); app.social.shareMyCard(); };
+  const mb = $("#pMoreBadges"); if (mb) mb.onclick = () => { $$(".bdg.more").forEach(x => { x.hidden = false; }); mb.remove(); };
+  $("#pLocker").onclick = () => { play("tap"); go("locker"); };
+  $("#pShop").onclick = () => { play("tap"); go("shop", { tab: "home" }); };
+  $("#pBoard").onclick = () => { play("tap"); go("friends"); };
+  $$("[data-pf]").forEach(b => b.onclick = () => { play("tap"); go("friend", { id: b.dataset.pf }); });
+  $("#pfForm").onsubmit = async e => { e.preventDefault(); const v = $("#pfIn").value.trim(); if (v) { $("#pfAdd").disabled = true; await app.social.receive(v); const b2 = $("#pfAdd"); if (b2) b2.disabled = false; } };
   $(".player-name").textContent = S.player || "Joueur";
   $(".player-title").textContent = `${S.avatar.name} · ${shownTitle()}`;
   $("#toLocker").onclick = () => { play("tap"); go("locker"); };

@@ -83,7 +83,7 @@ await p.click('#bfOk'); await p.waitForTimeout(300); await cels();
 check(await p.$('.bossnode.won[data-boss=u1]') !== null, 'couronne sur le parcours');
 
 // Export puis import d'un fichier piégé
-await p.click('nav.bottom button[data-go=profile]'); await p.waitForTimeout(300);
+await p.click('nav.bottom button[data-go=profile]'); await p.waitForTimeout(300); await p.click('[data-ptab=settings]'); await p.waitForTimeout(200);
 const [dl] = await Promise.all([p.waitForEvent('download'), p.click('#export')]);
 check(/labo-accent-.*\.json/.test(dl.suggestedFilename()), 'export : ' + dl.suggestedFilename());
 writeFileSync('/tmp/evil.json', '{"app":"labo-accent","format":2,"state":{"__proto__":{"pwn":1},"xp":50,"coins":"9999999","player":"<img src=x onerror=alert(1)>","history":[{"d":"2026-11-01","s":80,"t":"<script>alert(1)</script>"}],"avatar":{"species":"dragon","name":"\\u202eevil"}}}');

@@ -45,7 +45,7 @@ s = await S(); check(s.coins < 4000, `sceau supprimé → contrôle quand même 
 
 // 6. Fichier de sauvegarde trafiqué à l'import
 const state = { ...honest, coins: 88888, econ: { earned: 88888, spent: 0, day: '', practice: 0, reps: {}, log: [], lastSeen: 0, sealed: true, capNoted: '' }, owned: [...honest.owned, 'saber', 'angel'] };
-await p.click('nav.bottom button[data-go=profile]'); await p.waitForTimeout(500);
+await p.click('nav.bottom button[data-go=profile]'); await p.waitForTimeout(500); await p.click('[data-ptab=settings]'); await p.waitForTimeout(200);
 await p.setInputFiles('#importFile', { name: 'triche.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ app: 'labo-accent', format: 2, state, seal: 'AAAA' })) });
 await p.waitForSelector('#dlg[open]'); await p.click('#dlgOk'); await p.waitForTimeout(800);
 s = await S(); check(s.coins < 4000 && !s.owned.includes('saber') && /modifié/.test(await p.textContent('#dlgText')), `import trafiqué → ${s.coins} pièces, exclusivité retirée`);
