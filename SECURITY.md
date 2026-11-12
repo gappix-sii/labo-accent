@@ -86,7 +86,7 @@ Autres en-têtes : `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Embe
 
 - Modèle **Kokoro-82M** (Apache 2.0) exécuté **sur l'appareil** dans un worker séparé : le texte à lire n'est jamais envoyé sur internet.
 - Téléchargé **uniquement** quand l'utilisateur appuie sur « Activer la voix naturelle » (≈ 92 Mo, SHA-256 et taille exacte vérifiés). Aux visites suivantes, il n'est préparé que s'il est déjà dans le cache : jamais de retéléchargement silencieux.
-- Les 3 voix (`data/voices/*.bin`, 510 Ko chacune) viennent du dépôt officiel `github.com/hexgrad/kokoro` (commit `dfb907a`), sont livrées avec l'appli et vérifiées par le service worker (empreintes figées dans `tools/build-sw.mjs`) ; taille exacte recontrôlée dans le worker.
+- Les 3 voix (`data/voices/*.bin`, 510 Ko chacune) viennent du dépôt officiel `github.com/hexgrad/kokoro` (commit `dfb907a`), identiques octet pour octet aux fichiers `voices/*.bin` du dépôt Hugging Face `onnx-community/Kokoro-82M-v1.0-ONNX` (mêmes SHA-256 et tailles, vérifié le 12/11/2026), sont livrées avec l'appli et vérifiées par le service worker (empreintes figées dans `tools/build-sw.mjs`) ; taille exacte recontrôlée dans le worker.
 - Le texte est converti en phonèmes avec le dictionnaire CMU déjà présent (`js/g2p.js`) : aucun moteur supplémentaire (pas d'espeak-ng) n'est ajouté.
 - En cas d'échec (mémoire, navigateur), la voix de l'appareil prend le relais automatiquement. Bouton « Supprimer la voix naturelle » dans Réglages → Données.
 
