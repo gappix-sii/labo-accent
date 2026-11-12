@@ -6,8 +6,8 @@
 //    CSP du document (Trusted Types, pas de script externe), CSP des workers, isolation cross-origin, anti-iframe.
 // 3. Ne touche jamais aux requêtes vers d'autres sites (les modèles sont vérifiés dans les workers, voir js/integrity.js).
 /* BUILD:BEGIN */
-const VERSION = "labo-a198a5551fb8";
-const MANIFEST = {"css/app.css":{"h":"4cfb87ef83581ac8fbcbd1b32dcedacbd89fcc899280589ef681cde20c488886","n":74162},
+const VERSION = "labo-d8c912a12bc4";
+const MANIFEST = {"css/app.css":{"h":"c42447bbd0079a79df55d34f96b758ba8a30a681770257b8955a1ca76296909d","n":75137},
   "data/cmudict.json":{"h":"ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b","n":4114306},
   "fonts/barlow-condensed-latin-800-italic.woff2":{"h":"59b48100622b2dea5b10bbf9e98d02eecf20ea8ae000821877f2d470ec16ee55","n":23780},
   "fonts/barlow-condensed-latin-900-italic.woff2":{"h":"b58672f4b405724353d140e19cfead74fefc9004271e846d4884cd9b76f36dbf","n":23212},
@@ -17,8 +17,8 @@ const MANIFEST = {"css/app.css":{"h":"4cfb87ef83581ac8fbcbd1b32dcedacbd89fcc8992
   "icons/icon-192.png":{"h":"92d781707e174907327bc66aed26d3d7c5751a3d00ade01832c032531f21e132","n":3584},
   "icons/icon-512.png":{"h":"6d46b0b296865b477d8c78fc94bee366ff4b40341313ae12e7c1eadfc777207d","n":12913},
   "icons/icon.svg":{"h":"4047b4dcbd186860a3cfb5f7f2dc9c98952f2a47118e9812100d0ded42c84708","n":400},
-  "index.html":{"h":"0fbaa4958e3f8914cab0b9d76f2d56120f32590ce987f2447e59613019d88e02","n":6115},
-  "js/app.js":{"h":"5f0c61380ed7ba9a1d0585275be5a6f5416cccc6024078829ef4f12c0b4d8bef","n":138350},
+  "index.html":{"h":"b73ab725c70f79b8e1ed830629c559fc9bbaff173367d2bce61733efc002d9ad","n":6241},
+  "js/app.js":{"h":"3984770824c909307a4d099c4f54b2ffce22665d27108e0ead5de354fb92a9c3","n":139459},
   "js/art.js":{"h":"2c9a402ba01e48e371275a8e8210acfd05e7ce43658d972907fb4c2a3fbd6d46","n":7111},
   "js/audio.js":{"h":"3ed9fe642351caf208cb9fd8842bfacd557bdedc5e13a968f27966515f619b01","n":5998},
   "js/avatar.js":{"h":"d4634499ba5db817fc94a320fc0b7703ef4397dbd7726b233bdb4930b20a5531","n":52929},
@@ -57,8 +57,22 @@ const TYPES = { html: "text/html; charset=utf-8", js: "text/javascript; charset=
 const typeOf = p => TYPES[p.split(".").pop()] || "application/octet-stream";
 const hex = buf => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
 
+// Fichier inchangé depuis la version précédente : on le reprend du cache (après revérification de son empreinte)
+// au lieu de le retélécharger. Une mise à jour ne télécharge donc que ce qui a changé.
+async function fromOldCache(href, want) {
+  for (const k of await caches.keys()) {
+    if (!k.startsWith("labo-") || k === VERSION) continue;
+    const r = await (await caches.open(k)).match(href);
+    if (!r) continue;
+    const buf = await r.arrayBuffer();
+    if (buf.byteLength === want.n && hex(await crypto.subtle.digest("SHA-256", buf)) === want.h) return buf;
+  }
+  return null;
+}
 async function fetchVerified(path, want) {
   const url = new URL(path, self.registration.scope);
+  const old = await fromOldCache(url.href, want);
+  if (old) return [url.href, new Response(old, { headers: { "Content-Type": typeOf(path), "Content-Length": String(old.byteLength) } })];
   const r = await fetch(url, { cache: "reload", credentials: "same-origin", redirect: "error" });
   if (!r.ok) throw new Error(`${path}: HTTP ${r.status}`);
   const buf = await r.arrayBuffer();

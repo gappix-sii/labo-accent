@@ -10,7 +10,7 @@ import { Recorder, speak, englishVoices, wavBase64 } from "./audio.js";
 import * as G from "./game.js";
 import * as M from "./meta.js";
 import { SPECIES, ITEMS, THEMES, THEME_BY_ID, avatarSvg, bossSvg, BOSSES, droppable, describeOwned, themeKey, RARITY } from "./avatar.js";
-import { COIN, TROPHY, CHEST_ICO, BOLT, SNOW, CROWN, HEART, chestSvg, emblemSvg } from "./art.js";
+import { COIN, TROPHY, CHEST_ICO, BOLT, SNOW, CROWN, HEART, chestSvg, emblemSvg, boxSvg } from "./art.js";
 import { line, companionSay, pitchOf } from "./mascot.js";
 import * as FX from "./fx.js";
 import { VOCAB, LEVELS, sayText } from "./vocab.js";
@@ -418,6 +418,8 @@ function renderPath() {
     <section class="card goal-card"><div class="ring" data-css="--p:${goalPct}"><span>${goalPct}%</span></div><div class="grow"><h3>Objectif du jour</h3><span class="xpfloat">${xpToday()} / ${S.goalXp} XP</span>
       ${boostActive() ? html`<span class="pill ok">${BOLT} Potion ×2 active</span>` : ""}${S.freezes ? html`<span class="pill good">${SNOW} ${S.freezes} gel${S.freezes > 1 ? "s" : ""} de série</span>` : ""}</div></section>
     ${questsCard()}
+    <section class="card loot-promo"><div class="row"><span class="promo-box">${boxSvg("mythic", "idle")}</span><div class="grow"><h3>Boîtes à butin</h3><p class="small">Skins et accessoires exclusifs, du commun au mythique. Paie avec tes pièces !</p></div></div>
+      <button class="btn yellow block shine" id="toBoxes">Ouvrir la boutique · ${S.coins}${COIN}</button></section>
     <section class="card desk-only"><div class="lvl"><div class="badge-lv">${lvl.level}</div><div class="grow"><h3>${G.levelTitle(lvl.level)}</h3>
       <div class="bar xp"><i data-css="--p:${Math.round(lvl.into / lvl.need * 100)}%"></i></div><span class="small muted">${lvl.into} / ${lvl.need} XP · ${S.badges.length} badge${S.badges.length > 1 ? "s" : ""}</span></div></div></section>
     <section class="card desk-only"><div class="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">${line("hello", S.avatar)}</div></div>
@@ -435,6 +437,7 @@ function renderPath() {
     if (b.classList.contains("locked")) { play("bad"); FX.shake(b); toast("Termine toutes les leçons de l'unité pour affronter le boss."); return; }
     play("tap"); startBoss(b.dataset.boss);
   });
+  $("#toBoxes").onclick = () => { play("tap"); go("locker", { tab: "boxes" }); };
   const nc = $("#newsChest"); if (nc) nc.onclick = () => { S.news = 2; save(); openChestFlow(); renderPath(); };
   const no = $("#newsOk"); if (no) no.onclick = () => { S.news = 2; save(); renderPath(); };
   if (!S.onboarded) { S.onboarded = true; save(); }
@@ -1796,10 +1799,17 @@ async function setupServiceWorker() {
   const apply = w => { asked = true; w.postMessage("skipWaiting"); };
   const offer = w => {
     if (!w || !navigator.serviceWorker.controller) return;
-    if (performance.now() < 5000 && !inActivity) return apply(w); // au démarrage : on applique tout de suite
-    notify("Mise à jour prête", "Vérifiée fichier par fichier. Elle s'appliquera au prochain lancement.", ICON.shield);
+    if (performance.now() < 8000 && !inActivity) return apply(w); // au démarrage : on applique tout de suite
+    if ($("#updBar")) return;
+    // Sinon : bouton visible, l'utilisateur choisit le moment (jamais au milieu d'un exercice sans son accord).
+    const bar = append(document.body, html`<div class="updbar" id="updBar" role="status">${ICON.shield}<span>Nouvelle version prête (vérifiée)</span><button class="btn yellow sm" id="updGo">Mettre à jour</button></div>`);
+    $("#updGo", bar).onclick = () => { bar.remove(); apply(w); };
   };
   if (reg.waiting) offer(reg.waiting);
+  // Sur téléphone, l'appli reste ouverte en arrière-plan : on vérifie les mises à jour au retour et toutes les 30 min.
+  const check = () => reg.update().catch(() => {});
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") check(); });
+  setInterval(check, 30 * 60000);
   reg.addEventListener("updatefound", () => {
     const w = reg.installing;
     if (w) w.addEventListener("statechange", () => { if (w.state === "installed") offer(w); });

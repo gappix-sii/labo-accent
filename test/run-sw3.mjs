@@ -4,7 +4,7 @@ import { execSync, spawn } from 'node:child_process';
 import { appendFileSync, writeFileSync, mkdirSync } from 'node:fs';
 const logs = [], check = (c, m) => logs.push((c ? 'OK   ' : 'FAIL ') + m);
 const b = await chromium.launch({ executablePath: '/usr/bin/google-chrome', args: ['--no-sandbox'] });
-const serve = (dir, port) => { const s = spawn('python3', ['-m', 'http.server', String(port), '--bind', '127.0.0.1'], { cwd: dir, stdio: 'ignore' }); return new Promise(r => setTimeout(() => r(s), 800)); };
+const serve = (dir, port) => { const s = spawn('python3', ['-m', 'http.server', String(port), '--bind', '127.0.0.1'], { cwd: dir, stdio: ['ignore', 'ignore', 'pipe'] }); s.log = ''; s.stderr.on('data', d => { s.log += d; }); return new Promise(r => setTimeout(() => r(s), 800)); };
 const copy = dir => { execSync(`rm -rf ${dir} && mkdir -p ${dir} && cd /home/claude/labo && cp -r index.html manifest.webmanifest sw.js css js fonts icons vendor data tools ${dir}/`); };
 
 // 1. Version saine : installation vérifiée + en-têtes
@@ -43,9 +43,20 @@ const copy = dir => { execSync(`rm -rf ${dir} && mkdir -p ${dir} && cd /home/cla
   await p.goto('http://127.0.0.1:8767/'); await p.waitForTimeout(5000);
   const v1 = await p.evaluate(() => caches.keys());
   appendFileSync('/tmp/upd/js/fx.js', '\n// v2\n'); execSync('node /tmp/upd/tools/build-sw.mjs');
+  srv.log = '';
   await p.reload(); await p.waitForTimeout(6000);
   const v2 = await p.evaluate(async () => ({ keys: await caches.keys(), controlled: !!navigator.serviceWorker.controller }));
-  check(v2.controlled && v2.keys.length === 1 && v2.keys[0] !== v1[0], `mise à jour appliquée : ${v1} → ${v2.keys}`);
+  check(v2.controlled && v2.keys.length === 1 && v2.keys[0] !== v1[0], `mise à jour appliquée au lancement : ${v1} → ${v2.keys}`);
+  const wasm = (srv.log.match(/ort-wasm-simd-threaded\.asyncify\.wasm/g) || []).length, fxjs = (srv.log.match(/GET \/js\/fx\.js/g) || []).length;
+  check(wasm === 0 && fxjs >= 1, `seul le fichier modifié est retéléchargé (wasm : ${wasm}, fx.js : ${fxjs})`);
+  // Appli déjà ouverte depuis un moment : bouton « Mettre à jour »
+  await p.waitForTimeout(8500);
+  appendFileSync('/tmp/upd/js/fx.js', '\n// v3\n'); execSync('node /tmp/upd/tools/build-sw.mjs');
+  await p.evaluate(async () => (await navigator.serviceWorker.getRegistration()).update());
+  const bar = await p.waitForSelector('#updBar', { timeout: 15000 }).then(() => true).catch(() => false);
+  check(bar, 'bouton « Mettre à jour » affiché');
+  if (bar) { await Promise.all([p.waitForEvent('load', { timeout: 15000 }), p.click('#updGo')]); await p.waitForTimeout(1500);
+    const v3 = await p.evaluate(() => caches.keys()); check(v3.length === 1 && v3[0] !== v2.keys[0], 'mise à jour appliquée après le clic : ' + v3); }
   await ctx.close(); srv.kill();
 }
 // 4. Affichée dans un cadre par un autre site : refus

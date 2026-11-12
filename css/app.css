@@ -832,3 +832,12 @@ dialog canvas.dfx.on{display:block}
 .screen-flash.r-legendary{background:radial-gradient(circle,#fff8c4,rgba(255,210,63,.55))}
 .screen-flash.r-mythic{background:radial-gradient(circle,#ffffff,rgba(255,47,208,.6));animation-duration:1.15s}
 @keyframes sflash{from{opacity:.95}to{opacity:0}}
+
+/* Accès à la boutique et mise à jour */
+.stat.coins .plus{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--yellow);color:#2a1a00;font-size:.85rem;line-height:1;margin-left:2px;font-weight:900}
+.loot-promo{border-color:var(--pink);background:linear-gradient(180deg,color-mix(in srgb,#ff2fd0 12%,var(--panel2)),var(--panel))}
+.loot-promo .row{flex-wrap:nowrap}
+.promo-box{width:76px;height:76px;flex:none}
+.updbar{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:10px;background:var(--panel2);border:2px solid var(--yellow);border-radius:16px;padding:8px 10px 8px 14px;box-shadow:0 10px 30px rgba(0,0,0,.45);font-weight:800;width:max-content;max-width:calc(100% - 24px);animation:rise .4s cubic-bezier(.2,1.3,.4,1) both}
+.updbar svg{width:22px;height:22px;color:var(--green);flex:none}
+@media (min-width:1024px){.updbar{bottom:24px}}
