@@ -16,6 +16,7 @@ import { COIN, TROPHY, CHEST_ICO, BOLT, SNOW, CROWN, HEART, chestSvg, emblemSvg,
 import { line, companionSay, pitchOf } from "./mascot.js";
 import * as FX from "./fx.js";
 import { VOCAB, LEVELS, sayText } from "./vocab.js";
+import { BASICS, BASICS_BY_ID, basicsItems, basicsCardId, numberWords, yearWords, ordinalWords, pronOf } from "./basics.js";
 import { DIALOGUES, STOP } from "./dialogues.js";
 import { GRAMMAR, GLEVELS } from "./grammar.js";
 import { MISTAKE_CATS, ALL_MISTAKES } from "./mistakes.js";
@@ -1083,6 +1084,114 @@ function renderSessionEnd(o) {
   $("#seOk").onclick = async () => { await rewards({ earned: o.earned }); go("path"); };
 }
 
+// ---------------- Dates & nombres ----------------
+// Fiches (prononciation à la française + phonétique + écoute), cartes au micro, quiz d'écoute, phrases à prononcer.
+let BX = { theme: "days" }, BQ = null;
+const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+const MONTHS = BASICS_BY_ID.months.groups[0].items.map(w => w.en);
+const rnd = n => Math.floor(Math.random() * n);
+function renderBasics() {
+  const b = BASICS_BY_ID[BX.theme] || BASICS[0], best = (S.basics[b.id] || {}).best;
+  const row = (w, k) => { const st2 = G.vocabStatus(S.vocab[basicsCardId(b, w)]);
+    return html`<div class="bxrow" data-css="--i:${Math.min(k, 12)}"><div class="bx-say"><button class="iconbtn" data-say="${w.en}" aria-label="Écouter ${w.en}">${ICON.spk}</button><button class="iconbtn slow" data-slow="${w.en}" aria-label="Écouter lentement ${w.en}">${ICON.slow}</button></div>
+      <div class="bx-txt"><div class="bx-line"><b class="bx-en">${w.en}</b> <span class="muted">= ${w.fr}</span>${st2 === "new" ? "" : html`<span class="pill sm ${st2 === "mastered" ? "good" : "ok"}">${st2 === "mastered" ? "maîtrisé" : "en cours"}</span>`}</div><span class="frpron">« ${w.pron} »</span> <span class="ipa" data-ipa="${w.en}"></span>${w.note ? html`<p class="small bx-note">${w.note}</p>` : ""}</div></div>`; };
+  render($("#view"), html`${learnTabs("basics")}
+    <h2>Jours, mois et nombres</h2>
+    <div class="chips" role="tablist" aria-label="Thème">${BASICS.map(x => html`<button class="chip ${x.id === b.id ? "on" : ""}" role="tab" aria-selected="${x.id === b.id}" data-bx="${x.id}">${x.short}</button>`)}</div>
+    <section class="card glow"><div class="row between"><h3>${b.title}</h3>${best !== undefined ? html`<span class="pill good">Quiz : ${best} %</span>` : ""}</div>
+      <p class="small muted">${b.sub}</p>
+      <div class="bx-actions"><button class="btn green shine" id="bxCards">Apprendre au micro</button><button class="btn cyan" id="bxQuiz">${b.quiz === "dictation" ? "Dictée de nombres" : "Quiz d'écoute"}</button><button class="btn ghost" id="bxSay">Prononcer des phrases</button></div>
+      <h4 class="bx-h">Comment bien les prononcer</h4>
+      <ul class="bx-tips">${b.tips.map(t => html`<li>${t}</li>`)}</ul>
+      <p class="small muted">« MAJUSCULES » = la syllabe à accentuer · « th » = langue entre les dents · touche le haut-parleur pour écouter, la tortue pour écouter lentement.</p></section>
+    ${b.groups.map(g => html`<section class="card"><h3>${g.title}</h3><div class="bxlist">${g.items.map(row)}</div></section>`)}
+    <section class="card"><h3>Phrases pour s'entraîner</h3><div class="bxlist">${b.sentences.map(([en, fr]) => html`<div class="bxrow"><div class="bx-say"><button class="iconbtn" data-say="${en}" aria-label="Écouter">${ICON.spk}</button></div><div class="bx-txt"><b>${en}</b><br><span class="small muted">${fr}</span></div></div>`)}</div></section>`);
+  bindLearnTabs();
+  $$("[data-bx]").forEach(c => c.onclick = () => { play("tap"); BX.theme = c.dataset.bx; renderBasics(); });
+  $$("[data-say]").forEach(x => x.onclick = () => speak(x.dataset.say, { voiceURI: S.voice, rate: 0.9 }));
+  $$("[data-slow]").forEach(x => x.onclick = () => speak(x.dataset.slow, { voiceURI: S.voice, rate: S.slow }));
+  $("#bxCards").onclick = () => { play("tap"); startBasicsCards(b); };
+  $("#bxQuiz").onclick = () => { play("tap"); startBasicsQuiz(b); };
+  $("#bxSay").onclick = () => { play("tap"); startLesson({ id: null, kind: "basics-" + b.id, title: b.title, items: b.sentences.map(([en, fr]) => ({ en, fr })) }); };
+  loadDict().then(d => { $$("[data-ipa]").forEach(el => { const r = P.buildReference(d, el.dataset.ipa); if (r.every(w => w.prons)) el.textContent = "/" + r.map(w => P.ipaString(w.prons[0])).join(" ") + "/"; }); }).catch(() => {});
+}
+function startBasicsCards(b) {
+  const words = basicsItems(b).map(w => ({ id: basicsCardId(b, w), en: w.en, fr: w.fr, level: b.short, pron: w.pron, note: w.note }));
+  let cards = G.pickVocab(words, S.vocab, 10, 10, today());
+  if (!cards.length) cards = shuffle(words).slice(0, 10);
+  V = { level: b.short, back: "basics", cards, i: 0, correct: 0, newly: 0, xp: 0, requeued: new Set(), startLevel: levelNow().level, revealed: false };
+  if (engineState === "off") startEngine();
+  go("vcard");
+}
+// Une question : say = ce qu'on entend ; answer = la bonne réponse ; options (QCM) ou saisie de chiffres.
+function basicsQuestion(b) {
+  if (b.quiz === "dictation") {
+    const tier = rnd(6);
+    const n = tier === 0 ? rnd(21) : tier === 1 ? (rnd(2) ? 13 + rnd(7) : (3 + rnd(7)) * 10) : tier === 2 ? 21 + rnd(79) : tier === 3 ? 100 + rnd(900) : tier === 4 ? 1000 + rnd(9000) : 1950 + rnd(80);
+    const words = tier === 5 ? yearWords(n) : numberWords(n);
+    return { kind: "type", say: words, answer: String(n), words, hint: tier === 1 ? "Écoute où tombe l'accent : -TEEN ou -ty ?" : tier === 5 ? "C'est une année." : "" };
+  }
+  if (b.id === "dates") {
+    const day = 1 + rnd(28), m = rnd(12), fr = d => `${d === 1 ? "1er" : d} ${MOIS[m]}`;
+    const say = `the ${ordinalWords(day)} of ${MONTHS[m]}`;
+    const near = [day + 10, day - 10, day + 1, day - 1, day + 20, day - 20].filter(x => x >= 1 && x <= 31 && x !== day);
+    const opts = shuffle([fr(day), ...shuffle(near).slice(0, 2).map(fr), `${day === 1 ? "1er" : day} ${MOIS[(m + 1 + rnd(11)) % 12]}`]);
+    return { kind: "choice", say, answer: fr(day), options: [...new Set(opts)], words: say };
+  }
+  const items = basicsItems(b), w = items[rnd(items.length)];
+  const others = shuffle(items.filter(x => x !== w)).slice(0, 3).map(x => x.fr);
+  return { kind: "choice", say: w.en, answer: w.fr, options: shuffle([w.fr, ...others]), words: w.en, pron: w.pron, note: w.note };
+}
+function startBasicsQuiz(b) {
+  BQ = { b, i: 0, n: 8, ok: 0, q: basicsQuestion(b), done: false, startLevel: levelNow().level };
+  go("bquiz");
+}
+function renderBasicsQuiz() {
+  const q = BQ.q, b = BQ.b;
+  render($("#view"), html`
+    <div class="ltop"><button class="iconbtn" id="quit" aria-label="Quitter">${ICON.close}</button><div class="bar"><i data-css="--p:${BQ.i / BQ.n * 100}%"></i></div><span class="combo">${BQ.i + 1}/${BQ.n}</span></div>
+    <div class="coach" id="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">${q.kind === "type" ? "Écoute et écris le nombre en chiffres." : "Écoute : c'est lequel ?"}</div></div>
+    <section class="card center bq">
+      <div class="listen"><button class="btn cyan" id="bqPlay">${ICON.spk}Écouter</button><button class="btn ghost" id="bqSlow">${ICON.slow}Lentement</button></div>
+      ${q.hint ? html`<p class="small muted">${q.hint}</p>` : ""}
+      ${q.kind === "type" ? html`<form id="bqForm" class="bq-form"><input id="bqIn" inputmode="numeric" autocomplete="off" maxlength="9" aria-label="Le nombre en chiffres" placeholder="ex. 47"><button class="btn green" id="bqOk">Valider</button></form>`
+        : html`<div class="bq-opts">${q.options.map(o => html`<button class="btn ghost bq-opt" data-opt="${o}">${o}</button>`)}</div>`}
+      <div id="bqRes"></div></section>`);
+  const say = r => speak(q.say, { voiceURI: S.voice, rate: r });
+  $("#bqPlay").onclick = () => say(0.9); $("#bqSlow").onclick = () => say(S.slow);
+  $("#quit").onclick = () => quitActivity(BQ.i === 0, "basics");
+  if (q.kind === "type") {
+    $("#bqForm").onsubmit = e => { e.preventDefault(); const v = $("#bqIn").value.replace(/[\s.,]/g, ""); if (v) answerBasics(v === q.answer, v); };
+    setTimeout(() => { const i = $("#bqIn"); if (i) i.focus(); }, 50);
+  } else $$("[data-opt]").forEach(x => x.onclick = () => answerBasics(x.dataset.opt === q.answer, x.dataset.opt, x));
+  setTimeout(() => say(0.9), 250);
+}
+function answerBasics(ok, given, btn) {
+  if (BQ.done) return;
+  BQ.done = true;
+  const q = BQ.q;
+  if (ok) BQ.ok++;
+  play(ok ? "great" : "bad"); haptic(ok ? "good" : "bad");
+  $$("[data-opt]").forEach(x => { x.disabled = true; if (x.dataset.opt === q.answer) x.classList.add("good"); else if (x === btn) x.classList.add("bad"); });
+  const f = $("#bqForm"); if (f) f.querySelectorAll("input,button").forEach(x => { x.disabled = true; });
+  if (ok) FX.floatText("+4 XP", btn || $("#bqRes"), "gold");
+  render($("#bqRes"), html`<div class="bq-fb ${ok ? "ok" : "ko"}"><b>${ok ? "Bravo !" : `Non : c'était ${q.answer}`}</b>
+    <p><b>${q.words}</b>${q.kind === "type" ? html` = ${Number(q.answer).toLocaleString("fr-FR")}` : ""}</p><p class="frpron">« ${q.pron || pronOf(q.words)} »</p>${q.note ? html`<p class="small bx-note">${q.note}</p>` : ""}
+    <button class="btn ${ok ? "green" : "orange"} block" id="bqNext">${BQ.i + 1 < BQ.n ? "Suivant" : "Terminer"}</button></div>`);
+  $("#bqNext").onclick = nextBasics;
+  $("#bqNext").focus();
+}
+function nextBasics() {
+  BQ.i++;
+  if (BQ.i < BQ.n) { BQ.q = basicsQuestion(BQ.b); BQ.done = false; renderBasicsQuiz(); return; }
+  const b = BQ.b, pct = Math.round(BQ.ok / BQ.n * 100), prev = S.basics[b.id];
+  S.basics[b.id] = { best: Math.max(prev ? prev.best : 0, pct), d: today() };
+  const first = pct >= 80 && (!prev || prev.best < 80);
+  const r = gainXp(BQ.ok * 4 + 10, BQ.startLevel, { key: "basics:" + b.id, progress: first ? Econ.PROGRESS.firstDialogue : 0, why: `${b.short} réussis à ${pct} %` });
+  go("done", { title: pct >= 80 ? "Excellente oreille !" : "Quiz terminé", tiles: [["g", "Bonnes réponses", `${BQ.ok}/${BQ.n}`], ["c", "Réussite", pct + "%"], ["y", "XP gagnés", "+" + r.xpGained], ["o", "Pièces", "+" + r.coins]],
+    line: pct >= 80 ? "Tu les reconnais à l'oreille, bravo !" : "Réécoute les fiches, puis retente le quiz.", back: "basics", ...r });
+}
+
 // ---------------- Vocabulaire ----------------
 let V = null;
 function levelStats(lv) {
@@ -1092,7 +1201,7 @@ function levelStats(lv) {
   return { total: words.length, fresh, learning, mastered, due };
 }
 function learnTabs(active) {
-  return html`<div class="seg" role="tablist" aria-label="Apprendre">${[["vocab", "Vocabulaire"], ["grammar", "Grammaire"], ["mistakes", "Fautes à éviter"]].map(([v, t]) => html`<button role="tab" aria-selected="${v === active}" class="${v === active ? "on" : ""}" data-seg="${v}">${t}</button>`)}</div>`;
+  return html`<div class="seg" role="tablist" aria-label="Apprendre">${[["vocab", "Vocabulaire"], ["basics", "Dates & nombres"], ["grammar", "Grammaire"], ["mistakes", "Fautes"]].map(([v, t]) => html`<button role="tab" aria-selected="${v === active}" class="${v === active ? "on" : ""}" data-seg="${v}">${t}</button>`)}</div>`;
 }
 function bindLearnTabs() { $$("[data-seg]").forEach(b => b.onclick = () => { play("tap"); go(b.dataset.seg); }); }
 function renderVocabHome() {
@@ -1143,7 +1252,7 @@ function revealVocab() {
   V.revealed = true;
   const ans = $("#ans"); ans.hidden = false;
   const ipa = ref ? "/" + ref.map(w => w.prons ? P.ipaString(w.prons[0]) : "?").join(" ") + "/" : "";
-  render(ans, html`<p class="sentence">${c.en}</p><p class="ipa">${ipa}</p>
+  render(ans, html`<p class="sentence">${c.en}</p><p class="ipa">${ipa}</p>${c.pron ? html`<p class="frpron" title="Prononciation à la française, syllabe accentuée en majuscules">« ${c.pron} »</p>` : ""}${c.note ? html`<p class="small bx-note">${c.note}</p>` : ""}
     <div class="listen"><button class="btn cyan sm" id="listen">${ICON.spk}Écouter</button><button class="btn ghost sm" id="slow">${ICON.slow}Lentement</button></div>
     <div class="row"><button class="btn ghost sm" id="knew">Je le savais</button><button class="btn ghost sm" id="didnt">À revoir</button></div>`);
   $("#sCard").classList.add("flip");
@@ -1195,7 +1304,7 @@ function vocabNext(correct) {
   if (V.i < V.cards.length) { play("tap"); renderVocabCard(); return; }
   const total = V.xp + 10;
   const uniq = new Set(V.cards.map(x => x.id)).size;
-  go("vfinish", { total, correct: V.correct, count: uniq, newly: V.newly, ...gainXp(total, V.startLevel, { key: "vocab", progress: V.newly * Econ.PROGRESS.newWord, why: V.newly > 1 ? `${V.newly} mots appris` : "1 mot appris" }) });
+  go("vfinish", { total, correct: V.correct, count: uniq, newly: V.newly, ...gainXp(total, V.startLevel, { key: "vocab" + (V.back ? ":" + V.level : ""), progress: V.newly * Econ.PROGRESS.newWord, why: V.newly > 1 ? `${V.newly} mots appris` : "1 mot appris" }) });
 }
 function renderVocabFinish(o) {
   render($("#view"), html`<section class="card finish">
@@ -1212,7 +1321,7 @@ function renderVocabFinish(o) {
   fx(); play("done");
   collectCoins($("#coinTile"), o.coins);
   companionSay($("#vfCoach"), o.correct >= o.count * 0.8 ? "Quelle mémoire ! Ces mots sont à toi." : "Les mots ratés reviendront demain, c'est comme ça qu'on retient.", { voice: S.poufVoice, mood: "happy", av: S.avatar });
-  $("#vfOk").onclick = async () => { await rewards(o); if (SESS) sessionNext(); else go("vocab"); };
+  $("#vfOk").onclick = async () => { await rewards(o); if (SESS) sessionNext(); else go(V && V.back ? V.back : "vocab"); };
 }
 
 // ---------------- Conversation guidée et écoute ----------------
@@ -1808,6 +1917,8 @@ defView("send", renderSessionEnd, { tab: "session", full: true });
 defView("vocab", renderVocabHome);
 defView("vcard", renderVocabCard, { tab: "vocab", full: true });
 defView("vfinish", renderVocabFinish, { tab: "vocab", full: true });
+defView("basics", renderBasics, { tab: "vocab" });
+defView("bquiz", renderBasicsQuiz, { tab: "vocab", full: true });
 defView("dialog", renderDialog, { tab: "train", full: true });
 defView("dlisten", renderListen, { tab: "train", full: true });
 defView("dfinish", renderDialogFinish, { tab: "train", full: true });

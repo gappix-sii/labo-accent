@@ -6,6 +6,9 @@ import { sanitize, defaults, parseImport, exportText, cleanText } from "../js/co
 import * as M from "../js/meta.js";
 import * as E from "../js/core/economy.js";
 import { levelOf } from "../js/game.js";
+import { BASICS, basicsItems, numberWords, yearWords, ordinalWords, ordinalSuffix, pronOf } from "../js/basics.js";
+import { buildReference } from "../js/phonemes.js";
+import { readFileSync } from "node:fs";
 import { MODELS, guardedFetch, lookup } from "../js/integrity.js";
 import { SPECIES, ITEMS, THEMES, SLOTS, CATALOG, avatarSvg, bossSvg, BOSSES, droppable, itemPreview, boxPool, EXCLUSIVES, basePrice, levelFor } from "../js/avatar.js";
 
@@ -237,5 +240,24 @@ import { SPECIES, ITEMS, THEMES, SLOTS, CATALOG, avatarSvg, bossSvg, BOSSES, dro
   E.audit(OB, day, deps); assert.ok(OB.owned.includes("saber") && OB.coins === 50, "boîtes d'avant la mise à jour conservées"); assert.equal(O.coins, 120);
   const o = E.audit(O, day, deps); assert.ok(O.owned.includes("pirate") && O.coins === 120, o.notes.join(", "));
   console.log("anti-triche OK (plafond, répétitions, horloge, solde, contrôle de cohérence)");
+}
+// ---------- Dates & nombres ----------
+{
+  const cases = { 0: "zero", 13: "thirteen", 30: "thirty", 45: "forty-five", 100: "one hundred", 105: "one hundred and five", 250: "two hundred and fifty", 1000: "one thousand", 2345: "two thousand three hundred and forty-five", 1000000: "one million" };
+  for (const [n, w] of Object.entries(cases)) assert.equal(numberWords(+n), w);
+  assert.equal(yearWords(2026), "twenty twenty-six"); assert.equal(yearWords(1995), "nineteen ninety-five"); assert.equal(yearWords(2005), "two thousand and five"); assert.equal(yearWords(1900), "nineteen hundred"); assert.equal(yearWords(1905), "nineteen oh five");
+  assert.deepEqual([1, 2, 3, 5, 8, 9, 12, 20, 21, 30, 31].map(ordinalWords), ["first", "second", "third", "fifth", "eighth", "ninth", "twelfth", "twentieth", "twenty-first", "thirtieth", "thirty-first"]);
+  assert.deepEqual([1, 2, 3, 4, 11, 12, 13, 21, 22, 23, 111].map(ordinalSuffix), ["1st", "2nd", "3rd", "4th", "11th", "12th", "13th", "21st", "22nd", "23rd", "111th"]);
+  assert.equal(pronOf("forty-five"), "FOR-ti · FAÏV");
+  // Chaque mot et chaque phrase est notable au micro (présent dans le dictionnaire de prononciation)
+  const dict = JSON.parse(readFileSync(new URL("../data/cmudict.json", import.meta.url), "utf8"));
+  let n = 0;
+  for (const b of BASICS) {
+    assert.equal(new Set(basicsItems(b).map(w => w.en)).size, basicsItems(b).length, "doublon dans " + b.id);
+    for (const w of basicsItems(b)) { assert.ok(w.pron && w.fr, w.en); assert.ok(buildReference(dict, w.en).every(r => r.prons), "absent du dictionnaire : " + w.en); n++; }
+    for (const [en] of b.sentences) assert.ok(buildReference(dict, en).every(r => r.prons), "phrase non notable : " + en);
+  }
+  for (let k = 0; k <= 9999; k++) assert.ok(buildReference(dict, numberWords(k)).every(r => r.prons), "dictée non prononçable : " + k);
+  console.log(`dates & nombres OK (${n} mots, ${BASICS.reduce((t, b) => t + b.sentences.length, 0)} phrases, nombres 0–9999 prononçables)`);
 }
 console.log("TOUS LES TESTS CŒUR OK");

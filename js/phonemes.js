@@ -68,7 +68,13 @@ export function lookupProns(dict, word) {
 export function buildReference(dict, sentence) {
   return splitDisplayWords(sentence).map(display => {
     const norm = normWord(display);
-    return { display, norm, prons: norm ? lookupProns(dict, norm) : null };
+    let prons = norm ? lookupProns(dict, norm) : null;
+    // Mots composés absents du dictionnaire (twenty-one, thirty-first…) : on enchaîne la prononciation des morceaux.
+    if (!prons && display.includes("-")) {
+      const parts = display.split("-").map(x => lookupProns(dict, x));
+      if (parts.length > 1 && parts.every(Boolean)) prons = [parts.flatMap(x => x[0])];
+    }
+    return { display, norm, prons };
   });
 }
 

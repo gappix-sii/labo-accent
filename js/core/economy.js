@@ -99,7 +99,7 @@ export function audit(S, today, deps) {
   if (S.chests.length > maxChests - st.chests + 1) S.chests = S.chests.slice(0, Math.max(0, maxChests - st.chests + 1));
   st.bosses = Math.min(st.bosses, bosses + 2 * nDays * 9);
   // Pièces : tout ce que la progression aurait pu rapporter, très largement
-  const lessons = Object.keys(S.lessons).length, dlg = Object.keys(S.dialogues).length, gram = Object.keys(S.grammar).length;
+  const lessons = Object.keys(S.lessons).length, dlg = Object.keys(S.dialogues).length, gram = Object.keys(S.grammar).length + Object.keys(S.basics || {}).length;
   const words = Object.values(S.vocab || {}).filter(v => v && v.box >= 1).length;
   let maxEarned = Math.floor(S.xp / 4) + 40 * level + 15 * nDays + 25 * S.badges.length + 45 * st.quests
     + 160 * st.chests + 60 * bosses + 60 * st.bosses + PROGRESS.firstLesson * lessons + (3 * PROGRESS.newStar + 10 * PROGRESS.newBest) * lessons
