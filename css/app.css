@@ -180,6 +180,45 @@ body.in-lesson main{padding-bottom:40px}
 .bq-fb.ok{border-color:var(--green)} .bq-fb.ko{border-color:var(--orange,#ff9f43)}
 .bq-fb p{margin:0}
 @media (min-width:900px){.bxlist{grid-template-columns:1fr 1fr;column-gap:28px}}
+@media (max-width:480px){.seg:has(> :nth-child(5)) button{font-size:.68rem;padding:9px 1px}}
+/* ================= Verbes irréguliers ================= */
+.vf-tune{display:inline-flex;align-items:center;gap:10px;margin:4px 0 8px;background:var(--well);border:2px solid var(--line);border-radius:999px;padding:8px 16px;color:var(--yellow);font-family:var(--font-display);font-style:italic;font-weight:900;font-size:1.25rem;cursor:pointer}
+.vf-tune svg{width:22px;height:22px}
+.vf-games{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.vgame{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:14px;border-radius:18px;border:2px solid var(--line);background:linear-gradient(160deg,var(--panel2),var(--panel));color:var(--ink);cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.35);transition:transform .15s}
+.vgame:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.vgame b{font-family:var(--font-display);font-style:italic;font-size:1.2rem;text-transform:uppercase}
+.vgame span{font-size:.8rem;color:var(--muted)}
+.vgame.trio{border-color:var(--pink,#ff6fae)} .vgame.rush{border-color:var(--yellow)} .vgame.write{border-color:var(--cyan,#4cc9f0)} .vgame.say{border-color:var(--green)}
+.seg.mini{display:inline-grid;font-size:.75rem} .seg.mini button{padding:6px 8px;font-size:.74rem}
+.vf-head{display:grid;grid-template-columns:42px repeat(3,1fr);gap:6px;font-size:.7rem;text-transform:uppercase;color:var(--muted);font-weight:800;margin:10px 0 2px;padding-left:2px}
+.vf-head span:first-child{grid-column:1}
+.vflist{display:grid}
+.vfrow{display:grid;grid-template-columns:42px 1fr;gap:4px 6px;padding:10px 0;border-bottom:2px solid var(--soft);animation:rise .35s both;animation-delay:calc(var(--i,0) * 25ms)}
+.vf-forms{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:1.05rem;align-items:center}
+.vf-meta{grid-column:2}
+.vf-ex{margin:4px 0 0;color:var(--muted);font-style:italic}
+.vf-hide{border:2px dashed var(--line);background:var(--well);color:var(--yellow);border-radius:10px;font-weight:900;padding:4px 0;cursor:pointer}
+.vf-shown{color:var(--yellow);animation:rise .3s both}
+.trio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0 12px;perspective:800px}
+.tcard{position:relative;height:84px;border:0;background:none;padding:0;cursor:pointer;transform-style:preserve-3d;transition:transform .35s}
+.tcard span{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:16px;backface-visibility:hidden;border:2px solid var(--line)}
+.tc-back{background:linear-gradient(135deg,#7b3fe4,#ff6fae);color:#fff;font-family:var(--font-display);font-style:italic;font-weight:900;font-size:2rem;box-shadow:0 4px 0 rgba(0,0,0,.35)}
+.tc-face{background:var(--panel2);transform:rotateY(180deg);color:var(--ink)}
+.tc-face b{font-size:1.05rem} .tc-face small{font-size:.62rem;color:var(--muted);opacity:0;transition:opacity .3s}
+.tcard.up{transform:rotateY(180deg)}
+.tcard.done .tc-face{border-color:var(--green);background:color-mix(in srgb,var(--green) 18%,var(--panel2))} .tcard.done small{opacity:1}
+.tcard.no .tc-face{border-color:var(--red,#ff5470)}
+.rush-hud{display:flex;justify-content:space-between;margin:8px 0}
+.rush-sent{font-size:1.3rem;font-weight:700;line-height:1.5;margin:8px 0}
+.rush-sent .blank{display:inline-block;min-width:4ch;border-bottom:3px solid var(--yellow);color:var(--yellow);padding:0 4px}
+.rush-sent .blank.ok{color:var(--green);border-color:var(--green)} .rush-sent .blank.ko{color:var(--orange,#ff9f43);border-color:var(--orange,#ff9f43)}
+.vw-sent{font-size:1.25rem;font-weight:700;line-height:2.1;margin:10px 0}
+.vw-sent input{font:inherit;color:var(--yellow);background:var(--well);border:0;border-bottom:3px solid var(--yellow);border-radius:8px 8px 0 0;text-align:center;padding:0 4px;margin:0 4px}
+.vw-sent input.ok{color:var(--green);border-color:var(--green)} .vw-sent input.ko{color:var(--orange,#ff9f43);border-color:var(--orange,#ff9f43)}
+.vw-actions{margin-top:8px}
+.bq-fb .row{margin:4px 0 8px}
+@media (min-width:900px){.vf-games{grid-template-columns:repeat(4,1fr)} .trio-grid{grid-template-columns:repeat(4,1fr)} .tcard{height:100px}}
 .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%}
 .tiles.four{grid-template-columns:repeat(2,1fr)} .tiles.six{grid-template-columns:repeat(3,1fr)}
 @media (min-width:560px){.tiles.four{grid-template-columns:repeat(4,1fr)}}

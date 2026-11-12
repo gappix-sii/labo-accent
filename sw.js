@@ -6,8 +6,8 @@
 //    CSP du document (Trusted Types, pas de script externe), CSP des workers, isolation cross-origin, anti-iframe.
 // 3. Ne touche jamais aux requêtes vers d'autres sites (les modèles sont vérifiés dans les workers, voir js/integrity.js).
 /* BUILD:BEGIN */
-const VERSION = "labo-d0ccfb148eb0";
-const MANIFEST = {"css/app.css":{"h":"f6d8a574e250611fb4c5c174e8873f9d86e22bef70d5c2bffe24e01cd56aee83","n":80137},
+const VERSION = "labo-cd6577c8369e";
+const MANIFEST = {"css/app.css":{"h":"10cffb175ec23de5438eaf4a6306907ed96a51a4a35b482b8f60d4c5910e1ebb","n":84386},
   "data/cmudict.json":{"h":"ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b","n":4114306},
   "fonts/barlow-condensed-latin-800-italic.woff2":{"h":"59b48100622b2dea5b10bbf9e98d02eecf20ea8ae000821877f2d470ec16ee55","n":23780},
   "fonts/barlow-condensed-latin-900-italic.woff2":{"h":"b58672f4b405724353d140e19cfead74fefc9004271e846d4884cd9b76f36dbf","n":23212},
@@ -18,7 +18,7 @@ const MANIFEST = {"css/app.css":{"h":"f6d8a574e250611fb4c5c174e8873f9d86e22bef70
   "icons/icon-512.png":{"h":"6d46b0b296865b477d8c78fc94bee366ff4b40341313ae12e7c1eadfc777207d","n":12913},
   "icons/icon.svg":{"h":"4047b4dcbd186860a3cfb5f7f2dc9c98952f2a47118e9812100d0ded42c84708","n":400},
   "index.html":{"h":"d0f1ce3303bcf0a70a3ab4d2d6171414b6b2aa784e3ebcc6b2b9936d92e30bd8","n":6542},
-  "js/app.js":{"h":"0346389156f690a0a3e066ab437ebbc61e2467b99181a5e5845235e87bf037ac","n":157362},
+  "js/app.js":{"h":"b17e347f3dfbf354166bd9a5e59640681b6cd571421c6d46e2b5d250be652a9a","n":157486},
   "js/art.js":{"h":"2c9a402ba01e48e371275a8e8210acfd05e7ce43658d972907fb4c2a3fbd6d46","n":7111},
   "js/audio.js":{"h":"3ed9fe642351caf208cb9fd8842bfacd557bdedc5e13a968f27966515f619b01","n":5998},
   "js/avatar.js":{"h":"13f903a38031257621a9a4cd220a7672b64e20de8bdafe9e098a104ae423bcff","n":76221},
@@ -27,15 +27,16 @@ const MANIFEST = {"css/app.css":{"h":"f6d8a574e250611fb4c5c174e8873f9d86e22bef70
   "js/chrono.js":{"h":"3f8acd26be32cc5abbc5f40cf0585b82a61b79d4e16cef0793400b39d52a5b9c","n":2067},
   "js/content.js":{"h":"b5b839bf38c93db4d2d1f7d7c0d29a363f8319068f96fd7de7ae534413c8b836","n":12140},
   "js/core/dom.js":{"h":"cf0b04f6214c6e19ea6cc581b58205c5008accdad394508403367c55282bc084","n":6467},
-  "js/core/economy.js":{"h":"648d83d2e3b7b33bc86b6c096831e0021a845725d96a313c15f0538fb44103ce","n":7938},
+  "js/core/economy.js":{"h":"c5ccf1bf3ffe072b6d0208ae842c2d716a4d941d8fd7fd5f08175a5a22766544","n":7976},
   "js/core/seal.js":{"h":"8ff111a96959a19c29c95e094e1a899ad6eda2d0cd4fb49a29b6f2d3108e3fef","n":1899},
   "js/core/secret.js":{"h":"9e8ff9e69dc1993bcb3c9e3214e071ffbeecff1df764b6780804f62d80fe3226","n":3002},
-  "js/core/store.js":{"h":"6c92f775c58ca1078e0a900910d2262b4e4247989cc02afc850a1609e4b3d570","n":11263},
+  "js/core/store.js":{"h":"2e2f8c22b1d2192ab90dd98b774b2da9ee7ca0838b5046c573acb77c3147d246","n":11354},
   "js/dialogues.js":{"h":"5291c9b56e61879b0f7c04b38fb13af5a85d3aa399bbd2014089c51c8c632e34","n":16800},
   "js/fx.js":{"h":"e92947b3e0d0dba9a351d82203ef66b494b9e85cb0bc8d040d132144d3ffe2a8","n":7847},
   "js/game.js":{"h":"c55e280078647f0234433f51a0914e7ae1c312d66066304579906f4bbb1d5b09","n":10362},
   "js/grammar.js":{"h":"18323d4fc8096f7a57fb332999f710c40de18ee9cbb11e279ae97a1837a5a413","n":30662},
   "js/integrity.js":{"h":"5496eeb233a33d68ef579964c574f58014a377269cd8375acd6b030e1587c18b","n":6091},
+  "js/irregular.js":{"h":"b47b647aa1840de6e88934856e0c6681901b35ae83e0969233ed835ab50cf17b","n":19777},
   "js/mascot.js":{"h":"2bf1076d68c152fe01aba0bc16368f3cac419e7be35c8ab5ababcdcff376fb5a","n":2511},
   "js/meta.js":{"h":"f03ef4637eb4de9046dd489dbcf9064e77e4e756e746ba5deb3de50acac266e9","n":11613},
   "js/mistakes.js":{"h":"7190f9253cc152ab161fc47d29b16991e93eb408d0b0471c40faa20de0a554e0","n":5294},
@@ -45,6 +46,7 @@ const MANIFEST = {"css/app.css":{"h":"f6d8a574e250611fb4c5c174e8873f9d86e22bef70
   "js/views/arena.js":{"h":"9b3a5cd4f69b5459d741346c9fabe0b4689d71bad96bb214aa9e777e6429c9c0","n":14925},
   "js/views/locker.js":{"h":"afbea92a75303b3e63300adf451149e2587cdcfc169284f3524afe6198ede287","n":17132},
   "js/views/lootbox.js":{"h":"eafc6f72b4f6e76f9920954d9471468adaf1058b0ac756db88374e3a305f1aaa","n":9516},
+  "js/views/verbs.js":{"h":"a2c898b5f968cbabfa2ec97a69c4651f4b3fb4fd385fa8c20d87338b90463775","n":18604},
   "js/vocab.js":{"h":"7550d525a813b7570cf6cb5e9991975b6f58e7863c12039aa8364c956ee763f2","n":11241},
   "js/worker.js":{"h":"c8151c3e371fce679dea8f64cdcf63b4553f6f70c2a37b3c8a2f6fd8a8e709b6","n":2950},
   "manifest.webmanifest":{"h":"abc8d70fbf7514cf470e2f129ada80ac309d14c9480903dc08eecede6ec56123","n":590},

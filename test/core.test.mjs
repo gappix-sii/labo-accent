@@ -8,6 +8,7 @@ import * as E from "../js/core/economy.js";
 import { levelOf } from "../js/game.js";
 import { BASICS, basicsItems, numberWords, yearWords, ordinalWords, ordinalSuffix, pronOf } from "../js/basics.js";
 import { buildReference } from "../js/phonemes.js";
+import { FAMILIES, VERBS, variants, targetOf, cloze, fakeRegular } from "../js/irregular.js";
 import { readFileSync } from "node:fs";
 import { MODELS, guardedFetch, lookup } from "../js/integrity.js";
 import { SPECIES, ITEMS, THEMES, SLOTS, CATALOG, avatarSvg, bossSvg, BOSSES, droppable, itemPreview, boxPool, EXCLUSIVES, basePrice, levelFor } from "../js/avatar.js";
@@ -259,5 +260,24 @@ import { SPECIES, ITEMS, THEMES, SLOTS, CATALOG, avatarSvg, bossSvg, BOSSES, dro
   }
   for (let k = 0; k <= 9999; k++) assert.ok(buildReference(dict, numberWords(k)).every(r => r.prons), "dictée non prononçable : " + k);
   console.log(`dates & nombres OK (${n} mots, ${BASICS.reduce((t, b) => t + b.sentences.length, 0)} phrases, nombres 0–9999 prononçables)`);
+}
+// ---------- Verbes irréguliers ----------
+{
+  const dict = JSON.parse(readFileSync(new URL("../data/cmudict.json", import.meta.url), "utf8"));
+  assert.ok(VERBS.length >= 60 && FAMILIES.length >= 8);
+  assert.equal(new Set(VERBS.map(x => x.base)).size, VERBS.length, "verbe en double");
+  for (const x of VERBS) {
+    assert.ok(x.fr && x.pron.length === 3, x.base);
+    for (const f of [x.base, ...variants(x.past), ...variants(x.pp)]) assert.ok(buildReference(dict, f).every(r => r.prons), "forme non notable : " + f);
+    for (const sent of [x.ps, x.pps]) {
+      assert.ok(buildReference(dict, sent.en).every(r => r.prons), "phrase non notable : " + sent.en);
+      const t = targetOf(sent, x); assert.equal((sent.en.match(new RegExp(`\\b${t}\\b`, "gi")) || []).length, 1, `${x.base} : « ${sent.en} »`);
+      const c = cloze(sent, x); assert.equal(c.before + c.answer + c.after, sent.en);
+    }
+    assert.ok(!variants(x.past).includes(fakeRegular(x.base)) || x.base === "cut", "la fausse forme régulière doit être fausse : " + x.base);
+  }
+  assert.equal(targetOf(VERBS.find(x => x.base === "be").ps, VERBS.find(x => x.base === "be")), "was");
+  assert.deepEqual(["go", "buy", "cut", "fly", "make"].map(fakeRegular), ["goed", "buyed", "cutted", "flied", "maked"]);
+  console.log(`verbes irréguliers OK (${VERBS.length} verbes, ${FAMILIES.length} familles, ${VERBS.length * 2} phrases de contexte)`);
 }
 console.log("TOUS LES TESTS CŒUR OK");

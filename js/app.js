@@ -24,6 +24,7 @@ import { SCENES, systemPrompt } from "./scenes.js";
 import { setupLocker } from "./views/locker.js";
 import { setupArena } from "./views/arena.js";
 import { createLootbox } from "./views/lootbox.js";
+import { setupVerbs } from "./views/verbs.js";
 
 // ---------------- Anti-iframe ----------------
 // Un autre site ne peut pas afficher l'appli dans un cadre (protection contre le « clickjacking »).
@@ -1201,7 +1202,7 @@ function levelStats(lv) {
   return { total: words.length, fresh, learning, mastered, due };
 }
 function learnTabs(active) {
-  return html`<div class="seg" role="tablist" aria-label="Apprendre">${[["vocab", "Vocabulaire"], ["basics", "Dates & nombres"], ["grammar", "Grammaire"], ["mistakes", "Fautes"]].map(([v, t]) => html`<button role="tab" aria-selected="${v === active}" class="${v === active ? "on" : ""}" data-seg="${v}">${t}</button>`)}</div>`;
+  return html`<div class="seg" role="tablist" aria-label="Apprendre">${[["vocab", "Vocabulaire"], ["verbs", "Verbes"], ["basics", "Dates & nombres"], ["grammar", "Grammaire"], ["mistakes", "Fautes"]].map(([v, t]) => html`<button role="tab" aria-selected="${v === active}" class="${v === active ? "on" : ""}" data-seg="${v}">${t}</button>`)}</div>`;
 }
 function bindLearnTabs() { $$("[data-seg]").forEach(b => b.onclick = () => { play("tap"); go(b.dataset.seg); }); }
 function renderVocabHome() {
@@ -1932,12 +1933,13 @@ defView("chat", renderChat, { tab: "train", full: true });
 
 // Contexte partagé avec les modules de vues (compagnon, arène).
 const app = {
-  get S() { return S; }, save, earn, now, go, defView, play, haptic, toast, notify, confirmDlg, celebrate, rewards, gainXp, quest, spend, openChestFlow, collectCoins,
+  get S() { return S; }, save, earn, now, learnTabs, bindLearnTabs, startLesson, go, defView, play, haptic, toast, notify, confirmDlg, celebrate, rewards, gainXp, quest, spend, openChestFlow, collectCoins,
   renderHud, applyPrefs, checkUnlocks, today, streak, levelNow, ICON, TEST_LOCAL, params, view: () => view, bossesWon, startBoss, speakEn: (t, rate = 0.9) => speak(t, { voiceURI: S.voice, rate })
 };
 app.lootbox = createLootbox(app);
 setupLocker(app);
 setupArena(app);
+setupVerbs(app);
 
 // ---------------- Raccourcis clavier ----------------
 const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "KeyB", "KeyA"];
