@@ -30,10 +30,28 @@ export const sfx = {
   tick() { tone(1500, 0, 0.03, "square", 0.025); },
   whoosh() { tone(300, 0, 0.18, "sine", 0.05, 900); },
   rank() { [523, 784, 1047].forEach((f, i) => tone(f, i * 0.12, 0.4, "triangle", 0.1)); [659, 988, 1319].forEach((f, i) => tone(f, i * 0.12, 0.4, "sine", 0.06)); },
-  buy() { [1047, 1319, 1568].forEach((f, i) => tone(f, i * 0.05, 0.12, "square", 0.04)); }
+  buy() { [1047, 1319, 1568].forEach((f, i) => tone(f, i * 0.05, 0.12, "square", 0.04)); },
+  charge(k = 0) { tone(260 + k * 150, 0, 0.22, "square", 0.05, 260); tone(130 + k * 75, 0, 0.3, "sine", 0.06); },
+  reveal(r) {
+    const seq = { common: [523, 659], rare: [587, 784, 988], epic: [523, 784, 1047, 1319], legendary: [392, 523, 659, 784, 1047, 1319, 1568], mythic: [330, 494, 659, 988, 1319, 1760, 2093, 2637] }[r] || [523];
+    seq.forEach((f, i) => tone(f, i * 0.07, 0.32, r === "mythic" ? "sawtooth" : "triangle", r === "mythic" ? 0.05 : 0.09));
+    if (r === "legendary" || r === "mythic") { tone(110, 0, 0.8, "sine", 0.14, -40); seq.slice(-3).forEach((f, i) => tone(f, 0.6 + i * 0.12, 0.5, "triangle", 0.07)); }
+  }
 };
+// Éclair plein écran (raretés hautes). Dans une fenêtre ouverte, il doit être dans la fenêtre pour passer devant.
+export function screenFlash(cls = "") {
+  if (reduced()) return;
+  const host = document.querySelector("dialog[open]") || document.body;
+  const el = document.createElement("div");
+  el.className = "screen-flash " + cls;
+  host.appendChild(el);
+  el.addEventListener("animationend", () => el.remove(), { once: true });
+  setTimeout(() => el.remove(), 2000);
+}
 
 export function confetti(canvas, ms = 2200, { x = 0.5, y = 0.35, count = 140 } = {}) {
+  // Une fenêtre (dialog) ouverte passe au-dessus de tout : on dessine alors dans son propre canevas.
+  canvas = document.querySelector("dialog[open] canvas.dfx") || canvas;
   if (!canvas || reduced()) return;
   const dpr = window.devicePixelRatio || 1, W = canvas.width = innerWidth * dpr, H = canvas.height = innerHeight * dpr;
   const g = canvas.getContext("2d"), cols = ["#ffd23f", "#4ee07a", "#4cc9f0", "#ff5d8f", "#ff9f43", "#a98bff"];

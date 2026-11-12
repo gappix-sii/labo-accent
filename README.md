@@ -12,6 +12,7 @@ Le tout façon jeu vidéo : compagnons à personnaliser, coffres, quêtes, boss 
 
 - **Compagnons** : 9 animaux originaux à débloquer avec les niveaux (putois, renard, chat, lapin, panda, pingouin, hibou, axolotl, bébé dragon légendaire), 4 couleurs chacun, plus de 40 accessoires (tête, yeux, cou, main, aura animée) de rareté commune à légendaire, et un nom à choisir.
 - **Boutique et pièces** : les pièces se gagnent avec l'XP, les quêtes et les coffres ; on achète couleurs, accessoires, thèmes de l'appli (8 dont un thème clair), gel de série et potion d'XP ×2.
+- **Boîtes à butin** (classique 100, épique 260, mythique 600 pièces) : 5 raretés de Commun à **Mythique**, probabilités affichées (ce sont les vraies), légendaire ou mieux garanti au moins toutes les 10 boîtes, doublons convertis en pièces. **16 exclusivités** introuvables ailleurs : 9 skins à effets animés (holographique, spectral, néon, lave, cristal…) et 7 accessoires (sabre laser, yeux laser, galaxie…). Ouverture animée : la boîte tremble et change de couleur palier par palier jusqu'à la rareté obtenue, puis une révélation différente pour chaque rareté (onde de choc, rayons, éclair blanc, confettis, son et vibration). Jamais d'argent réel.
 - **Coffres** (bois, argent, or, légendaire) avec animation d'ouverture ; gagnés en montant de niveau, avec les quêtes, les boss et les rangs.
 - **Quêtes du jour** : 3 défis différents chaque jour, un coffre si les trois sont faites.
 - **Boss** : un boss garde la fin de chaque unité ; une phrase bien prononcée lui fait des dégâts (coup critique au-dessus de 95), une phrase ratée coûte une vie. Victoire : couronne, coffre d'or, trophées.
@@ -81,7 +82,7 @@ puis ouvre `http://localhost:8000` dans Chrome. (Le micro exige `https` ou `loca
 | `js/integrity.js`, `js/sha256.js` | Liste blanche et vérification SHA-256 des modèles téléchargés |
 | `js/avatar.js`, `js/art.js` | Compagnons, accessoires, thèmes, boss, coffres, emblèmes (SVG originaux) |
 | `js/meta.js` | Pièces, quêtes, coffres, rangs, gel de série, boss, défi chrono |
-| `js/views/locker.js`, `js/views/arena.js`, `js/chrono.js` | Mon compagnon (boutique), arène et défi chrono |
+| `js/views/locker.js`, `js/views/lootbox.js`, `js/views/arena.js`, `js/chrono.js` | Mon compagnon (boutique), boîtes à butin, arène et défi chrono |
 | `js/audio.js` | Micro, détection de fin de parole, conversion 16 kHz, synthèse vocale |
 | `js/worker.js` | Moteur de prononciation, dans un thread séparé |
 | `js/phonemes.js` | Dictionnaire → sons, décodage CTC, alignement, score, conseils |

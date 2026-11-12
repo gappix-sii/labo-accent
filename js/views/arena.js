@@ -3,7 +3,7 @@ import { html, render, $, $$, setVar } from "../core/dom.js";
 import * as M from "../meta.js";
 import { UNITS } from "../game.js";
 import { BOSSES, bossSvg } from "../avatar.js";
-import { emblemSvg, COIN, TROPHY, CROWN, CHEST_ICO } from "../art.js";
+import { emblemSvg, boxSvg, COIN, TROPHY, CROWN, CHEST_ICO } from "../art.js";
 import { makeQuestions } from "../chrono.js";
 import { line } from "../mascot.js";
 import * as FX from "../fx.js";
@@ -39,15 +39,20 @@ export function setupArena(app) {
           ${dailyScore !== null ? html`<p class="daily-score">Ton meilleur score du jour : <b>${dailyScore.toLocaleString("fr-FR")}</b></p>` : ""}
           <button class="btn cyan block" id="arDaily">${dailyScore !== null ? "Rejouer le défi du jour" : "Relever le défi"}</button>
         </section>
-        <section class="card bosses-card" data-css="--i:3"><h3>Les boss</h3><p class="small muted">Un boss garde la fin de chaque unité du parcours. Bats-le pour gagner une couronne, un coffre d'or et des trophées.</p>
+        <section class="card mode loot-card" data-css="--i:3">
+          <div class="mode-head"><span class="mode-box">${boxSvg("mythic", "idle")}</span><div><h3>Boîtes à butin</h3><p class="small">Dépense tes pièces pour tenter ta chance : skins et accessoires exclusifs, du commun au mythique. Probabilités affichées, légendaire garanti au moins toutes les 10 boîtes.</p></div></div>
+          <button class="btn yellow block" id="arLoot">Voir les boîtes</button>
+        </section>
+        <section class="card bosses-card" data-css="--i:4"><h3>Les boss</h3><p class="small muted">Un boss garde la fin de chaque unité du parcours. Bats-le pour gagner une couronne, un coffre d'or et des trophées.</p>
           <div class="boss-list">${UNITS.map(u => { const b = s.bosses[u.id], won = b && b.won, open = unitDone(u); return html`<div class="boss-row ${won ? "won" : open ? "open" : "locked"}">
             <div class="boss-mini">${bossSvg(u.id, won ? "ko" : "")}</div><div class="grow"><b>${BOSSES[u.id].name}</b><br><span class="small muted">${u.title} · ${u.sub}${b ? ` · meilleur ${b.best} %` : ""}</span></div>
             ${won ? html`<span class="crown">${CROWN}</span>` : ""}${open ? html`<button class="btn sm ${won ? "ghost" : "red"}" data-fight="${u.id}">${won ? "Rejouer" : "Combattre"}</button>` : html`<span class="pill">Termine l'unité</span>`}</div>`; })}</div></section>
-        <section class="card ranks-card" data-css="--i:4"><h3>Les rangs</h3><p class="small muted">Chaque nouveau rang rapporte un coffre d'or (légendaire pour Légende). Les trophées se gagnent au défi chrono et contre les boss.</p>
+        <section class="card ranks-card" data-css="--i:5"><h3>Les rangs</h3><p class="small muted">Chaque nouveau rang rapporte un coffre d'or (légendaire pour Légende). Les trophées se gagnent au défi chrono et contre les boss.</p>
           <div class="rank-list">${M.RANKS.map((r, i) => html`<div class="rank-row ${i <= rank.i ? "got" : ""}">${emblemSvg({ ...r, div: "" }, "sm")}<b>${r.name}</b><span class="small muted">${r.min} ${TROPHY}</span></div>`)}</div></section>
       </div>`);
     $("#arChrono").onclick = () => { app.play("tap"); startChrono("free"); };
     $("#arDaily").onclick = () => { app.play("tap"); startChrono("daily"); };
+    $("#arLoot").onclick = () => { app.play("tap"); app.go("locker", { tab: "boxes" }); };
     $$("[data-fight]").forEach(b => b.onclick = () => { app.play("tap"); app.startBoss(b.dataset.fight); });
   }
 

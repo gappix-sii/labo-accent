@@ -69,8 +69,8 @@ export const CHESTS = {
   gold: { name: "Coffre d'or", coins: [70, 140], item: 1, rar: { rare: 0.55, epic: 0.37, legendary: 0.08 } },
   legend: { name: "Coffre légendaire", coins: [180, 300], item: 1, rar: { epic: 0.6, legendary: 0.4 } }
 };
-export const DUP_COINS = { common: 25, rare: 60, epic: 120, legendary: 250 };
-const RAR_ORDER = ["common", "rare", "epic", "legendary"];
+export const DUP_COINS = { common: 25, rare: 60, epic: 120, legendary: 250, mythic: 500 };
+const RAR_ORDER = ["common", "rare", "epic", "legendary", "mythic"];
 function pickWeighted(weights, rng) {
   let r = rng(), last = null;
   for (const [k, w] of Object.entries(weights)) { last = k; if ((r -= w) < 0) return k; }
@@ -165,4 +165,27 @@ export function chronoRewards(score, correct, dailyFirst = false) {
 export function pushRecord(list, entry, max = 5) {
   const out = [...list, entry].sort((a, b) => b.score - a.score).slice(0, max);
   return { list: out, rank: out.indexOf(entry) };
+}
+
+// ---------- Boîtes à butin (achetées avec les pièces du jeu, jamais avec de l'argent réel) ----------
+// Les probabilités affichées dans l'appli sont exactement celles-ci.
+export const BOXES = {
+  classic: { name: "Boîte classique", price: 100, odds: { common: 0.62, rare: 0.27, epic: 0.09, legendary: 0.018, mythic: 0.002 } },
+  epic: { name: "Boîte épique", price: 260, odds: { rare: 0.5, epic: 0.36, legendary: 0.12, mythic: 0.02 } },
+  mythic: { name: "Boîte mythique", price: 600, odds: { epic: 0.45, legendary: 0.43, mythic: 0.12 } }
+};
+export const BOX_DUP = { common: 20, rare: 50, epic: 110, legendary: 250, mythic: 500 };
+export const PITY = 10; // au plus 10 boîtes pour un objet légendaire ou mythique
+export const PITY_ODDS = { legendary: 0.8, mythic: 0.2 };
+// pool : [{id, rarity, owned}]. Priorité aux objets pas encore possédés ; sinon doublon converti en pièces.
+export function rollBox(boxId, pool, pity, rng, forced = null) {
+  const B = BOXES[boxId];
+  const guaranteed = !forced && pity >= PITY - 1;
+  const rarity = forced || pickWeighted(guaranteed ? PITY_ODDS : B.odds, rng);
+  const all = pool.filter(p => p.rarity === rarity), fresh = all.filter(p => !p.owned);
+  const top = rarity === "legendary" || rarity === "mythic";
+  const res = { rarity, guaranteed, pity: top ? 0 : pity + 1, item: null, dup: false, coins: 0 };
+  if (fresh.length) res.item = fresh[Math.floor(rng() * fresh.length)].id;
+  else { res.dup = true; res.coins = BOX_DUP[rarity]; if (all.length) res.item = all[Math.floor(rng() * all.length)].id; }
+  return res;
 }

@@ -37,3 +37,31 @@ export function emblemSvg(rank, cls = "") {
     ${rank.id === "legend" ? html`<path class="av-twinkle" d="M50 0l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="#ffffff"/>` : ""}
   </svg>`;
 }
+
+// Boîtes à butin : chaque modèle a sa couleur ; la mythique a un ruban qui change de couleur.
+const BOX_COLORS = {
+  classic: { a: "#4cc9f0", b: "#1e8fb5", rib: "#ffd23f", ribD: "#c99a00" },
+  epic: { a: "#a98bff", b: "#6c4fd1", rib: "#ff6fae", ribD: "#c43d7c" },
+  mythic: { a: "#241a4f", b: "#120d24", rib: "#ff2fd0", ribD: "#8a1a73" }
+};
+export function boxSvg(id, cls = "") {
+  const c = BOX_COLORS[id] || BOX_COLORS.classic, rgb = id === "mythic" ? "box-rgb" : "";
+  return html`<svg class="lbox lbox-${id} ${cls}" viewBox="0 0 200 200" role="img" aria-label="Boîte à butin">
+    <ellipse cx="100" cy="186" rx="64" ry="9" fill="#000000" opacity=".3"/>
+    <g class="lbox-body">
+      <rect x="40" y="94" width="120" height="86" rx="10" fill="${c.a}" stroke="#120d24" stroke-width="4"/>
+      <rect x="40" y="150" width="120" height="30" rx="8" fill="${c.b}" opacity=".55"/>
+      <rect class="${rgb}" x="90" y="94" width="20" height="86" fill="${c.rib}"/>
+      <text x="64" y="152" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-style="italic" font-weight="900" font-size="46" fill="#ffffff" opacity=".9">?</text>
+      <text x="124" y="152" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-style="italic" font-weight="900" font-size="46" fill="#ffffff" opacity=".9">?</text>
+      ${id === "mythic" ? html`<path d="M48 104l8 8M146 104l8 8M50 170l10-6M150 170l-10-6" stroke="#ffd23f" stroke-width="3" stroke-linecap="round" opacity=".8"/>` : ""}
+    </g>
+    <g class="lbox-lid">
+      <rect x="30" y="68" width="140" height="32" rx="8" fill="${c.a}" stroke="#120d24" stroke-width="4"/>
+      <rect x="30" y="88" width="140" height="12" rx="4" fill="${c.b}" opacity=".5"/>
+      <rect class="${rgb}" x="90" y="68" width="20" height="32" fill="${c.rib}"/>
+      <path class="${rgb}" d="M100 66c-10-22-40-26-38-8 2 12 24 12 38 8zM100 66c10-22 40-26 38-8-2 12-24 12-38 8z" fill="${c.rib}" stroke="${c.ribD}" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="100" cy="64" r="8" fill="${c.ribD}"/>
+    </g>
+  </svg>`;
+}

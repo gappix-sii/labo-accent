@@ -22,7 +22,7 @@ export function defaults() {
     quests: { day: "", list: [], bonus: false }, chests: [], trophies: 0, rankSeen: 0,
     bosses: {}, chrono: { best: [], daily: { day: "", score: 0 }, runs: 0 },
     freezes: 0, frozenDays: [], boostUntil: 0, haptics: true, motion: "auto", title: "", player: "",
-    stats: { chests: 0, perfect: 0, bosses: 0, quests: 0 }, levelSeen: 1, secret: false
+    stats: { chests: 0, perfect: 0, bosses: 0, quests: 0, boxes: 0 }, boxPity: 0, levelSeen: 1, secret: false
   };
 }
 
@@ -105,7 +105,8 @@ const SPEC = {
   chrono: shape({ best: list(shape({ score: int(0, 1e7), d: day, daily: bool }, true), 5), daily: shape({ day: v => v === "" ? "" : day(v), score: int(0, 1e7) }, true), runs: int(0, 1e7) }),
   freezes: int(0, MAX_FREEZES), frozenDays: list(day, 120, true), boostUntil: num(0, 9e15),
   haptics: bool, motion: oneOf(["auto", "reduced", "full"]), title: str(30, /^[a-z0-9:]*$/), player: text(20),
-  stats: shape({ chests: int(0, 1e7), perfect: int(0, 1e7), bosses: int(0, 1e7), quests: int(0, 1e7) }),
+  stats: shape({ chests: int(0, 1e7), perfect: int(0, 1e7), bosses: int(0, 1e7), quests: int(0, 1e7), boxes: int(0, 1e7) }),
+  boxPity: int(0, 100),
   levelSeen: int(1, 10000), secret: bool, news: int(0, 1000), v: int(1, 1000)
 };
 

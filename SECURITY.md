@@ -90,6 +90,13 @@ Autres en-têtes : `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Embe
   - Nom du modèle validé (lettres minuscules, chiffres, points, tirets), délai maximal de 45 s.
   - L'audio (WAV 16 kHz) et le texte de la conversation sont envoyés à Google ; avec l'offre gratuite, Google peut les utiliser pour améliorer ses produits.
 
+## Boîtes à butin (jeu responsable)
+
+- Payées **uniquement avec les pièces du jeu**, gagnées en apprenant : il n'existe aucun achat avec de l'argent réel dans l'appli.
+- Les probabilités affichées sont exactement celles du tirage (`BOXES` dans `js/meta.js`), vérifiées par un test sur 200 000 tirages.
+- Garantie : au plus 10 boîtes pour un objet légendaire ou mythique ; doublons convertis en pièces.
+- Tirage par `crypto.getRandomValues`, résultat enregistré avant l'animation (fermer la fenêtre ne fait rien perdre).
+
 ## Dépendances (vérifiées)
 
 | Fichier | Origine | Version | SHA-256 |

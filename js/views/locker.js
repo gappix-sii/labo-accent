@@ -6,7 +6,7 @@ import { COIN, SNOW, BOLT, CHEST_ICO } from "../art.js";
 import { PRICES, MAX_FREEZES, BOOST_MS, rankOf, RANKS } from "../meta.js";
 import * as FX from "../fx.js";
 
-const TABS = [["species", "Animal"], ["skin", "Couleur"], ...SLOTS, ["theme", "Thème"], ["bonus", "Bonus"]];
+const TABS = [["boxes", "Boîtes"], ["species", "Animal"], ["skin", "Couleur"], ...SLOTS, ["theme", "Thème"], ["bonus", "Bonus"]];
 
 export function setupLocker(app) {
   let tab = "species", preview = null;
@@ -14,6 +14,7 @@ export function setupLocker(app) {
 
   function unlockText(u) { return u ? u.text : ""; }
   function lockReason(it) {
+    if (it.box) return "Boîte à butin";
     if (it.unlock) return unlockText(it.unlock);
     if (it.price === null) return "Dans les coffres";
     if (app.levelNow().level < it.lvl) return `Niveau ${it.lvl}`;
@@ -28,6 +29,7 @@ export function setupLocker(app) {
   function cards() {
     const s = S(), a = s.avatar, lv = app.levelNow().level;
     const still = av => avatarSvg(av, { cls: "still" });
+    if (tab === "boxes") return app.lootbox.cards();
     if (tab === "species") return SPECIES.map(sp => {
       const on = a.species === sp.id, open = lv >= sp.lvl;
       const skin = on ? a.skin : sp.skins[0].id;
@@ -42,7 +44,7 @@ export function setupLocker(app) {
         const owned = ownsSkin(s.owned, sp.id, k.id), on = a.species === sp.id && a.skin === k.id, price = SKIN_PRICE[k.rarity];
         return html`<div class="shopcard rar-${k.rarity} ${on ? "on" : ""}" data-prev="skin:${sp.id}:${k.id}">
           <div class="sc-art">${still({ ...a, species: sp.id, skin: k.id })}</div><b>${sp.name} ${k.name}</b>${rtag(k.rarity)}
-          ${on ? html`<span class="pill good">Équipé</span>` : !open ? html`<span class="pill">Niveau ${sp.lvl}</span>` : owned ? html`<button class="btn sm cyan" data-act="skin" data-id="${sp.id}:${k.id}">Équiper</button>` : i === 0 ? "" : priceBtn(skinKey(sp.id, k.id), price)}</div>`;
+          ${on ? html`<span class="pill good">Équipé</span>` : !open ? html`<span class="pill">Niveau ${sp.lvl}</span>` : owned ? html`<button class="btn sm cyan" data-act="skin" data-id="${sp.id}:${k.id}">Équiper</button>` : i === 0 ? "" : k.box ? html`<span class="pill">Boîte à butin</span>` : priceBtn(skinKey(sp.id, k.id), price)}</div>`;
       });
     }
     if (tab === "theme") return THEMES.map(t => {
@@ -115,6 +117,7 @@ export function setupLocker(app) {
       preview = a; app.play("tap"); renderStage(); FX.pop($("#stageAv"));
     });
     $$("[data-act]").forEach(b => b.onclick = () => act(b));
+    if (tab === "boxes") app.lootbox.bind(() => { if (app.view() === "locker") renderLocker(); });
   }
 
   async function act(b) {

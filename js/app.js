@@ -20,6 +20,7 @@ import { MISTAKE_CATS, ALL_MISTAKES } from "./mistakes.js";
 import { SCENES, systemPrompt } from "./scenes.js";
 import { setupLocker } from "./views/locker.js";
 import { setupArena } from "./views/arena.js";
+import { createLootbox } from "./views/lootbox.js";
 
 // ---------------- Anti-iframe ----------------
 // Un autre site ne peut pas afficher l'appli dans un cadre (protection contre le « clickjacking »).
@@ -99,7 +100,7 @@ function renderHud() {
 }
 $("#hVoice").addEventListener("click", () => { S.poufVoice = !S.poufVoice; save(); renderHud(); if (!S.poufVoice && "speechSynthesis" in window) speechSynthesis.cancel(); });
 $("#hMe").addEventListener("click", () => { play("tap"); go("profile"); });
-$("#hCoins").addEventListener("click", () => { play("tap"); go("locker", { tab: "bonus" }); });
+$("#hCoins").addEventListener("click", () => { play("tap"); go("locker", { tab: "boxes" }); });
 $("#hChest").addEventListener("click", () => openChestFlow());
 setInterval(() => { if (S.boostUntil) renderHud(); }, 30000);
 function collectCoins(fromEl, n) {
@@ -1749,6 +1750,7 @@ const app = {
   get S() { return S; }, save, go, defView, play, haptic, toast, notify, confirmDlg, celebrate, rewards, gainXp, quest, spend, openChestFlow, collectCoins,
   renderHud, applyPrefs, checkUnlocks, today, streak, levelNow, ICON, TEST_LOCAL, params, view: () => view, bossesWon, startBoss, speakEn: (t, rate = 0.9) => speak(t, { voiceURI: S.voice, rate })
 };
+app.lootbox = createLootbox(app);
 setupLocker(app);
 setupArena(app);
 

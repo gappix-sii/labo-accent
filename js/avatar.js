@@ -45,7 +45,8 @@ export const SPECIES = [
       { id: "night", name: "Nuit", rarity: "common", c: { fur: "#2b2250", fur2: "#3a2f5e", belly: "#3a2f5e", mark: "#f4f1ff", inner: "#ff9bb3", line: "#8b7be0", nose: "#ff8fab", cheek: "#ff9bb3" } },
       { id: "candy", name: "Barbe à papa", rarity: "rare", c: { fur: "#ff7eb6", fur2: "#ff9fca", belly: "#ffc2dd", mark: "#ffffff", inner: "#fff0f6", line: "#c43d7c", nose: "#c43d7c", cheek: "#ffffff" } },
       { id: "gold", name: "Doré", rarity: "epic", c: { fur: "#b8860b", fur2: "#d4a017", belly: "#e6c35c", mark: "#fff4c2", inner: "#ffd27a", line: "#ffe58a", nose: "#7a4f00", cheek: "#ffd27a" } },
-      { id: "neon", name: "Néon", rarity: "legendary", c: { fur: "#0d1b2a", fur2: "#14273d", belly: "#14273d", mark: "#39ff14", inner: "#39ff14", line: "#39ff14", nose: "#ff2fd0", cheek: "#ff2fd0" } }
+      { id: "neon", name: "Néon", rarity: "legendary", c: { fur: "#0d1b2a", fur2: "#14273d", belly: "#14273d", mark: "#39ff14", inner: "#39ff14", line: "#39ff14", nose: "#ff2fd0", cheek: "#ff2fd0" } },
+      { id: "galaxy", name: "Galactique", rarity: "mythic", box: true, fx: "holo", c: { fur: "#1b1446", fur2: "#2a1f6b", belly: "#2a1f6b", mark: "#ff6fae", inner: "#4cc9f0", line: "#c9b6ff", nose: "#ffd23f", cheek: "#ff6fae" } }
     ] },
   { id: "fox", name: "Renard", plural: "renards", lvl: 2, pitch: 1.3, desc: "Rusé, rapide, il a toujours une réplique.",
     tail: c => html`<g class="av-tail"><path d="M146 172c32 4 52-26 44-60-4-16-14-26-24-28 6 20 2 44-26 66z" fill="${c.fur}" stroke="${c.line}" stroke-width="${L}"/><path d="M190 112c-4-16-14-26-24-28 2 8 4 16 3 24 7 0 15 2 21 4z" fill="${c.belly}"/></g>`,
@@ -58,7 +59,8 @@ export const SPECIES = [
       { id: "red", name: "Roux", rarity: "common", c: { fur: "#f07b28", line: "#9a3f0a", belly: "#fff7ee", inner: "#ffd6b8", tip: "#3a1d10", nose: "#2b1a14", cheek: "#ffb3a0", feet: "#3a1d10", iris: "#c46e16" } },
       { id: "arctic", name: "Arctique", rarity: "rare", c: { fur: "#eef3ff", line: "#9fb3d9", belly: "#ffffff", inner: "#cfd9f2", tip: "#8fa3c8", nose: "#3a4660", cheek: "#ffc6d9", feet: "#c7d3ee", iris: "#4c8fd6" } },
       { id: "silver", name: "Argenté", rarity: "epic", c: { fur: "#8d93a6", line: "#4a5066", belly: "#e8ebf3", inner: "#c9cede", tip: "#2f3342", nose: "#1d2030", cheek: "#ffb3c6", feet: "#2f3342", iris: "#ffb02e" } },
-      { id: "cosmic", name: "Cosmique", rarity: "legendary", c: { fur: "#5b2a86", line: "#c9b6ff", belly: "#c9b6ff", inner: "#ff6fae", tip: "#ffd23f", nose: "#ffd23f", cheek: "#ff6fae", feet: "#2d1450", iris: "#4cc9f0" } }
+      { id: "cosmic", name: "Cosmique", rarity: "legendary", c: { fur: "#5b2a86", line: "#c9b6ff", belly: "#c9b6ff", inner: "#ff6fae", tip: "#ffd23f", nose: "#ffd23f", cheek: "#ff6fae", feet: "#2d1450", iris: "#4cc9f0" } },
+      { id: "spectral", name: "Spectral", rarity: "mythic", box: true, fx: "ghost", c: { fur: "#cfe9ff", line: "#7cc4ff", belly: "#ffffff", inner: "#bfe3ff", tip: "#4cc9f0", nose: "#4c8fd6", cheek: "#bfe3ff", feet: "#9fd0ea", iris: "#4cc9f0" } }
     ] },
   { id: "cat", name: "Chat", plural: "chats", lvl: 3, pitch: 1.7, desc: "Curieux et un peu fier quand tu réussis.",
     tail: c => html`<g class="av-tail"><path d="M148 176c30-2 40-30 32-56-3-10-10-14-16-10" fill="none" stroke="${c.line}" stroke-width="17" stroke-linecap="round"/><path d="M148 176c30-2 40-30 32-56-3-10-10-14-16-10" fill="none" stroke="${c.fur}" stroke-width="11" stroke-linecap="round"/><path d="M178 140l8 2M182 126l8-1" stroke="${c.fur2}" stroke-width="4" stroke-linecap="round"/></g>`,
@@ -71,7 +73,8 @@ export const SPECIES = [
       { id: "tabby", name: "Gris tigré", rarity: "common", c: { fur: "#9aa3b5", fur2: "#6b7385", belly: "#eef0f6", inner: "#ffb3c6", line: "#4d5466", nose: "#ff8fab", cheek: "#ffb3c6", whisker: "#ffffff", iris: "#8fd16a" } },
       { id: "ginger", name: "Roux", rarity: "common", c: { fur: "#f2a65a", fur2: "#c8742e", belly: "#fff3e3", inner: "#ffc9a8", line: "#9a5420", nose: "#ff8fab", cheek: "#ffb3a0", whisker: "#ffffff", iris: "#7fc96b" } },
       { id: "midnight", name: "Minuit", rarity: "rare", c: { fur: "#2a2a35", fur2: "#44445a", belly: "#3d3d4d", inner: "#ff9bb3", line: "#6b6b85", nose: "#ff8fab", cheek: "#ff9bb3", whisker: "#c9c9d9", iris: "#ffd23f" } },
-      { id: "galaxy", name: "Galaxie", rarity: "legendary", c: { fur: "#2d1b69", fur2: "#ff6fae", belly: "#4c2ea0", inner: "#ff6fae", line: "#a98bff", nose: "#ffd23f", cheek: "#ff6fae", whisker: "#ffd23f", iris: "#4cc9f0" } }
+      { id: "galaxy", name: "Galaxie", rarity: "legendary", c: { fur: "#2d1b69", fur2: "#ff6fae", belly: "#4c2ea0", inner: "#ff6fae", line: "#a98bff", nose: "#ffd23f", cheek: "#ff6fae", whisker: "#ffd23f", iris: "#4cc9f0" } },
+      { id: "cyber", name: "Cyber", rarity: "legendary", box: true, fx: "neon", c: { fur: "#101a2e", fur2: "#00f0ff", belly: "#18243d", inner: "#ff2fd0", line: "#00f0ff", nose: "#ff2fd0", cheek: "#ff2fd0", whisker: "#00f0ff", iris: "#ff2fd0" } }
     ] },
   { id: "rabbit", name: "Lapin", plural: "lapins", lvl: 4, pitch: 1.8, desc: "Ses grandes oreilles entendent chaque son.",
     tail: c => html`<circle class="av-tail" cx="150" cy="174" r="13" fill="${c.belly}" stroke="${c.line}" stroke-width="${L}"/>`,
@@ -85,7 +88,8 @@ export const SPECIES = [
       { id: "snow", name: "Neige", rarity: "common", c: { fur: "#f6f2ff", line: "#b9b0dd", belly: "#ffffff", inner: "#ffb3c6", nose: "#ff8fab", cheek: "#ffc6d9" } },
       { id: "caramel", name: "Caramel", rarity: "common", c: { fur: "#c98b5a", line: "#8a5a33", belly: "#f3dcc4", inner: "#ffc4a8", nose: "#6b3d1e", cheek: "#ffb3a0" } },
       { id: "grey", name: "Gris perle", rarity: "rare", c: { fur: "#a7a3b5", line: "#6e6a80", belly: "#e7e5ee", inner: "#ffb3c6", nose: "#ff8fab", cheek: "#ffb3c6" } },
-      { id: "lavender", name: "Lavande", rarity: "epic", c: { fur: "#b9a3ff", line: "#7d63d9", belly: "#efe9ff", inner: "#ff9bd2", nose: "#ff6fae", cheek: "#ff9bd2" } }
+      { id: "lavender", name: "Lavande", rarity: "epic", c: { fur: "#b9a3ff", line: "#7d63d9", belly: "#efe9ff", inner: "#ff9bd2", nose: "#ff6fae", cheek: "#ff9bd2" } },
+      { id: "bonbon", name: "Bonbon", rarity: "epic", box: true, c: { fur: "#ffd1ec", line: "#ff6fae", belly: "#ffffff", inner: "#a0e7ff", nose: "#ff6fae", cheek: "#a0e7ff" } }
     ] },
   { id: "panda", name: "Panda", plural: "pandas", lvl: 5, pitch: 1.0, desc: "Calme et patient, même quand ça rate.", eyeBg: "dark",
     body: c => stdBody({ ...c, body: c.dark, belly: c.fur, feet: c.dark }),
@@ -97,7 +101,8 @@ export const SPECIES = [
       { id: "classic", name: "Classique", rarity: "common", c: { fur: "#f7f7fb", dark: "#1d1d29", line: "#6b6b85", belly: "#ececf3", inner: "#3a3a4d", cheek: "#ffb3c6" } },
       { id: "mint", name: "Menthe", rarity: "common", c: { fur: "#effff7", dark: "#1f9e57", line: "#157a42", belly: "#dcf7e8", inner: "#3ddc84", cheek: "#ffb3c6" } },
       { id: "rose", name: "Rose", rarity: "rare", c: { fur: "#fff0f6", dark: "#ff5d8f", line: "#c43d7c", belly: "#ffe0ec", inner: "#ff9bbd", cheek: "#ff5d8f" } },
-      { id: "negative", name: "Négatif", rarity: "epic", c: { fur: "#1d1d29", dark: "#f7f7fb", line: "#8b7be0", belly: "#2c2c3d", inner: "#c9c9d9", cheek: "#ff6fae" } }
+      { id: "negative", name: "Négatif", rarity: "epic", c: { fur: "#1d1d29", dark: "#f7f7fb", line: "#8b7be0", belly: "#2c2c3d", inner: "#c9c9d9", cheek: "#ff6fae" } },
+      { id: "bamboo", name: "Bambou d'or", rarity: "legendary", box: true, fx: "shine", c: { fur: "#fff8dc", dark: "#c99a00", line: "#8a6a00", belly: "#fff3c4", inner: "#ffd23f", cheek: "#ff9f43" } }
     ] },
   { id: "penguin", name: "Pingouin", plural: "pingouins", lvl: 7, pitch: 1.6, desc: "Toujours bien habillé, même sur la banquise.", eyeBg: "face", hatY: 2,
     back: c => flippers(c.fur, c.line),
@@ -110,7 +115,8 @@ export const SPECIES = [
       { id: "emperor", name: "Empereur", rarity: "common", c: { fur: "#1d2440", line: "#5a6aa8", face: "#ffffff", beak: "#ffb02e", beakLine: "#c77d00", cheek: "#ffb3c6" } },
       { id: "glacier", name: "Glacier", rarity: "common", c: { fur: "#2c6fb7", line: "#87b8ef", face: "#f3f9ff", beak: "#ffb02e", beakLine: "#c77d00", cheek: "#ffc6d9" } },
       { id: "flamingo", name: "Flamant", rarity: "rare", c: { fur: "#ff7eb6", line: "#c43d7c", face: "#fff5fa", beak: "#ffd23f", beakLine: "#c99a00", cheek: "#ff5d8f" } },
-      { id: "royal", name: "Or royal", rarity: "legendary", c: { fur: "#8a6a00", line: "#ffe58a", face: "#fff8dc", beak: "#ff8a3d", beakLine: "#b35a12", cheek: "#ffb3a0" } }
+      { id: "royal", name: "Or royal", rarity: "legendary", c: { fur: "#8a6a00", line: "#ffe58a", face: "#fff8dc", beak: "#ff8a3d", beakLine: "#b35a12", cheek: "#ffb3a0" } },
+      { id: "frost", name: "Givre", rarity: "legendary", box: true, fx: "frost", c: { fur: "#7cc4ff", line: "#e8f6ff", face: "#ffffff", beak: "#4cc9f0", beakLine: "#1e8fb5", cheek: "#bfe3ff" } }
     ] },
   { id: "owl", name: "Hibou", plural: "hiboux", lvl: 9, pitch: 0.9, desc: "Sage et précis : rien ne lui échappe.", eyeBg: "disc",
     back: c => flippers(c.fur2, c.line),
@@ -124,7 +130,8 @@ export const SPECIES = [
       { id: "brown", name: "Chouette brune", rarity: "common", c: { fur: "#8b5a3c", fur2: "#6b4129", line: "#c49470", disc: "#f1dcc0", beak: "#ffb02e", iris: "#ffb02e", cheek: "#ffb3a0", feet: "#ffb02e" } },
       { id: "snowy", name: "Harfang", rarity: "rare", c: { fur: "#f2f4fa", fur2: "#2b2b3a", line: "#a9b0c6", disc: "#ffffff", beak: "#2b2b3a", iris: "#ffd23f", cheek: "#ffc6d9", feet: "#d9dde9" } },
       { id: "nocturne", name: "Nocturne", rarity: "epic", c: { fur: "#2b2250", fur2: "#4a3a9e", line: "#8b7be0", disc: "#4a3a9e", beak: "#ffd23f", iris: "#ffd23f", cheek: "#ff9bb3", feet: "#ffd23f" } },
-      { id: "phoenix", name: "Phénix", rarity: "legendary", c: { fur: "#c2410c", fur2: "#ffd23f", line: "#ffb27a", disc: "#ffd27a", beak: "#fff3c4", iris: "#ffffff", cheek: "#ffd23f", feet: "#ffd23f" } }
+      { id: "phoenix", name: "Phénix", rarity: "legendary", c: { fur: "#c2410c", fur2: "#ffd23f", line: "#ffb27a", disc: "#ffd27a", beak: "#fff3c4", iris: "#ffffff", cheek: "#ffd23f", feet: "#ffd23f" } },
+      { id: "astral", name: "Astral", rarity: "mythic", box: true, fx: "holo", c: { fur: "#24175e", fur2: "#a98bff", line: "#ffd23f", disc: "#3b2f80", beak: "#ffd23f", iris: "#4cc9f0", cheek: "#ff6fae", feet: "#ffd23f" } }
     ] },
   { id: "axolotl", name: "Axolotl", plural: "axolotls", lvl: 12, pitch: 1.9, desc: "Toujours le sourire, même sous l'eau.", hatY: 8,
     tail: c => html`<path class="av-tail" d="M144 168c30 0 48-14 54-34-14 10-32 18-54 20z" fill="${c.fur2}" stroke="${c.line}" stroke-width="${L}" stroke-linejoin="round"/>`,
@@ -138,7 +145,8 @@ export const SPECIES = [
       { id: "pink", name: "Rose", rarity: "common", c: { fur: "#ffb3cf", fur2: "#ff8fb8", gill: "#ff5d8f", line: "#e06a95", cheek: "#ff5d8f", belly: "#ffd6e5" } },
       { id: "pearl", name: "Perle", rarity: "common", c: { fur: "#fff0f5", fur2: "#ffd6e5", gill: "#ff8fab", line: "#e5b3c6", cheek: "#ff8fab", belly: "#ffffff" } },
       { id: "gold", name: "Doré", rarity: "rare", c: { fur: "#ffd27a", fur2: "#ffb84d", gill: "#ff9f43", line: "#d9952e", cheek: "#ff9f43", belly: "#ffe9b8" } },
-      { id: "shadow", name: "Mélanique", rarity: "epic", c: { fur: "#3b3b52", fur2: "#2a2a3d", gill: "#8b7be0", line: "#8b7be0", cheek: "#8b7be0", belly: "#4a4a66" } }
+      { id: "shadow", name: "Mélanique", rarity: "epic", c: { fur: "#3b3b52", fur2: "#2a2a3d", gill: "#8b7be0", line: "#8b7be0", cheek: "#8b7be0", belly: "#4a4a66" } },
+      { id: "lava", name: "Lave", rarity: "mythic", box: true, fx: "lava", c: { fur: "#3a0d0d", fur2: "#ff5a1f", gill: "#ff9f43", line: "#ff5a1f", cheek: "#ff5a1f", belly: "#5c1a0e" } }
     ] },
   { id: "dragon", name: "Bébé dragon", plural: "dragons", lvl: 15, pitch: 0.7, desc: "Légendaire. Il crache des voyelles parfaites.",
     back: c => html`<g class="av-wings"><path d="M58 146C30 124 16 132 10 150c12-2 20 4 26 12 4-8 10-12 18-10z" fill="${c.wing}" stroke="${c.line}" stroke-width="${L}" stroke-linejoin="round"/><path d="M142 146c28-22 42-14 48 4-12-2-20 4-26 12-4-8-10-12-18-10z" fill="${c.wing}" stroke="${c.line}" stroke-width="${L}" stroke-linejoin="round"/></g>`,
@@ -152,13 +160,14 @@ export const SPECIES = [
       { id: "emerald", name: "Émeraude", rarity: "common", c: { fur: "#3ddc84", fur2: "#1f9e57", line: "#157a42", belly: "#fff3c4", wing: "#1f9e57", horn: "#fff3c4", spike: "#ffd23f", iris: "#ffd23f", cheek: "#ff9bb3" } },
       { id: "amethyst", name: "Améthyste", rarity: "rare", c: { fur: "#8b5cf6", fur2: "#6d28d9", line: "#4c1d95", belly: "#ede9fe", wing: "#6d28d9", horn: "#fde68a", spike: "#f472b6", iris: "#fde047", cheek: "#f9a8d4" } },
       { id: "ruby", name: "Rubis", rarity: "epic", c: { fur: "#ef4444", fur2: "#b91c1c", line: "#7f1d1d", belly: "#fee2e2", wing: "#b91c1c", horn: "#fde68a", spike: "#fbbf24", iris: "#fde047", cheek: "#fda4af" } },
-      { id: "shadow", name: "Ombre", rarity: "legendary", c: { fur: "#1f2937", fur2: "#111827", line: "#ff6fae", belly: "#374151", wing: "#ff6fae", horn: "#e5e7eb", spike: "#ff6fae", iris: "#ff6fae", cheek: "#ff6fae" } }
+      { id: "shadow", name: "Ombre", rarity: "legendary", c: { fur: "#1f2937", fur2: "#111827", line: "#ff6fae", belly: "#374151", wing: "#ff6fae", horn: "#e5e7eb", spike: "#ff6fae", iris: "#ff6fae", cheek: "#ff6fae" } },
+      { id: "crystal", name: "Cristal", rarity: "mythic", box: true, fx: "crystal", c: { fur: "#b9f2ff", fur2: "#7cc4ff", line: "#4c8fd6", belly: "#ffffff", wing: "#c9b6ff", horn: "#ffffff", spike: "#ff6fae", iris: "#ff6fae", cheek: "#ffc6e5" } }
     ] }
 ];
 export const SPECIES_BY_ID = Object.fromEntries(SPECIES.map(s => [s.id, s]));
 
 // ---------- Accessoires ----------
-// rarity : common, rare, epic, legendary. price : en pièces (null = pas en boutique). lvl : niveau minimum pour l'acheter.
+// rarity : common, rare, epic, legendary, mythic (boîtes uniquement). price : en pièces (null = pas en boutique). lvl : niveau minimum pour l'acheter.
 // drop : peut sortir d'un coffre. unlock : condition spéciale (attribué automatiquement).
 const star5 = "M0-18 4.7-6.5 17.1-5.6 7.6 2.5 10.6 14.6 0 8-10.6 14.6-7.6 2.5-17.1-5.6-4.7-6.5z";
 const heart = "M0 6c-8-6-12-10-8-14 3-3 7-1 8 2 1-3 5-5 8-2 4 4 0 8-8 14z";
@@ -249,7 +258,22 @@ export const ITEMS = [
   { id: "rainbow", slot: "aura", name: "Arc-en-ciel", rarity: "legendary", price: 700, lvl: 12, drop: true,
     draw: () => html`<g class="av-pulse" fill="none" stroke-width="7" stroke-linecap="round">${["#ff5470", "#ff9f43", "#ffd23f", "#3ddc84", "#4cc9f0", "#a98bff"].map((col, i) => html`<path d="M${8 + i * 8} 126a${92 - i * 8} ${92 - i * 8} 0 0 1 ${184 - i * 16} 0" stroke="${col}"/>`)}</g>` },
   { id: "lightning", slot: "aura", name: "Éclairs", rarity: "legendary", price: null, lvl: 1, unlock: { chrono: 3000, text: "Marque 3 000 points au défi chrono" },
-    draw: () => html`<g transform="translate(20 40)"><path class="av-flash" d="M8 0h14l-8 16h10L6 50l6-22H2z" fill="#ffd23f" stroke="#c99a00" stroke-width="1.5"/></g><g transform="translate(160 60)"><path class="av-flash d2" d="M8 0h14l-8 16h10L6 50l6-22H2z" fill="#ffd23f" stroke="#c99a00" stroke-width="1.5"/></g>` }
+    draw: () => html`<g transform="translate(20 40)"><path class="av-flash" d="M8 0h14l-8 16h10L6 50l6-22H2z" fill="#ffd23f" stroke="#c99a00" stroke-width="1.5"/></g><g transform="translate(160 60)"><path class="av-flash d2" d="M8 0h14l-8 16h10L6 50l6-22H2z" fill="#ffd23f" stroke="#c99a00" stroke-width="1.5"/></g>` },
+  // Exclusivités des boîtes à butin (box: true) : jamais en boutique ni dans les coffres
+  { id: "antenna", slot: "head", name: "Antennes d'alien", rarity: "rare", price: null, lvl: 1, box: true,
+    draw: () => html`<path d="M84 44 72 12M116 44l12-32" stroke="#3ddc84" stroke-width="4" stroke-linecap="round"/><circle class="av-pulse" cx="72" cy="10" r="7" fill="#9bff6b"/><circle class="av-pulse d2" cx="128" cy="10" r="7" fill="#9bff6b"/>` },
+  { id: "icecrown", slot: "head", name: "Couronne de glace", rarity: "legendary", price: null, lvl: 1, box: true,
+    draw: () => html`<path d="M62 58 66 20l18 20 16-28 16 28 18-20 4 38z" fill="#bfe9ff" stroke="#4cc9f0" stroke-width="3" stroke-linejoin="round"/><path d="M70 50l6-16M100 46V24M130 50l-6-16" stroke="#ffffff" stroke-width="2.5" opacity=".8" stroke-linecap="round"/><circle cx="100" cy="48" r="5" fill="#ffffff"/><g transform="translate(130 22)"><path class="av-twinkle" d="${spark}" fill="#ffffff"/></g>` },
+  { id: "laser", slot: "eyes", name: "Yeux laser", rarity: "legendary", price: null, lvl: 1, box: true,
+    draw: () => html`<g class="av-laser"><path d="M76 96-60 150M124 96l140 54" stroke="#ff2f4f" stroke-width="10" opacity=".25" stroke-linecap="round"/><path d="M76 96-60 150M124 96l140 54" stroke="#ff8a9b" stroke-width="3.5" stroke-linecap="round"/></g><circle cx="76" cy="96" r="12" fill="#ff2f4f"/><circle cx="124" cy="96" r="12" fill="#ff2f4f"/><circle cx="76" cy="96" r="5" fill="#ffffff"/><circle cx="124" cy="96" r="5" fill="#ffffff"/>` },
+  { id: "gem", slot: "neck", name: "Cristal porte-bonheur", rarity: "epic", price: null, lvl: 1, box: true,
+    draw: () => html`<path d="M78 138l22 18 22-18" fill="none" stroke="#c9b6ff" stroke-width="2.5"/><path d="M100 152l11 11-11 17-11-17z" fill="#7cf2ff" stroke="#4cc9f0" stroke-width="2" stroke-linejoin="round"/><path d="M89 163h22" stroke="#ffffff" stroke-width="1.5" opacity=".7"/><g transform="translate(110 156) scale(.5)"><path class="av-twinkle" d="${spark}" fill="#ffffff"/></g>` },
+  { id: "saber", slot: "hand", name: "Sabre laser", rarity: "mythic", price: null, lvl: 1, box: true,
+    draw: () => html`<g transform="translate(160 170) rotate(-30)"><rect class="av-saber-glow" x="-8" y="-74" width="16" height="70" rx="8"/><rect x="-2.5" y="-70" width="5" height="64" rx="2.5" fill="#ffffff"/><rect x="-4.5" y="-6" width="9" height="22" rx="2" fill="#9aa3b5" stroke="#5a6075" stroke-width="1.5"/><rect x="-6" y="-6" width="12" height="4" rx="1" fill="#2e2e45"/></g>` },
+  { id: "confetti", slot: "aura", name: "Pluie de confettis", rarity: "epic", price: null, lvl: 1, box: true,
+    draw: () => html`${[[26, 40, "#ff5470", 1, 20], [172, 34, "#ffd23f", 2, -30], [16, 120, "#4cc9f0", 3, 45], [186, 118, "#3ddc84", 4, 10], [58, 12, "#a98bff", 5, -15], [140, 10, "#ff9f43", 2, 30], [40, 176, "#ff6fae", 4, 60], [164, 180, "#4cc9f0", 1, -45]].map(([x, y, f, d, r]) => html`<rect class="av-float d${d}" x="${x}" y="${y}" width="9" height="5" rx="1" fill="${f}" transform="rotate(${r} ${x} ${y})"/>`)}` },
+  { id: "galaxy", slot: "aura", name: "Galaxie", rarity: "mythic", price: null, lvl: 1, box: true,
+    draw: () => html`<circle cx="100" cy="105" r="80" fill="#5b2bd1" opacity=".16"/><g class="av-spin"><circle cx="100" cy="105" r="90" fill="none" stroke="#a98bff" stroke-width="2.5" stroke-dasharray="3 11" opacity=".9"/><circle cx="100" cy="105" r="72" fill="none" stroke="#ff6fae" stroke-width="2" stroke-dasharray="2 14" opacity=".8"/>${[[100, 15], [190, 105], [100, 195], [10, 105], [164, 41], [36, 169]].map(([x, y], k) => html`<g transform="translate(${x} ${y}) scale(.45)"><path class="av-twinkle d${(k % 5) + 1}" d="${star5}" fill="${k % 2 ? "#4cc9f0" : "#ffd23f"}"/></g>`)}</g>` }
 ];
 export const ITEM_BY_ID = Object.fromEntries(ITEMS.map(i => [i.id, i]));
 export const SLOTS = [["head", "Tête"], ["eyes", "Yeux"], ["neck", "Cou"], ["hand", "Main"], ["aura", "Aura"]];
@@ -267,7 +291,8 @@ export const THEMES = [
 ];
 export const THEME_BY_ID = Object.fromEntries(THEMES.map(t => [t.id, t]));
 
-export const RARITY = { common: "Commun", rare: "Rare", epic: "Épique", legendary: "Légendaire" };
+export const RARITY = { common: "Commun", rare: "Rare", epic: "Épique", legendary: "Légendaire", mythic: "Mythique" };
+export const RARITY_ORDER = ["common", "rare", "epic", "legendary", "mythic"];
 export const SKIN_PRICE = { common: 80, rare: 160, epic: 320, legendary: 700 };
 
 // Identifiants d'inventaire : « skin.<espèce>.<couleur> », « theme.<id> », ou l'id de l'accessoire.
@@ -284,10 +309,20 @@ export function ownsSkin(owned, sp, sk) {
 export function droppable(owned) {
   const out = [];
   for (const i of ITEMS) if (i.drop && !owned.includes(i.id)) out.push({ id: i.id, rarity: i.rarity });
-  for (const s of SPECIES) for (const k of s.skins.slice(1)) if (!owned.includes(skinKey(s.id, k.id))) out.push({ id: skinKey(s.id, k.id), rarity: k.rarity });
+  for (const s of SPECIES) for (const k of s.skins.slice(1)) if (!k.box && !owned.includes(skinKey(s.id, k.id))) out.push({ id: skinKey(s.id, k.id), rarity: k.rarity });
   for (const t of THEMES) if (t.drop && !owned.includes(themeKey(t.id))) out.push({ id: themeKey(t.id), rarity: t.rarity });
   return out;
 }
+// Contenu possible des boîtes à butin : tout ce qui se gagne (boutique, coffres) + les exclusivités des boîtes.
+// Les récompenses spéciales (couronne, auréole…) et les objets de départ n'y sont jamais.
+export function boxPool(owned) {
+  const out = [], add = (id, rarity, box = false) => out.push({ id, rarity, box: !!box, owned: owned.includes(id) });
+  for (const i of ITEMS) if (i.drop || i.box) add(i.id, i.rarity, i.box);
+  for (const s of SPECIES) for (const k of s.skins.slice(1)) add(skinKey(s.id, k.id), k.rarity, k.box);
+  for (const t of THEMES) if (t.drop) add(themeKey(t.id), t.rarity);
+  return out;
+}
+export const EXCLUSIVES = [...ITEMS.filter(i => i.box).map(i => i.id), ...SPECIES.flatMap(s => s.skins.filter(k => k.box).map(k => skinKey(s.id, k.id)))];
 export function describeOwned(id) {
   if (id.startsWith("skin.")) { const [, sp, sk] = id.split("."); const s = SPECIES_BY_ID[sp], k = s && s.skins.find(x => x.id === sk); return k ? { kind: "skin", name: `${s.name} ${k.name}`, rarity: k.rarity, sp, sk } : null; }
   if (id.startsWith("theme.")) { const t = THEME_BY_ID[id.slice(6)]; return t ? { kind: "theme", name: `Thème ${t.name}`, rarity: t.rarity, theme: t.id } : null; }
@@ -303,7 +338,7 @@ export function avatarSvg(av = DEFAULT_AVATAR, { cls = "", label = "" } = {}) {
   c.lid = lum(c[sp.eyeBg || "fur"] || c.fur) > 0.3 ? "#1c1240" : "#ffffff";
   const it = slot => { const i = ITEM_BY_ID[av[slot]]; return i && i.slot === slot ? i : null; };
   const head = it("head"), eyes = it("eyes"), neck = it("neck"), hand = it("hand"), aura = it("aura");
-  return html`<svg class="pouf av sp-${sp.id} ${cls}" viewBox="0 0 200 200" role="img" aria-label="${label || `${av.name || sp.name}, ${sp.name.toLowerCase()}`}">
+  return html`<svg class="pouf av sp-${sp.id} ${skin.fx ? "fx-" + skin.fx : ""} ${cls}" viewBox="0 0 200 200" role="img" aria-label="${label || `${av.name || sp.name}, ${sp.name.toLowerCase()}`}"><g class="av-root">
     ${aura ? html`<g class="av-aura">${aura.draw()}</g>` : ""}
     ${neck && neck.back ? neck.back() : ""}
     ${sp.back ? sp.back(c) : ""}
@@ -322,7 +357,7 @@ export function avatarSvg(av = DEFAULT_AVATAR, { cls = "", label = "" } = {}) {
       ${head ? html`<g class="av-hat" transform="translate(0 ${sp.hatY || 0})">${head.draw()}</g>` : ""}
     </g>
     ${hand ? html`<g class="av-hand">${hand.draw()}</g>` : ""}
-  </svg>`;
+  </g></svg>`;
 }
 
 // Petite icône d'un accessoire seul (boutique) : on le dessine sur une silhouette neutre.

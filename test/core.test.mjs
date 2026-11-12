@@ -5,7 +5,7 @@ import { html, toHTMLString } from "../js/core/dom.js";
 import { sanitize, defaults, parseImport, exportText, cleanText } from "../js/core/store.js";
 import * as M from "../js/meta.js";
 import { MODELS, guardedFetch, lookup } from "../js/integrity.js";
-import { SPECIES, ITEMS, THEMES, avatarSvg, bossSvg, BOSSES, droppable, itemPreview } from "../js/avatar.js";
+import { SPECIES, ITEMS, THEMES, avatarSvg, bossSvg, BOSSES, droppable, itemPreview, boxPool, EXCLUSIVES } from "../js/avatar.js";
 
 // ---------- html`` ----------
 {
@@ -147,5 +147,29 @@ import { SPECIES, ITEMS, THEMES, avatarSvg, bossSvg, BOSSES, droppable, itemPrev
   const same = await guardedFetch(async () => new Response("local"), "https://app.test")("https://app.test/vendor/x.wasm");
   assert.equal(await same.text(), "local");
   console.log("intégrité OK");
+}
+// ---------- Boîtes à butin ----------
+{
+  for (const [id, B] of Object.entries(M.BOXES)) assert.ok(Math.abs(Object.values(B.odds).reduce((a, b) => a + b, 0) - 1) < 1e-9, "probabilités = 100 % : " + id);
+  const pool = boxPool([]);
+  for (const r of ["common", "rare", "epic", "legendary", "mythic"]) assert.ok(pool.some(p => p.rarity === r), "rareté présente : " + r);
+  assert.ok(!pool.some(p => ["crown", "halo", "medal", "trophy", "lightning", "phones"].includes(p.id)), "pas de récompense spéciale dans les boîtes");
+  assert.ok(!droppable([]).some(p => EXCLUSIVES.includes(p.id)), "exclusivités absentes des coffres");
+  assert.equal(EXCLUSIVES.length, 16);
+  // Fréquences observées ≈ probabilités annoncées (boîte classique, sans garantie)
+  const rng = M.mulberry32(7), N = 200000, count = {};
+  for (let i = 0; i < N; i++) { const r = M.rollBox("classic", pool, 0, rng); count[r.rarity] = (count[r.rarity] || 0) + 1; }
+  for (const [r, p] of Object.entries(M.BOXES.classic.odds)) assert.ok(Math.abs(count[r] / N - p) < Math.max(0.004, p * 0.15), `${r} : ${(count[r] / N * 100).toFixed(2)} % pour ${p * 100} %`);
+  // Garantie : au plus 10 boîtes pour un légendaire ou mieux
+  let pity = 0, worst = 0, run = 0;
+  for (let i = 0; i < 20000; i++) { const r = M.rollBox("classic", pool, pity, rng); pity = r.pity; run++; if (["legendary", "mythic"].includes(r.rarity)) { worst = Math.max(worst, run); run = 0; } }
+  assert.ok(worst <= M.PITY, "garantie respectée (pire série : " + worst + ")");
+  // Doublon : tout possédé dans la rareté → pièces
+  const owned = pool.filter(p => p.rarity === "mythic").map(p => p.id);
+  const d = M.rollBox("mythic", boxPool(owned), 0, rng, "mythic");
+  assert.ok(d.dup && d.coins === M.BOX_DUP.mythic && owned.includes(d.item));
+  const n = M.rollBox("mythic", boxPool([]), 0, rng, "mythic");
+  assert.ok(!n.dup && EXCLUSIVES.includes(n.item) && n.pity === 0);
+  console.log(`boîtes OK (classique sur ${N} : ${Object.entries(count).map(([k, v]) => k + " " + (v / N * 100).toFixed(2) + "%").join(", ")} ; pire série ${worst})`);
 }
 console.log("TOUS LES TESTS CŒUR OK");
