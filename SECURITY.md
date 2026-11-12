@@ -110,6 +110,16 @@ Objectif : que les pièces récompensent la vraie progression, et qu'on ne puiss
 - **Horloge** : l'heure utilisée ne recule jamais (la plus tardive déjà vue), et elle est recalée sur l'en-tête `Date` du serveur quand l'appareil est décalé de plus de 5 minutes. Changer l'heure ne fait donc pas revenir quêtes, offres ou défi du jour.
 - **Raccourcis de test** (`?test`, `&accept`, rareté forcée) : actifs uniquement sur `127.0.0.1` / `localhost`, jamais sur le site publié (testé dans `test/run-cheat.mjs`).
 
+## Amis, classement et défis (sans serveur)
+
+- **Aucun serveur, aucun compte** : les joueurs s'envoient eux-mêmes des liens (SMS, messagerie). Le code est dans le fragment `#c=…` de l'adresse, qui n'est jamais envoyé à GitHub ; l'appli le lit puis l'efface de la barre d'adresse.
+- **Contenu d'une carte** : pseudo, compagnon et cosmétiques, niveau, XP, série, trophées et quelques compteurs. Jamais d'e-mail, de clé, d'historique ni de sauvegarde.
+- **Signature** : chaque carte, défi et résultat est signé en ECDSA P-256 par une clé générée sur l'appareil (clé privée **non exportable**, dans IndexedDB). Un code modifié, même d'un caractère, est refusé.
+- **Anti-usurpation** : la clé publique d'un ami est retenue à son premier ajout ; une carte à son nom signée par une autre clé déclenche un avertissement (autre appareil ou imposteur) et rien n'est remplacé sans accord.
+- **Données reçues = données non fiables** : chaque champ est validé (identifiants, longueurs, caractères de contrôle retirés, espèce, couleur et objets existants et à la bonne place, nombres bornés) ; les champs inconnus sont ignorés ; l'affichage passe par l'échappement `html```.
+- **Défis** : mêmes questions grâce à une graine partagée ; un défi reçu ne se joue qu'une fois ; les duels rapportent l'XP normale (avec les règles anti-farm), pas de bonus à farmer.
+- Limite : sans serveur, un joueur qui maîtrise les outils du navigateur peut gonfler ses propres chiffres avant de partager sa carte. Les cartes de tes amis reflètent le jour où ils te les ont envoyées.
+
 ## Dépendances (vérifiées)
 
 | Fichier | Origine | Version | SHA-256 |

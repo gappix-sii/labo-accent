@@ -4,6 +4,7 @@
 import { BADGES, DURATIONS, levelOf } from "../game.js";
 import { SPECIES_BY_ID, ITEM_BY_ID, THEME_BY_ID, DEFAULT_OWNED, DEFAULT_AVATAR, SLOTS, EXCLUSIVES, isValidOwned, ownsSkin, themeKey, basePrice } from "../avatar.js";
 import { emptyEcon } from "./economy.js";
+import { cleanStoredFriend, cleanStoredDuel } from "../social.js";
 import { QUEST_BY_ID, CHESTS, RANKS, MAX_FREEZES } from "../meta.js";
 
 export const STORE_KEY = "labo.v1";
@@ -17,7 +18,7 @@ export function defaults() {
     v: STATE_VERSION, news: STATE_VERSION,
     history: [], sounds: {}, days: [], voice: "", slow: 0.7, modelReady: false, xp: 0, lessons: {}, badges: [],
     bestCombo: 0, xpDays: {}, goalXp: 50, sfx: true, poufVoice: true, onboarded: false, vocab: {}, vocabLevel: "A1",
-    sessions: [], sessMin: 15, dialogues: {}, grammar: {}, basics: {}, irr: {}, mistakes: {}, gLevel: "A1",
+    sessions: [], sessMin: 15, dialogues: {}, grammar: {}, basics: {}, irr: {}, social: { id: "", friends: [], duels: [] }, mistakes: {}, gLevel: "A1",
     chat: { engine: "", model: "gemini-3.8-flash", level: "A2" }, chatModelReady: false,
     coins: 0, owned: [...DEFAULT_OWNED], avatar: { ...DEFAULT_AVATAR }, theme: "nuit",
     quests: { day: "", list: [], bonus: false }, chests: [], trophies: 0, rankSeen: 0,
@@ -95,7 +96,7 @@ const SPEC = {
   vocab: map(SRS, 5000, 80), vocabLevel: oneOf(LEVELS),
   sessions: list(shape({ d: day, planned: oneOf(DURATIONS), real: int(1, 600), xp: int(0, 1e6) }, true), 100),
   sessMin: oneOf(DURATIONS),
-  dialogues: map(BEST, 200, 60), grammar: map(BEST, 400, 60), basics: map(BEST, 20, 30), irr: map(shape({ rush: int(0, 1e6), write: int(0, 100), d: day }, true), 20, 20), mistakes: map(SRS, 2000, 200), gLevel: oneOf(["A1", "A2", "B1", "B2"]),
+  dialogues: map(BEST, 200, 60), grammar: map(BEST, 400, 60), basics: map(BEST, 20, 30), social: shape({ id: v => v === "" || (typeof v === "string" && /^[a-z0-9]{12}$/.test(v)) ? v : undefined, friends: list(cleanStoredFriend, 50), duels: list(cleanStoredDuel, 30) }), irr: map(shape({ rush: int(0, 1e6), write: int(0, 100), d: day }, true), 20, 20), mistakes: map(SRS, 2000, 200), gLevel: oneOf(["A1", "A2", "B1", "B2"]),
   chat: CHAT, chatModelReady: bool,
   coins: int(0, 1e8), owned: list(v => typeof v === "string" && isValidOwned(v) ? v : undefined, 400, true),
   avatar: shape({ species: oneOf(Object.keys(SPECIES_BY_ID)), skin: str(30, /^[a-z]+$/), head: str(20), eyes: str(20), neck: str(20), hand: str(20), back: str(20), aura: str(20), name: text(16) }),

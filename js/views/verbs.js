@@ -11,7 +11,7 @@ import * as M from "../meta.js";
 import { PROGRESS } from "../core/economy.js";
 import * as FX from "../fx.js";
 
-const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const shuffle = (a, rng = Math.random) => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const famOf = id => FAMILIES.find(f => f.id === id) || FAMILIES[0];
 const forms3 = x => [x.base, x.past, x.pp];
 const sayForms = x => [x.base, ...variants(x.past), ...variants(x.pp)].join(", ");
@@ -118,15 +118,17 @@ export function setupVerbs(app) {
 
   // ---------- Verb Rush ----------
   function rushQuestion() {
-    if (!R.queue.length) R.queue = shuffle(R.f.verbs.flatMap(x => [[x, x.ps], [x, x.pps]]));
+    const rng = R.rng;
+    if (!R.queue.length) R.queue = shuffle(R.f.verbs.flatMap(x => [[x, x.ps], [x, x.pps]]), rng);
     const [x, s] = R.queue.pop(), c = cloze(s, x);
     const pool = [...new Set([x.base, ...variants(x.past), ...variants(x.pp), fakeRegular(x.base)])].filter(t => t.toLowerCase() !== c.answer.toLowerCase());
-    let opts = [c.answer, ...shuffle(pool).slice(0, 3)];
-    while (opts.length < 4) { const y = R.f.verbs[Math.floor(Math.random() * R.f.verbs.length)], t = [y.past, y.pp][Math.floor(Math.random() * 2)].split("/")[0].trim(); if (!opts.includes(t)) opts.push(t); }
-    return { x, s, c, opts: shuffle(opts), t0: Date.now() };
+    let opts = [c.answer, ...shuffle(pool, rng).slice(0, 3)];
+    for (let guard = 0; opts.length < 4 && guard < 50; guard++) { const y = R.f.verbs[Math.floor(rng() * R.f.verbs.length)], t = [y.past, y.pp][Math.floor(rng() * 2)].split("/")[0].trim(); if (!opts.includes(t)) opts.push(t); }
+    return { x, s, c, opts: shuffle(opts, rng), t0: Date.now() };
   }
-  function startRush(f) {
-    R = { f, queue: [], score: 0, combo: 0, maxCombo: 0, ok: 0, n: 0, end: Date.now() + (app.TEST_LOCAL && app.params.has("fast") ? 8000 : RUSH_MS), timer: null, busy: false, startLevel: app.levelNow().level, prev: irr(f.id).rush };
+  // opts.seed : même suite de questions que l'ami (duel).
+  function startRush(f, opts = {}) {
+    R = { f, queue: [], duel: !!opts.duel, rng: opts.duel ? M.mulberry32(opts.seed >>> 0) : Math.random, score: 0, combo: 0, maxCombo: 0, ok: 0, n: 0, end: Date.now() + (app.TEST_LOCAL && app.params.has("fast") ? 8000 : RUSH_MS), timer: null, busy: false, startLevel: app.levelNow().level, prev: irr(f.id).rush };
     R.q = rushQuestion();
     app.go("vrush");
     R.timer = setInterval(tick, 200);
@@ -171,7 +173,8 @@ export function setupVerbs(app) {
     const s = S(), cur = irr(R.f.id), record = R.score > R.prev && R.prev > 0;
     s.irr[R.f.id] = { ...cur, rush: Math.max(cur.rush, R.score), d: app.today() };
     const rw = M.chronoRewards(R.score, R.ok);
-    const r = app.gainXp(rw.xp, R.startLevel, { coins: rw.coins, reason: "chrono", key: "irr:rush:" + R.f.id, progress: record ? M.CHRONO_RECORD : 0, why: `record Verb Rush ${R.score}` });
+    const r = app.gainXp(rw.xp, R.startLevel, { coins: rw.coins, reason: "chrono", key: "irr:rush:" + R.f.id + (R.duel ? ":duel" : ""), progress: record && !R.duel ? M.CHRONO_RECORD : 0, why: `record Verb Rush ${R.score}` });
+    if (R.duel) return app.social.duelFinished({ score: R.score, ok: R.ok, n: R.n, g: r });
     app.go("done", { title: record ? "Nouveau record !" : "Temps écoulé !", tiles: [["y", "Score", String(R.score)], ["g", "Bonnes réponses", `${R.ok}/${R.n}`], ["c", "Meilleur combo", "×" + M.chronoMult(R.maxCombo)], ["o", "XP gagnés", "+" + r.xpGained]],
       line: R.ok >= R.n * 0.8 ? "Tu les as dans la peau !" : "Les erreurs reviendront plus souvent : rejoue pour battre ton score.", back: "verbs", ...r });
   }
@@ -226,6 +229,7 @@ export function setupVerbs(app) {
       line: pct >= 80 ? "Ces verbes n'ont plus de secret pour toi !" : "Joue au Trio pour bien les retenir, puis réessaie.", back: "verbs", ...r });
   }
 
+  app.startRush = (famId, opts) => startRush(famOf(famId), opts);
   app.defView("verbs", renderHome, { tab: "vocab" });
   app.defView("vtrio", renderTrio, { tab: "vocab", full: true });
   app.defView("vrush", renderRush, { tab: "vocab", full: true });

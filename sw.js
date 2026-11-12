@@ -6,8 +6,8 @@
 //    CSP du document (Trusted Types, pas de script externe), CSP des workers, isolation cross-origin, anti-iframe.
 // 3. Ne touche jamais aux requêtes vers d'autres sites (les modèles sont vérifiés dans les workers, voir js/integrity.js).
 /* BUILD:BEGIN */
-const VERSION = "labo-5c7919be6bc8";
-const MANIFEST = {"css/app.css":{"h":"fa67b80f585d0222e4c5c7401c309fcbb0019642ef7a3f7fb7c07720a722f286","n":87313},
+const VERSION = "labo-13afa79c6a50";
+const MANIFEST = {"css/app.css":{"h":"cfb318b89e112eb8827a45d279f5d91c1fc13b501f3e9588d1690c9ae655b0db","n":89657},
   "data/cmudict.json":{"h":"ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b","n":4114306},
   "fonts/barlow-condensed-latin-800-italic.woff2":{"h":"59b48100622b2dea5b10bbf9e98d02eecf20ea8ae000821877f2d470ec16ee55","n":23780},
   "fonts/barlow-condensed-latin-900-italic.woff2":{"h":"b58672f4b405724353d140e19cfead74fefc9004271e846d4884cd9b76f36dbf","n":23212},
@@ -18,7 +18,7 @@ const MANIFEST = {"css/app.css":{"h":"fa67b80f585d0222e4c5c7401c309fcbb0019642ef
   "icons/icon-512.png":{"h":"6d46b0b296865b477d8c78fc94bee366ff4b40341313ae12e7c1eadfc777207d","n":12913},
   "icons/icon.svg":{"h":"4047b4dcbd186860a3cfb5f7f2dc9c98952f2a47118e9812100d0ded42c84708","n":400},
   "index.html":{"h":"d0f1ce3303bcf0a70a3ab4d2d6171414b6b2aa784e3ebcc6b2b9936d92e30bd8","n":6542},
-  "js/app.js":{"h":"35fffb1d1e3836cd4516505c149922e8c0a349911cf30655d300eb71aef67543","n":163823},
+  "js/app.js":{"h":"390187f016651d960928ec60cb927ed48d3937715ff4df061731db9239d06f3a","n":165198},
   "js/art.js":{"h":"2c9a402ba01e48e371275a8e8210acfd05e7ce43658d972907fb4c2a3fbd6d46","n":7111},
   "js/audio.js":{"h":"3ed9fe642351caf208cb9fd8842bfacd557bdedc5e13a968f27966515f619b01","n":5998},
   "js/avatar.js":{"h":"13f903a38031257621a9a4cd220a7672b64e20de8bdafe9e098a104ae423bcff","n":76221},
@@ -30,7 +30,7 @@ const MANIFEST = {"css/app.css":{"h":"fa67b80f585d0222e4c5c7401c309fcbb0019642ef
   "js/core/economy.js":{"h":"c5ccf1bf3ffe072b6d0208ae842c2d716a4d941d8fd7fd5f08175a5a22766544","n":7976},
   "js/core/seal.js":{"h":"8ff111a96959a19c29c95e094e1a899ad6eda2d0cd4fb49a29b6f2d3108e3fef","n":1899},
   "js/core/secret.js":{"h":"9e8ff9e69dc1993bcb3c9e3214e071ffbeecff1df764b6780804f62d80fe3226","n":3002},
-  "js/core/store.js":{"h":"2e2f8c22b1d2192ab90dd98b774b2da9ee7ca0838b5046c573acb77c3147d246","n":11354},
+  "js/core/store.js":{"h":"1d302ea9d40beb76fbf8449239c4056394937afddb16ce8c62d8811dda96c2c6","n":11646},
   "js/dialogues.js":{"h":"5291c9b56e61879b0f7c04b38fb13af5a85d3aa399bbd2014089c51c8c632e34","n":16800},
   "js/fx.js":{"h":"e92947b3e0d0dba9a351d82203ef66b494b9e85cb0bc8d040d132144d3ffe2a8","n":7847},
   "js/game.js":{"h":"c55e280078647f0234433f51a0914e7ae1c312d66066304579906f4bbb1d5b09","n":10362},
@@ -43,10 +43,12 @@ const MANIFEST = {"css/app.css":{"h":"fa67b80f585d0222e4c5c7401c309fcbb0019642ef
   "js/phonemes.js":{"h":"3594fe52b95ba9d15bc4e2bd49361a426a5e76a6b8e19693aae89c1dd018ba44","n":15498},
   "js/scenes.js":{"h":"ddcd906743eda2eda92ffb3c90d01a73f5ab67eda0f75514b034d79738f32ee5","n":3070},
   "js/sha256.js":{"h":"a5031526d8129eafe51967778287a21f65727f1cf39da08ffa0977163fd28570","n":4206},
-  "js/views/arena.js":{"h":"9b3a5cd4f69b5459d741346c9fabe0b4689d71bad96bb214aa9e777e6429c9c0","n":14925},
+  "js/social.js":{"h":"60fff7e0d856cdc83fe2ba33649b463a874f39e9e14fb8fe5fec178ae76fad27","n":8800},
+  "js/views/arena.js":{"h":"26792dd4886fb4c591bd3fd1a3757666354b34815e5d47196b8f56561d2b82ce","n":15422},
+  "js/views/friends.js":{"h":"cb3beb9d0bb0fc625017a16dbbb959663e0bdd705b9efecc950e27629d777121","n":19385},
   "js/views/locker.js":{"h":"afbea92a75303b3e63300adf451149e2587cdcfc169284f3524afe6198ede287","n":17132},
   "js/views/lootbox.js":{"h":"eafc6f72b4f6e76f9920954d9471468adaf1058b0ac756db88374e3a305f1aaa","n":9516},
-  "js/views/verbs.js":{"h":"a2c898b5f968cbabfa2ec97a69c4651f4b3fb4fd385fa8c20d87338b90463775","n":18604},
+  "js/views/verbs.js":{"h":"fe8b8efa9150700b40beba384e9b28acf016eb07bf0a9854e1d5281df4093120","n":19022},
   "js/vocab.js":{"h":"7550d525a813b7570cf6cb5e9991975b6f58e7863c12039aa8364c956ee763f2","n":11241},
   "js/worker.js":{"h":"c8151c3e371fce679dea8f64cdcf63b4553f6f70c2a37b3c8a2f6fd8a8e709b6","n":2950},
   "manifest.webmanifest":{"h":"abc8d70fbf7514cf470e2f129ada80ac309d14c9480903dc08eecede6ec56123","n":590},

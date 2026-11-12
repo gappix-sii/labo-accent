@@ -21,6 +21,7 @@ export function setupArena(app) {
     const unitDone = u => u.lessons.every(l => s.lessons[l.id]);
     render($("#view"), html`
       <h2>Arène</h2>
+      ${app.social ? app.social.arenaCard() : ""}
       <section class="card rankcard glow">
         <div class="emblem-wrap">${emblemSvg(rank, "big")}</div>
         <div class="grow"><span class="small muted">Ton rang</span><h3 class="rank-name">${rank.name} ${rank.div}</h3>
@@ -50,16 +51,18 @@ export function setupArena(app) {
         <section class="card ranks-card" data-css="--i:5"><h3>Les rangs</h3><p class="small muted">Chaque nouveau rang rapporte un coffre d'or (légendaire pour Légende). Les trophées se gagnent au défi chrono et contre les boss.</p>
           <div class="rank-list">${M.RANKS.map((r, i) => html`<div class="rank-row ${i <= rank.i ? "got" : ""}">${emblemSvg({ ...r, div: "" }, "sm")}<b>${r.name}</b><span class="small muted">${r.min} ${TROPHY}</span></div>`)}</div></section>
       </div>`);
+    if (app.social) app.social.bindArenaCard();
     $("#arChrono").onclick = () => { app.play("tap"); startChrono("free"); };
     $("#arDaily").onclick = () => { app.play("tap"); startChrono("daily"); };
     $("#arLoot").onclick = () => { app.play("tap"); app.go("shop", { tab: "home" }); };
     $$("[data-fight]").forEach(b => b.onclick = () => { app.play("tap"); app.startBoss(b.dataset.fight); });
   }
 
-  function startChrono(mode) {
-    const s = S(), daily = mode === "daily";
-    const rng = daily ? M.mulberry32(M.seedFrom("daily:" + app.today())) : Math.random;
-    const levels = daily ? ["A1", "A2"] : [...new Set(["A1", "A2", s.vocabLevel])];
+  // mode : "free", "daily" (mêmes questions pour tous aujourd'hui) ou "duel" (mêmes questions que l'ami : opts.seed).
+  function startChrono(mode, opts = {}) {
+    const s = S(), daily = mode === "daily", duel = mode === "duel";
+    const rng = daily ? M.mulberry32(M.seedFrom("daily:" + app.today())) : duel ? M.mulberry32(opts.seed >>> 0) : Math.random;
+    const levels = daily || duel ? ["A1", "A2"] : [...new Set(["A1", "A2", s.vocabLevel])];
     const ms = app.TEST_LOCAL && app.params.has("fast") ? 6000 : M.CHRONO_MS;
     CR = { mode, qs: makeQuestions(rng, { levels, n: 120 }), i: -1, score: 0, combo: 0, maxCombo: 0, correct: 0, wrong: 0, answers: [], ms, end: 0, startLevel: app.levelNow().level, locked: false, done: false };
     app.go("chrono");
@@ -67,7 +70,7 @@ export function setupArena(app) {
   function renderChrono() {
     render($("#view"), html`<div class="chrono">
       <div class="ltop"><button class="iconbtn" id="crQuit" aria-label="Abandonner">${app.ICON.close}</button><div class="bar time" id="crTime"><i></i></div><span class="crsec" id="crSec">${Math.round(CR.ms / 1000)}</span></div>
-      <div class="cr-score"><span class="small muted">${CR.mode === "daily" ? "Défi du jour" : "Défi chrono"}</span><b id="crScore">0</b><span class="cr-mult" id="crMult"></span></div>
+      <div class="cr-score"><span class="small muted">${CR.mode === "daily" ? "Défi du jour" : CR.mode === "duel" ? "Duel entre amis" : "Défi chrono"}</span><b id="crScore">0</b><span class="cr-mult" id="crMult"></span></div>
       <section class="card qcard cr-q" id="crCard"><span class="pill ok" id="crType"></span><p class="cr-prompt" id="crPrompt"></p><p class="small muted" id="crSub"></p><div class="cr-opts" id="crOpts"></div></section>
       <div class="cr-count" id="crCount" aria-live="assertive"></div>
       <p class="kbd-hint"><b>1</b> <b>2</b> <b>3</b> <b>4</b> pour répondre · <b>Échap</b> pour abandonner</p></div>`);
@@ -152,6 +155,7 @@ export function setupArena(app) {
     const isRecord = CR.score > prevBest && prevBest > 0;
     const g = app.gainXp(R.xp, CR.startLevel, { coins: R.coins, trophies: R.trophies, key: "chrono:" + CR.mode, reason: "chrono", progress: isRecord ? M.CHRONO_RECORD : 0, why: `record personnel ${CR.score}` });
     app.quest("chrono"); app.quest("chronoScore", CR.score);
+    if (CR.mode === "duel") return app.social.duelFinished({ score: CR.score, ok: CR.correct, n: CR.answers.length, g });
     app.go("cfinish", { ...g, score: CR.score, correct: CR.correct, total: CR.answers.length, maxCombo: CR.maxCombo, daily, record: CR.score > prevBest && CR.score > 0, rank: rec.rank, answers: CR.answers, firstDaily });
   }
   function shareText(o) {
@@ -199,6 +203,7 @@ export function setupArena(app) {
     if (k >= 0) { const b = $$(".cr-opt")[k]; if (b) { e.preventDefault(); b.click(); } }
   });
 
+  app.startChrono = startChrono;
   app.defView("arena", renderArena);
   app.defView("chrono", renderChrono, { tab: "arena", full: true });
   app.defView("cfinish", renderEnd, { tab: "arena", full: true });

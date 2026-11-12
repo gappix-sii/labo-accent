@@ -9,6 +9,7 @@ import { levelOf } from "../js/game.js";
 import { BASICS, basicsItems, numberWords, yearWords, ordinalWords, ordinalSuffix, pronOf } from "../js/basics.js";
 import { buildReference } from "../js/phonemes.js";
 import { FAMILIES, VERBS, variants, targetOf, cloze, fakeRegular } from "../js/irregular.js";
+import * as Soc from "../js/social.js";
 import { readFileSync } from "node:fs";
 import { MODELS, guardedFetch, lookup } from "../js/integrity.js";
 import { SPECIES, ITEMS, THEMES, SLOTS, CATALOG, avatarSvg, bossSvg, BOSSES, droppable, itemPreview, boxPool, EXCLUSIVES, basePrice, levelFor } from "../js/avatar.js";
@@ -279,5 +280,36 @@ import { SPECIES, ITEMS, THEMES, SLOTS, CATALOG, avatarSvg, bossSvg, BOSSES, dro
   assert.equal(targetOf(VERBS.find(x => x.base === "be").ps, VERBS.find(x => x.base === "be")), "was");
   assert.deepEqual(["go", "buy", "cut", "fly", "make"].map(fakeRegular), ["goed", "buyed", "cutted", "flied", "maked"]);
   console.log(`verbes irréguliers OK (${VERBS.length} verbes, ${FAMILIES.length} familles, ${VERBS.length * 2} phrases de contexte)`);
+}
+// ---------- Amis (codes signés) ----------
+{
+  const pair = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, false, ["sign", "verify"]);
+  const pk = Soc.b64u(new Uint8Array(await crypto.subtle.exportKey("raw", pair.publicKey)));
+  const signed = async obj => { const body = Soc.b64u(new TextEncoder().encode(JSON.stringify({ ...obj, pk }))); const sig = Soc.b64u(new Uint8Array(await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, pair.privateKey, new TextEncoder().encode("labo-social:" + body)))); return `LA1.${body}.${sig}`; };
+  const evil = { v: 1, t: "card", id: "abcdefghij12", n: "<img src=x onerror=alert(1)>\u0000" + "x".repeat(50), d: "2026-11-12", av: { sp: "dragon", sk: "nope", head: "saber", hand: "saber", nm: "Rex", __proto__: { bad: 1 } }, th: "inconnu", lv: 1e9, xp: -5, st: "12", tr: 50, ls: 3, extra: "ignoré" };
+  const r = await Soc.readCode("Coucou, voici ma carte : https://x.y/#c=" + await signed(evil));
+  assert.ok(r.ok && r.kind === "card");
+  const c = r.card;
+  assert.equal(c.name.length, 20); assert.ok(!/\u0000/.test(c.name));
+  assert.equal(c.avatar.species, "dragon"); assert.equal(c.avatar.skin, "emerald"); assert.equal(c.avatar.head, "", "objet dans le mauvais emplacement refusé"); assert.equal(c.avatar.hand, "saber");
+  assert.equal(c.theme, "nuit"); assert.equal(c.level, 1); assert.equal(c.xp, 0); assert.equal(c.streak, 0); assert.ok(!("extra" in c));
+  // Le texte est affiché via html`` : le nom piégé reste du texte
+  assert.ok(!toHTMLString(html`<b>${c.name}</b>`).includes("<img"));
+  // Signature : un seul caractère changé et le code est refusé
+  const good = await signed({ v: 1, t: "card", id: "abcdefghij12", n: "Bob", av: {}, xp: 10 });
+  const tampered = good.replace(/^(LA1\.)(.{25})(.)/, (m, a, b, ch) => a + b + (ch === "A" ? "B" : "A"));
+  assert.ok(!(await Soc.readCode(tampered)).ok);
+  assert.ok(!(await Soc.readCode("pas de code ici")).ok);
+  assert.ok(!(await Soc.readCode(good.replace(/\.[^.]+$/, ".AAAA" + "A".repeat(80)))).ok, "fausse signature refusée");
+  // Défi et données enregistrées
+  const d = await Soc.readCode(await signed({ v: 1, t: "duel", did: "zzzzzzzzzzzz", from: "abcdefghij12", n: "Bob", av: {}, g: "rush", fam: "stars", seed: 42, sc: 1234 }));
+  assert.ok(d.ok && d.kind === "duel" && d.duel.seed === 42 && d.duel.score === 1234 && d.duel.game === "rush");
+  assert.ok(!(await Soc.readCode(await signed({ v: 1, t: "duel", did: "zzzzzzzzzzzz", from: "abcdefghij12", g: "pirate", seed: 1 }))).ok, "jeu inconnu refusé");
+  const stored = Soc.cleanStoredFriend({ ...c, added: "2026-11-12", upd: "nope" });
+  assert.equal(stored.avatar.hand, "saber"); assert.equal(stored.upd, c.d);
+  assert.equal(Soc.cleanStoredFriend({ id: "x" }), undefined);
+  const S9 = sanitize({ ...defaults(), social: { id: "abcdefghij12", friends: [{ ...c, added: "2026-11-12", upd: "2026-11-12" }, { id: "bad" }], duels: [{ did: "zzzzzzzzzzzz", role: "sent", game: "chrono", seed: 7, mine: 300, theirs: -1 }, { did: "x" }] } });
+  assert.equal(S9.social.friends.length, 1); assert.equal(S9.social.duels.length, 1);
+  console.log("amis OK (codes signés, validation des cartes reçues, sauvegarde)");
 }
 console.log("TOUS LES TESTS CŒUR OK");

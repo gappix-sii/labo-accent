@@ -25,6 +25,7 @@ import { setupLocker } from "./views/locker.js";
 import { setupArena } from "./views/arena.js";
 import { createLootbox } from "./views/lootbox.js";
 import { setupVerbs } from "./views/verbs.js";
+import { setupFriends } from "./views/friends.js";
 
 // ---------------- Anti-iframe ----------------
 // Un autre site ne peut pas afficher l'appli dans un cadre (protection contre le « clickjacking »).
@@ -1996,6 +1997,7 @@ const app = {
 };
 app.lootbox = createLootbox(app);
 setupLocker(app);
+setupFriends(app);
 setupArena(app);
 setupVerbs(app);
 
@@ -2072,6 +2074,22 @@ if (integrity.status === "tampered") confirmDlg("Sauvegarde modifiée en dehors 
   `Pour que chacun soit récompensé de ses vrais progrès, les pièces et les objets ont été ramenés à ce que ta progression justifie.${integrity.notes.length ? " Corrections : " + integrity.notes.join(" ; ") + "." : ""}`, "J'ai compris", { danger: false, noCancel: true });
 else if (integrity.notes.length) confirmDlg("Sauvegarde vérifiée", `Des valeurs impossibles ont été corrigées : ${integrity.notes.join(" ; ")}.`, "OK", { danger: false, noCancel: true });
 setupServiceWorker();
+
+// Liens d'amis et de défis (#c=…) : lus puis effacés de la barre d'adresse. Le fragment n'est jamais envoyé au serveur.
+// À la toute première visite, l'appli se recharge une fois (mode hors ligne) : le code est gardé de côté
+// (sessionStorage, cet onglet seulement) et traité quand l'appli est prête.
+function readLinkCode() {
+  const m = location.hash.match(/^#c=([A-Za-z0-9._%-]{20,6000})$/);
+  if (m) { try { sessionStorage.setItem("labo.pending", decodeURIComponent(m[1])); } catch (e) { /* stockage refusé */ } history.replaceState(null, "", location.pathname + location.search); }
+  let code = null; try { code = sessionStorage.getItem("labo.pending"); } catch (e) { code = m ? decodeURIComponent(m[1]) : null; }
+  if (!code) return;
+  const willReload = "serviceWorker" in navigator && !TEST_LOCAL && !navigator.serviceWorker.controller && !self.crossOriginIsolated && !sessionStorage.getItem("coiReload");
+  const go2 = () => { try { sessionStorage.removeItem("labo.pending"); } catch (e) { /* rien */ } app.social.receive(code); };
+  if (willReload) setTimeout(() => { try { if (sessionStorage.getItem("labo.pending")) go2(); } catch (e) { go2(); } }, 5000); // si le rechargement n'a pas lieu
+  else go2();
+}
+readLinkCode();
+window.addEventListener("hashchange", readLinkCode);
 
 // Heure du serveur (en-tête Date de la page) : si l'horloge de l'appareil est décalée de plus de 5 minutes,
 // les récompenses du jour (quêtes, offres, série, défi du jour) suivent l'heure réelle.
