@@ -63,14 +63,14 @@ export function createLootbox(app) {
     async function buyAndOpen() {
       if (busy) return;
       const s = S();
-      if (s.coins < B.price || !app.spend(B.price)) { app.toast("Pas assez de pièces."); return; }
+      if (s.coins < B.price || !app.spend(B.price, "box")) { app.toast("Pas assez de pièces."); return; }
       busy = true;
       const forced = app.TEST_LOCAL ? (window.__boxrar || app.params.get("boxrar")) : null;
       const r = M.rollBox(id, boxPool(s.owned), s.boxPity, M.cryptoRng(), RARITY_ORDER.includes(forced) ? forced : null);
       // Le résultat est enregistré avant l'animation : fermer la fenêtre ne fait rien perdre.
       s.boxPity = r.pity; s.stats.boxes++;
       if (r.item && !r.dup) s.owned.push(r.item);
-      if (r.coins) s.coins += r.coins;
+      if (r.coins) app.earn(r.coins, "box");
       app.save(); app.renderHud();
       await charge(r.rarity);
       if (d.open) reveal(r);

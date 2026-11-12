@@ -2,7 +2,8 @@
 // dans les bornes prévues, sont gardées. Protège contre un fichier importé piégé ou un stockage corrompu
 // (types inattendus, clés « __proto__ », tailles démesurées).
 import { BADGES, DURATIONS, levelOf } from "../game.js";
-import { SPECIES_BY_ID, ITEM_BY_ID, THEME_BY_ID, DEFAULT_OWNED, DEFAULT_AVATAR, SLOTS, isValidOwned, ownsSkin, themeKey, basePrice } from "../avatar.js";
+import { SPECIES_BY_ID, ITEM_BY_ID, THEME_BY_ID, DEFAULT_OWNED, DEFAULT_AVATAR, SLOTS, EXCLUSIVES, isValidOwned, ownsSkin, themeKey, basePrice } from "../avatar.js";
+import { emptyEcon } from "./economy.js";
 import { QUEST_BY_ID, CHESTS, RANKS, MAX_FREEZES } from "../meta.js";
 
 export const STORE_KEY = "labo.v1";
@@ -23,7 +24,7 @@ export function defaults() {
     bosses: {}, chrono: { best: [], daily: { day: "", score: 0 }, runs: 0 },
     freezes: 0, frozenDays: [], boostUntil: 0, haptics: true, motion: "auto", title: "", player: "",
     stats: { chests: 0, perfect: 0, bosses: 0, quests: 0, boxes: 0 }, boxPity: 0, levelSeen: 1, secret: false,
-    deals: { day: "", ids: [] }
+    deals: { day: "", ids: [] }, econ: emptyEcon()
   };
 }
 
@@ -104,6 +105,9 @@ const SPEC = {
   trophies: int(0, 1e7), rankSeen: int(0, RANKS.length - 1),
   bosses: map(shape({ won: bool, best: int(0, 100), tries: int(0, 1e6) }, true), 20, 4),
   chrono: shape({ best: list(shape({ score: int(0, 1e7), d: day, daily: bool }, true), 5), daily: shape({ day: v => v === "" ? "" : day(v), score: int(0, 1e7) }, true), runs: int(0, 1e7) }),
+  econ: shape({ earned: int(0, 1e9), spent: int(0, 1e9), day: v => v === "" ? "" : day(v), practice: int(0, 1e6),
+    reps: map(int(0, 99), 80, 60), log: list(shape({ t: num(0, 9e15), a: int(-1e7, 1e7), r: str(20, /^[a-z]+$/) }, true), 60),
+    lastSeen: num(0, 9e15), sealed: bool, capNoted: v => v === "" ? "" : day(v) }),
   deals: shape({ day: v => v === "" ? "" : day(v), ids: list(v => typeof v === "string" && basePrice(v) ? v : undefined, 4, true) }),
   freezes: int(0, MAX_FREEZES), frozenDays: list(day, 120, true), boostUntil: num(0, 9e15),
   haptics: bool, motion: oneOf(["auto", "reduced", "full"]), title: str(30, /^[a-z0-9:]*$/), player: text(20),
@@ -132,6 +136,15 @@ export function sanitize(raw, now = Date.now()) {
     if (a[slot] && (!it || it.slot !== slot || !S.owned.includes(a[slot]))) a[slot] = "";
   }
   if (!a.name) a.name = DEFAULT_AVATAR.name;
+  // Économie : une sauvegarde d'avant le journal des pièces est reprise telle quelle (achats passés comptés comme
+  // dépenses) ; ensuite le solde ne peut jamais dépasser « gagné − dépensé ».
+  if (!isObj(src.econ)) {
+    const spent = S.owned.filter(id => !DEFAULT_OWNED.includes(id) && !EXCLUSIVES.includes(id)).reduce((t, id) => t + (basePrice(id) || 0), 0);
+    const paid = spent + 100 * S.stats.boxes; // chaque boîte déjà ouverte a coûté au moins 100 pièces
+    S.econ = { ...S.econ, earned: S.coins + paid, spent: paid };
+  }
+  if (S.econ.spent > S.econ.earned) S.econ.spent = S.econ.earned;
+  S.coins = Math.min(S.coins, S.econ.earned - S.econ.spent);
   if (!S.owned.includes(themeKey(S.theme))) S.theme = "nuit";
   if (S.boostUntil > now + 24 * 3600e3) S.boostUntil = 0;
   if (S.title && !(S.title === "rank" || S.title === "level" || S.badges.includes(S.title))) S.title = "";
@@ -144,7 +157,8 @@ export function sanitize(raw, now = Date.now()) {
 function migrate(raw, S) {
   if (isObj(raw) && raw.v === undefined && Number.isInteger(raw.xp) && raw.xp > 0) {
     S.levelSeen = levelOf(S.xp).level;
-    S.coins = Math.max(S.coins, 100 + Math.floor(S.xp / 10));
+    const gift = Math.max(0, 100 + Math.floor(S.xp / 10) - S.coins);
+    S.coins += gift; S.econ.earned += gift;
     S.chests = ["gold", ...S.chests];
     S.news = 1;
   }

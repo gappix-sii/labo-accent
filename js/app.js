@@ -2,14 +2,16 @@
 // Sécurité : tout le HTML passe par html`` (échappement automatique) et la politique Trusted Types « labo ».
 // La voix est analysée sur l'appareil ; rien ne quitte le navigateur, sauf si l'utilisateur choisit Gemini.
 import { html, render, append, replace, $, $$, setVar, makeWorker, scriptURL } from "./core/dom.js";
-import { load, persist, defaults, exportText, parseImport, MAX_IMPORT, cleanText } from "./core/store.js";
+import { load, sanitize, defaults, exportText, parseImport, MAX_IMPORT, cleanText, STORE_KEY } from "./core/store.js";
+import * as Econ from "./core/economy.js";
+import * as Seal from "./core/seal.js";
 import { saveSecret, loadSecret, deleteSecret, hasSecret, migrateLegacy, secretsAvailable } from "./core/secret.js";
 import * as P from "./phonemes.js";
 import { CATEGORIES, SOUND_LESSONS, MINIMAL_PAIRS } from "./content.js";
 import { Recorder, speak, englishVoices, wavBase64 } from "./audio.js";
 import * as G from "./game.js";
 import * as M from "./meta.js";
-import { SPECIES, ITEMS, THEMES, THEME_BY_ID, avatarSvg, bossSvg, BOSSES, droppable, describeOwned, themeKey, RARITY } from "./avatar.js";
+import { SPECIES, ITEMS, THEMES, THEME_BY_ID, avatarSvg, bossSvg, BOSSES, droppable, describeOwned, themeKey, RARITY, EXCLUSIVES, DEFAULT_OWNED, ITEM_BY_ID, basePrice } from "./avatar.js";
 import { COIN, TROPHY, CHEST_ICO, BOLT, SNOW, CROWN, HEART, chestSvg, emblemSvg, boxSvg } from "./art.js";
 import { line, companionSay, pitchOf } from "./mascot.js";
 import * as FX from "./fx.js";
@@ -36,7 +38,10 @@ const params = new URLSearchParams(location.search);
 const TEST_LOCAL = ["127.0.0.1", "localhost"].includes(location.hostname) && params.has("test");
 const FORCE = TEST_LOCAL && params.has("accept"); // tests locaux uniquement : force un bon score
 const shuffle = a => M.shuffleWith(a, Math.random);
-const today = () => M.dayKey(new Date());
+// Heure de confiance : jamais en arrière, et recalée sur l'heure du serveur quand l'appareil est déréglé.
+let clockOffset = 0;
+const now = () => Econ.trustedNow(S.econ, Date.now(), clockOffset);
+const today = () => M.dayKey(new Date(now()));
 
 const ICON = {
   mic: html`<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V22h2v-3.08A7 7 0 0 0 19 12z"/></svg>`,
@@ -56,7 +61,41 @@ const COACH_LINK = html`<a class="btn cyan block" href="https://claude.ai/artifa
 
 // ---------------- État ----------------
 let S = load();
-function save() { if (!persist(S)) toast("Impossible d'enregistrer ta progression sur cet appareil."); }
+const SIG_KEY = STORE_KEY + ".sig";
+// Ce qui peut s'obtenir sans boutique : objets de départ, récompenses de défis (couronne, auréole…).
+const isUnlockId = id => { const t = id.startsWith("theme.") ? THEME_BY_ID[id.slice(6)] : ITEM_BY_ID[id]; return !!(t && t.unlock); };
+const AUDIT_DEPS = { levelOf: G.levelOf, basePrice, isExclusive: id => EXCLUSIVES.includes(id), isDefault: id => DEFAULT_OWNED.includes(id), isUnlock: isUnlockId };
+// Vérification au démarrage : la sauvegarde doit porter le sceau de cet appareil.
+let integrity = { status: "ok", notes: [] };
+{
+  let raw = null, sig = null;
+  try { raw = localStorage.getItem(STORE_KEY); sig = localStorage.getItem(SIG_KEY); } catch (e) { /* stockage indisponible */ }
+  if (raw && Seal.sealAvailable()) {
+    const ok = !!sig && await Seal.verify(raw, sig);
+    // Tests automatiques sur ce poste uniquement (127.0.0.1 + ?test) : un état injecté sans sceau est accepté.
+    if (!ok && !(TEST_LOCAL && !sig)) {
+      const status = !sig && !S.econ.sealed ? "legacy" : Seal.keyIsFresh() ? "unverified" : "tampered";
+      const r = Econ.audit(S, today(), AUDIT_DEPS);
+      S = sanitize(JSON.parse(JSON.stringify(S)));
+      integrity = { status, notes: r.notes };
+    }
+  }
+  S.econ.sealed = Seal.sealAvailable();
+}
+let saveSeq = 0;
+function writeOut(json, sig) {
+  try { localStorage.setItem(STORE_KEY, json); if (sig) localStorage.setItem(SIG_KEY, sig); else localStorage.removeItem(SIG_KEY); return true; }
+  catch (e) { toast("Impossible d'enregistrer ta progression sur cet appareil."); return false; }
+}
+// Enregistre l'état et son sceau ensemble (le sceau est calculé avant l'écriture : jamais l'un sans l'autre).
+function save() {
+  S.econ.lastSeen = Math.max(S.econ.lastSeen || 0, now());
+  const json = JSON.stringify(S), seq = ++saveSeq;
+  if (!Seal.sealAvailable()) return writeOut(json, "");
+  Seal.sign(json).then(sig => { if (seq === saveSeq) writeOut(json, sig); });
+  return true;
+}
+const earn = (n, why) => Econ.credit(S, n, why, today(), now());
 const streak = () => M.streakOf(S.days, S.frozenDays, today());
 const xpToday = () => S.xpDays[today()] || 0;
 const levelNow = () => G.levelOf(S.xp);
@@ -67,7 +106,7 @@ FX.setReduced(reducedMotion);
 function play(name) { if (S.sfx) { try { FX.sfx[name](); } catch (e) {} } }
 const HAPTIC = { tap: 8, good: [14], great: [12, 30, 18], bad: [40, 40, 40], level: [30, 50, 30, 50, 90], chest: [20, 40, 80], hit: [25], crit: [15, 20, 60] };
 function haptic(k) { if (S.haptics && navigator.vibrate) { try { navigator.vibrate(HAPTIC[k] || 10); } catch (e) {} } }
-const boostActive = () => S.boostUntil > Date.now();
+const boostActive = () => S.boostUntil > now();
 const bossesWon = () => Object.values(S.bosses).filter(b => b.won).length;
 
 function applyPrefs() {
@@ -92,7 +131,7 @@ function renderHud() {
   if (k !== avKey) { avKey = k; render($("#hAv"), avatarSvg(S.avatar, { cls: "mini" })); }
   $("#hCoins span").textContent = Math.max(0, S.coins - pendingCoins);
   const hc = $("#hChest"); hc.hidden = !S.chests.length; hc.querySelector("span").textContent = S.chests.length;
-  const hb = $("#hBoost"), left = S.boostUntil - Date.now();
+  const hb = $("#hBoost"), left = S.boostUntil - now();
   hb.hidden = left <= 0;
   if (left > 0) { hb.querySelector("span").textContent = "×2"; hb.title = `Potion d'XP ×2 : encore ${Math.ceil(left / 60000)} min`; }
   const v = $("#hVoice"); render(v, S.poufVoice ? ICON.spk : ICON.mute); v.setAttribute("aria-pressed", String(S.poufVoice));
@@ -126,8 +165,9 @@ function notify(title, text, icon = COIN) {
   setTimeout(() => { el.classList.add("out"); setTimeout(() => el.remove(), 400); }, 3600);
   while (box.children.length > 3) box.firstElementChild.remove();
 }
-function confirmDlg(title, text, okLabel = "Confirmer", { danger = true } = {}) {
+function confirmDlg(title, text, okLabel = "Confirmer", { danger = true, noCancel = false } = {}) {
   const d = $("#dlg"); $("#dlgTitle").textContent = title; $("#dlgText").textContent = text; $("#dlgOk").textContent = okLabel;
+  $("#dlgCancel").hidden = noCancel;
   $("#dlgOk").className = "btn sm " + (danger ? "red" : "green");
   return new Promise(res => {
     const done = v => { d.close(); res(v); };
@@ -261,24 +301,36 @@ function addTrophies(n) {
   while (S.rankSeen < r.i) { S.rankSeen++; S.chests.push(M.rankChest(S.rankSeen)); rankUp = r; }
   return rankUp;
 }
+// extra.key : identifiant de l'activité (rejouer la même le même jour rapporte de moins en moins) ;
+// extra.progress : pièces de progrès (nouvelle leçon, étoiles, records, mots appris), jamais réduites ni plafonnées.
 function gainXp(total, startLevel, extra = {}) {
-  const xp = boostActive() ? total * 2 : total;
+  const day = today(), mult = Econ.repeatMult(S.econ, extra.key, day);
+  Econ.noteRun(S.econ, extra.key, day);
+  const base = Math.round(total * mult), xp = boostActive() ? base * 2 : base;
   const before = xpToday();
-  S.xp += xp; S.xpDays[today()] = before + xp;
-  const coins = M.coinsForXp(xp) + (extra.coins || 0);
-  S.coins += coins;
+  S.xp += xp; S.xpDays[day] = before + xp;
+  const wasCapped = Econ.capReached(S);
+  let coins = earn(M.coinsForXp(xp), "xp") + earn(Math.round((extra.coins || 0) * mult), extra.reason || "boss");
+  const progress = earn(extra.progress || 0, "progress");
+  coins += progress;
   markActive();
   const lv = levelNow().level, levels = [];
-  while (S.levelSeen < lv) { S.levelSeen++; const r = M.levelReward(S.levelSeen); S.coins += r.coins; S.chests.push(r.chest); levels.push(S.levelSeen); }
+  while (S.levelSeen < lv) { S.levelSeen++; const r = M.levelReward(S.levelSeen); coins += earn(r.coins, "level"); S.chests.push(r.chest); levels.push(S.levelSeen); }
   const goalReached = before < S.goalXp && xpToday() >= S.goalXp;
-  if (goalReached) S.coins += 15;
+  if (goalReached) coins += earn(15, "goal");
   const earned = G.newBadges(S, { streak: streak() }); S.badges.push(...earned);
-  for (const id of earned) { S.coins += 25; if (id === "streak7") S.chests.push("silver"); if (id === "streak30") S.chests.push("gold"); }
-  const rankUp = extra.trophies ? addTrophies(extra.trophies) : null;
+  for (const id of earned) { coins += earn(25, "badge"); if (id === "streak7") S.chests.push("silver"); if (id === "streak30") S.chests.push("gold"); }
+  const trophies = Math.round((extra.trophies || 0) * mult);
+  const rankUp = trophies ? addTrophies(trophies) : null;
   const unlocks = checkUnlocks();
+  const capNow = !wasCapped && Econ.capReached(S) && S.econ.capNoted !== day;
+  if (capNow) S.econ.capNoted = day;
   save();
   quest("xp", xp);
-  return { xpGained: xp, boosted: xp !== total, coins, levelUp: lv > startLevel ? lv : 0, levels, goalReached, earned, rankUp, unlocks, trophies: extra.trophies || 0 };
+  if (mult < 1) notify("Déjà fait aujourd'hui", `Récompense à ${Math.round(mult * 100)} % : une nouvelle leçon ou un meilleur score rapporte plus !`);
+  if (progress) notify("Bravo pour tes progrès !", `${extra.why || "Nouveau progrès"} · +${progress} pièces`, COIN);
+  if (capNow) notify("Plafond d'entraînement atteint", `${Econ.COIN_DAY_CAP} pièces d'entraînement aujourd'hui. L'XP compte toujours ; les pièces reviennent avec tes progrès, tes quêtes et demain.`);
+  return { xpGained: xp, boosted: xp !== base, coins, progress, mult, levelUp: lv > startLevel ? lv : 0, levels, goalReached, earned, rankUp, unlocks, trophies };
 }
 async function rewards(o) {
   if (o.goalReached) await celebrate({ kind: "goal", title: "Objectif du jour atteint !", text: `${xpToday()} XP aujourd'hui · +15 pièces. Ta série continue !` });
@@ -306,7 +358,7 @@ async function quitActivity(noConfirm, back) {
   }
   if (noConfirm || await confirmDlg("Quitter ?", "Tu perdras l'XP de l'exercice en cours.", "Quitter")) go(back);
 }
-function spend(n) { if (S.coins < n) return false; S.coins -= n; save(); renderHud(); return true; }
+function spend(n, why = "shop") { if (!Econ.debit(S, n, why, now())) return false; save(); renderHud(); return true; }
 
 // ---------------- Coffres ----------------
 async function openChestFlow() {
@@ -324,7 +376,7 @@ async function openChestFlow() {
   if (!d.open) return;
   // Le tirage est appliqué tout de suite : fermer pendant l'animation ne fait rien perdre.
   const r = M.rollChest(tier, droppable(S.owned), M.cryptoRng());
-  S.chests.shift(); S.coins += r.coins; if (r.item) S.owned.push(r.item); S.stats.chests++; save();
+  S.chests.shift(); earn(r.coins, "chest"); if (r.item) S.owned.push(r.item); S.stats.chests++; save();
   const svg = $("#chestTap .chest");
   svg.classList.remove("idle"); svg.classList.add("shake");
   haptic("chest");
@@ -625,7 +677,7 @@ function finishBoss(win) {
   S.bosses[B.id] = { won: prev.won || win, best: Math.max(prev.best, avg), tries: prev.tries + 1 };
   if (win) S.stats.bosses++;
   if (R.chest) S.chests.push(R.chest);
-  const g = gainXp(R.xp, L.startLevel, { coins: R.coins, trophies: R.trophies });
+  const g = gainXp(R.xp, L.startLevel, { coins: R.coins, trophies: R.trophies, key: "boss:" + B.id, reason: "boss" });
   go("bfinish", { win, avg, first, R, ...g });
 }
 function renderBossFinish(o) {
@@ -666,8 +718,16 @@ function finishLesson() {
   const bonus = 20 + (scores.every(s => s >= 85) ? 10 : 0);
   const total = L.xp + bonus;
   S.bestCombo = Math.max(S.bestCombo || 0, L.maxCombo);
-  if (L.lesson.id) { const prev = S.lessons[L.lesson.id] || { stars: 0, best: 0 }; S.lessons[L.lesson.id] = { stars: Math.max(prev.stars, st), best: Math.max(prev.best, avg), d: today() }; }
-  const g = gainXp(total, L.startLevel);
+  const why = [];
+  let progress = 0;
+  if (L.lesson.id) {
+    const had = S.lessons[L.lesson.id], prev = had || { stars: 0, best: 0 };
+    if (!had) { progress += Econ.PROGRESS.firstLesson; why.push("nouvelle leçon"); }
+    if (st > prev.stars) { progress += (st - prev.stars) * Econ.PROGRESS.newStar; why.push(st - prev.stars > 1 ? `${st - prev.stars} nouvelles étoiles` : "nouvelle étoile"); }
+    if (had && avg >= prev.best + 5) { progress += Econ.PROGRESS.newBest; why.push(`record ${avg} %`); }
+    S.lessons[L.lesson.id] = { stars: Math.max(prev.stars, st), best: Math.max(prev.best, avg), d: today() };
+  }
+  const g = gainXp(total, L.startLevel, { key: "lesson:" + (L.lesson.id || L.lesson.kind || "free"), progress, why: why.join(", ") });
   if (L.lesson.id) quest("lesson");
   go("finish", { avg, st, total, combo: L.maxCombo, ...g });
 }
@@ -851,8 +911,9 @@ function renderProfile() {
   $("#voice").onchange = e => { S.voice = e.target.value; save(); };
   $("#tryVoice").onclick = () => speak("Hello! How are you today?", { voiceURI: S.voice });
   $("#slowR").oninput = e => { S.slow = +e.target.value; $("#slowV").textContent = Math.round(S.slow * 100) + " %"; save(); };
-  $("#export").onclick = () => {
-    const blob = new Blob([exportText(S)], { type: "application/json" });
+  $("#export").onclick = async () => {
+    const body = exportText(S), sealed = JSON.stringify({ ...JSON.parse(body), seal: await Seal.sign(JSON.stringify(S)) }, null, 1);
+    const blob = new Blob([sealed], { type: "application/json" });
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `labo-accent-${today()}.json`;
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     toast("Sauvegarde téléchargée. Garde ce fichier pour toi : il contient ta progression (pas ta clé).");
@@ -865,7 +926,15 @@ function renderProfile() {
     if (!r.ok) { toast(r.error); return; }
     const s = r.summary;
     if (!await confirmDlg("Restaurer cette sauvegarde ?", `Niveau ${s.level} · ${s.xp} XP · ${s.lessons} leçons · ${s.words} mots maîtrisés · ${s.coins} pièces. Ta progression actuelle sur cet appareil sera remplacée.`, "Restaurer")) return;
-    S = r.state; save(); applyPrefs(); renderHud(); toast("Sauvegarde restaurée."); go("profile");
+    // Même appareil : le sceau le prouve, la sauvegarde est reprise telle quelle. Sinon (autre appareil, fichier
+    // modifié) : pièces et objets sont ramenés à ce que la progression justifie.
+    let file = null; try { file = JSON.parse(await f.text()); } catch (err) { file = null; }
+    const sealOk = !!(file && file.state && typeof file.seal === "string" && await Seal.verify(JSON.stringify(file.state), file.seal));
+    let next = r.state, notes = [];
+    if (!sealOk) { const a = Econ.audit(next, today(), AUDIT_DEPS); notes = a.notes; next = sanitize(JSON.parse(JSON.stringify(next))); }
+    S = next; S.econ.sealed = Seal.sealAvailable(); save(); applyPrefs(); renderHud(); go("profile");
+    if (sealOk || !notes.length) toast(sealOk ? "Sauvegarde restaurée (sceau vérifié)." : "Sauvegarde restaurée et vérifiée.");
+    else await confirmDlg("Sauvegarde restaurée", `Ce fichier ne vient pas de cet appareil ou a été modifié. Les valeurs impossibles ont été corrigées : ${notes.join(" ; ")}.`, "OK", { danger: false, noCancel: true });
   };
   $("#delModel").onclick = async () => {
     if (!await confirmDlg("Supprimer le moteur ?", "Le moteur de prononciation (≈ 355 Mo) sera retiré de ton appareil. Il faudra le retélécharger pour jouer. Ta progression est conservée.", "Supprimer")) return;
@@ -992,7 +1061,7 @@ function endSession(completed) {
   if (completed && s.done > 0) {
     S.sessions = [...(S.sessions || []), { d: today(), planned: s.min, real, xp }].slice(-100);
     const earned = G.newBadges(S, { streak: streak() }); S.badges.push(...earned);
-    const bonus = 10 * s.done; S.coins += bonus + earned.length * 25;
+    const bonus = earn(10 * s.done, "session"); earn(earned.length * 25, "badge");
     save();
     go("send", { real, xp, done: s.done, total: s.blocks.length, planned: s.min, earned, coins: bonus });
   } else go("session");
@@ -1126,7 +1195,7 @@ function vocabNext(correct) {
   if (V.i < V.cards.length) { play("tap"); renderVocabCard(); return; }
   const total = V.xp + 10;
   const uniq = new Set(V.cards.map(x => x.id)).size;
-  go("vfinish", { total, correct: V.correct, count: uniq, newly: V.newly, ...gainXp(total, V.startLevel) });
+  go("vfinish", { total, correct: V.correct, count: uniq, newly: V.newly, ...gainXp(total, V.startLevel, { key: "vocab", progress: V.newly * Econ.PROGRESS.newWord, why: V.newly > 1 ? `${V.newly} mots appris` : "1 mot appris" }) });
 }
 function renderVocabFinish(o) {
   render($("#view"), html`<section class="card finish">
@@ -1253,7 +1322,8 @@ function finishDialog() {
   const prev = S.dialogues[D.d.id];
   S.dialogues[D.d.id] = { best: Math.max(prev ? prev.best : 0, avg), d: today() };
   const total = D.xp + 20;
-  const g = gainXp(total, D.startLevel);
+  const dp = !prev ? Econ.PROGRESS.firstDialogue : avg >= prev.best + 5 ? Econ.PROGRESS.newBest : 0;
+  const g = gainXp(total, D.startLevel, { key: "dialog:" + D.d.id, progress: dp, why: !prev ? "nouveau dialogue" : `record ${avg} %` });
   quest("dialog");
   go("dfinish", { avg, total, tasks: D.done.size, ntasks: D.d.tasks.length, ...g });
 }
@@ -1323,7 +1393,7 @@ function checkListen() {
   });
   const total = hit + missed, score = total ? Math.max(0, Math.round((hit - wrong) / total * 100)) : 0;
   const xp = 5 + hit * 2;
-  const r = gainXp(xp, LS.startLevel);
+  const r = gainXp(xp, LS.startLevel, { key: "listen" });
   play(score >= 80 ? "great" : score >= 50 ? "good" : "bad");
   render($("#lRes"), html`<p class="hintline"><b>${score} %</b> · ${hit} trouvé${hit > 1 ? "s" : ""}, ${missed} manqué${missed > 1 ? "s" : ""}, ${wrong} en trop · <span class="xpfloat">+${r.xpGained} XP</span></p>
     <p class="small muted">Vert : bien entendu · orange : présent mais manqué · rouge : n'était pas dans le dialogue. Touche un mot pour l'écouter.</p>
@@ -1431,7 +1501,8 @@ function showFeedbackSheet({ ok, full, why, next }) {
 function finishGrammar() {
   const g = GR.g, pct = Math.round(GR.ok / g.ex.length * 100), prev = S.grammar[g.id];
   S.grammar[g.id] = { best: Math.max(prev ? prev.best : 0, pct), d: today() };
-  const total = GR.xp + 15, r = gainXp(total, GR.startLevel);
+  const gp = !prev ? Econ.PROGRESS.firstDialogue : pct >= prev.best + 5 ? Econ.PROGRESS.newBest : 0;
+  const total = GR.xp + 15, r = gainXp(total, GR.startLevel, { key: "grammar:" + g.id, progress: gp, why: !prev ? "nouvelle règle" : `record ${pct} %` });
   go("done", { title: "Règle travaillée !", tiles: [["g", "Bonnes réponses", `${GR.ok}/${g.ex.length}`], ["c", "Réussite", pct + "%"], ["y", "XP gagnés", "+" + r.xpGained], ["o", "Pièces", "+" + r.coins]],
     line: pct >= 80 ? "Cette règle n'a plus de secret pour toi !" : "Refais-la demain, ça va rentrer.", back: "grammar", ...r });
 }
@@ -1480,7 +1551,7 @@ function renderMistakeCard() {
   });
 }
 function finishMistakes() {
-  const total = MQ.xp + 10, r = gainXp(total, MQ.startLevel);
+  const total = MQ.xp + 10, r = gainXp(total, MQ.startLevel, { key: "mistakes" });
   go("done", { title: "Fautes chassées !", tiles: [["g", "Bonnes réponses", `${MQ.ok}/${MQ.cards.length}`], ["o", "À revoir", String(MQ.cards.length - MQ.ok)], ["y", "XP gagnés", "+" + r.xpGained], ["o", "Pièces", "+" + r.coins]],
     line: MQ.ok >= MQ.cards.length * 0.8 ? "Bravo, tu ne tombes plus dans le piège !" : "Les fautes ratées reviendront demain.", back: "mistakes", ...r });
 }
@@ -1717,7 +1788,7 @@ function endChat() {
   if (chatRec && chatRec.active) { chatRec.stop().catch(() => {}); chatRec = null; }
   if ("speechSynthesis" in window) speechSynthesis.cancel();
   if (!CH || CH.msgs === 0) { go("train"); return; }
-  const total = CH.msgs * 5 + 10, r = gainXp(total, CH.startLevel);
+  const total = Math.min(CH.msgs, 12) * 5 + 10, r = gainXp(total, CH.startLevel, { key: "chat" });
   quest("dialog");
   go("done", { title: "Conversation terminée !", tiles: [["c", "Tes messages", String(CH.msgs)], ["o", "Corrections", String(CH.corrections)], ["y", "XP gagnés", "+" + r.xpGained], ["o", "Pièces", "+" + r.coins]],
     line: CH.corrections === 0 ? "Aucune faute, impressionnant !" : "Relis les corrections : ce sont tes points à travailler.", back: "train", ...r });
@@ -1750,7 +1821,7 @@ defView("chat", renderChat, { tab: "train", full: true });
 
 // Contexte partagé avec les modules de vues (compagnon, arène).
 const app = {
-  get S() { return S; }, save, go, defView, play, haptic, toast, notify, confirmDlg, celebrate, rewards, gainXp, quest, spend, openChestFlow, collectCoins,
+  get S() { return S; }, save, earn, now, go, defView, play, haptic, toast, notify, confirmDlg, celebrate, rewards, gainXp, quest, spend, openChestFlow, collectCoins,
   renderHud, applyPrefs, checkUnlocks, today, streak, levelNow, ICON, TEST_LOCAL, params, view: () => view, bossesWon, startBoss, speakEn: (t, rate = 0.9) => speak(t, { voiceURI: S.voice, rate })
 };
 app.lootbox = createLootbox(app);
@@ -1762,7 +1833,7 @@ const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "Ar
 let kIdx = 0;
 async function secretFound() {
   if (S.secret) { toast("Tu connais déjà le code secret !"); return; }
-  S.secret = true; S.coins += 100;
+  S.secret = true; earn(100, "secret");
   const had = S.owned.includes("controller"); if (!had) S.owned.push("controller");
   save(); renderHud();
   await celebrate({ kind: "unlock", title: "Code secret !", text: `Vrai gamer détecté. +100 pièces${had ? "" : " et la manette pour ton compagnon"}.`, visual: html`<div class="unlock-ico av live">${avatarSvg({ ...S.avatar, hand: "controller" }, { cls: "happy" })}</div>` });
@@ -1796,6 +1867,7 @@ async function setupServiceWorker() {
   });
   let reg;
   try { reg = await navigator.serviceWorker.register(scriptURL("sw.js"), { updateViaCache: "none" }); } catch (e) { return; }
+  if (!reg) return; // service worker bloqué par le navigateur : l'appli marche sans mode hors ligne
   const apply = w => { asked = true; w.postMessage("skipWaiting"); };
   const offer = w => {
     if (!w || !navigator.serviceWorker.controller) return;
@@ -1825,4 +1897,24 @@ migrateLegacy("gemini").finally(refreshKeyState);
 if (S.modelReady) startEngine();
 go("path");
 if (used) notify("Gel de série utilisé", `${used} jour${used > 1 ? "s" : ""} manqué${used > 1 ? "s" : ""} protégé${used > 1 ? "s" : ""} : ta série continue !`, SNOW);
+if (integrity.status === "tampered") confirmDlg("Sauvegarde modifiée en dehors de l'appli",
+  `Pour que chacun soit récompensé de ses vrais progrès, les pièces et les objets ont été ramenés à ce que ta progression justifie.${integrity.notes.length ? " Corrections : " + integrity.notes.join(" ; ") + "." : ""}`, "J'ai compris", { danger: false, noCancel: true });
+else if (integrity.notes.length) confirmDlg("Sauvegarde vérifiée", `Des valeurs impossibles ont été corrigées : ${integrity.notes.join(" ; ")}.`, "OK", { danger: false, noCancel: true });
 setupServiceWorker();
+
+// Heure du serveur (en-tête Date de la page) : si l'horloge de l'appareil est décalée de plus de 5 minutes,
+// les récompenses du jour (quêtes, offres, série, défi du jour) suivent l'heure réelle.
+async function syncClock() {
+  if (TEST_LOCAL && !params.has("clock")) return;
+  try {
+    const t0 = Date.now(), r = await fetch("./?clock=" + t0, { method: "HEAD", cache: "no-store", credentials: "omit" }), t1 = Date.now();
+    const srv = Date.parse(r.headers.get("date") || "");
+    if (!Number.isFinite(srv)) return;
+    const off = srv - (t0 + t1) / 2, had = clockOffset !== 0;
+    clockOffset = Math.abs(off) > 5 * 60e3 ? Math.round(off) : 0;
+    if (clockOffset && !had) toast("L'heure de ton appareil est décalée : les récompenses du jour suivent l'heure réelle.");
+    if (S.econ.lastSeen > srv + 36e5) toast("Horloge avancée détectée : les récompenses du jour reprendront quand l'heure réelle aura rattrapé.");
+  } catch (e) { /* hors ligne : on garde l'heure la plus tardive déjà vue */ }
+}
+syncClock();
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") syncClock(); });

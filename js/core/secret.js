@@ -27,6 +27,7 @@ async function tx(mode, fn) {
 }
 const get = k => tx("readonly", st => st.get(k));
 const put = (k, v) => tx("readwrite", st => st.put(v, k));
+export { get as kvGet, put as kvPut };
 const del = k => tx("readwrite", st => st.delete(k));
 
 async function wrapKey() {

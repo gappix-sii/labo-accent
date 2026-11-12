@@ -97,6 +97,19 @@ Autres en-têtes : `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Embe
 - Garantie : au plus 10 boîtes pour un objet légendaire ou mythique ; doublons convertis en pièces.
 - Tirage par `crypto.getRandomValues`, résultat enregistré avant l'animation (fermer la fenêtre ne fait rien perdre).
 
+## Monnaie et Shop : anti-triche
+
+Objectif : que les pièces récompensent la vraie progression, et qu'on ne puisse pas s'en donner à la main.
+
+- **Une seule porte** : toutes les pièces passent par `credit()` / `debit()` (`js/core/economy.js`), qui tiennent un journal (gagné, dépensé, 60 dernières opérations). Le solde ne peut jamais dépasser « gagné − dépensé ».
+- **Sceau de la sauvegarde** (`js/core/seal.js`) : chaque enregistrement est signé en HMAC-SHA-256 avec une clé WebCrypto **non exportable** gardée dans IndexedDB. Modifier `localStorage` à la main, supprimer le sceau ou importer un fichier trafiqué est détecté au démarrage ou à l'import.
+- **Contrôle de cohérence** (`audit`) pour toute sauvegarde non scellée : jours d'activité ni futurs ni antérieurs à l'appli, XP et trophées bornés par jour d'activité, pièces bornées par ce que la progression peut rapporter, exclusivités limitées au nombre de boîtes ouvertes, objets de la boutique limités à ce qui a été payé ou gagné dans un coffre. Les bornes sont larges : un joueur honnête n'est jamais pénalisé (testé).
+- **Export / import** : le fichier exporté porte le sceau de l'appareil ; réimporté sur le même appareil, il est repris tel quel, sinon il passe par le contrôle de cohérence.
+- **Prix** : toujours recalculés par l'appli (catalogue, offre du jour), jamais lus dans la page ; niveau requis et possession vérifiés à l'achat ; tirages des coffres et boîtes avec `crypto.getRandomValues`.
+- **Anti-farm** : la même activité rejouée le même jour rapporte 100 %, puis 60 %, 35 % et 20 % ; les pièces d'entraînement (XP, séances, chrono, boss) sont plafonnées à 220 par jour. Les **pièces de progrès** ne sont jamais réduites : nouvelle leçon (+20), nouvelle étoile (+15), record (+5), mot appris (+2), nouveau dialogue ou nouvelle règle (+20), record au chrono (+20), plus quêtes, niveaux et succès.
+- **Horloge** : l'heure utilisée ne recule jamais (la plus tardive déjà vue), et elle est recalée sur l'en-tête `Date` du serveur quand l'appareil est décalé de plus de 5 minutes. Changer l'heure ne fait donc pas revenir quêtes, offres ou défi du jour.
+- **Raccourcis de test** (`?test`, `&accept`, rareté forcée) : actifs uniquement sur `127.0.0.1` / `localhost`, jamais sur le site publié (testé dans `test/run-cheat.mjs`).
+
 ## Dépendances (vérifiées)
 
 | Fichier | Origine | Version | SHA-256 |
@@ -116,4 +129,4 @@ Autres en-têtes : `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Embe
 - Trusted Types n'est appliqué que par les navigateurs qui le gèrent ; ailleurs, l'échappement systématique reste la protection.
 - Le chiffrement de la clé protège le stockage (lecture du disque, extension qui fouille `localStorage`, sauvegarde) ; il ne protégerait pas contre un script exécuté dans la page, cas que la CSP et Trusted Types empêchent.
 - Les modèles déjà téléchargés avant cette version restent dans le cache du navigateur sans nouvelle vérification ; « Supprimer le moteur » puis le retélécharger applique la vérification.
-- La progression locale peut être modifiée par quelqu'un qui a accès à l'appareil (triche possible, sans risque de sécurité).
+- Anti-triche sans serveur : le sceau et le contrôle de cohérence arrêtent les triches faciles (modifier la sauvegarde, trafiquer un fichier, changer l'heure). Quelqu'un qui maîtrise les outils de développement peut encore exécuter du code dans la page ; seul un serveur de confiance (classements entre amis, par exemple) l'empêcherait. Et le contrôle laisse une marge : une sauvegarde gonflée est ramenée au maximum crédible pour sa progression, pas forcément à zéro.

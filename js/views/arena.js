@@ -149,7 +149,8 @@ export function setupArena(app) {
     const rec = M.pushRecord(s.chrono.best, entry);
     s.chrono.best = rec.list; s.chrono.runs++;
     if (daily) s.chrono.daily = { day: today, score: s.chrono.daily.day === today ? Math.max(s.chrono.daily.score, CR.score) : CR.score };
-    const g = app.gainXp(R.xp, CR.startLevel, { coins: R.coins, trophies: R.trophies });
+    const isRecord = CR.score > prevBest && prevBest > 0;
+    const g = app.gainXp(R.xp, CR.startLevel, { coins: R.coins, trophies: R.trophies, key: "chrono:" + CR.mode, reason: "chrono", progress: isRecord ? M.CHRONO_RECORD : 0, why: `record personnel ${CR.score}` });
     app.quest("chrono"); app.quest("chronoScore", CR.score);
     app.go("cfinish", { ...g, score: CR.score, correct: CR.correct, total: CR.answers.length, maxCombo: CR.maxCombo, daily, record: CR.score > prevBest && CR.score > 0, rank: rec.rank, answers: CR.answers, firstDaily });
   }

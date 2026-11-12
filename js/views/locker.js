@@ -24,7 +24,7 @@ export function setupLocker(app) {
 
   // ---------- Offres du jour ----------
   function deals() {
-    const s = S(), day = M.dayKey(new Date());
+    const s = S(), day = app.today();
     if (s.deals.day !== day) {
       s.deals = { day, ids: M.pickDeals(day, CATALOG.filter(id => !owns(id) && levelFor(id) <= lv())) };
       app.save();
@@ -109,7 +109,7 @@ export function setupLocker(app) {
     return [none, ...[...list.filter(owns), ...list.filter(id => !owns(id))].map(id => card(id))];
   }
   function bonusCards() {
-    const s = S(), left = s.boostUntil - Date.now();
+    const s = S(), left = s.boostUntil - app.now();
     const b = (id, price) => html`<button class="btn sm ${s.coins >= price ? "yellow" : "ghost"}" data-act="buy" data-id="${id}" ${s.coins >= price ? "" : "disabled"}>Acheter ${price}${COIN}</button>`;
     return [
       html`<div class="shopcard"><div class="sc-art bonus-art">${SNOW}</div><b>Gel de série</b><span class="small muted">Protège ta série si tu rates un jour. Utilisé automatiquement. ${s.freezes}/${M.MAX_FREEZES} en réserve.</span>
@@ -123,7 +123,7 @@ export function setupLocker(app) {
   function shopBody(tab) {
     const grid = list => html`<div class="shopgrid">${list.map((c, k) => html`<div class="sc-wrap" data-css="--i:${Math.min(k, 14)}">${c}</div>`)}</div>`;
     if (tab === "home") {
-      const ms = M.msToMidnight(), h = Math.floor(ms / 3600e3), m = Math.floor(ms / 60e3) % 60, ids = deals();
+      const ms = M.msToMidnight(new Date(app.now())), h = Math.floor(ms / 3600e3), m = Math.floor(ms / 60e3) % 60, ids = deals();
       const lb = app.lootbox.cards();
       return html`
         <h3 class="sec-title">Boîtes à butin</h3>${grid(lb.slice(0, -1))}
@@ -210,14 +210,14 @@ export function setupLocker(app) {
         if (id === "freeze" || id === "boost") {
           const price = M.PRICES[id];
           if (s.coins < price) return app.toast("Pas assez de pièces. Fais des leçons, des quêtes ou ouvre tes coffres !");
-          if (id === "freeze") { if (s.freezes >= M.MAX_FREEZES || !app.spend(price)) return; s.freezes++; FX.floatText(`−${price}`, b, "gold"); return done("Gel de série ajouté : ta série est protégée."); }
-          if (s.boostUntil > Date.now() || !app.spend(price)) return; s.boostUntil = Date.now() + M.BOOST_MS; FX.floatText("×2 XP !", b, "gold"); return done("Potion bue : XP doublée pendant 15 minutes !");
+          if (id === "freeze") { if (s.freezes >= M.MAX_FREEZES || !app.spend(price, "bonus")) return; s.freezes++; FX.floatText(`−${price}`, b, "gold"); return done("Gel de série ajouté : ta série est protégée."); }
+          if (s.boostUntil > app.now() || !app.spend(price, "bonus")) return; s.boostUntil = app.now() + M.BOOST_MS; FX.floatText("×2 XP !", b, "gold"); return done("Potion bue : XP doublée pendant 15 minutes !");
         }
         const d = describeOwned(id), price = priceOf(id);
         if (!d || !price || owns(id) || lv() < levelFor(id)) return;
         if (s.coins < price) return app.toast("Pas assez de pièces. Fais des leçons, des quêtes ou ouvre tes coffres !");
         if (!await app.confirmDlg("Acheter ?", `${d.name} pour ${price} pièces (il t'en restera ${s.coins - price}).`, "Acheter", { danger: false })) return;
-        if (owns(id) || !app.spend(price)) return;
+        if (owns(id) || !app.spend(price, "shop")) return;
         s.owned.push(id);
         if (d.kind === "skin") { if (lv() >= SPECIES_BY_ID[d.sp].lvl) { a.species = d.sp; a.skin = d.sk; } }
         else if (d.kind === "theme") { s.theme = d.theme; app.applyPrefs(); }

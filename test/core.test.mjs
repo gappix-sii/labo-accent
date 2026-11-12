@@ -4,6 +4,8 @@ import { createHash } from "node:crypto";
 import { html, toHTMLString } from "../js/core/dom.js";
 import { sanitize, defaults, parseImport, exportText, cleanText } from "../js/core/store.js";
 import * as M from "../js/meta.js";
+import * as E from "../js/core/economy.js";
+import { levelOf } from "../js/game.js";
 import { MODELS, guardedFetch, lookup } from "../js/integrity.js";
 import { SPECIES, ITEMS, THEMES, SLOTS, CATALOG, avatarSvg, bossSvg, BOSSES, droppable, itemPreview, boxPool, EXCLUSIVES, basePrice, levelFor } from "../js/avatar.js";
 
@@ -192,5 +194,48 @@ import { SPECIES, ITEMS, THEMES, SLOTS, CATALOG, avatarSvg, bossSvg, BOSSES, dro
   assert.equal(S2.avatar.back, "");
   assert.ok(levelFor("angel") === 10 && levelFor("skin.dragon.ruby") === 15);
   console.log(`shop OK (${CATALOG.length} objets en vente, ${EXCLUSIVES.length} exclusivités des boîtes)`);
+}
+// ---------- Économie anti-triche ----------
+{
+  const day = "2026-11-12";
+  // Plafond d'entraînement : les pièces issues de l'XP s'arrêtent à COIN_DAY_CAP ; les progrès ne sont pas plafonnés
+  const S = sanitize({ ...defaults(), coins: 0 });
+  let got = 0; for (let k = 0; k < 50; k++) got += E.credit(S, 30, "xp", day);
+  assert.equal(got, E.COIN_DAY_CAP); assert.equal(E.credit(S, 30, "xp", day), 0);
+  assert.equal(E.credit(S, 40, "progress", day), 40); assert.equal(E.credit(S, 45, "quest", day), 45);
+  assert.equal(S.coins, E.COIN_DAY_CAP + 85); assert.equal(S.econ.earned, S.coins);
+  assert.equal(E.credit(S, 30, "xp", "2026-11-13"), 30, "le plafond repart le lendemain");
+  // Dépense : jamais en négatif, journalisée
+  const c0 = S.coins; assert.ok(!E.debit(S, c0 + 1, "shop")); assert.ok(E.debit(S, 100, "shop")); assert.equal(S.coins, c0 - 100); assert.equal(S.econ.spent, 100);
+  assert.ok(!E.debit(S, -50, "shop") && !E.debit(S, 0, "shop"));
+  // Répétitions : 100 %, 60 %, 35 %, puis 20 % ; une autre activité repart à 100 %
+  const R = E.emptyEcon(), mults = [];
+  for (let k = 0; k < 5; k++) { mults.push(E.repeatMult(R, "lesson:a", day)); E.noteRun(R, "lesson:a", day); }
+  assert.deepEqual(mults, [1, 0.6, 0.35, 0.2, 0.2]); assert.equal(E.repeatMult(R, "lesson:b", day), 1); assert.equal(E.repeatMult(R, "lesson:a", "2026-11-13"), 1);
+  // Horloge : jamais en arrière
+  assert.equal(E.trustedNow({ lastSeen: 5000 }, 1000), 5000); assert.equal(E.trustedNow({ lastSeen: 5000 }, 9000), 9000); assert.equal(E.trustedNow({ lastSeen: 0 }, 9000, -4000), 5000);
+  // Le solde ne peut pas dépasser « gagné − dépensé » (modifier seulement les pièces ne sert à rien)
+  const T = sanitize({ ...defaults(), coins: 999999, econ: { ...E.emptyEcon(), earned: 500, spent: 200 } });
+  assert.equal(T.coins, 300);
+  const deps = { levelOf, basePrice, isExclusive: id => EXCLUSIVES.includes(id), isDefault: id => ["phones", "theme.nuit", "theme.jour"].includes(id), isUnlock: id => ["crown", "halo", "medal", "trophy", "lightning", "theme.prestige"].includes(id) };
+  const days = ["2026-11-10", "2026-11-11", "2026-11-12"];
+  // Joueur honnête : rien ne change
+  const H = sanitize({ ...defaults(), xp: 1500, days, coins: 260, owned: ["phones", "theme.nuit", "theme.jour", "cap", "sun"], stats: { chests: 1, perfect: 0, bosses: 0, quests: 4, boxes: 0 }, econ: { ...E.emptyEcon(), earned: 410, spent: 150 }, lessons: { a: { stars: 3, best: 90, d: day } } });
+  const h = E.audit(H, day, deps); assert.ok(!h.changed, "honnête : " + h.notes.join(", ")); assert.equal(H.coins, 260);
+  // Tricheur : tout gonflé à la main → ramené à ce que la progression justifie
+  const X = sanitize({ ...defaults(), xp: 9e6, days: [...days, "2031-01-01", "2020-01-01"], coins: 999999, trophies: 99999, owned: ["phones", "theme.nuit", "theme.jour", ...EXCLUSIVES, ...CATALOG], stats: { chests: 9999, perfect: 0, bosses: 0, quests: 9999, boxes: 9999 }, econ: { ...E.emptyEcon(), earned: 999999, spent: 0 } });
+  const x = E.audit(X, day, deps);
+  assert.ok(x.changed); assert.equal(X.days.length, 3); assert.ok(X.xp <= 3 * E.XP_DAY_MAX && X.trophies <= 3 * E.TROPHY_DAY_MAX);
+  assert.ok(X.coins < 20000, "pièces " + X.coins); assert.ok(X.stats.quests <= 9 && X.stats.chests < 100);
+  assert.ok(X.owned.filter(id => EXCLUSIVES.includes(id)).length <= X.stats.boxes);
+  const shopValue = X.owned.reduce((t, id) => t + (basePrice(id) || 0), 0);
+  assert.ok(shopValue < 60000, "objets gardés : " + shopValue);
+  // Ancienne sauvegarde (avant le journal) : les achats passés sont comptés comme des dépenses, rien n'est perdu
+  const O = sanitize({ v: 2, xp: 1500, days, coins: 120, owned: ["phones", "theme.nuit", "theme.jour", "cap", "pirate"] });
+  assert.equal(O.econ.spent, 70 + 160); assert.equal(O.econ.earned, 120 + 230);
+  const OB = sanitize({ v: 2, xp: 900, days, coins: 50, owned: ["phones", "theme.nuit", "theme.jour", "saber"], stats: { chests: 0, perfect: 0, bosses: 0, quests: 0, boxes: 3 } });
+  E.audit(OB, day, deps); assert.ok(OB.owned.includes("saber") && OB.coins === 50, "boîtes d'avant la mise à jour conservées"); assert.equal(O.coins, 120);
+  const o = E.audit(O, day, deps); assert.ok(O.owned.includes("pirate") && O.coins === 120, o.notes.join(", "));
+  console.log("anti-triche OK (plafond, répétitions, horloge, solde, contrôle de cohérence)");
 }
 console.log("TOUS LES TESTS CŒUR OK");

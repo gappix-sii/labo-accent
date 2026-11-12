@@ -1,4 +1,5 @@
 // Méta-jeu : pièces, quêtes du jour, coffres, rangs, gel de série, boss et défi chrono.
+import { credit } from "./core/economy.js";
 // Module pur (aucun accès au DOM ni au stockage) : testable sous Node.
 
 const pad = n => String(n).padStart(2, "0");
@@ -55,7 +56,7 @@ export function questEvent(S, day, ev, amount = 1) {
     const def = QUEST_BY_ID[q.id];
     if (!def || def.ev !== ev || q.done) continue;
     q.prog = Math.min(q.goal, def.mode === "max" ? Math.max(q.prog, amount) : q.prog + amount);
-    if (q.prog >= q.goal) { q.done = true; S.coins += q.coins; S.stats.quests++; done.push(q); }
+    if (q.prog >= q.goal) { q.done = true; credit(S, q.coins, "quest", day); S.stats.quests++; done.push(q); }
   }
   let bonus = false;
   if (done.length && !S.quests.bonus && S.quests.list.every(q => q.done)) { S.quests.bonus = true; S.chests.push("silver"); bonus = true; }
@@ -162,6 +163,7 @@ export function chronoRewards(score, correct, dailyFirst = false) {
     trophies: correct > 0 ? Math.max(1, Math.round(score / 100)) + (dailyFirst ? 10 : 0) : 0
   };
 }
+export const CHRONO_RECORD = 20; // pièces de progrès pour un nouveau record personnel
 export function pushRecord(list, entry, max = 5) {
   const out = [...list, entry].sort((a, b) => b.score - a.score).slice(0, max);
   return { list: out, rank: out.indexOf(entry) };

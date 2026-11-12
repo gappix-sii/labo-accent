@@ -40,7 +40,7 @@ await p.click('#boxAgain'); await p.waitForSelector('#boxDlg .reveal', { timeout
 check((await S()).stats.boxes === n1 + 1, 'bouton Encore');
 await p.click('#boxOk'); await p.waitForTimeout(300);
 // Pas assez de pièces : bouton désactivé, aucune dépense
-await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('labo.v1')); s.coins = 50; localStorage.setItem('labo.v1', JSON.stringify(s)); });
+await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('labo.v1')); s.coins = 50; localStorage.setItem('labo.v1', JSON.stringify(s)); localStorage.removeItem('labo.v1.sig'); });
 await p.reload(); await p.waitForTimeout(500); await p.click('#hCoins'); await p.waitForTimeout(400);
 await p.click('[data-box=mythic]', { force: true }); await p.waitForSelector('#boxDlg[open]');
 check(await p.isDisabled('#boxOpen') && (await S()).coins === 50, 'pas assez de pièces : rien n\'est dépensé');

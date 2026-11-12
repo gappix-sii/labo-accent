@@ -100,7 +100,7 @@ await p.waitForSelector('#cel[open]', { timeout: 3000 }).catch(() => {});
 await p.screenshot({ path: out + '/10-secret.png' });
 await cels();
 s = await S(); check(s.secret && s.owned.includes('controller'), 'code secret');
-await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('labo.v1')); s.theme = 'jour'; localStorage.setItem('labo.v1', JSON.stringify(s)); });
+await p.evaluate(() => { const s = JSON.parse(localStorage.getItem('labo.v1')); s.theme = 'jour'; localStorage.setItem('labo.v1', JSON.stringify(s)); localStorage.removeItem('labo.v1.sig'); });
 await p.reload(); await p.waitForTimeout(700);
 await p.screenshot({ path: out + '/11-jour.png' });
 const v = await p.evaluate(() => window.__viol);
