@@ -19,8 +19,13 @@ for (const [tag, vp] of [['mob', { width: 390, height: 844 }], ['desk', { width:
   }
   await p.click('#toLocker'); await p.waitForTimeout(500);
   await p.screenshot({ path: `${out}/${tag}-locker.png` });
-  for (const t of ['skin', 'head', 'eyes', 'aura', 'theme', 'bonus']) { await p.click(`[data-ltab=${t}]`); await p.waitForTimeout(250); }
-  await p.screenshot({ path: `${out}/${tag}-locker-bonus.png` });
+  for (const t of ['skin', 'head', 'eyes', 'back', 'aura', 'theme']) { await p.click(`[data-ltab=${t}]`); await p.waitForTimeout(250); }
+  await p.screenshot({ path: `${out}/${tag}-locker-theme.png` });
+  await p.click('nav.bottom button[data-go=shop]'); await p.waitForTimeout(500);
+  await p.screenshot({ path: `${out}/${tag}-shop.png`, fullPage: true });
+  for (const t of ['skins', 'head', 'hand', 'back', 'theme', 'bonus']) { await p.click(`[data-ltab=${t}]`); await p.waitForTimeout(250); }
+  await p.click('[data-ltab=back]'); await p.waitForTimeout(250); await p.click('.shopcard[data-prev^="back:"]'); await p.waitForTimeout(300);
+  await p.screenshot({ path: `${out}/${tag}-shop-back.png` });
   const info = await p.evaluate(() => ({ view: document.body.dataset.view, tt: !!window.trustedTypes, viol: window.__viol, nodes: document.querySelectorAll('.node').length }));
   logs.push(`${tag}: ${JSON.stringify(info)}`);
   // Une écriture HTML brute doit être refusée par Trusted Types.

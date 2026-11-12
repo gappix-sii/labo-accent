@@ -167,6 +167,15 @@ export function pushRecord(list, entry, max = 5) {
   return { list: out, rank: out.indexOf(entry) };
 }
 
+// ---------- Offres du jour du Shop ----------
+// 3 objets (pas encore possédés, achetables à ton niveau) choisis une fois par jour, à −30 %.
+export const DEAL_COUNT = 3, DEAL_OFF = 0.3;
+export const dealPrice = base => Math.max(5, Math.round(base * (1 - DEAL_OFF) / 5) * 5);
+export function pickDeals(day, candidates) {
+  return shuffleWith([...candidates].sort(), mulberry32(seedFrom("deals:" + day))).slice(0, DEAL_COUNT);
+}
+export function msToMidnight(now = new Date()) { const m = new Date(now); m.setHours(24, 0, 0, 0); return m - now; }
+
 // ---------- Boîtes à butin (achetées avec les pièces du jeu, jamais avec de l'argent réel) ----------
 // Les probabilités affichées dans l'appli sont exactement celles-ci.
 export const BOXES = {

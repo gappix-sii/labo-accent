@@ -2,7 +2,7 @@
 // dans les bornes prévues, sont gardées. Protège contre un fichier importé piégé ou un stockage corrompu
 // (types inattendus, clés « __proto__ », tailles démesurées).
 import { BADGES, DURATIONS, levelOf } from "../game.js";
-import { SPECIES_BY_ID, ITEM_BY_ID, THEME_BY_ID, DEFAULT_OWNED, DEFAULT_AVATAR, isValidOwned, ownsSkin, themeKey } from "../avatar.js";
+import { SPECIES_BY_ID, ITEM_BY_ID, THEME_BY_ID, DEFAULT_OWNED, DEFAULT_AVATAR, SLOTS, isValidOwned, ownsSkin, themeKey, basePrice } from "../avatar.js";
 import { QUEST_BY_ID, CHESTS, RANKS, MAX_FREEZES } from "../meta.js";
 
 export const STORE_KEY = "labo.v1";
@@ -22,7 +22,8 @@ export function defaults() {
     quests: { day: "", list: [], bonus: false }, chests: [], trophies: 0, rankSeen: 0,
     bosses: {}, chrono: { best: [], daily: { day: "", score: 0 }, runs: 0 },
     freezes: 0, frozenDays: [], boostUntil: 0, haptics: true, motion: "auto", title: "", player: "",
-    stats: { chests: 0, perfect: 0, bosses: 0, quests: 0, boxes: 0 }, boxPity: 0, levelSeen: 1, secret: false
+    stats: { chests: 0, perfect: 0, bosses: 0, quests: 0, boxes: 0 }, boxPity: 0, levelSeen: 1, secret: false,
+    deals: { day: "", ids: [] }
   };
 }
 
@@ -96,13 +97,14 @@ const SPEC = {
   dialogues: map(BEST, 200, 60), grammar: map(BEST, 400, 60), mistakes: map(SRS, 2000, 200), gLevel: oneOf(["A1", "A2", "B1", "B2"]),
   chat: CHAT, chatModelReady: bool,
   coins: int(0, 1e8), owned: list(v => typeof v === "string" && isValidOwned(v) ? v : undefined, 400, true),
-  avatar: shape({ species: oneOf(Object.keys(SPECIES_BY_ID)), skin: str(30, /^[a-z]+$/), head: str(20), eyes: str(20), neck: str(20), hand: str(20), aura: str(20), name: text(16) }),
+  avatar: shape({ species: oneOf(Object.keys(SPECIES_BY_ID)), skin: str(30, /^[a-z]+$/), head: str(20), eyes: str(20), neck: str(20), hand: str(20), back: str(20), aura: str(20), name: text(16) }),
   theme: oneOf(Object.keys(THEME_BY_ID)),
   quests: shape({ day: v => v === "" ? "" : day(v), list: list(QUEST, 3), bonus: bool }),
   chests: list(oneOf(Object.keys(CHESTS)), 30),
   trophies: int(0, 1e7), rankSeen: int(0, RANKS.length - 1),
   bosses: map(shape({ won: bool, best: int(0, 100), tries: int(0, 1e6) }, true), 20, 4),
   chrono: shape({ best: list(shape({ score: int(0, 1e7), d: day, daily: bool }, true), 5), daily: shape({ day: v => v === "" ? "" : day(v), score: int(0, 1e7) }, true), runs: int(0, 1e7) }),
+  deals: shape({ day: v => v === "" ? "" : day(v), ids: list(v => typeof v === "string" && basePrice(v) ? v : undefined, 4, true) }),
   freezes: int(0, MAX_FREEZES), frozenDays: list(day, 120, true), boostUntil: num(0, 9e15),
   haptics: bool, motion: oneOf(["auto", "reduced", "full"]), title: str(30, /^[a-z0-9:]*$/), player: text(20),
   stats: shape({ chests: int(0, 1e7), perfect: int(0, 1e7), bosses: int(0, 1e7), quests: int(0, 1e7), boxes: int(0, 1e7) }),
@@ -125,7 +127,7 @@ export function sanitize(raw, now = Date.now()) {
   const sp = SPECIES_BY_ID[a.species];
   if (!sp || sp.lvl > lv) { a.species = DEFAULT_AVATAR.species; a.skin = DEFAULT_AVATAR.skin; }
   if (!ownsSkin(S.owned, a.species, a.skin)) a.skin = SPECIES_BY_ID[a.species].skins[0].id;
-  for (const slot of ["head", "eyes", "neck", "hand", "aura"]) {
+  for (const [slot] of SLOTS) {
     const it = ITEM_BY_ID[a[slot]];
     if (a[slot] && (!it || it.slot !== slot || !S.owned.includes(a[slot]))) a[slot] = "";
   }

@@ -5,7 +5,7 @@ import { html, toHTMLString } from "../js/core/dom.js";
 import { sanitize, defaults, parseImport, exportText, cleanText } from "../js/core/store.js";
 import * as M from "../js/meta.js";
 import { MODELS, guardedFetch, lookup } from "../js/integrity.js";
-import { SPECIES, ITEMS, THEMES, avatarSvg, bossSvg, BOSSES, droppable, itemPreview, boxPool, EXCLUSIVES } from "../js/avatar.js";
+import { SPECIES, ITEMS, THEMES, SLOTS, CATALOG, avatarSvg, bossSvg, BOSSES, droppable, itemPreview, boxPool, EXCLUSIVES, basePrice, levelFor } from "../js/avatar.js";
 
 // ---------- html`` ----------
 {
@@ -155,7 +155,7 @@ import { SPECIES, ITEMS, THEMES, avatarSvg, bossSvg, BOSSES, droppable, itemPrev
   for (const r of ["common", "rare", "epic", "legendary", "mythic"]) assert.ok(pool.some(p => p.rarity === r), "rareté présente : " + r);
   assert.ok(!pool.some(p => ["crown", "halo", "medal", "trophy", "lightning", "phones"].includes(p.id)), "pas de récompense spéciale dans les boîtes");
   assert.ok(!droppable([]).some(p => EXCLUSIVES.includes(p.id)), "exclusivités absentes des coffres");
-  assert.equal(EXCLUSIVES.length, 16);
+  assert.equal(EXCLUSIVES.length, 25);
   // Fréquences observées ≈ probabilités annoncées (boîte classique, sans garantie)
   const rng = M.mulberry32(7), N = 200000, count = {};
   for (let i = 0; i < N; i++) { const r = M.rollBox("classic", pool, 0, rng); count[r.rarity] = (count[r.rarity] || 0) + 1; }
@@ -171,5 +171,26 @@ import { SPECIES, ITEMS, THEMES, avatarSvg, bossSvg, BOSSES, droppable, itemPrev
   const n = M.rollBox("mythic", boxPool([]), 0, rng, "mythic");
   assert.ok(!n.dup && EXCLUSIVES.includes(n.item) && n.pity === 0);
   console.log(`boîtes OK (classique sur ${N} : ${Object.entries(count).map(([k, v]) => k + " " + (v / N * 100).toFixed(2) + "%").join(", ")} ; pire série ${worst})`);
+}
+// ---------- Shop ----------
+{
+  // Chaque emplacement a des objets, chaque objet a un emplacement connu ; ids courts et uniques
+  const slots = new Set(SLOTS.map(([k]) => k)), ids = ITEMS.map(i => i.id);
+  assert.ok(ITEMS.every(i => slots.has(i.slot)) && SLOTS.every(([k]) => ITEMS.some(i => i.slot === k)));
+  assert.equal(new Set(ids).size, ids.length); assert.ok(ids.every(x => x.length <= 20 && /^[a-z0-9]+$/.test(x)));
+  // Catalogue : tout a un prix, rien n'est une exclusivité des boîtes
+  assert.ok(CATALOG.length > 90 && CATALOG.every(id => basePrice(id) > 0 && !EXCLUSIVES.includes(id)));
+  assert.equal(basePrice("saber"), null); assert.equal(basePrice("skin.skunk.night"), null); assert.equal(basePrice("theme.galaxie"), null);
+  // Offres : 3 par jour, mêmes offres toute la journée, différentes d'un jour à l'autre, −30 % arrondi
+  const a = M.pickDeals("2026-11-12", CATALOG), b = M.pickDeals("2026-11-12", [...CATALOG].reverse()), c = M.pickDeals("2026-11-13", CATALOG);
+  assert.deepEqual(a, b); assert.equal(a.length, M.DEAL_COUNT); assert.notDeepEqual(a, c);
+  assert.equal(M.dealPrice(100), 70); assert.equal(M.dealPrice(60), 40); assert.ok(M.dealPrice(5) >= 5);
+  // Sauvegarde : emplacement Dos conservé seulement si possédé ; offres invalides retirées
+  const S1 = sanitize({ ...defaults(), xp: 99999, owned: ["phones", "theme.nuit", "theme.jour", "jetpack"], avatar: { species: "fox", skin: "red", head: "", eyes: "", neck: "", hand: "", back: "jetpack", aura: "", name: "A" }, deals: { day: "2026-11-12", ids: ["cap", "saber", "<x>"] } });
+  assert.equal(S1.avatar.back, "jetpack"); assert.deepEqual(S1.deals.ids, ["cap"]);
+  const S2 = sanitize({ ...defaults(), avatar: { ...defaults().avatar, back: "angel" } });
+  assert.equal(S2.avatar.back, "");
+  assert.ok(levelFor("angel") === 10 && levelFor("skin.dragon.ruby") === 15);
+  console.log(`shop OK (${CATALOG.length} objets en vente, ${EXCLUSIVES.length} exclusivités des boîtes)`);
 }
 console.log("TOUS LES TESTS CŒUR OK");

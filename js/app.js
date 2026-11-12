@@ -100,7 +100,7 @@ function renderHud() {
 }
 $("#hVoice").addEventListener("click", () => { S.poufVoice = !S.poufVoice; save(); renderHud(); if (!S.poufVoice && "speechSynthesis" in window) speechSynthesis.cancel(); });
 $("#hMe").addEventListener("click", () => { play("tap"); go("profile"); });
-$("#hCoins").addEventListener("click", () => { play("tap"); go("locker", { tab: "boxes" }); });
+$("#hCoins").addEventListener("click", () => { play("tap"); go("shop", { tab: "home" }); });
 $("#hChest").addEventListener("click", () => openChestFlow());
 setInterval(() => { if (S.boostUntil) renderHud(); }, 30000);
 function collectCoins(fromEl, n) {
@@ -341,7 +341,7 @@ async function openChestFlow() {
       <div class="row center">${item && item.kind !== "theme" ? html`<button class="btn cyan sm" id="chestEquip">Équiper</button>` : ""}${item && item.kind === "theme" ? html`<button class="btn cyan sm" id="chestEquip">Appliquer</button>` : ""}
         ${S.chests.length ? html`<button class="btn ghost sm" id="chestNext">Coffre suivant (${S.chests.length})</button>` : ""}<button class="btn yellow" id="chestOk">Super !</button></div></div>`);
   if (item) $(".loot-name").textContent = item.name;
-  const close = () => { d.close(); renderHud(); if (view === "profile" || view === "locker") go(view); };
+  const close = () => { d.close(); renderHud(); if (view === "profile" || view === "locker" || view === "shop") go(view); };
   $("#chestOk").onclick = close;
   const eq = $("#chestEquip");
   if (eq) eq.onclick = () => {
@@ -437,7 +437,7 @@ function renderPath() {
     if (b.classList.contains("locked")) { play("bad"); FX.shake(b); toast("Termine toutes les leçons de l'unité pour affronter le boss."); return; }
     play("tap"); startBoss(b.dataset.boss);
   });
-  $("#toBoxes").onclick = () => { play("tap"); go("locker", { tab: "boxes" }); };
+  $("#toBoxes").onclick = () => { play("tap"); go("shop", { tab: "home" }); };
   const nc = $("#newsChest"); if (nc) nc.onclick = () => { S.news = 2; save(); openChestFlow(); renderPath(); };
   const no = $("#newsOk"); if (no) no.onclick = () => { S.news = 2; save(); renderPath(); };
   if (!S.onboarded) { S.onboarded = true; save(); }

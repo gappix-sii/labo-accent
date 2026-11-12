@@ -1,0 +1,15 @@
+<!doctype html><meta charset="utf-8"><title>Planche d'essayage</title>
+<link rel="stylesheet" href="../css/app.css">
+<style>body{background:#150d3d;color:#fff;font:12px sans-serif;padding:8px;margin:0}table{border-collapse:collapse}td,th{border:1px solid #3a2f6e;padding:0;text-align:center}th{font-weight:600;max-width:120px;font-size:10px}td div{width:120px;height:120px}.av *{animation:none!important}</style>
+<div id="out"></div>
+<script type="module">
+import { SPECIES, ITEMS, DEFAULT_AVATAR, avatarSvg } from "../js/avatar.js";
+import { render, html } from "../js/core/dom.js";
+const q = new URLSearchParams(location.search), slot = q.get("slot") || "head", mode = q.get("mode") || "items", from = +(q.get("from") || 0), n = +(q.get("n") || 99);
+const base = sp => ({ ...DEFAULT_AVATAR, head: "", species: sp.id, skin: sp.skins[0].id });
+let cols, cell;
+if (mode === "skins") { cols = [0, 1, 2, 3, 4, 5, 6].map(i => ({ name: "skin " + i })); cell = (sp, k) => sp.skins[k] ? avatarSvg({ ...base(sp), skin: sp.skins[k].id }, { cls: "still" }) : html``; }
+else { cols = ITEMS.filter(i => i.slot === slot).slice(from, from + n); cell = (sp, k) => avatarSvg({ ...base(sp), [slot]: cols[k].id }, { cls: "still" }); }
+render(document.getElementById("out"), html`<table><tr><th></th>${cols.map(c => html`<th>${c.name}</th>`)}</tr>${SPECIES.map(sp => html`<tr><th>${sp.name}</th>${cols.map((_, k) => html`<td><div>${cell(sp, k)}</div></td>`)}</tr>`)}</table>`);
+document.body.dataset.ready = "1";
+</script>

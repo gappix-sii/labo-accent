@@ -11,7 +11,7 @@ p.on('pageerror', e => logs.push('pageerror: ' + e.message));
 const S = () => p.evaluate(() => JSON.parse(localStorage.getItem('labo.v1')));
 await p.goto(url); await p.waitForTimeout(700);
 await p.click('#hCoins'); await p.waitForTimeout(500);
-check(await p.$('body[data-view=locker] [data-box=classic]') !== null, 'pièces du HUD → onglet Boîtes');
+check(await p.$('body[data-view=shop] [data-box=classic]') !== null, 'pièces du HUD → Shop, boîtes en tête');
 await p.screenshot({ path: out + '/0-shop.png', fullPage: true });
 for (const [k, rar, box] of [[1, 'common', 'classic'], [2, 'rare', 'classic'], [3, 'epic', 'epic'], [4, 'legendary', 'epic'], [5, 'mythic', 'mythic']]) {
   await p.evaluate(r => { window.__boxrar = r; }, rar);

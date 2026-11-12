@@ -52,7 +52,7 @@ export function setupArena(app) {
       </div>`);
     $("#arChrono").onclick = () => { app.play("tap"); startChrono("free"); };
     $("#arDaily").onclick = () => { app.play("tap"); startChrono("daily"); };
-    $("#arLoot").onclick = () => { app.play("tap"); app.go("locker", { tab: "boxes" }); };
+    $("#arLoot").onclick = () => { app.play("tap"); app.go("shop", { tab: "home" }); };
     $$("[data-fight]").forEach(b => b.onclick = () => { app.play("tap"); app.startBoss(b.dataset.fight); });
   }
 

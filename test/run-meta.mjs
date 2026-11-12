@@ -20,19 +20,21 @@ await p.screenshot({ path: out + '/0-hud.png' });
 // Boutique
 await p.click('#hMe'); await p.waitForTimeout(300); await p.click('#toLocker'); await p.waitForTimeout(300);
 await p.click('[data-ltab=head]'); await p.waitForTimeout(200);
+const capPrice = (await S()).deals.ids.includes('cap') ? 50 : 70;
 await p.click('[data-act=buy][data-id=cap]'); await p.waitForSelector('#dlg[open]'); await p.click('#dlgOk'); await p.waitForTimeout(400);
-let s = await S(); check(s.owned.includes('cap') && s.avatar.head === 'cap' && s.coins === 930, `achat casquette (pièces ${s.coins})`);
+let s = await S(); check(s.owned.includes('cap') && s.avatar.head === 'cap' && s.coins === 1000 - capPrice, `achat casquette (pièces ${s.coins})`);
 await p.click('[data-ltab=species]'); await p.waitForTimeout(200);
 await p.click('[data-act=sp][data-id=fox]'); await p.waitForTimeout(300);
 s = await S(); check(s.avatar.species === 'fox', 'renard choisi');
 await p.screenshot({ path: out + '/1-locker-fox.png' });
+await p.fill('#avName', 'Roux'); await p.press('#avName', 'Tab'); await p.waitForTimeout(200);
+s = await S(); check(s.avatar.name === 'Roux', 'compagnon renommé');
+await p.click('#toShop'); await p.waitForTimeout(300);
 await p.click('[data-ltab=bonus]'); await p.waitForTimeout(200);
 await p.click('[data-act=buy][data-id=freeze]'); await p.waitForTimeout(300);
 await p.click('[data-act=buy][data-id=boost]'); await p.waitForTimeout(300);
 s = await S(); check(s.freezes === 1 && s.boostUntil > Date.now(), 'gel de série + potion');
 check(await p.isVisible('#hBoost'), 'potion visible dans le HUD');
-await p.fill('#avName', 'Roux'); await p.press('#avName', 'Tab'); await p.waitForTimeout(200);
-s = await S(); check(s.avatar.name === 'Roux', 'compagnon renommé');
 
 // Coffres
 for (let k = 0; k < 3; k++) {
