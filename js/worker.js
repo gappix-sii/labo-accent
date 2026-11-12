@@ -2,6 +2,10 @@
 // Tout se passe sur l'appareil : l'audio n'est jamais envoyé sur le réseau.
 import { env, AutoFeatureExtractor, AutoModelForCTC } from "../vendor/transformers.min.js";
 import { decodeCTC } from "./phonemes.js";
+import { installGuard } from "./integrity.js";
+
+// Tout téléchargement passe par la liste blanche et la vérification SHA-256 (voir integrity.js).
+installGuard(env);
 
 // Modèle et révision épinglés : un changement côté Hugging Face ne peut pas modifier l'appli.
 export const MODEL_ID = "robg/speako-phoneme-recognizer";

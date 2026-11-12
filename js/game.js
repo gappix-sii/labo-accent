@@ -101,7 +101,8 @@ export function newBadges(state, extra) {
 // ---- Vocabulaire : répétition espacée (boîtes de Leitner) ----
 export const BOX_DAYS = [0, 1, 3, 7, 14, 30];
 export const MASTERED_BOX = 3;
-export function addDays(dayStr, n) { const d = new Date(dayStr + "T12:00:00"); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
+// Date locale (pas UTC) : évite un décalage d'un jour dans les fuseaux très éloignés de Greenwich.
+export function addDays(dayStr, n) { const [y, m, d] = dayStr.split("-").map(Number); const x = new Date(y, m - 1, d + n); return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, "0")}-${String(x.getDate()).padStart(2, "0")}`; }
 export function vocabStatus(rec) { if (!rec) return "new"; return rec.box >= MASTERED_BOX ? "mastered" : "learning"; }
 export function masteredCount(v) { return Object.values(v || {}).filter(r => r.box >= MASTERED_BOX).length; }
 export function gradeVocab(rec, correct, day) {

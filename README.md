@@ -6,17 +6,25 @@ Tu lis une phrase, l'appli reconnaît **chaque son** que tu prononces, le compar
 avec un conseil en français pour chaque son raté.
 
 Tout se passe **dans ton navigateur** : aucun serveur, aucun abonnement, et ta voix n'est jamais envoyée sur internet.
+Le tout façon jeu vidéo : compagnons à personnaliser, coffres, quêtes, boss et arène.
 
 ## Fonctions
 
-- **Conversation libre avec l'IA** (onglet Pratique) : 11 situations réelles (se présenter, où sont les toilettes, restaurant, taxi, médecin…) ou ta propre situation ; tu réponds librement à l'oral ou à l'écrit, l'IA joue le rôle et corrige chaque phrase. Deux moteurs au choix : **IA locale** (Gemma 3 1B + Whisper dans le navigateur, gratuite et privée, PC avec WebGPU, ≈ 1,2 Go) ou **Gemini** (clé gratuite Google de chaque utilisateur, meilleure qualité, marche sur téléphone).
+- **Compagnons** : 9 animaux originaux à débloquer avec les niveaux (putois, renard, chat, lapin, panda, pingouin, hibou, axolotl, bébé dragon légendaire), 4 couleurs chacun, plus de 40 accessoires (tête, yeux, cou, main, aura animée) de rareté commune à légendaire, et un nom à choisir.
+- **Boutique et pièces** : les pièces se gagnent avec l'XP, les quêtes et les coffres ; on achète couleurs, accessoires, thèmes de l'appli (8 dont un thème clair), gel de série et potion d'XP ×2.
+- **Coffres** (bois, argent, or, légendaire) avec animation d'ouverture ; gagnés en montant de niveau, avec les quêtes, les boss et les rangs.
+- **Quêtes du jour** : 3 défis différents chaque jour, un coffre si les trois sont faites.
+- **Boss** : un boss garde la fin de chaque unité ; une phrase bien prononcée lui fait des dégâts (coup critique au-dessus de 95), une phrase ratée coûte une vie. Victoire : couronne, coffre d'or, trophées.
+- **Arène** : défi chrono de 60 secondes (vocabulaire, grammaire, fautes à repérer) avec combos multiplicateurs et records ; **défi du jour** identique pour tout le monde, score à partager entre amis ; **rangs** de Bronze à Légende.
+- **Animations** partout (transitions, pièces qui volent, confettis, niveau supérieur, compagnon qui cligne des yeux et remue la queue), désactivables ; vibrations sur téléphone ; un code secret pour les gamers.
+- **Conversation libre avec l'IA** (onglet Pratique) : 11 situations réelles (se présenter, où sont les toilettes, restaurant, taxi, médecin…) ou ta propre situation ; tu réponds librement à l'oral ou à l'écrit, l'IA joue le rôle et corrige chaque phrase. Deux moteurs au choix : **IA locale** (Gemma 3 1B + Whisper dans le navigateur, gratuite et privée, PC avec WebGPU, ≈ 1 Go vérifié par SHA-256) ou **Gemini** (clé gratuite Google de chaque utilisateur, meilleure qualité, marche sur téléphone).
 - **Grammaire** (onglet Apprendre) : 24 règles de A1 à B2, chacune avec la règle en français, des exemples à écouter, le piège typique des francophones, puis 4 à 5 exercices progressifs (choisir la bonne forme, corriger une phrase, remettre les mots dans l'ordre) et la phrase à prononcer.
 - **Fautes à éviter** : 46 fautes typiques des Français (grammaire, faux amis, prépositions, expressions), en quiz avec répétition espacée.
 - **Conversation** (onglet Pratique) : 10 jeux de rôle guidés (café, hôtel, dîner en amoureux, pharmacie, vol annulé, support informatique…) avec tâches à accomplir et indices ; Pouf joue le personnage, tu réponds au micro et chaque réponse est notée son par son. Exercice d'écoute : entends le dialogue et touche les mots reconnus.
 - **Séances chronométrées** de 15, 30, 45 min ou 1 h : Pouf compose un programme (vocabulaire, leçon du parcours, son faible, paires minimales, révision) avec minuteur.
 - **Vocabulaire par niveau du CECRL** (A1 à C1, environ 500 mots) : cartes français → anglais à dire au micro, répétition espacée.
 - **Parcours façon jeu** : 9 unités (Se présenter, En couple, Voyager, Raconter, Au travail, Sortir, Santé et imprévus, Loisirs et opinions, Au téléphone), 49 leçons à débloquer, de 1 à 3 étoiles par leçon, révisions des phrases ratées.
-- **Pouf**, le putois coach au casque orange : il t'encourage, réagit à chaque essai et parle à voix haute (désactivable).
+- **Ton compagnon** (Pouf le putois au départ) : il t'encourage, réagit à chaque essai et parle à voix haute (désactivable).
 - **XP, niveaux, combo, série de jours, objectif quotidien et 13 badges** ; sons et confettis (désactivables).
 - Analyse **son par son** : chaque mot en vert, orange ou rouge, conseil en français pour chaque son raté, écoute du modèle (normal ou lent) et de ta propre voix, mot par mot.
 - **Entraînement libre** : toutes les phrases, paires minimales (ship / sheep…), 12 sons difficiles, et ta propre phrase.
@@ -43,7 +51,9 @@ Tout se passe **dans ton navigateur** : aucun serveur, aucun abonnement, et ta v
 4. Après une à deux minutes, l'appli est en ligne sur `https://TON-PSEUDO.github.io/labo-accent/`.
 5. Ouvre ce lien sur ton PC puis sur ton téléphone. Sur le téléphone : menu du navigateur → **Ajouter à l'écran d'accueil**.
 
-Au premier lancement, appuie sur **Préparer l'analyse** : le modèle (≈ 360 Mo) se télécharge une seule fois, en Wi-Fi de préférence.
+Au premier lancement, appuie sur **Préparer le moteur** : le modèle (≈ 355 Mo) se télécharge une seule fois, en Wi-Fi de préférence, et chaque fichier est vérifié avant usage.
+
+**Avant chaque publication**, lance `node tools/build-sw.mjs` : il calcule l'empreinte de chaque fichier pour le service worker (sans cela, la vérification hors ligne reste en mode développement).
 
 ## Utilisation en local (sans GitHub)
 
@@ -64,22 +74,23 @@ puis ouvre `http://localhost:8000` dans Chrome. (Le micro exige `https` ou `loca
 
 | Fichier | Rôle |
 |---|---|
-| `index.html`, `css/app.css`, `js/app.js` | Interface |
+| `index.html`, `css/app.css`, `js/app.js` | Interface et écrans principaux |
+| `js/core/dom.js` | Rendu HTML sûr (échappement automatique, Trusted Types) |
+| `js/core/store.js` | Progression : validation stricte, sauvegarde et restauration |
+| `js/core/secret.js` | Clé Gemini chiffrée (AES-GCM, clé non exportable) |
+| `js/integrity.js`, `js/sha256.js` | Liste blanche et vérification SHA-256 des modèles téléchargés |
+| `js/avatar.js`, `js/art.js` | Compagnons, accessoires, thèmes, boss, coffres, emblèmes (SVG originaux) |
+| `js/meta.js` | Pièces, quêtes, coffres, rangs, gel de série, boss, défi chrono |
+| `js/views/locker.js`, `js/views/arena.js`, `js/chrono.js` | Mon compagnon (boutique), arène et défi chrono |
 | `js/audio.js` | Micro, détection de fin de parole, conversion 16 kHz, synthèse vocale |
-| `js/worker.js` | Chargement du modèle et inférence, dans un thread séparé |
+| `js/worker.js` | Moteur de prononciation, dans un thread séparé |
 | `js/phonemes.js` | Dictionnaire → sons, décodage CTC, alignement, score, conseils |
-| `js/content.js` | Phrases et leçons |
+| `js/content.js`, `js/vocab.js`, `js/dialogues.js`, `js/grammar.js`, `js/mistakes.js`, `js/scenes.js` | Contenus |
 | `js/game.js` | Parcours, XP, niveaux, étoiles, badges, séances, répétition espacée |
-| `js/vocab.js` | Vocabulaire A1 à C1 |
-| `js/dialogues.js` | Jeux de rôle guidés |
-| `js/grammar.js` | Règles de grammaire et exercices |
-| `js/mistakes.js` | Fautes typiques des francophones |
-| `js/scenes.js` | Situations de conversation libre |
 | `js/chat-worker.js` | IA locale : Whisper + Gemma 3 1B (WebGPU) |
-| `js/mascot.js` | Pouf (dessin, humeurs, répliques) |
-| `js/fx.js` | Sons synthétisés et confettis |
+| `js/mascot.js`, `js/fx.js` | Répliques du compagnon, sons synthétisés et effets |
 | `fonts/` | Polices auto-hébergées (Barlow Condensed, Nunito) |
-| `sw.js` | Hors ligne et en-têtes de sécurité |
+| `sw.js` | Hors ligne vérifié par empreintes et en-têtes de sécurité |
 | `vendor/` | Bibliothèques auto-hébergées (aucun CDN) |
 | `data/cmudict.json` | Dictionnaire de prononciation CMU |
 | `test/`, `tools/` | Tests et scripts de construction |

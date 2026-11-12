@@ -1,6 +1,9 @@
 // Worker de conversation libre « IA locale » : reconnaissance vocale (Whisper) + petit modèle de langage (Gemma 3 1B).
 // Tout tourne dans le navigateur avec WebGPU. Modèles et révisions épinglés.
 import { env, pipeline, AutoTokenizer, AutoModelForCausalLM } from "../vendor/transformers.min.js";
+import { installGuard } from "./integrity.js";
+
+installGuard(env); // liste blanche + vérification SHA-256 de chaque fichier de modèle
 
 export const ASR = { id: "onnx-community/whisper-base.en", rev: "51eefc0af78b103839eda9e7e4f4186acc6517fe" };
 export const LLM = { id: "onnx-community/gemma-3-1b-it-ONNX", rev: "a58439f40017d3b99c7d378ff525e54e0ba08ebf" };

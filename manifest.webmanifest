@@ -1,13 +1,13 @@
 {
   "name": "Labo d'accent",
   "short_name": "Accent",
-  "description": "Entraînement à la prononciation anglaise, analyse son par son sur l'appareil.",
+  "description": "Entraînement à la prononciation anglaise façon jeu vidéo, analyse son par son sur l'appareil.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#13213a",
-  "theme_color": "#13213a",
+  "background_color": "#150d3d",
+  "theme_color": "#150d3d",
   "icons": [
     { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" },
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },

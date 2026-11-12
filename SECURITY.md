@@ -1,44 +1,94 @@
 # Sécurité et confidentialité
 
+## Modèle de menace (ce qui est protégé, et contre quoi)
+
+| Risque | Protection |
+|---|---|
+| Injection de code via un texte affiché (réponse d'IA, pseudo, sauvegarde importée, transcription) | Rendu **sûr par construction** (`js/core/dom.js`) + **Trusted Types** + CSP sans script inline |
+| Fichier de modèle remplacé ou corrompu (CDN, dépôt modifié, téléchargement tronqué) | Liste blanche + **SHA-256 et taille exacte vérifiés pendant le téléchargement**, échec fermé (`js/integrity.js`) |
+| Fichier de l'appli modifié sur l'hébergement ou en cache | **Pré-cache vérifié** : chaque fichier comparé à son empreinte SHA-256 avant installation (`sw.js`) |
+| Sauvegarde importée piégée (types inattendus, `__proto__`, tailles énormes) | **Validation stricte** par schéma, bornes de taille, nettoyage des caractères de contrôle (`js/core/store.js`) |
+| Vol de la clé Gemini dans le stockage | **Chiffrée au repos** (AES-GCM 256, clé WebCrypto non exportable, IndexedDB) ; jamais dans les sauvegardes |
+| Affichage de l'appli dans un cadre par un autre site (clickjacking) | `frame-ancestors 'none'`, `X-Frame-Options: DENY` et vérification en JavaScript |
+| Fuite de données vers d'autres sites | CSP `connect-src` minimale, séparée entre la page et les workers ; aucun traceur, aucun CDN |
+
 ## Données
 
-- **Audio** : enregistré en mémoire, analysé dans un Web Worker local, jamais envoyé sur le réseau.
-  Le micro est coupé dès la fin de l'enregistrement (`track.stop()`).
+- **Audio** : enregistré en mémoire, analysé dans un Web Worker local, jamais envoyé sur le réseau (sauf choix explicite de Gemini, voir plus bas). Le micro est coupé dès la fin de l'enregistrement.
 - **Progression** : `localStorage` du navigateur uniquement. Pas de compte, pas de cookie, pas d'analytics.
-- **Suppression** : « Effacer ma progression » et « Supprimer le modèle » demandent une confirmation.
+- **Sauvegarde** : « Sauvegarder ma progression » télécharge un fichier JSON (sans la clé). « Restaurer » vérifie le fichier (2 Mo maximum), le nettoie champ par champ, affiche un résumé et demande confirmation.
+- **Suppression** : progression, moteur, IA locale et clé se suppriment séparément, toujours avec confirmation.
 
-## Réseau
+## Rendu HTML sûr et Trusted Types
 
-Seule requête externe : le téléchargement du modèle depuis Hugging Face, **à une révision figée**
-(`robg/speako-phoneme-recognizer@ad0f63cd58fc1bb1e9c261a3b4135997a31c2e58`, licence Apache-2.0).
-Une modification du dépôt du modèle ne peut donc pas changer ce que l'appli exécute.
-Vérifié : en test, les seules URL externes appelées sont `huggingface.co/robg/speako-phoneme-recognizer/resolve/<révision>/…`.
+- Tout le HTML de l'interface passe par le gabarit `html\`…\`` : **chaque valeur interpolée est échappée**. Seuls les fragments créés par ce même gabarit sont insérés tels quels ; il n'existe aucune fonction pour marquer une chaîne quelconque comme « sûre ».
+- Chaque gabarit est analysé une fois : interpoler dans un nom de balise, dans un attribut sans guillemets, ou dans un attribut dangereux (`on*`, `style`, `href`, `src`, `srcdoc`, `action`…) lève une erreur. Dans une balise, seuls des noms d'attributs simples (`checked`, `disabled`…) sont acceptés.
+- La CSP impose `require-trusted-types-for 'script'; trusted-types labo` : le navigateur refuse toute écriture HTML ou URL de script qui ne passe pas par la politique `labo`, privée au module de rendu. Les URL de script autorisées se limitent à `sw.js` et `js/*.js` de la même origine.
+- Les styles dynamiques (barres de progression…) passent par des variables CSS validées, jamais par un attribut `style`.
+- Les réponses des IA sont traitées comme des données non fiables : chaînes uniquement, longueurs bornées, toujours affichées échappées.
 
-### Conversation libre (optionnelle)
+Vérifié par les tests : aucune violation CSP ou Trusted Types sur l'ensemble des écrans, une écriture HTML brute est bien bloquée, et une sauvegarde contenant `<img onerror>`, `<script>` ou `__proto__` est neutralisée.
 
-- **IA locale** : `onnx-community/whisper-base.en@51eefc0af78b103839eda9e7e4f4186acc6517fe` et `onnx-community/gemma-3-1b-it-ONNX@a58439f40017d3b99c7d378ff525e54e0ba08ebf`, révisions figées, téléchargés depuis Hugging Face. Audio et texte restent sur l'appareil.
-- **Gemini** : uniquement si l'utilisateur choisit ce moteur et colle **sa propre clé**. Aucune clé n'est présente dans le dépôt. La clé est stockée dans `localStorage` (ou seulement en mémoire si « Mémoriser » est décoché) et envoyée uniquement à `generativelanguage.googleapis.com` dans l'en-tête `x-goog-api-key`, sans cookie ni référent. L'audio (WAV 16 kHz) et le texte de la conversation sont alors envoyés à Google ; avec l'offre gratuite, Google peut les utiliser pour améliorer ses produits. Recommandation affichée : restreindre la clé au domaine du site et à l'API Generative Language.
+## Téléchargement des modèles : liste blanche et SHA-256
+
+Dans les workers, `fetch` est remplacé par une version contrôlée (`js/integrity.js`) :
+
+- seul `https://huggingface.co/<dépôt>/resolve/<révision>/<fichier>` est accepté, pour les 3 dépôts et révisions figés ci-dessous ; tout autre site ou révision est refusé ;
+- un fichier qui n'est pas dans la liste reçoit une réponse 404 ;
+- chaque gros fichier est **haché en flux** (SHA-256) et compté pendant le téléchargement : s'il dépasse la taille prévue, le flux s'arrête aussitôt ; s'il ne correspond pas à la fin, le flux échoue, **rien n'est mis en cache** et le moteur ne démarre pas ;
+- les petits fichiers de configuration (JSON, gabarit de conversation) sont limités en taille et figés par la révision Git ;
+- requêtes sans cookie ni référent.
+
+| Dépôt (révision figée) | Fichiers vérifiés par SHA-256 |
+|---|---|
+| `robg/speako-phoneme-recognizer@ad0f63cd58fc1bb1e9c261a3b4135997a31c2e58` | `onnx/model_quantized.onnx` (355 Mo) |
+| `onnx-community/whisper-base.en@51eefc0af78b103839eda9e7e4f4186acc6517fe` | `onnx/encoder_model.onnx`, `onnx/decoder_model_merged_q4.onnx` |
+| `onnx-community/gemma-3-1b-it-ONNX@a58439f40017d3b99c7d378ff525e54e0ba08ebf` | `tokenizer.json`, `onnx/model_q4f16.onnx(+_data)`, `onnx/model_q4.onnx(+_data)` |
+
+Les empreintes sont les `oid sha256` des pointeurs Git LFS de ces révisions (liste complète dans `js/integrity.js`).
+
+## Appli vérifiée fichier par fichier (service worker)
+
+- `node tools/build-sw.mjs` calcule l'empreinte SHA-256 et la taille de chaque fichier de l'appli et les écrit dans `sw.js`. L'outil refuse de continuer si une bibliothèque de `vendor/` a changé ou si un module importé manque.
+- À l'installation, le service worker télécharge chaque fichier (sans cache HTTP) et le compare à son empreinte. **Une seule différence et la nouvelle version n'est pas installée** ; l'ancienne reste en place, intacte.
+- Ensuite l'appli est servie depuis ce cache vérifié (hors ligne, versions toujours cohérentes). Une mise à jour s'applique au lancement suivant, jamais au milieu d'un exercice.
+- Le service worker ne modifie jamais les requêtes vers d'autres sites.
+
+Testé : fichier modifié après calcul des empreintes → installation refusée ; nouvelle version valide → installée puis appliquée ; seules requêtes externes observées : Hugging Face à la révision figée.
 
 ## Politique de sécurité du contenu (CSP)
 
-Appliquée par balise `<meta>` et, une fois le service worker actif, par en-tête HTTP (y compris pour les workers) :
+Document (balise `<meta>` dès le premier chargement, puis en-tête HTTP via le service worker) :
+
+```
+default-src 'self'; script-src 'self'; worker-src 'self';
+connect-src 'self' https://generativelanguage.googleapis.com;
+img-src 'self'; media-src 'self' blob:; style-src 'self'; font-src 'self'; manifest-src 'self';
+object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none';
+require-trusted-types-for 'script'; trusted-types labo
+```
+
+Workers (en-tête HTTP) :
 
 ```
 default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self';
-connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.co https://generativelanguage.googleapis.com;
-img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self'; font-src 'self';
-manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.co; object-src 'none'; base-uri 'none'
 ```
 
-- Aucun script inline, aucun `eval` (seule la compilation WebAssembly est autorisée).
-- Aucun CDN : les bibliothèques et les polices sont copiées dans `vendor/` et servies par le même domaine.
-- Toutes les données affichées dynamiquement sont échappées avant insertion (protection XSS).
+- Séparation des rôles : la page ne peut pas contacter Hugging Face, les workers ne peuvent pas contacter Google.
+- Aucun script inline, aucun `eval` ; WebAssembly autorisé seulement dans les workers.
+- Aucun CDN : bibliothèques et polices copiées dans `vendor/` et `fonts/`.
 
-Autres en-têtes ajoutés par `sw.js` : `Cross-Origin-Opener-Policy: same-origin`,
-`Cross-Origin-Embedder-Policy: require-corp` (isolation, permet le calcul multi-cœurs),
-`X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`,
-`Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=(), usb=()`.
-Le service worker ne modifie jamais les requêtes vers d'autres domaines.
+Autres en-têtes : `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Embedder-Policy: require-corp` (isolation, calcul multi-cœurs), `Cross-Origin-Resource-Policy: same-origin`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, `Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), display-capture=()`.
+
+## Conversation libre (optionnelle)
+
+- **IA locale** (Whisper base.en + Gemma 3 1B, ≈ 1 Go vérifié par SHA-256) : audio et texte restent sur l'appareil.
+- **Gemini** : uniquement si l'utilisateur choisit ce moteur et colle **sa propre clé**. Aucune clé dans le dépôt.
+  - Clé **chiffrée** (AES-GCM 256) avec une clé WebCrypto **non exportable** gardée dans IndexedDB ; jamais en clair sur le disque, jamais dans les sauvegardes. Option « ne pas mémoriser » : clé gardée seulement en mémoire. L'ancienne copie en clair (versions précédentes) est chiffrée puis effacée automatiquement.
+  - Envoyée seulement à `generativelanguage.googleapis.com`, dans l'en-tête `x-goog-api-key`, sans cookie, sans redirection, avec un référent réduit à l'origine du site (`strict-origin`) : cela permet de **restreindre la clé à ce site** dans Google Cloud (restriction « Sites Web » `https://<ton-site>/*` et API « Generative Language » uniquement).
+  - Nom du modèle validé (lettres minuscules, chiffres, points, tirets), délai maximal de 45 s.
+  - L'audio (WAV 16 kHz) et le texte de la conversation sont envoyés à Google ; avec l'offre gratuite, Google peut les utiliser pour améliorer ses produits.
 
 ## Dépendances (vérifiées)
 
@@ -47,17 +97,16 @@ Le service worker ne modifie jamais les requêtes vers d'autres domaines.
 | `vendor/transformers.min.js` | npm `@huggingface/transformers` (Apache-2.0) | 4.3.2 | `8b5a3171f8876bab2b1820a7d65eb87628e3d30bb5ea85b9dd398e76eb34decb` |
 | `vendor/ort-wasm-simd-threaded.asyncify.mjs` | npm `onnxruntime-web` (MIT) | 1.31.0-dev.20260914 | `0966b6105cd936744498aa60df7a22cbd47af3374dbc64a9ab561c08a71e3611` |
 | `vendor/ort-wasm-simd-threaded.asyncify.wasm` | npm `onnxruntime-web` (MIT) | 1.31.0-dev.20260914 | `49871f5a4409519797e127440868a6d1923339d9185907f301a5b2a1d90af082` |
-| `data/cmudict.json` | npm `cmu-pronouncing-dictionary` 3.0.0 (dictionnaire CMU, BSD) | 3.0.0 | `ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b` |
+| `data/cmudict.json` | npm `cmu-pronouncing-dictionary` (dictionnaire CMU, BSD) | 3.0.0 | `ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b` |
+| `fonts/*.woff2` | npm `@fontsource/barlow-condensed`, `@fontsource/nunito` (OFL-1.1) | 5.3.0 | dans `sw.js` |
 
-| `fonts/*.woff2` | npm `@fontsource/barlow-condensed`, `@fontsource/nunito` (OFL-1.1) | 5.3.0 | voir `sha256sum fonts/*` |
+- Paquets installés avec `npm install --ignore-scripts` (aucun script d'installation exécuté) ; `npm audit` : 0 vulnérabilité au moment de la construction.
+- Vérifier soi-même : `sha256sum vendor/* data/cmudict.json`, ou `node tools/build-sw.mjs` qui échoue si une empreinte a changé.
 
-- Paquets installés avec `npm install --ignore-scripts` (aucun script d'installation exécuté).
-- `npm audit` : 0 vulnérabilité au moment de la construction.
-- Vérifier soi-même : `sha256sum vendor/* data/cmudict.json`.
+## Limites (honnêtes)
 
-## Limites
-
-- GitHub Pages ne permet pas de définir des en-têtes HTTP : au tout premier chargement (avant l'activation
-  du service worker), seule la CSP en `<meta>` s'applique. La page se recharge une fois pour activer l'isolation.
-- Le modèle téléchargé n'a pas de somme de contrôle vérifiée par l'appli ; la protection repose sur la révision
-  Git figée et sur HTTPS.
+- GitHub Pages ne permet pas de définir d'en-têtes HTTP : au tout premier chargement, avant l'activation du service worker, seule la CSP en `<meta>` s'applique (Trusted Types compris) ; `frame-ancestors` est alors remplacé par la vérification JavaScript.
+- Trusted Types n'est appliqué que par les navigateurs qui le gèrent ; ailleurs, l'échappement systématique reste la protection.
+- Le chiffrement de la clé protège le stockage (lecture du disque, extension qui fouille `localStorage`, sauvegarde) ; il ne protégerait pas contre un script exécuté dans la page, cas que la CSP et Trusted Types empêchent.
+- Les modèles déjà téléchargés avant cette version restent dans le cache du navigateur sans nouvelle vérification ; « Supprimer le moteur » puis le retélécharger applique la vérification.
+- La progression locale peut être modifiée par quelqu'un qui a accès à l'appareil (triche possible, sans risque de sécurité).
