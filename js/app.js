@@ -432,9 +432,23 @@ function nodeIcon(l) {
   return ICON.mic;
 }
 function untilMidnight() { const d = new Date(), m = new Date(d); m.setHours(24, 0, 0, 0); const h = Math.floor((m - d) / 3600e3), mn = Math.floor((m - d) / 60000) % 60; return h ? `${h} h ${mn} min` : `${mn} min`; }
+// En haut de la colonne : tout ce qui compte aujourd'hui, et un bouton pour reprendre là où on s'est arrêté.
+function todayCard(cur, lvl, goalPct) {
+  const next = G.ALL_LESSONS[cur], st = streak(), q = S.quests.list.filter(x => x.done).length;
+  return html`<section class="card today glow">
+    <div class="today-top"><div class="ring" data-css="--p:${goalPct}"><span>${goalPct}%</span></div>
+      <div class="grow"><div class="row between"><h3>Aujourd'hui</h3><span class="xpfloat">${xpToday()} / ${S.goalXp} XP</span></div>
+        <div class="small muted">Niveau ${lvl.level} · ${G.levelTitle(lvl.level)}</div>
+        <div class="bar xp"><i data-css="--p:${Math.round(lvl.into / lvl.need * 100)}%"></i></div></div></div>
+    <div class="today-pills"><span class="pill">${st} jour${st > 1 ? "s" : ""} de série</span>
+      <button class="pill pillbtn ${q === 3 ? "good" : ""}" id="toQuests">Quêtes ${q}/3</button>
+      ${boostActive() ? html`<span class="pill ok">${BOLT} Potion ×2</span>` : ""}${S.freezes ? html`<span class="pill good">${SNOW} ${S.freezes} gel${S.freezes > 1 ? "s" : ""}</span>` : ""}</div>
+    ${next && G.lessonState(S.lessons, cur) === "open" ? html`<button class="btn green block shine" id="resume">${Object.keys(S.lessons).length ? "Continuer" : "Commencer"} : ${next.title}</button>` : ""}
+  </section>`;
+}
 function questsCard() {
   M.ensureQuests(S, today());
-  return html`<section class="card quests"><div class="row between"><h3>Quêtes du jour</h3><span class="small muted">Nouvelles dans ${untilMidnight()}</span></div>
+  return html`<section class="card quests side-late" id="quests"><div class="row between"><h3>Quêtes du jour</h3><span class="small muted">Nouvelles dans ${untilMidnight()}</span></div>
     ${S.quests.list.map(q => html`<div class="quest ${q.done ? "done" : ""}"><div class="grow"><b>${M.questText(q)}</b>
       <div class="bar sm"><i data-css="--p:${Math.round(q.prog / q.goal * 100)}%"></i></div><span class="small muted">${q.prog.toLocaleString("fr-FR")} / ${q.goal.toLocaleString("fr-FR")}</span></div>
       <span class="qreward">${q.done ? html`<b>✓</b>` : html`+${q.coins}`}${COIN}</span></div>`)}
@@ -469,16 +483,12 @@ function renderPath() {
     ${S.news < 2 ? html`<section class="card news glow"><h3>Nouveau dans le Labo !</h3><ul class="plain"><li>9 compagnons à débloquer et plus de 40 accessoires</li><li>Boutique, coffres et quêtes du jour</li><li>Arène : défi chrono, défi du jour et rangs</li><li>Un boss à battre à la fin de chaque unité</li></ul>
       <p class="small">Cadeau de mise à jour : des pièces et un coffre d'or, selon ta progression.</p><div class="row"><button class="btn yellow sm" id="newsChest">Ouvrir mon cadeau</button><button class="btn ghost sm" id="newsOk">J'ai vu</button></div></section>` : ""}
     ${setupCard()}
-    <section class="card goal-card"><div class="ring" data-css="--p:${goalPct}"><span>${goalPct}%</span></div><div class="grow"><h3>Objectif du jour</h3><span class="xpfloat">${xpToday()} / ${S.goalXp} XP</span>
-      ${boostActive() ? html`<span class="pill ok">${BOLT} Potion ×2 active</span>` : ""}${S.freezes ? html`<span class="pill good">${SNOW} ${S.freezes} gel${S.freezes > 1 ? "s" : ""} de série</span>` : ""}</div></section>
+    ${todayCard(cur, lvl, goalPct)}
     ${questsCard()}
-    <section class="card loot-promo"><div class="row"><span class="promo-box">${boxSvg("mythic", "idle")}</span><div class="grow"><h3>Boîtes à butin</h3><p class="small">Skins et accessoires exclusifs, du commun au mythique. Paie avec tes pièces !</p></div></div>
-      <button class="btn yellow block shine" id="toBoxes">Ouvrir la boutique · ${S.coins}${COIN}</button></section>
-    <section class="card desk-only"><div class="lvl"><div class="badge-lv">${lvl.level}</div><div class="grow"><h3>${G.levelTitle(lvl.level)}</h3>
-      <div class="bar xp"><i data-css="--p:${Math.round(lvl.into / lvl.need * 100)}%"></i></div><span class="small muted">${lvl.into} / ${lvl.need} XP · ${S.badges.length} badge${S.badges.length > 1 ? "s" : ""}</span></div></div></section>
-    <section class="card desk-only"><div class="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">${line("hello", S.avatar)}</div></div>
-      <p class="small muted">Raccourcis clavier en leçon : <b>Espace</b> enregistrer, <b>L</b> écouter, <b>Entrée</b> continuer.</p></section>
-    <section class="card coach-link"><h3>Pour discuter</h3><p class="small">Conversation, vocabulaire et corrections avec ton coach Claude.</p>${COACH_LINK}</section>
+    <section class="card loot-promo side-late"><div class="row"><span class="promo-box">${boxSvg("mythic", "idle")}</span><div class="grow"><h3>Boîtes à butin</h3><p class="small">Skins et accessoires exclusifs, du commun au mythique.</p></div></div>
+      <button class="btn yellow block shine" id="toBoxes">Ouvrir le Shop · ${S.coins}${COIN}</button></section>
+    <section class="card coach-link side-late"><h3>Pour discuter</h3><p class="small">Conversation, vocabulaire et corrections avec ton coach Claude.</p>${COACH_LINK}
+      <p class="small muted kbd-tip">Raccourcis en leçon : <b>Espace</b> enregistrer, <b>L</b> écouter, <b>Entrée</b> continuer.</p></section>
     </aside>
     <div class="colmain">${units}</div></div>`);
   bindSetup();
@@ -492,6 +502,8 @@ function renderPath() {
     play("tap"); startBoss(b.dataset.boss);
   });
   $("#toBoxes").onclick = () => { play("tap"); go("shop", { tab: "home" }); };
+  const rs = $("#resume"); if (rs) rs.onclick = () => { play("tap"); haptic("tap"); startLesson(G.ALL_LESSONS[cur]); };
+  const tq = $("#toQuests"); if (tq) tq.onclick = () => { play("tap"); const q = $("#quests"); if (q) { q.scrollIntoView({ block: "nearest", behavior: FX.reduced() ? "auto" : "smooth" }); FX.pop(q); } };
   const nc = $("#newsChest"); if (nc) nc.onclick = () => { S.news = 2; save(); openChestFlow(); renderPath(); };
   const no = $("#newsOk"); if (no) no.onclick = () => { S.news = 2; save(); renderPath(); };
   if (!S.onboarded) { S.onboarded = true; save(); }

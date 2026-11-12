@@ -743,7 +743,16 @@ body.hide-fr .tr{display:none}
 /* ================= Ordinateur ================= */
 .cols{display:flex;flex-direction:column;gap:16px}
 .side{display:contents}
-.side > *{order:1} .colmain{order:2;display:flex;flex-direction:column;gap:16px} .side > .coach-link{order:3}
+.side > *{order:1} .colmain{order:2;display:flex;flex-direction:column;gap:16px} .side > .side-late{order:3}
+.today{gap:10px}
+.today-top{display:flex;align-items:center;gap:14px}
+.today-top .grow{display:flex;flex-direction:column;gap:4px;min-width:0}
+.today-top h3{margin:0}
+.today-pills{display:flex;flex-wrap:wrap;gap:6px}
+.pillbtn{cursor:pointer;font:inherit;font-size:.8rem;font-weight:800;color:inherit}
+.pillbtn:hover{filter:brightness(1.15)}
+.kbd-tip{display:none}
+@media (min-width:1024px){.kbd-tip{display:block}}
 .desk-only{display:none}
 @media (min-width:1024px){
   body{padding-left:232px}
@@ -758,8 +767,8 @@ body.hide-fr .tr{display:none}
   nav.bottom .lg{display:inline} nav.bottom .sh{display:none}
   .hud .brand{visibility:hidden}
   .cols{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:32px;align-items:start}
-  .side{display:flex;flex-direction:column;gap:16px;grid-column:2;grid-row:1;position:sticky;top:86px}
-  .side > *{order:0}
+  .side{display:flex;flex-direction:column;gap:16px;grid-column:2;grid-row:1;position:sticky;top:86px;max-height:calc(100vh - 102px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding:2px 6px 8px 2px;margin:-2px -6px 0 -2px}
+  .side > *{order:0;flex:none}
   .colmain{grid-column:1;grid-row:1}
   .desk-only{display:flex}
   .path{gap:48px}
