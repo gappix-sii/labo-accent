@@ -16,10 +16,11 @@ const BAD_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 export function defaults() {
   return {
     v: STATE_VERSION, news: STATE_VERSION,
-    history: [], sounds: {}, days: [], voice: "", slow: 0.7, modelReady: false, xp: 0, lessons: {}, badges: [],
+    history: [], sounds: {}, days: [], voice: "", tts: false, slow: 0.7, modelReady: false, xp: 0, lessons: {}, badges: [],
     bestCombo: 0, xpDays: {}, goalXp: 50, sfx: true, poufVoice: true, onboarded: false, vocab: {}, vocabLevel: "A1",
     sessions: [], sessMin: 15, dialogues: {}, grammar: {}, basics: {}, irr: {}, social: { id: "", friends: [], duels: [] }, mistakes: {}, gLevel: "A1",
-    chat: { engine: "", model: "gemini-3.8-flash", level: "A2" }, chatModelReady: false,
+    chat: { engine: "", model: "gemini-3.8-flash", level: "A2", hands: false }, chatModelReady: false,
+    coach: { notes: [], words: [], goal: "", n: 0 },
     coins: 0, owned: [...DEFAULT_OWNED], avatar: { ...DEFAULT_AVATAR }, theme: "nuit",
     quests: { day: "", list: [], bonus: false }, chests: [], trophies: 0, rankSeen: 0,
     bosses: {}, chrono: { best: [], daily: { day: "", score: 0 }, runs: 0 },
@@ -76,7 +77,9 @@ const map = (val, max, keyMax = 160) => v => {
 
 const SRS = shape({ box: int(0, 5), due: day, seen: int(0, 1e6), ok: int(0, 1e6) }, true);
 const BEST = shape({ best: int(0, 100), d: day }, true);
-const CHAT = shape({ engine: oneOf(["", "local", "gemini", "test"]), model: str(60, /^[a-z0-9][a-z0-9.-]*$/), level: oneOf(["A1", "A2", "B1", "B2"]) });
+const CHAT = shape({ engine: oneOf(["", "local", "gemini", "test"]), model: str(60, /^[a-z0-9][a-z0-9.-]*$/), level: oneOf(["A1", "A2", "B1", "B2"]), hands: bool });
+const NOTE = v => { const t = cleanText(v, 160); return t ? t : undefined; };
+const COACH = shape({ notes: list(NOTE, 30, true), words: list(shape({ en: NOTE, fr: v => cleanText(v, 80) }, true), 60), goal: text(200), n: int(0, 1e6), last: day });
 const QUEST = v => {
   const q = shape({ id: oneOf(Object.keys(QUEST_BY_ID)), goal: int(1, 1e6), prog: int(0, 1e6), done: bool, coins: int(0, 1000) }, true)(v);
   if (q) q.prog = Math.min(q.prog, q.goal);
@@ -87,7 +90,7 @@ const SPEC = {
   history: list(shape({ d: day, s: int(0, 100), t: text(120) }, true), 500),
   sounds: map(v => { const o = shape({ n: int(0, 1e7), ok: int(0, 1e7) }, true)(v); return o && o.ok <= o.n ? o : undefined; }, 120, 8),
   days: list(day, 4000, true),
-  voice: str(400), slow: num(0.5, 0.9), modelReady: bool, xp: int(0, 1e8),
+  voice: str(400), tts: bool, slow: num(0.5, 0.9), modelReady: bool, xp: int(0, 1e8),
   lessons: map(shape({ stars: int(1, 3), best: int(0, 100), d: day }, true), 400, 60),
   badges: list(oneOf(BADGES.map(b => b.id)), 200, true),
   bestCombo: int(0, 10000),
@@ -97,7 +100,7 @@ const SPEC = {
   sessions: list(shape({ d: day, planned: oneOf(DURATIONS), real: int(1, 600), xp: int(0, 1e6) }, true), 100),
   sessMin: oneOf(DURATIONS),
   dialogues: map(BEST, 200, 60), grammar: map(BEST, 400, 60), basics: map(BEST, 20, 30), social: shape({ id: v => v === "" || (typeof v === "string" && /^[a-z0-9]{12}$/.test(v)) ? v : undefined, friends: list(cleanStoredFriend, 50), duels: list(cleanStoredDuel, 30) }), irr: map(shape({ rush: int(0, 1e6), write: int(0, 100), d: day }, true), 20, 20), mistakes: map(SRS, 2000, 200), gLevel: oneOf(["A1", "A2", "B1", "B2"]),
-  chat: CHAT, chatModelReady: bool,
+  chat: CHAT, chatModelReady: bool, coach: COACH,
   coins: int(0, 1e8), owned: list(v => typeof v === "string" && isValidOwned(v) ? v : undefined, 400, true),
   avatar: shape({ species: oneOf(Object.keys(SPECIES_BY_ID)), skin: str(30, /^[a-z]+$/), head: str(20), eyes: str(20), neck: str(20), hand: str(20), back: str(20), aura: str(20), name: text(16) }),
   theme: oneOf(Object.keys(THEME_BY_ID)),

@@ -12,7 +12,11 @@ const VENDOR = {
   "vendor/transformers.min.js": "8b5a3171f8876bab2b1820a7d65eb87628e3d30bb5ea85b9dd398e76eb34decb",
   "vendor/ort-wasm-simd-threaded.asyncify.mjs": "0966b6105cd936744498aa60df7a22cbd47af3374dbc64a9ab561c08a71e3611",
   "vendor/ort-wasm-simd-threaded.asyncify.wasm": "49871f5a4409519797e127440868a6d1923339d9185907f301a5b2a1d90af082",
-  "data/cmudict.json": "ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b"
+  "data/cmudict.json": "ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b",
+  // Voix Kokoro (Apache 2.0), copiées depuis github.com/hexgrad/kokoro (kokoro.js/voices, commit dfb907a)
+  "data/voices/af_heart.bin": "d583ccff3cdca2f7fae535cb998ac07e9fcb90f09737b9a41fa2734ec44a8f0b",
+  "data/voices/af_bella.bin": "f69d836209b78eb8c66e75e3cda491e26ea838a3674257e9d4e5703cbaf55c8b",
+  "data/voices/am_michael.bin": "1d1f21dd8da39c30705cd4c75d039d265e9bc4a2a93ed09bc9e1b1225eb95ba1"
 };
 const walk = d => readdirSync(join(root, d)).flatMap(f => { const p = posix.join(d, f); return statSync(join(root, p)).isDirectory() ? walk(p) : [p]; });
 const files = [

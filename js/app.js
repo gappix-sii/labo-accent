@@ -8,7 +8,8 @@ import * as Seal from "./core/seal.js";
 import { saveSecret, loadSecret, deleteSecret, hasSecret, migrateLegacy, secretsAvailable } from "./core/secret.js";
 import * as P from "./phonemes.js";
 import { CATEGORIES, SOUND_LESSONS, MINIMAL_PAIRS } from "./content.js";
-import { Recorder, speak, englishVoices, wavBase64 } from "./audio.js";
+import { Recorder, speak, stopSpeaking, englishVoices, naturalVoices, wavBase64 } from "./audio.js";
+import { configureTts, initTts, onTts, ttsState, ttsCached, deleteTts, naturalOn, NATURAL_VOICES } from "./tts.js";
 import * as G from "./game.js";
 import * as M from "./meta.js";
 import { SPECIES, ITEMS, THEMES, THEME_BY_ID, avatarSvg, bossSvg, BOSSES, droppable, describeOwned, themeKey, RARITY, EXCLUSIVES, DEFAULT_OWNED, ITEM_BY_ID, basePrice } from "./avatar.js";
@@ -20,7 +21,7 @@ import { BASICS, BASICS_BY_ID, basicsItems, basicsCardId, numberWords, yearWords
 import { DIALOGUES, STOP } from "./dialogues.js";
 import { GRAMMAR, GLEVELS } from "./grammar.js";
 import { MISTAKE_CATS, ALL_MISTAKES } from "./mistakes.js";
-import { SCENES, systemPrompt } from "./scenes.js";
+import { SCENES, systemPrompt, COACH_MODES, coachPrompt } from "./scenes.js";
 import { setupLocker } from "./views/locker.js";
 import { setupArena } from "./views/arena.js";
 import { createLootbox } from "./views/lootbox.js";
@@ -140,7 +141,7 @@ function renderHud() {
   const v = $("#hVoice"); render(v, S.poufVoice ? ICON.spk : ICON.mute); v.setAttribute("aria-pressed", String(S.poufVoice));
   v.setAttribute("aria-label", S.poufVoice ? `Couper la voix de ${S.avatar.name}` : `Activer la voix de ${S.avatar.name}`);
 }
-$("#hVoice").addEventListener("click", () => { S.poufVoice = !S.poufVoice; save(); renderHud(); if (!S.poufVoice && "speechSynthesis" in window) speechSynthesis.cancel(); });
+$("#hVoice").addEventListener("click", () => { S.poufVoice = !S.poufVoice; save(); renderHud(); if (!S.poufVoice) stopSpeaking(); });
 $("#hMe").addEventListener("click", () => { play("tap"); go("profile"); });
 $("#hCoins").addEventListener("click", () => { play("tap"); go("shop", { tab: "home" }); });
 $("#hChest").addEventListener("click", () => openChestFlow());
@@ -573,7 +574,7 @@ async function toggleRecording() {
   if (rec && rec.active) return stopRecording(false);
   if (!navigator.mediaDevices || !window.MediaRecorder) { toast("Ce navigateur ne permet pas d'enregistrer le micro. Essaie Chrome, Edge, Firefox ou Safari récent."); return; }
   if (L && L.boss && L.best[L.i] !== undefined && view === "lesson") return;
-  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  stopSpeaking();
   if (!["gpoint", "mcard"].includes(view)) closeSheet();
   const btn = $("#rec");
   rec = new Recorder({
@@ -807,8 +808,8 @@ function renderTrain() {
   if (TR.tab === "talk") {
     const lvls = [...new Set(DIALOGUES.map(d => d.level))], list = DIALOGUES.filter(d => !TR.lv || d.level === TR.lv);
     body = html`
-      <section class="card free-chat glow"><div class="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">Envie de parler librement ? Dis ce que tu veux, l'IA te répond et corrige tes fautes.</div></div>
-        <button class="btn yellow block shine" id="toChat">${ICON.mic}Conversation libre avec l'IA</button></section>
+      <section class="card free-chat glow"><div class="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">${S.coach.n ? `On reprend ? Je me souviens de nos ${S.coach.n} séance${S.coach.n > 1 ? "s" : ""}.` : "Je suis ton coach d'anglais personnel : on parle, je te corrige et je retiens tes progrès."}</div></div>
+        <button class="btn yellow block shine" id="toChat">${ICON.mic}Parler à mon coach ${S.avatar.name}</button></section>
       <div class="row between tr-head"><h3>Jeux de rôle</h3><span class="small muted">${DIALOGUES.filter(d => S.dialogues[d.id]).length}/${DIALOGUES.length} faits</span></div>
       <p class="small muted">${S.avatar.name} joue un personnage, tu réponds au micro. Pas sûr ? Écoute d'abord le dialogue en entier.</p>
       <div class="chips" role="tablist" aria-label="Niveau">${[["", "Tous"], ...lvls.map(l => [l, l])].map(([v, t]) => html`<button class="chip ${TR.lv === v ? "on" : ""}" data-trlv="${v}">${t}</button>`)}</div>
@@ -959,6 +960,7 @@ function renderProfile() {
         <select id="optMotion">${[["auto", "Selon mon appareil"], ["full", "Toutes"], ["reduced", "Réduites"]].map(([v, t]) => html`<option value="${v}" ${v === S.motion ? "selected" : ""}>${t}</option>`)}</select></label>
       <label class="f" for="goal">Objectif quotidien
         <select id="goal">${[[20, "Tranquille · 20 XP"], [50, "Normal · 50 XP"], [100, "Sérieux · 100 XP"], [150, "Intense · 150 XP"]].map(([v, t]) => html`<option value="${v}" ${v === S.goalXp ? "selected" : ""}>${t}</option>`)}</select></label>
+      <div class="tts-box" id="ttsBox"></div>
       <label class="f" for="voice">Voix anglaise des modèles
         <select id="voice">${voices.length ? voices.map(v => html`<option value="${v.voiceURI}" ${v.voiceURI === S.voice ? "selected" : ""}>${v.name} (${v.lang})</option>`) : html`<option value="">Voix par défaut</option>`}</select></label>
       <button class="btn ghost sm" id="tryVoice">${ICON.spk}Tester la voix</button>
@@ -977,6 +979,7 @@ function renderProfile() {
       <label class="btn ghost sm filebtn" for="importFile">Restaurer une sauvegarde<input type="file" id="importFile" accept="application/json,.json"></label></div>
       <button class="btn ghost sm" id="delModel">Supprimer le moteur de prononciation</button>
       <button class="btn ghost sm" id="delChat">Supprimer l'IA locale de conversation</button>
+      <button class="btn ghost sm" id="delTts">Supprimer la voix naturelle</button>
       <button class="btn red sm" id="delData">Effacer ma progression</button></section>
     </div>`);
   $$("[data-ptab]").forEach(b => b.onclick = () => { play("tap"); PF.tab = b.dataset.ptab; $$("[data-ptab]").forEach(x => { const on = x.dataset.ptab === PF.tab; x.classList.toggle("on", on); x.setAttribute("aria-selected", on); }); $$(".pro-panel").forEach(p => { p.hidden = p.dataset.panel !== PF.tab; }); });
@@ -999,6 +1002,7 @@ function renderProfile() {
   $("#optMotion").onchange = e => { S.motion = e.target.value; save(); applyPrefs(); };
   $("#goal").onchange = e => { S.goalXp = +e.target.value; save(); };
   $("#voice").onchange = e => { S.voice = e.target.value; save(); };
+  renderTtsBox();
   $("#tryVoice").onclick = () => speak("Hello! How are you today?", { voiceURI: S.voice });
   $("#slowR").oninput = e => { S.slow = +e.target.value; $("#slowV").textContent = Math.round(S.slow * 100) + " %"; save(); };
   $("#export").onclick = async () => {
@@ -1038,12 +1042,78 @@ function renderProfile() {
     if (chatWorker) { chatWorker.terminate(); chatWorker = null; chatState = "off"; }
     S.chatModelReady = false; save(); toast("IA locale supprimée.");
   };
+  $("#delTts").onclick = async () => {
+    if (!await confirmDlg("Supprimer la voix naturelle ?", "Le modèle de voix (≈ 92 Mo) sera retiré de ton appareil. Les voix de l'appareil restent disponibles.", "Supprimer")) return;
+    await deleteTts(); S.tts = false; if (S.voice.startsWith("kokoro:")) S.voice = ""; save(); toast("Voix naturelle supprimée."); renderProfile();
+  };
   $("#delData").onclick = async () => {
     if (!await confirmDlg("Effacer ta progression ?", "XP, niveaux, pièces, compagnons, badges, leçons, historique et série seront effacés de cet appareil. C'est définitif.", "Tout effacer")) return;
-    const keep = { voice: S.voice, slow: S.slow, goalXp: S.goalXp, modelReady: S.modelReady, sfx: S.sfx, poufVoice: S.poufVoice, haptics: S.haptics, motion: S.motion, chat: S.chat, chatModelReady: S.chatModelReady, onboarded: true };
+    const keep = { voice: S.voice, tts: S.tts, slow: S.slow, goalXp: S.goalXp, modelReady: S.modelReady, sfx: S.sfx, poufVoice: S.poufVoice, haptics: S.haptics, motion: S.motion, chat: S.chat, chatModelReady: S.chatModelReady, onboarded: true };
     S = { ...defaults(), ...keep }; save(); applyPrefs(); renderHud(); toast("Progression effacée."); renderProfile();
   };
 }
+// ---------------- Voix naturelle (Kokoro, sur l'appareil) ----------------
+// Activée seulement si l'utilisateur l'a choisie ET que le modèle est déjà sur l'appareil :
+// jamais de téléchargement de 92 Mo sans qu'il l'ait demandé.
+let ttsMissing = false;
+function startNaturalVoice() {
+  configureTts({ enabled: false, local: TEST_LOCAL });
+  if (!S.tts) return;
+  ttsCached().then(ok => {
+    ttsMissing = !ok;
+    if (!ok) { if (view === "profile") renderTtsBox(); return; }
+    configureTts({ enabled: true, local: TEST_LOCAL });
+    const warm = () => initTts();
+    if ("requestIdleCallback" in window) requestIdleCallback(warm, { timeout: 4000 }); else setTimeout(warm, 1500);
+  });
+}
+async function enableNaturalVoice() {
+  S.tts = true; ttsMissing = false; save();
+  configureTts({ enabled: true, local: TEST_LOCAL });
+  renderTtsBox();
+  const ok = await initTts();
+  if (!ok) { toast("La voix naturelle n'a pas pu se charger. La voix de l'appareil reste utilisée."); renderTtsBox(); return false; }
+  if (!S.voice.startsWith("kokoro:")) S.voice = "kokoro:" + NATURAL_VOICES[0].id;
+  save();
+  if (view === "profile") renderProfile();
+  speak("Hi! I'm your new voice. Let's practice together!", { voiceURI: S.voice, rate: 0.95 });
+  return true;
+}
+function ttsLine() {
+  const st = ttsState();
+  if (st.state === "ready") return { pill: html`<span class="pill good">prête</span>`, txt: `Calculée sur ton appareil${st.threads > 1 ? ` (${st.threads} cœurs)` : ""}. Choisis-la dans la liste ci-dessous.` };
+  if (st.state === "loading") {
+    const pct = st.total ? Math.round(st.loaded / st.total * 100) : 0;
+    return { pill: html`<span class="pill ok">chargement</span>`, txt: st.total ? `Téléchargement : ${pct} % (${Math.round(st.loaded / 1e6)} / ${Math.round(st.total / 1e6)} Mo)` : "Préparation…", pct };
+  }
+  if (st.state === "error") return { pill: html`<span class="pill bad">erreur</span>`, txt: `Elle n'a pas pu démarrer sur cet appareil (mémoire ou navigateur). La voix de l'appareil reste utilisée.${st.error ? ` Détail : ${String(st.error).slice(0, 120)}` : ""}` };
+  if (S.tts && ttsMissing) return { pill: html`<span class="pill ok">à retélécharger</span>`, txt: "Le navigateur a libéré la place du modèle. Retélécharge-le (≈ 92 Mo) pour la retrouver." };
+  return { pill: "", txt: "Une vraie voix d'IA open source (Kokoro), beaucoup moins robotique, calculée sur ton appareil : rien n'est envoyé sur internet. Téléchargement unique ≈ 92 Mo, idéalement en Wi-Fi." };
+}
+function renderTtsBox() {
+  const box = $("#ttsBox"); if (!box) return;
+  const st = ttsState(), l = ttsLine(), on = S.tts && naturalOn();
+  render(box, html`<div class="row between"><b>${ICON.spk} Voix naturelle</b>${l.pill}</div>
+    <p class="small muted" id="ttsTxt">${l.txt}</p>
+    ${st.state === "loading" ? html`<div class="bar xp" id="ttsBar"><i data-css="--p:${l.pct || 0}%"></i></div>` : ""}
+    ${st.state === "loading" ? "" : on && st.state !== "error"
+      ? html`<div class="row"><button class="btn ghost sm" id="ttsOff">Revenir à la voix de l'appareil</button></div>`
+      : html`<button class="btn sm" id="ttsOn">${S.tts && (ttsMissing || st.state === "error") ? "Réessayer" : "Activer la voix naturelle"}</button>`}`);
+  const b1 = $("#ttsOn"); if (b1) b1.onclick = () => { play("tap"); enableNaturalVoice(); };
+  const b2 = $("#ttsOff"); if (b2) b2.onclick = () => {
+    play("tap"); S.tts = false; if (S.voice.startsWith("kokoro:")) S.voice = ""; save();
+    configureTts({ enabled: false, local: TEST_LOCAL }); renderProfile();
+  };
+}
+let ttsLast = "";
+onTts((state) => {
+  if (state === "ready" && view === "profile" && ttsLast !== "ready") { ttsLast = state; renderProfile(); return; }
+  ttsLast = state;
+  if (view !== "profile") return;
+  const st = ttsState(), bar = $("#ttsBar > i"), txt = $("#ttsTxt");
+  if (state === "loading" && bar && txt) { const l = ttsLine(); setVar(bar, "--p", (l.pct || 0) + "%"); txt.textContent = l.txt; }
+  else renderTtsBox();
+});
 async function deleteModelFiles(repos) {
   try {
     const c = await caches.open("transformers-cache");
@@ -1583,7 +1653,7 @@ function renderListen() {
     <section class="card"><h3>Quels mots as-tu entendus ?</h3>
       <div class="wchips" id="chips">${LS.chips.map(w => html`<button class="wchip" data-w="${w}" aria-pressed="false">${w}</button>`)}</div>
       <button class="btn green block" id="lCheck">Vérifier</button><div id="lRes"></div></section>`);
-  $("#quit").onclick = () => { speechSynthesis.cancel(); LS.playing = false; if (SESS) quitActivity(false, "train"); else go("train"); };
+  $("#quit").onclick = () => { stopSpeaking(); LS.playing = false; if (SESS) quitActivity(false, "train"); else go("train"); };
   $("#lPlay").onclick = () => playDialogue(0.95);
   $("#lSlow").onclick = () => playDialogue(0.75);
   $$(".wchip").forEach(c => c.onclick = () => {
@@ -1594,7 +1664,7 @@ function renderListen() {
   $("#lCheck").onclick = checkListen;
 }
 async function playDialogue(rate) {
-  if (LS.playing) { speechSynthesis.cancel(); LS.playing = false; return; }
+  if (LS.playing) { stopSpeaking(); LS.playing = false; return; }
   LS.playing = true;
   const voices = englishVoices(), vA = S.voice || (voices[0] && voices[0].voiceURI) || "", vB = (voices.find(v => v.voiceURI !== vA) || {}).voiceURI || vA;
   for (const l of LS.lines) { if (!LS.playing || view !== "dlisten") break; await speak(l.en, { voiceURI: l.who === "ai" ? vA : vB, rate }); await new Promise(r => setTimeout(r, 250)); }
@@ -1602,7 +1672,7 @@ async function playDialogue(rate) {
 }
 function checkListen() {
   if (LS.checked) return;
-  LS.checked = true; speechSynthesis.cancel(); LS.playing = false;
+  LS.checked = true; stopSpeaking(); LS.playing = false;
   let hit = 0, wrong = 0, missed = 0;
   $$(".wchip").forEach(c => {
     const w = c.dataset.w, sel = LS.sel.has(w), pres = LS.present.has(w);
@@ -1815,33 +1885,40 @@ function startChatEngine() {
 function chatWhenReady() { return chatState === "ready" ? Promise.resolve() : new Promise((res, rej) => chatWaiters.push({ res, rej })); }
 function chatCall(msg, transfer) { const id = ++chatReq; return new Promise((res, rej) => { chatPending.set(id, { res, rej }); chatWorker.postMessage({ ...msg, id }, transfer || []); }); }
 const LOCAL_FORMAT = "\nAnswer EXACTLY in this format, nothing else:\nREPLY: <your answer in English>\nCORRECT: <the learner's last message corrected, or OK if it is correct>\nEXPLAIN: <short explanation of the errors in French, or nothing>";
+const LOCAL_COACH = "\nWORD: <one useful new English word or expression = its French translation, or nothing>\nMEMORY: <one short note to remember about the learner, or nothing>";
 function parseLocal(t) {
   const g = re => { const m = t.match(re); return m ? m[1].trim() : ""; };
   const reply = g(/REPLY:\s*([\s\S]*?)(?:\n\s*CORRECT:|$)/i) || t.trim();
   let corrected = g(/CORRECT:\s*([\s\S]*?)(?:\n\s*EXPLAIN:|$)/i);
-  const explanation_fr = g(/EXPLAIN:\s*([\s\S]*)$/i);
+  const explanation_fr = g(/EXPLAIN:\s*([\s\S]*?)(?:\n\s*(?:WORD|MEMORY):|$)/i);
   const ok = !corrected || /^ok\.?$/i.test(corrected);
   if (ok) corrected = "";
-  return { reply, reply_fr: "", ok, corrected, explanation_fr, natural: "", pron_fr: "" };
+  const wm = g(/WORD:\s*([^\n]*)/i).split(/\s*=\s*/), memory = g(/MEMORY:\s*([^\n]*)/i);
+  const word = wm[0] && wm[1] && !/^nothing$/i.test(wm[0]) ? { en: wm[0], fr: wm[1] } : null;
+  return { reply, reply_fr: "", ok, corrected, explanation_fr, natural: "", pron_fr: "", word, memory: /^nothing\.?$/i.test(memory) ? "" : memory };
 }
 // Réponse d'une IA = donnée non fiable : chaînes uniquement, longueurs bornées, toujours affichées échappées.
 function clampAi(r) {
   const s = (v, n) => typeof v === "string" ? cleanText(v, n) : "";
-  return { heard: r.heard === null ? null : s(r.heard, 500), reply: s(r.reply, 1500), reply_fr: s(r.reply_fr, 1500), ok: r.ok === true, corrected: s(r.corrected, 800), explanation_fr: s(r.explanation_fr, 1200), natural: s(r.natural, 800), pron_fr: s(r.pron_fr, 600), empty: !!r.empty };
+  const w = r.word && typeof r.word === "object" ? { en: s(r.word.en, 60), fr: s(r.word.fr, 80) } : null;
+  const mem = Array.isArray(r.memory) ? r.memory.find(x => typeof x === "string") : r.memory;
+  return { heard: r.heard === null ? null : s(r.heard, 500), reply: s(r.reply, 1500), reply_fr: s(r.reply_fr, 1500), ok: r.ok === true, corrected: s(r.corrected, 800), explanation_fr: s(r.explanation_fr, 1200), natural: s(r.natural, 800), pron_fr: s(r.pron_fr, 600), empty: !!r.empty,
+    word: w && w.en && w.fr ? w : null, memory: s(mem, 160) };
 }
 async function chatTurn({ text, samples }) {
-  const cfg = chatCfg(), scene = CH.scene, sys = systemPrompt(scene, cfg.level);
-  const hist = CH.turns.slice(-10);
+  const cfg = chatCfg(), scene = CH.scene, sys = scene.coach ? coachPrompt(coachCtx(scene)) : systemPrompt(scene, cfg.level);
+  const hist = CH.turns.slice(-10), start = scene.coach ? "Start the session now." : "Start the conversation now, in your role.";
   if (cfg.engine === "test") {
     await new Promise(r => setTimeout(r, 300));
-    return clampAi({ heard: text || "I would like a coffee please", reply: text === null ? "Hi! How can I help you today?" : "Sure! Anything else?", reply_fr: "Bien sûr ! Autre chose ?", ok: false, corrected: "I'd like a coffee, please.", explanation_fr: "Test : correction factice.", natural: "", pron_fr: "" });
+    const coach = scene.coach && text !== null ? { word: { en: "to look forward to", fr: "avoir hâte de" }, memory: "Wants to visit London next spring." } : {};
+    return clampAi({ heard: text || "I would like a coffee please", reply: text === null ? (scene.coach ? `Hi ${S.player || "there"}! How was your day?` : "Hi! How can I help you today?") : "Sure! Anything else?", reply_fr: "Bien sûr ! Autre chose ?", ok: false, corrected: "I'd like a coffee, please.", explanation_fr: "Test : correction factice.", natural: "", pron_fr: "", ...coach });
   }
   if (cfg.engine === "local") {
     if (chatState !== "ready") { startChatEngine(); await chatWhenReady(); }
     let heard = text;
     if (samples) heard = await chatCall({ type: "transcribe", audio: samples }, [samples.buffer]);
     if (heard !== null && !heard) return { heard: "", reply: "", empty: true };
-    const msgs = [{ role: "user", content: sys + LOCAL_FORMAT + "\n\nStart the conversation now, in your role." }];
+    const msgs = [{ role: "user", content: sys + LOCAL_FORMAT + (scene.coach ? LOCAL_COACH : "") + "\n\n" + start }];
     hist.forEach(h => msgs.push(h.who === "ai" ? { role: "assistant", content: "REPLY: " + h.text } : { role: "user", content: "Learner: " + h.text }));
     if (heard !== null) msgs.push({ role: "user", content: "Learner: " + heard });
     const out = await chatCall({ type: "generate", messages: msgs });
@@ -1850,9 +1927,9 @@ async function chatTurn({ text, samples }) {
   const key = await geminiKey();
   if (!key) throw new Error("no_key");
   if (!MODEL_RE.test(cfg.model)) throw new Error("bad_model");
-  const fmtJson = `\nReturn ONLY one JSON object: {"heard":"exact transcription of the learner's last message (empty at the start)","reply":"your answer in English","reply_fr":"French translation of reply","ok":true,"corrected":"the learner's message corrected, or empty if correct","explanation_fr":"short friendly explanation in French of each error, or empty","natural":"how a native would say it, or empty","pron_fr":"if you received audio: a short French note on a clearly mispronounced word, else empty"}`;
+  const fmtJson = `\nReturn ONLY one JSON object: {"heard":"exact transcription of the learner's last message (empty at the start)","reply":"your answer in English","reply_fr":"French translation of reply","ok":true,"corrected":"the learner's message corrected, or empty if correct","explanation_fr":"short friendly explanation in French of each error, or empty","natural":"how a native would say it, or empty","pron_fr":"if you received audio: a short French note on a clearly mispronounced word, else empty"${scene.coach ? ',"word":{"en":"one useful new word or expression you just taught, or empty","fr":"its French translation"},"memory":"one short note to remember about the learner for next sessions, or empty"' : ""}}`;
   const contents = hist.map(h => ({ role: h.who === "ai" ? "model" : "user", parts: [{ text: h.text }] }));
-  if (text === null && !samples) contents.push({ role: "user", parts: [{ text: "Start the conversation now, in your role." }] });
+  if (text === null && !samples) contents.push({ role: "user", parts: [{ text: start }] });
   else if (samples) contents.push({ role: "user", parts: [{ inlineData: { mimeType: "audio/wav", data: wavBase64(samples) } }, { text: "(The learner said this out loud. Transcribe it in \"heard\", then answer and correct it.)" }] });
   else contents.push({ role: "user", parts: [{ text }] });
   const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 45000);
@@ -1870,7 +1947,7 @@ async function chatTurn({ text, samples }) {
   const raw = (((data.candidates || [])[0] || {}).content || {}).parts?.map(p => typeof p.text === "string" ? p.text : "").join("") || "";
   let j; try { j = JSON.parse(raw.match(/\{[\s\S]*\}/)[0]); } catch (e) { j = { reply: raw }; }
   if (!j || typeof j !== "object") j = { reply: String(raw) };
-  return clampAi({ heard: typeof j.heard === "string" ? j.heard : (text ?? ""), reply: j.reply, reply_fr: j.reply_fr, ok: j.ok === true || !j.corrected, corrected: j.corrected, explanation_fr: j.explanation_fr, natural: j.natural, pron_fr: j.pron_fr });
+  return clampAi({ heard: typeof j.heard === "string" ? j.heard : (text ?? ""), reply: j.reply, reply_fr: j.reply_fr, ok: j.ok === true || !j.corrected, corrected: j.corrected, explanation_fr: j.explanation_fr, natural: j.natural, pron_fr: j.pron_fr, word: j.word, memory: j.memory });
 }
 function chatError(e) {
   const m = String(e && e.message || e);
@@ -1891,9 +1968,9 @@ function renderChatSetup() {
   const hasGpu = !!navigator.gpu, key = !!sessionKey || keySaved;
   const localStatus = chatState === "ready" ? html`<span class="pill good">prête</span>` : chatState === "loading" ? html`<span class="pill ok">chargement</span>` : S.chatModelReady ? html`<span class="pill good">téléchargée</span>` : "";
   render($("#view"), html`
-    <div class="ltop"><button class="iconbtn" id="back" aria-label="Retour">${ICON.close}</button><h3 class="grow">Conversation libre avec l'IA</h3></div>
-    <section class="card"><div class="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">Réponds ce que tu veux, avec tes mots. L'IA joue le rôle et corrige chacune de tes phrases.</div></div></section>
-    <section class="card"><h3>1. Choisis le moteur</h3>
+    <div class="ltop"><button class="iconbtn" id="back" aria-label="Retour">${ICON.close}</button><h3 class="grow">Mon coach ${S.avatar.name}</h3></div>
+    ${coachCard()}
+    <section class="card"><h3>Moteur de l'IA</h3>
       <div class="engines">
         <button class="engine-card ${cfg.engine === "local" ? "on" : ""}" data-eng="local" ${hasGpu ? "" : "disabled"}><b>IA locale ${localStatus}</b><span class="small">Gratuite et privée : rien ne quitte ton appareil. PC récent avec Chrome ou Edge, ≈ 1 Go à télécharger une fois (chaque fichier est vérifié). Corrections plus approximatives.</span>${hasGpu ? "" : html`<span class="small bad-t">WebGPU indisponible sur cet appareil.</span>`}</button>
         <button class="engine-card ${cfg.engine === "gemini" ? "on" : ""}" data-eng="gemini"><b>Gemini (Google) ${key ? html`<span class="pill good">clé enregistrée</span>` : ""}</b><span class="small">Meilleure qualité, marche aussi sur téléphone. Il faut ta propre clé gratuite Google. Ta voix et tes messages sont envoyés à Google.</span></button>
@@ -1907,8 +1984,8 @@ function renderChatSetup() {
         <div class="row"><button class="btn yellow sm" id="gSave">Enregistrer</button>${key ? html`<button class="btn ghost sm" id="gDel">Effacer la clé</button>` : ""}</div>
         <p class="small muted">La clé est chiffrée (AES-GCM, clé non exportable) et n'est envoyée qu'à Google, jamais ailleurs, ni dans tes sauvegardes. Avec l'offre gratuite, Google peut utiliser ce que tu envoies pour améliorer ses produits : n'y mets rien de personnel.</p></div>` : ""}
     </section>
-    <section class="card"><h3>2. Ton niveau</h3><div class="chips">${["A1", "A2", "B1", "B2"].map(l => html`<button class="chip ${l === cfg.level ? "on" : ""}" data-cl="${l}">${l}</button>`)}</div></section>
-    <section class="card"><h3>3. Choisis une situation</h3>
+    <section class="card"><h3>Ton niveau</h3><div class="chips">${["A1", "A2", "B1", "B2"].map(l => html`<button class="chip ${l === cfg.level ? "on" : ""}" data-cl="${l}">${l}</button>`)}</div></section>
+    <section class="card"><h3>Ou joue une situation de la vie réelle</h3>
       <div class="scenes">${SCENES.map((s, k) => html`<button class="scene" data-sc="${s.id}" data-css="--i:${k}"><b>${s.title}</b><span class="small muted">${s.sub}</span></button>`)}</div>
       <label class="f" for="cCustom">Ou décris ta propre situation (en français)<input type="text" id="cCustom" maxlength="200" placeholder="Ex : je suis dans un bar à Londres et je cherche les toilettes"></label>
       <button class="btn green" id="cCustomGo">Jouer cette situation</button></section>`);
@@ -1934,8 +2011,57 @@ function renderChatSetup() {
   };
   const ready = () => { if (!cfg.engine) { toast("Choisis d'abord un moteur."); return false; } if (cfg.engine === "gemini" && !(sessionKey || keySaved)) { toast("Ajoute ta clé Gemini."); return false; } return true; };
   $$("[data-sc]").forEach(b => b.onclick = () => { if (ready()) startChat(SCENES.find(s => s.id === b.dataset.sc)); });
+  bindCoachCard(ready);
   $("#cCustomGo").onclick = () => { const t = cleanText($("#cCustom").value, 200); if (!t || !ready()) return; startChat({ id: "custom", title: t.slice(0, 50), sub: "", role: "the most natural other person in this situation (choose the role yourself and stay in it)", situation: `The learner described this real-life situation in French: ${JSON.stringify(t)}. Play it realistically.` }); };
 }
+// ---------------- Mon coach personnel ----------------
+// Le coach connaît ton niveau, tes sons et fautes à travailler, et garde des notes d'une séance à l'autre.
+// Notes et mots = sorties d'une IA : nettoyées, bornées, affichées échappées, effaçables à tout moment.
+function coachCard() {
+  const C = S.coach, nat = S.tts && naturalOn();
+  return html`<section class="card coach-home glow">
+    <div class="coach"><div class="av live">${avatarSvg(S.avatar)}</div><div class="bubble">${C.n ? `Content de te revoir${S.player ? ", " + S.player : ""} ! ${C.notes.length ? "Je me souviens de ce que tu m'as raconté." : "On continue ?"}` : `Je suis ${S.avatar.name}, ton coach d'anglais. On parle, je te corrige, et je retiens tes progrès d'une séance à l'autre.`}</div></div>
+    <div class="coach-modes">${COACH_MODES.map(m => html`<button class="scene coach-mode" data-cm="${m.id}"><b>${m.title}</b><span class="small muted">${m.sub}</span></button>`)}</div>
+    <label class="f" for="cPrep">Le moment à préparer (en français, pour « Préparer un moment réel »)<input type="text" id="cPrep" maxlength="200" autocomplete="off" placeholder="Ex : un entretien d'embauche en anglais jeudi"></label>
+    ${nat ? "" : html`<div class="coach-voice"><span class="small muted">Pour un coach qui parle comme un humain (voix d'IA open source, sur ton appareil) :</span><button class="btn ghost sm" id="cVoice">${ICON.spk}Activer la voix naturelle</button></div>`}
+    <details class="coach-mem"><summary>Ce que ${S.avatar.name} retient de toi (${C.notes.length})</summary>
+      <label class="f" for="cGoal">Mon objectif en anglais<input type="text" id="cGoal" maxlength="200" autocomplete="off" value="${C.goal}" placeholder="Ex : tenir une conversation en voyage"></label>
+      ${C.notes.length ? html`<ul class="plain notes">${C.notes.map((n, i) => html`<li><span class="grow">${n}</span><button class="iconbtn sm" data-dn="${i}" aria-label="Oublier cette note">${ICON.close}</button></li>`)}</ul>` : html`<p class="small muted">Rien pour l'instant : parle-lui de toi et de tes projets.</p>`}
+      ${C.words.length ? html`<p class="small"><b>Mots appris avec ton coach</b> (touche pour écouter)</p><div class="chips">${C.words.slice(-24).reverse().map(w => html`<button class="chip" data-say="${w.en}" title="${w.fr}">${w.en}</button>`)}</div>` : ""}
+      <p class="small muted">Ces notes restent sur ton appareil. Avec Gemini, elles sont envoyées à Google avec tes messages (pour que ton coach s'en souvienne) ; avec l'IA locale, rien ne quitte ton appareil. N'y mets rien de personnel ou de sensible.</p>
+      ${C.notes.length || C.words.length ? html`<button class="btn ghost sm" id="cForget">Tout oublier</button>` : ""}
+    </details></section>`;
+}
+function bindCoachCard(ready) {
+  $$("[data-cm]").forEach(b => b.onclick = () => {
+    const mode = b.dataset.cm, prep = cleanText($("#cPrep").value, 200) || "";
+    if (mode === "prep" && !prep) { toast("Décris d'abord le moment à préparer."); $("#cPrep").focus(); return; }
+    if (ready()) startChat({ id: "coach", coach: true, mode, prep, title: `Coach ${S.avatar.name}`, sub: "" });
+  });
+  const v = $("#cVoice"); if (v) v.onclick = async () => { play("tap"); v.disabled = true; v.textContent = "Téléchargement de la voix…"; await enableNaturalVoice(); if (view === "chatsetup") renderChatSetup(); };
+  $("#cGoal").onchange = e => { S.coach.goal = cleanText(e.target.value, 200) || ""; save(); };
+  $$("[data-dn]").forEach(b => b.onclick = () => { S.coach.notes.splice(+b.dataset.dn, 1); save(); renderChatSetup(); const d = $(".coach-mem"); if (d) d.open = true; });
+  $$(".coach-mem [data-say]").forEach(b => b.onclick = () => speak(b.dataset.say, { voiceURI: S.voice, rate: 0.9 }));
+  const f = $("#cForget"); if (f) f.onclick = async () => {
+    if (!await confirmDlg("Tout oublier ?", `${S.avatar.name} oubliera ses notes sur toi et la liste des mots appris ensemble. Ta progression est conservée.`, "Oublier")) return;
+    S.coach.notes = []; S.coach.words = []; save(); renderChatSetup();
+  };
+}
+function coachCtx(scene) {
+  const sounds = weakSoundList().slice(0, 3).map(p => { const l = SOUND_LESSONS.find(x => x.p === p); return `/${p}/ as in ${l ? l.items.slice(0, 2).join(", ") : "?"}`; });
+  const rate = m => { const v = S.mistakes[m.id]; return v && v.seen ? v.ok / v.seen : 1; };
+  const mistakes = ALL_MISTAKES.filter(m => rate(m) < 0.7).sort((a, b) => rate(a) - rate(b)).slice(0, 4).map(m => `says "${m.wrong}" instead of "${m.right}"`);
+  return { name: S.player, coachName: S.avatar.name, level: chatCfg().level, sounds, mistakes, notes: S.coach.notes.slice(-12), goal: S.coach.goal, mode: scene.mode, prep: scene.prep };
+}
+const SENSITIVE = /\d{5,}|@|https?:|password|mot de passe|\biban\b|\bcard\b/i;
+function coachLearn(r) {
+  const C = S.coach, out = {};
+  if (r.word && !C.words.some(w => w.en.toLowerCase() === r.word.en.toLowerCase())) { C.words.push(r.word); if (C.words.length > 60) C.words.shift(); out.word = r.word; }
+  const note = r.memory && !SENSITIVE.test(r.memory) ? r.memory : "";
+  if (note && !C.notes.includes(note)) { C.notes.push(note); if (C.notes.length > 30) C.notes.shift(); out.note = note; }
+  return out;
+}
+
 let CH = null, chatRec = null;
 function startChat(scene) {
   CH = { scene, turns: [], corrections: 0, msgs: 0, busy: false, startLevel: levelNow().level };
@@ -1946,7 +2072,8 @@ function renderChat() {
   const eng = chatCfg().engine;
   render($("#view"), html`
     <div class="ltop"><button class="iconbtn" id="quit" aria-label="Terminer">${ICON.close}</button><h3 class="grow">${CH.scene.title}</h3><span class="pill ok">${eng === "gemini" ? "Gemini" : eng === "local" ? "IA locale" : "test"}</span></div>
-    <label class="switch small" for="cFr">Afficher la traduction <input type="checkbox" id="cFr" checked></label>
+    <div class="row chat-opts"><label class="switch small" for="cFr">Afficher la traduction <input type="checkbox" id="cFr" checked></label>
+      <label class="switch small" for="cHands">Mains libres (le micro se relance tout seul) <input type="checkbox" id="cHands" ${chatCfg().hands ? "checked" : ""}></label></div>
     <div class="chat" id="chat"></div>
     <p class="status" id="cStatus"></p>
     <section class="card composer-card">
@@ -1956,6 +2083,7 @@ function renderChat() {
     </section>`);
   document.body.classList.remove("hide-fr");
   $("#cFr").onchange = e => document.body.classList.toggle("hide-fr", !e.target.checked);
+  $("#cHands").onchange = e => { chatCfg().hands = e.target.checked; save(); if (e.target.checked && !CH.busy && !(chatRec && chatRec.active)) chatMic(); };
   $("#quit").onclick = endChat; $("#cEnd").onclick = endChat;
   $("#cSend").onclick = () => { const t = cleanText($("#cText").value, 300); if (t) { $("#cText").value = ""; chatSend(t); } };
   $("#cText").addEventListener("keydown", e => { if (e.key === "Enter") $("#cSend").click(); });
@@ -1965,7 +2093,7 @@ async function chatMic() {
   if (CH.busy) return;
   const btn = $("#cMic");
   if (chatRec && chatRec.active) { const r = chatRec; chatRec = null; btn.classList.remove("on"); render(btn, ICON.mic); const out = await r.stop(); if (!out || !out.heardSpeech || !out.pcm) { $("#cStatus").textContent = "Je n'ai rien entendu."; return; } chatSend(undefined, out.pcm.samples); return; }
-  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  stopSpeaking();
   chatRec = new Recorder({ onAutoStop: () => chatMic() });
   try { await chatRec.start(); } catch (e) { chatRec = null; toast("Accès au micro refusé ou micro introuvable."); return; }
   btn.classList.add("on"); render(btn, ICON.stop); $("#cStatus").textContent = "Je t'écoute…";
@@ -1974,6 +2102,7 @@ function chatBubble(who, content, speakText) {
   const chat = $("#chat"); if (!chat) return null;
   const el = append(chat, html`<div class="msg ${who}">${who === "ai" ? html`<div class="av">${avatarSvg(S.avatar)}</div>` : ""}<div class="bub">${content}${speakText ? html`<button class="iconbtn sm" aria-label="Réécouter">${ICON.spk}</button>` : ""}</div></div>`);
   const b = el.querySelector("button.iconbtn"); if (b) b.onclick = () => speak(speakText, { voiceURI: S.voice, rate: 0.95 });
+  el.querySelectorAll("[data-say]").forEach(x => x.onclick = () => speak(x.dataset.say, { voiceURI: S.voice, rate: 0.85 }));
   el.scrollIntoView({ block: "end", behavior: FX.reduced() ? "auto" : "smooth" });
   return el;
 }
@@ -1995,21 +2124,29 @@ async function chatSend(text, samples) {
       markActive(); save();
     }
     CH.turns.push({ who: "ai", text: r.reply });
-    const el = chatBubble("ai", html`<div class="en">${r.reply}</div>${r.reply_fr ? html`<div class="tr">${r.reply_fr}</div>` : ""}`, r.reply);
+    const ex = CH.scene.coach ? coachLearn(r) : {};
+    if (ex.word || ex.note) { CH.learned = (CH.learned || 0) + (ex.word ? 1 : 0); save(); }
+    const el = chatBubble("ai", html`<div class="en">${r.reply}</div>${r.reply_fr ? html`<div class="tr">${r.reply_fr}</div>` : ""}${ex.word ? html`<div class="newword"><span class="pill good">Nouveau</span> <button class="chip sm" data-say="${ex.word.en}">${ICON.spk}${ex.word.en}</button> <span class="small">= ${ex.word.fr}</span></div>` : ""}${ex.note ? html`<div class="small muted memo">Noté pour nos prochaines séances : ${ex.note}</div>` : ""}`, r.reply);
     if (st) st.textContent = "";
     const svg = el && el.querySelector(".pouf"); if (svg) svg.classList.add("talk");
-    speak(r.reply, { voiceURI: S.voice, rate: 0.95 }).then(() => { if (svg) svg.classList.remove("talk"); });
+    const me = CH;
+    speak(r.reply, { voiceURI: S.voice, rate: 0.95 }).then(done => {
+      if (svg) svg.classList.remove("talk");
+      // Mains libres : dès que le coach a fini de parler, le micro se relance (jamais pendant qu'il parle).
+      if (done === true && chatCfg().hands && CH === me && view === "chat" && !(chatRec && chatRec.active)) setTimeout(() => { if (CH === me && view === "chat" && !CH.busy) chatMic(); }, 250);
+    });
   } catch (e) { if (st) st.textContent = chatError(e); }
   finally { CH.busy = false; const m = $("#cMic"); if (m) m.disabled = false; }
 }
 function endChat() {
   if (chatRec && chatRec.active) { chatRec.stop().catch(() => {}); chatRec = null; }
-  if ("speechSynthesis" in window) speechSynthesis.cancel();
+  stopSpeaking();
   if (!CH || CH.msgs === 0) { go("train"); return; }
   const total = Math.min(CH.msgs, 12) * 5 + 10, r = gainXp(total, CH.startLevel, { key: "chat" });
+  if (CH.scene.coach) { S.coach.n++; S.coach.last = today(); save(); }
   quest("dialog");
   go("done", { title: "Conversation terminée !", tiles: [["c", "Tes messages", String(CH.msgs)], ["o", "Corrections", String(CH.corrections)], ["y", "XP gagnés", "+" + r.xpGained], ["o", "Pièces", "+" + r.coins]],
-    line: CH.corrections === 0 ? "Aucune faute, impressionnant !" : "Relis les corrections : ce sont tes points à travailler.", back: "train", ...r });
+    line: (CH.corrections === 0 ? "Aucune faute, impressionnant !" : "Relis les corrections : ce sont tes points à travailler.") + (CH.learned ? ` ${CH.learned} nouveau${CH.learned > 1 ? "x" : ""} mot${CH.learned > 1 ? "s" : ""} rangé${CH.learned > 1 ? "s" : ""} dans « Mon coach ».` : ""), back: "train", ...r });
 }
 
 // ---------------- Vues ----------------
@@ -2117,6 +2254,7 @@ const used = M.applyFreezes(S, today());
 save();
 migrateLegacy("gemini").finally(refreshKeyState);
 if (S.modelReady) startEngine();
+startNaturalVoice();
 go("path");
 if (used) notify("Gel de série utilisé", `${used} jour${used > 1 ? "s" : ""} manqué${used > 1 ? "s" : ""} protégé${used > 1 ? "s" : ""} : ta série continue !`, SNOW);
 if (integrity.status === "tampered") confirmDlg("Sauvegarde modifiée en dehors de l'appli",

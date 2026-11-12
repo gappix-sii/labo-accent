@@ -33,7 +33,7 @@ Vérifié par les tests : aucune violation CSP ou Trusted Types sur l'ensemble d
 
 Dans les workers, `fetch` est remplacé par une version contrôlée (`js/integrity.js`) :
 
-- seul `https://huggingface.co/<dépôt>/resolve/<révision>/<fichier>` est accepté, pour les 3 dépôts et révisions figés ci-dessous ; tout autre site ou révision est refusé ;
+- seul `https://huggingface.co/<dépôt>/resolve/<révision>/<fichier>` est accepté, pour les 4 dépôts et révisions figés ci-dessous ; tout autre site ou révision est refusé (une vérification d'existence faite par la bibliothèque sur `main` est redirigée vers la révision figée, jamais vers `main`) ;
 - un fichier qui n'est pas dans la liste reçoit une réponse 404 ;
 - chaque gros fichier est **haché en flux** (SHA-256) et compté pendant le téléchargement : s'il dépasse la taille prévue, le flux s'arrête aussitôt ; s'il ne correspond pas à la fin, le flux échoue, **rien n'est mis en cache** et le moteur ne démarre pas ;
 - les petits fichiers de configuration (JSON, gabarit de conversation) sont limités en taille et figés par la révision Git ;
@@ -44,6 +44,7 @@ Dans les workers, `fetch` est remplacé par une version contrôlée (`js/integri
 | `robg/speako-phoneme-recognizer@ad0f63cd58fc1bb1e9c261a3b4135997a31c2e58` | `onnx/model_quantized.onnx` (355 Mo) |
 | `onnx-community/whisper-base.en@51eefc0af78b103839eda9e7e4f4186acc6517fe` | `onnx/encoder_model.onnx`, `onnx/decoder_model_merged_q4.onnx` |
 | `onnx-community/gemma-3-1b-it-ONNX@a58439f40017d3b99c7d378ff525e54e0ba08ebf` | `tokenizer.json`, `onnx/model_q4f16.onnx(+_data)`, `onnx/model_q4.onnx(+_data)` |
+| `onnx-community/Kokoro-82M-v1.0-ONNX@1939ad2a8e416c0acfeecc08a694d14ef25f2231` | `onnx/model_quantized.onnx` (92 Mo, voix naturelle) |
 
 Les empreintes sont les `oid sha256` des pointeurs Git LFS de ces révisions (liste complète dans `js/integrity.js`).
 
@@ -81,7 +82,15 @@ connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.
 
 Autres en-têtes : `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Embedder-Policy: require-corp` (isolation, calcul multi-cœurs), `Cross-Origin-Resource-Policy: same-origin`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, `Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), display-capture=()`.
 
-## Conversation libre (optionnelle)
+## Voix naturelle (optionnelle)
+
+- Modèle **Kokoro-82M** (Apache 2.0) exécuté **sur l'appareil** dans un worker séparé : le texte à lire n'est jamais envoyé sur internet.
+- Téléchargé **uniquement** quand l'utilisateur appuie sur « Activer la voix naturelle » (≈ 92 Mo, SHA-256 et taille exacte vérifiés). Aux visites suivantes, il n'est préparé que s'il est déjà dans le cache : jamais de retéléchargement silencieux.
+- Les 3 voix (`data/voices/*.bin`, 510 Ko chacune) viennent du dépôt officiel `github.com/hexgrad/kokoro` (commit `dfb907a`), sont livrées avec l'appli et vérifiées par le service worker (empreintes figées dans `tools/build-sw.mjs`) ; taille exacte recontrôlée dans le worker.
+- Le texte est converti en phonèmes avec le dictionnaire CMU déjà présent (`js/g2p.js`) : aucun moteur supplémentaire (pas d'espeak-ng) n'est ajouté.
+- En cas d'échec (mémoire, navigateur), la voix de l'appareil prend le relais automatiquement. Bouton « Supprimer la voix naturelle » dans Réglages → Données.
+
+## Conversation libre et coach (optionnels)
 
 - **IA locale** (Whisper base.en + Gemma 3 1B, ≈ 1 Go vérifié par SHA-256) : audio et texte restent sur l'appareil.
 - **Gemini** : uniquement si l'utilisateur choisit ce moteur et colle **sa propre clé**. Aucune clé dans le dépôt.
@@ -89,6 +98,8 @@ Autres en-têtes : `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Embe
   - Envoyée seulement à `generativelanguage.googleapis.com`, dans l'en-tête `x-goog-api-key`, sans cookie, sans redirection, avec un référent réduit à l'origine du site (`strict-origin`) : cela permet de **restreindre la clé à ce site** dans Google Cloud (restriction « Sites Web » `https://<ton-site>/*` et API « Generative Language » uniquement).
   - Nom du modèle validé (lettres minuscules, chiffres, points, tirets), délai maximal de 45 s.
   - L'audio (WAV 16 kHz) et le texte de la conversation sont envoyés à Google ; avec l'offre gratuite, Google peut les utiliser pour améliorer ses produits.
+- **Mémoire du coach** : notes courtes et mots appris, produits par l'IA, donc traités comme non fiables : texte nettoyé (caractères de contrôle et bidi retirés), longueur bornée (160 caractères, 30 notes, 60 mots), toujours affiché échappé. Une note qui ressemble à une donnée sensible (longue suite de chiffres, e-mail, lien, mot de passe, carte, IBAN) est refusée. Les notes sont réinjectées dans la consigne comme **données**, et le texte libre de l'utilisateur y est inséré en JSON. Tout est visible et effaçable (note par note ou « Tout oublier ») ; avec Gemini, les notes partent chez Google avec les messages, avec l'IA locale elles ne quittent pas l'appareil.
+- **Mains libres** : le micro ne se relance qu'après la fin complète de la réponse parlée, et s'arrête si rien n'est entendu.
 
 ## Boîtes à butin (jeu responsable)
 
@@ -128,6 +139,9 @@ Objectif : que les pièces récompensent la vraie progression, et qu'on ne puiss
 | `vendor/ort-wasm-simd-threaded.asyncify.mjs` | npm `onnxruntime-web` (MIT) | 1.31.0-dev.20260914 | `0966b6105cd936744498aa60df7a22cbd47af3374dbc64a9ab561c08a71e3611` |
 | `vendor/ort-wasm-simd-threaded.asyncify.wasm` | npm `onnxruntime-web` (MIT) | 1.31.0-dev.20260914 | `49871f5a4409519797e127440868a6d1923339d9185907f301a5b2a1d90af082` |
 | `data/cmudict.json` | npm `cmu-pronouncing-dictionary` (dictionnaire CMU, BSD) | 3.0.0 | `ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b` |
+| `data/voices/af_heart.bin` | `github.com/hexgrad/kokoro` `kokoro.js/voices` (Apache-2.0) | commit `dfb907a` | `d583ccff3cdca2f7fae535cb998ac07e9fcb90f09737b9a41fa2734ec44a8f0b` |
+| `data/voices/af_bella.bin` | idem | commit `dfb907a` | `f69d836209b78eb8c66e75e3cda491e26ea838a3674257e9d4e5703cbaf55c8b` |
+| `data/voices/am_michael.bin` | idem | commit `dfb907a` | `1d1f21dd8da39c30705cd4c75d039d265e9bc4a2a93ed09bc9e1b1225eb95ba1` |
 | `fonts/*.woff2` | npm `@fontsource/barlow-condensed`, `@fontsource/nunito` (OFL-1.1) | 5.3.0 | dans `sw.js` |
 
 - Paquets installés avec `npm install --ignore-scripts` (aucun script d'installation exécuté) ; `npm audit` : 0 vulnérabilité au moment de la construction.

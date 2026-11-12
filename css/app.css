@@ -600,6 +600,8 @@ ol.plan li::before{content:counter(b);width:30px;height:30px;border-radius:50%;b
 @keyframes msgIn{from{opacity:0;transform:translateY(12px) scale(.96)}}
 .chat .msg .av{width:46px;height:46px;flex:none}
 .chat .msg.me{align-self:flex-end;flex-direction:row-reverse}
+/* .me est aussi le bouton avatar du bandeau : on annule ses styles pour les bulles de l'utilisateur */
+.msg.me{width:auto;height:auto;border-radius:0;padding:0;background:none;position:static;cursor:auto;flex:initial;transition:none} .msg.me:active{transform:none}
 .bub{border-radius:18px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;position:relative;box-shadow:0 4px 0 var(--shadow)}
 .msg.ai .bub{background:var(--bubble);color:var(--bubble-ink);border-bottom-left-radius:6px}
 .msg.me .bub{background:var(--cyan);color:#03283a;border-bottom-right-radius:6px}
@@ -1024,3 +1026,13 @@ dialog canvas.dfx.on{display:block}
 .updbar{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:10px;background:var(--panel2);border:2px solid var(--yellow);border-radius:16px;padding:8px 10px 8px 14px;box-shadow:0 10px 30px rgba(0,0,0,.45);font-weight:800;width:max-content;max-width:calc(100% - 24px);animation:rise .4s cubic-bezier(.2,1.3,.4,1) both}
 .updbar svg{width:22px;height:22px;color:var(--green);flex:none}
 @media (min-width:1024px){.updbar{bottom:24px}}
+/* Voix naturelle */
+.tts-box{border:1px solid var(--line);border-radius:14px;padding:12px;margin:4px 0 12px;background:rgba(255,255,255,.03);display:grid;gap:8px}
+.tts-box p{margin:0} .tts-box .bar{margin:0} .tts-box > .row b{display:inline-flex;gap:8px;align-items:center} .tts-box > .row b svg{width:20px;height:20px;flex:none} .tts-box .btn{justify-self:start}
+/* Mon coach */
+.coach-home .coach-modes{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:10px 0}
+.coach-mode{border-color:var(--yellow)!important}
+.coach-mem{margin-top:10px} .coach-mem summary{cursor:pointer;font-weight:700;padding:6px 0}
+.coach-mem .notes li{display:flex;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid var(--line)}
+.coach-voice{margin:6px 0;display:grid;gap:6px;justify-items:start} .chat-opts{gap:6px 16px} .chat-opts .switch{flex:1 1 240px}
+.msg .newword{margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap} .msg .newword .chip{display:inline-flex;gap:4px;align-items:center;background:#e6f7ff;color:#03283a;border:1px solid #7cc8ea;box-shadow:none;font-family:inherit;font-style:normal;text-transform:none;padding:4px 10px;font-size:.95rem} .msg .newword .chip svg{width:16px;height:16px;flex:none} .msg .memo{margin-top:4px;font-style:italic}

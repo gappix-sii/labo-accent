@@ -8,3 +8,4 @@
 - **Polices** Barlow Condensed et Nunito (`fonts/`) : SIL Open Font License 1.1. Texte : `fonts/LICENSE-OFL.txt`.
 - **Pouf** et les autres compagnons, accessoires, boss, coffres et emblèmes sont des dessins originaux créés pour cette appli.
 - **Modèles de conversation** (téléchargés à l'exécution, non inclus) : Whisper base.en (MIT, OpenAI) ; Gemma 3 1B (conditions d'utilisation Gemma de Google).
+- **Voix naturelle** : modèle Kokoro-82M (`onnx-community/Kokoro-82M-v1.0-ONNX`, téléchargé à l'exécution, non inclus) et voix `data/voices/*.bin` (Heart, Bella, Michael) : Apache License 2.0, © hexgrad. Texte complet : `data/voices/LICENSE-kokoro.txt`. La conversion texte → phonèmes (`js/g2p.js`) reprend la notation de kokoro.js, réécrite pour utiliser le dictionnaire CMU.

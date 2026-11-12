@@ -24,6 +24,13 @@ export const MODELS = {
       "onnx/decoder_model_merged_q4.onnx": { sha256: "7770ac574b71a704191ec52becac42b4a4126af26f54ed653f31c8f16af31f99", size: 123600371 }
     }
   },
+  "onnx-community/Kokoro-82M-v1.0-ONNX": {
+    rev: "1939ad2a8e416c0acfeecc08a694d14ef25f2231",
+    files: {
+      "config.json": small(), "tokenizer.json": small(), "tokenizer_config.json": small(),
+      "onnx/model_quantized.onnx": { sha256: "fbae9257e1e05ffc727e951ef9b9c98418e6d79f1c9b6b13bd59f5c9028a1478", size: 92361116 }
+    }
+  },
   "onnx-community/gemma-3-1b-it-ONNX": {
     rev: "a58439f40017d3b99c7d378ff525e54e0ba08ebf",
     files: {
@@ -61,14 +68,16 @@ export function verifier(entry, file) {
 export function lookup(href) {
   const url = new URL(href);
   if (url.protocol !== "https:" || url.hostname !== "huggingface.co" || url.username || url.password || url.port) return { deny: true };
-  const m = url.pathname.match(/^\/([\w.-]+\/[\w.-]+)\/resolve\/([0-9a-f]{40})\/([\w./-]+)$/);
+  const m = url.pathname.match(/^\/([\w.-]+\/[\w.-]+)\/resolve\/([0-9a-f]{40}|main)\/([\w./-]+)$/);
   if (!m || url.search || url.hash) return { deny: true };
-  const repo = MODELS[m[1]];
-  if (!repo || repo.rev !== m[2]) return { deny: true };
+  const repo = Object.prototype.hasOwnProperty.call(MODELS, m[1]) ? MODELS[m[1]] : null;
+  if (!repo || (repo.rev !== m[2] && m[2] !== "main")) return { deny: true };
   const file = m[3];
   if (file.split("/").some(p => p === ".." || p === ".")) return { deny: true };
   const entry = Object.prototype.hasOwnProperty.call(repo.files, file) ? repo.files[file] : null;
-  return { repo: m[1], file, entry, href: url.href };
+  // La bibliothèque teste parfois l'existence d'un fichier sur « main » (sans la révision demandée) :
+  // on redirige toujours vers la révision figée, et le contenu reste vérifié comme d'habitude.
+  return { repo: m[1], file, entry, href: `https://huggingface.co/${m[1]}/resolve/${repo.rev}/${file}` };
 }
 
 // Remplace fetch dans les workers. base = fetch d'origine ; origin = origine de l'appli.

@@ -1,4 +1,5 @@
 // Enregistrement micro, détection de fin de parole, conversion en 16 kHz mono, synthèse vocale.
+import { naturalSay, naturalCancel, naturalOn, NATURAL_VOICES } from "./tts.js";
 
 export class Recorder {
   constructor({ onLevel, onAutoStop } = {}) {
@@ -87,15 +88,36 @@ function trimAndNormalize(x) {
   return { samples: y, offsetSec: a / 16000 };
 }
 
-// ---------- Synthèse vocale (voix de l'appareil) ----------
-export function englishVoices() { return voicesFor("en"); }
+// ---------- Synthèse vocale ----------
+// Voix naturelles (Kokoro, sur l'appareil) en tête de liste quand elles sont activées, puis celles de l'appareil.
+export const NATURAL_PREFIX = "kokoro:";
+export function naturalVoices() {
+  return naturalOn() ? NATURAL_VOICES.map(v => ({ voiceURI: NATURAL_PREFIX + v.id, name: `${v.name} · voix naturelle, ${v.desc}`, lang: "en-US", natural: true })) : [];
+}
+export function englishVoices() { return [...naturalVoices(), ...voicesFor("en")]; }
 export function voicesFor(lang) {
   if (!("speechSynthesis" in window)) return [];
   const re = new RegExp("^" + lang + "([-_]|$)", "i");
   return speechSynthesis.getVoices().filter(v => re.test(v.lang));
 }
 
-export function speak(text, { voiceURI = "", rate = 1, pitch = 1, lang = "en" } = {}) {
+export function stopSpeaking() {
+  naturalCancel();
+  if ("speechSynthesis" in window) speechSynthesis.cancel();
+}
+
+export function speak(text, opts = {}) {
+  const { voiceURI = "", lang = "en" } = opts;
+  if (lang === "en" && naturalOn() && String(voiceURI).startsWith(NATURAL_PREFIX)) {
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+    return naturalSay(text, { voice: voiceURI.slice(NATURAL_PREFIX.length), rate: opts.rate || 1 })
+      .then(r => r === null ? systemSpeak(text, { ...opts, voiceURI: "" }) : r);
+  }
+  naturalCancel();
+  return systemSpeak(text, opts);
+}
+
+function systemSpeak(text, { voiceURI = "", rate = 1, pitch = 1, lang = "en" } = {}) {
   if (!("speechSynthesis" in window)) return Promise.resolve(false);
   return new Promise(res => {
     speechSynthesis.cancel();

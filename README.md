@@ -20,6 +20,8 @@ Le tout façon jeu vidéo : compagnons à personnaliser, coffres, quêtes, boss 
 - **Boss** : un boss garde la fin de chaque unité ; une phrase bien prononcée lui fait des dégâts (coup critique au-dessus de 95), une phrase ratée coûte une vie. Victoire : couronne, coffre d'or, trophées.
 - **Arène** : défi chrono de 60 secondes (vocabulaire, grammaire, fautes à repérer) avec combos multiplicateurs et records ; **défi du jour** identique pour tout le monde, score à partager entre amis ; **rangs** de Bronze à Légende.
 - **Animations** partout (transitions, pièces qui volent, confettis, niveau supérieur, compagnon qui cligne des yeux et remue la queue), désactivables ; vibrations sur téléphone ; un code secret pour les gamers.
+- **Mon coach personnel** (onglet Pratique → « Parler à mon coach ») : ton compagnon devient ton professeur particulier. Il connaît ton niveau, tes sons et tes fautes à travailler, et **retient** d'une séance à l'autre ce que tu lui racontes (notes visibles et effaçables, objectif personnel, mots appris). 3 modes : discuter, travailler tes points faibles, préparer un moment réel (entretien, voyage, appel…). **Mains libres** : le micro se relance tout seul après chaque réponse, comme une vraie conversation.
+- **Voix naturelle** (Profil → Réglages) : une voix d'IA open source (Kokoro, 3 voix américaines), beaucoup moins robotique, calculée sur ton appareil ; téléchargement unique ≈ 92 Mo, puis hors ligne. Elle lit tout : modèles, dialogues, coach. Repli automatique sur la voix de l'appareil.
 - **Conversation libre avec l'IA** (onglet Pratique) : 11 situations réelles (se présenter, où sont les toilettes, restaurant, taxi, médecin…) ou ta propre situation ; tu réponds librement à l'oral ou à l'écrit, l'IA joue le rôle et corrige chaque phrase. Deux moteurs au choix : **IA locale** (Gemma 3 1B + Whisper dans le navigateur, gratuite et privée, PC avec WebGPU, ≈ 1 Go vérifié par SHA-256) ou **Gemini** (clé gratuite Google de chaque utilisateur, meilleure qualité, marche sur téléphone).
 - **Verbes irréguliers** (onglet Apprendre → Verbes) : les 67 plus utiles, rangés en 9 familles de sons (stars du quotidien, rien ne change cut-cut-cut, -ought, -t, passé = participe, i-a-u sing-sang-sung, retour au début come-came-come, -ew/-own, participe en -en), comme le recommandent la plupart des méthodes. Pour chaque verbe : les 3 formes, le sens, la prononciation à la française, le piège, l'écoute normale et lente, et 2 phrases de contexte (prétérit et present perfect). Fiches avec colonne à cacher, et 4 jeux : **Trio** (memory : retrouver les 3 formes d'un verbe), **Verb Rush** (60 s de phrases à trous, la faute « goed » en piège), **Écris la forme** (compléter au clavier) et les phrases au micro. Répétition espacée par verbe.
 - **Thèmes** (onglet Apprendre) : **mots-questions** (what, who, where, when, why, how, which, whose, les questions avec how much/many/old/long/often/far, les questions de tous les jours), chacun avec un exemple à écouter et un jeu « remets la question dans l'ordre » ; jours de la semaine, mois et saisons, nombres de 0 à un million, ordinaux et dates (1st, 2nd, « the first of May », années). Chaque mot a sa prononciation écrite à la française (syllabe accentuée en majuscules), la phonétique, l'écoute normale et lente, et le piège à connaître (thirteen ≠ thirty, Wednesday, July…). Cartes à dire au micro, quiz d'écoute, **dictée de nombres** (on entend, on écrit en chiffres) et phrases à prononcer.
@@ -73,7 +75,7 @@ puis ouvre `http://localhost:8000` dans Chrome. (Le micro exige `https` ou `loca
   britannique correct peut être un peu pénalisé sur certains mots.
 - Le modèle ne mesure pas encore l'accent tonique ni l'intonation.
 - Sur un téléphone ancien (moins de 4 Go de mémoire), l'analyse peut être lente ou échouer : utilise alors le PC.
-- La voix « modèle » est celle de ton appareil (synthèse vocale du système) : sa qualité dépend du téléphone ou du PC.
+- Sans la voix naturelle, la voix « modèle » est celle de ton appareil (synthèse vocale du système) : sa qualité dépend du téléphone ou du PC. La voix naturelle demande un appareil assez récent (≈ 300 Mo de mémoire libre) ; elle parle en anglais américain uniquement.
 
 ## Structure
 
@@ -93,11 +95,13 @@ puis ouvre `http://localhost:8000` dans Chrome. (Le micro exige `https` ou `loca
 | `js/content.js`, `js/vocab.js`, `js/dialogues.js`, `js/grammar.js`, `js/mistakes.js`, `js/scenes.js` | Contenus |
 | `js/game.js` | Parcours, XP, niveaux, étoiles, badges, séances, répétition espacée |
 | `js/chat-worker.js` | IA locale : Whisper + Gemma 3 1B (WebGPU) |
+| `js/tts.js`, `js/tts-worker.js`, `js/g2p.js` | Voix naturelle : lecture audio, modèle Kokoro dans un thread séparé, texte → phonèmes |
 | `js/mascot.js`, `js/fx.js` | Répliques du compagnon, sons synthétisés et effets |
 | `fonts/` | Polices auto-hébergées (Barlow Condensed, Nunito) |
 | `sw.js` | Hors ligne vérifié par empreintes et en-têtes de sécurité |
 | `vendor/` | Bibliothèques auto-hébergées (aucun CDN) |
 | `data/cmudict.json` | Dictionnaire de prononciation CMU |
+| `data/voices/` | Voix Kokoro (Heart, Bella, Michael) |
 | `test/`, `tools/` | Tests et scripts de construction |
 
 Voir `SECURITY.md` pour les choix de sécurité et `NOTICE.md` pour les licences.
