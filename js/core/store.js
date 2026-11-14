@@ -8,9 +8,11 @@ export const VERSION = 1;
 const LEVELS = new Set(["good", "ok", "bad", "skip"]);
 const STATUSES = new Set(["good", "ok", "bad"]);
 const VOICE_IDS = new Set(["af_heart", "am_michael"]);
+const KINDS = new Set(["soigné", "fautes"]);
+const LOG_MAX = 100;
 
 export function defaults() {
-  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", last: null };
+  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", last: null, kind: "soigné", log: [] };
 }
 
 const text = (v, max) => (typeof v === "string" ? v.slice(0, max) : "");
@@ -62,7 +64,22 @@ export function sanitize(raw) {
   S.voice = raw.voice === true; // la voix aussi
   S.voiceId = VOICE_IDS.has(raw.voiceId) ? raw.voiceId : "af_heart";
   S.last = cleanResult(raw.last);
+  S.kind = KINDS.has(raw.kind) ? raw.kind : "soigné";
+  S.log = list(raw.log, LOG_MAX).filter((e) => e && typeof e === "object" && KINDS.has(e.kind)).map((e) => ({
+    s: int(e.s, 0, 999, 0), kind: e.kind, score: int(e.score, 0, 100, 0), at: int(e.at, 0, 8.64e15, 0),
+    bad: list(e.bad, 30).filter((b) => b && typeof b === "object").map((b) => ({ p: text(b.p, 4), heard: typeof b.heard === "string" ? text(b.heard, 4) : null }))
+  }));
   return S;
+}
+
+// Journal du banc de test (tâche 7) : un essai = phrase, type d'essai, note, sons signalés.
+export function logEntry(sentenceIndex, kind, last, now = Date.now()) {
+  const bad = [];
+  for (const w of last.words) for (const ph of w.phones) if (ph.status === "bad") bad.push({ p: ph.p, heard: ph.heard });
+  return { s: sentenceIndex, kind: KINDS.has(kind) ? kind : "soigné", score: last.score, at: now, bad: bad.slice(0, 30) };
+}
+export function addLog(S, entry) {
+  S.log = [...S.log, entry].slice(-LOG_MAX);
 }
 
 export function load(storage = globalThis.localStorage) {

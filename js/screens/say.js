@@ -1,6 +1,7 @@
 // Écran « Dis cette phrase » : phrase → enregistrement → note son par son + conseils.
 import { html, render, $ } from "../core/dom.js";
-import { save, summarize } from "../core/store.js";
+import { save, summarize, logEntry, addLog } from "../core/store.js";
+import { kindBlock, benchBlock, benchText } from "./bench.js";
 import { SENTENCES } from "../content/sentences.js";
 import { Recorder } from "../engine/recorder.js";
 import { prepare, score, onEngine, MODEL_MB } from "../engine/engine.js";
@@ -35,6 +36,7 @@ export function mountSay(root, S) {
       <section class="card">${engineBlock()}</section>
       ${ui.error ? html`<p class="card error" role="alert">${ui.error}</p>` : ""}
       <section class="card" aria-live="polite">${last ? resultBlock(last) : html`<p class="muted">Pas encore de résultat pour cette phrase.</p>`}</section>
+      <section class="card">${benchBlock(S)}${ui.copied ? html`<p class="small" role="status">${ui.copied}</p>` : ""}</section>
     `);
   }
 
@@ -161,7 +163,7 @@ export function mountSay(root, S) {
         <button class="btn red" data-act="stop" type="button">Arrêter</button>`;
     }
     if (ui.busy === "analyze") return html`<p>Analyse en cours…</p>`;
-    return html`<button class="btn big" data-act="speak" type="button">🎤 Parler</button>
+    return html`${kindBlock(S, false)}<button class="btn big" data-act="speak" type="button">🎤 Parler</button>
       ${ui.info ? html`<p class="muted small">${ui.info}</p>` : ""}`;
   }
 
@@ -221,7 +223,9 @@ export function mountSay(root, S) {
       } else {
         const s = sentence().en;
         const res = await score(s, out.pcm.samples);
-        S.last = summarize(s, res); persist();
+        S.last = summarize(s, res);
+        addLog(S, logEntry(S.sentence % SENTENCES.length, S.kind, S.last));
+        persist();
         ui.info = `Analyse en ${Math.round(res.ms / 100) / 10} s`;
       }
     } catch (e) {
@@ -234,6 +238,13 @@ export function mountSay(root, S) {
   root.addEventListener("click", (e) => {
     const act = e.target.closest("[data-act]")?.dataset.act;
     if (!act || (ui.busy && act !== "stop")) return;
+    if (act === "kind-soigné" || act === "kind-fautes") { S.kind = act.slice(5); persist(); draw(); }
+    if (act === "copy-log") {
+      navigator.clipboard.writeText(benchText(S)).then(
+        () => { ui.copied = "Copié ! Colle-le dans la conversation avec Claude (Ctrl+V)."; draw(); },
+        () => { ui.copied = "La copie a échoué : sélectionne le tableau à la main."; draw(); }
+      );
+    }
     if (act === "listen") listen(1);
     if (act === "slow") listen(SLOW);
     if (act === "prev" || act === "next") {
