@@ -20,7 +20,7 @@ function onMsg(e) {
   if (m.type === "error" && m.id === undefined) return emit({ type: "error", message: m.message });
   const c = cur;
   if (!c || m.id !== c.id) return;
-  if (m.type === "chunk" && m.audio instanceof Float32Array) { c.parts.push(m.audio); play(c, m.audio); }
+  if (m.type === "chunk" && m.audio instanceof Float32Array) { c.parts.push(m.audio); if (!c.silent) play(c, m.audio); }
   else if (m.type === "end") { c.done = true; if (!m.cancelled && c.parts.length) remember(c.key, c.parts); check(c); }
   else if (m.type === "error") finish(c, new Error(m.message));
 }
@@ -75,24 +75,61 @@ function remember(key, parts) {
   while (memo.size > 30) memo.delete(memo.keys().next().value);
 }
 
-// Lit un texte anglais. Se résout à la fin de la lecture (ou si une autre lecture l'interrompt).
-// À appeler pendant un clic : le navigateur n'autorise le son qu'après un geste de l'utilisateur.
-export function say(text, { voice = "af_heart", speed = 1 } = {}) {
-  stopVoice();
-  audioCtx();
+function request(text, voice, speed) {
   const t = String(text || "").trim();
   const v = VOICES.some((x) => x.id === voice) ? voice : "af_heart";
   const sp = Math.min(1.25, Math.max(0.6, Number(speed) || 1));
-  const key = `${v}|${sp}|${t}`;
-  return new Promise((resolve, reject) => {
-    const c = cur = { id: ++seq, key, resolve, reject, parts: [], sources: [], playing: 0, nextAt: 0, done: false, over: false };
-    if (!t) return finish(c, null);
-    const hit = memo.get(key);
-    if (hit) { hit.forEach((a) => play(c, a)); c.done = true; return check(c); }
-    prepareVoice().then(() => {
-      if (!c.over) worker.postMessage({ type: "say", id: c.id, text: t, voice: v, speed: sp });
-    }, (e) => finish(c, e));
-  });
+  return { t, v, sp, key: `${v}|${sp}|${t}` };
+}
+
+function start(r, silent) {
+  let c;
+  c = { id: ++seq, key: r.key, silent, parts: [], sources: [], playing: 0, nextAt: 0, done: false, over: false };
+  c.promise = new Promise((resolve, reject) => { c.resolve = resolve; c.reject = reject; });
+  cur = c;
+  if (!r.t) { finish(c, null); return c; }
+  prepareVoice().then(() => {
+    if (!c.over) worker.postMessage({ type: "say", id: c.id, text: r.t, voice: r.v, speed: r.sp });
+  }, (e) => finish(c, e));
+  return c;
+}
+
+// Lit un texte anglais. Se résout à la fin de la lecture (ou si une autre lecture l'interrompt).
+// À appeler pendant un clic : le navigateur n'autorise le son qu'après un geste de l'utilisateur.
+export function say(text, { voice = "af_heart", speed = 1 } = {}) {
+  audioCtx();
+  const r = request(text, voice, speed);
+  const hit = memo.get(r.key);
+  if (hit) { // déjà préparée : lecture immédiate
+    stopVoice();
+    const c = { id: ++seq, key: r.key, silent: false, parts: hit, sources: [], playing: 0, nextAt: 0, done: true, over: false };
+    c.promise = new Promise((resolve, reject) => { c.resolve = resolve; c.reject = reject; });
+    cur = c;
+    hit.forEach((a) => play(c, a));
+    check(c);
+    return c.promise;
+  }
+  if (cur && !cur.over && cur.silent && cur.key === r.key) { // en cours de préparation : on la rend audible
+    cur.silent = false;
+    cur.parts.forEach((a) => play(cur, a));
+    check(cur);
+    return cur.promise;
+  }
+  stopVoice();
+  return start(r, false).promise;
+}
+
+// Prépare une phrase en arrière-plan, sans la jouer : le clic sur « Écouter » sera immédiat.
+// N'interrompt jamais une lecture en cours.
+export function preload(text, { voice = "af_heart", speed = 1 } = {}) {
+  const r = request(text, voice, speed);
+  if (!r.t || memo.has(r.key)) return Promise.resolve();
+  if (cur && !cur.over) {
+    if (cur.key === r.key) return cur.promise.catch(() => {});
+    if (!cur.silent) return Promise.resolve();
+    stopVoice(); // une autre préparation en cours : on passe à celle-ci
+  }
+  return start(r, true).promise.catch(() => {});
 }
 
 export function stopVoice() {

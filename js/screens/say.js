@@ -5,7 +5,9 @@ import { SENTENCES } from "../content/sentences.js";
 import { Recorder } from "../engine/recorder.js";
 import { prepare, score, onEngine, MODEL_MB } from "../engine/engine.js";
 import { FR_HINT } from "../engine/phonemes.js";
-import { say as speakText, stopVoice, prepareVoice, onVoice, VOICES, VOICE_MB } from "../engine/voice.js";
+import { say as speakText, preload, stopVoice, prepareVoice, onVoice, VOICES, VOICE_MB } from "../engine/voice.js";
+
+const SLOW = 0.7;
 
 const LEVEL_FR = { good: "bien", ok: "presque", bad: "à revoir", skip: "non noté" };
 const STATUS_FR = { good: "bien", ok: "presque", bad: "à revoir" };
@@ -79,6 +81,30 @@ export function mountSay(root, S) {
     ui.playing = true; draw();
     try { await playing; } catch (e) { ui.error = `La lecture a échoué (${e.message}).`; }
     ui.playing = false; draw();
+    warm();
+  }
+
+  // Prépare en arrière-plan la phrase affichée (vitesse normale, puis lente) : le clic sera immédiat.
+  function warm() {
+    if (ui.voice !== "ready" || ui.playing) return;
+    const text = sentence().en, voice = S.voiceId;
+    const still = () => sentence().en === text && S.voiceId === voice && !ui.playing && !ui.busy;
+    preload(text, { voice, speed: 1 }).then(() => { if (still()) preload(text, { voice, speed: SLOW }); });
+  }
+
+  // Voix déjà téléchargée sur cet appareil : on la recharge depuis le cache, puis on prépare la phrase.
+  async function startVoice() {
+    if (ui.voice !== "off") return;
+    ui.voice = "loading"; draw();
+    try {
+      const r = await prepareVoice();
+      ui.voice = "ready";
+      ui.voiceInfo = `Voix prête en ${Math.round(r.ms / 100) / 10} s`;
+    } catch {
+      ui.voice = "off"; // pas grave : elle sera retentée au premier clic sur « Écouter »
+    }
+    draw();
+    warm();
   }
 
   function engineBlock() {
@@ -129,6 +155,7 @@ export function mountSay(root, S) {
       ui.error = `Le moteur n'a pas pu se charger (${e.message}). Vérifie ta connexion puis réessaie.`;
     }
     draw();
+    if (S.voice) startVoice(); // l'un après l'autre : le démarrage reste fluide
   }
 
   async function speak() {
@@ -166,17 +193,18 @@ export function mountSay(root, S) {
       ui.error = `L'analyse a échoué (${e.message}).`;
     }
     ui.busy = ""; draw();
+    warm();
   }
 
   root.addEventListener("click", (e) => {
     const act = e.target.closest("[data-act]")?.dataset.act;
     if (!act || (ui.busy && act !== "stop")) return;
     if (act === "listen") listen(1);
-    if (act === "slow") listen(0.7);
+    if (act === "slow") listen(SLOW);
     if (act === "prev" || act === "next") {
       stopVoice();
       S.sentence = (S.sentence + (act === "next" ? 1 : SENTENCES.length - 1)) % SENTENCES.length;
-      ui.error = ""; persist(); draw();
+      ui.error = ""; persist(); draw(); warm();
     }
     if (act === "prepare") startEngine();
     if (act === "speak") speak();
@@ -186,7 +214,7 @@ export function mountSay(root, S) {
   root.addEventListener("change", (e) => {
     if (e.target.dataset.act !== "voice-pick") return;
     S.voiceId = VOICES.some((v) => v.id === e.target.value) ? e.target.value : "af_heart";
-    persist();
+    persist(); warm();
   });
 
   let lastVoiceDraw = 0;
@@ -204,5 +232,6 @@ export function mountSay(root, S) {
   });
 
   draw();
-  if (S.engine) startEngine(); // déjà téléchargé : on le recharge depuis le cache du navigateur
+  if (S.engine) startEngine(); // déjà téléchargé : on le recharge depuis le cache (puis la voix)
+  else if (S.voice) startVoice();
 }
