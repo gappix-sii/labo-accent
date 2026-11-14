@@ -14,7 +14,7 @@ Livrable : la page « Dis cette phrase », en ligne sur GitHub Pages.
 Fichiers : `ancien/` (ancien code), `package.json`, `tools/serve.mjs`, `index.html`, `js/engine/` (repris de `phonemes.js`, `g2p.js`, `integrity.js`, `sha256.js`, `worker.js`, `audio.js`, `tts.js`, `tts-worker.js`), `js/core/store.js` (neuf, clé `labo.v2`), `js/screens/say.js`, `test/`.
 Critère de fin : `npm test` passe sur le PC de l'utilisateur ; le protocole de la tâche 7 est réussi sur PC et sur Android ; résultats consignés dans PROJET.md.
 Risque principal : le moteur note mal, ou le téléphone ne tient pas ≈ 450 Mo (moteur + voix) → retour au cadrage (modèles espeak multilingues) avant toute autre phase.
-- [ ] Tâche 1 — Installer Node.js LTS (l'utilisateur, depuis nodejs.org) et vérifier `node --version`.
+- [x] Tâche 1 — Installer Node.js LTS et vérifier `node --version` (fait le 2026-11-14 : Node 26.13.1, npm 11.20.0, via winget, binaire signé OpenJS Foundation).
 - [ ] Tâche 2 — Déplacer l'ancien code dans `ancien/` ; créer `package.json` (scripts `start` et `test`) et `tools/serve.mjs` ; `npm start` affiche une page vide.
 - [ ] Tâche 3 — Reprendre `phonemes.js`, `g2p.js`, `integrity.js`, `sha256.js` dans `js/engine/` avec leurs tests Node (score, alignement, liste blanche, SHA-256) ; `npm test` passe.
 - [ ] Tâche 4 — Reprendre `worker.js` et `audio.js` ; écran unique : phrase affichée → enregistrer → résultat son par son + conseils ; dernier résultat sauvegardé et réaffiché au rechargement. Test sur PC en local.
