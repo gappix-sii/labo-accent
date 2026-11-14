@@ -48,6 +48,7 @@ _Mises à jour le 2026-11-14_
 | Interface | JavaScript sans framework, découpé par écran | Aucune dépendance à surveiller, déjà en place | Svelte/React (outillage en plus) |
 | Prononciation | Moteur actuel, à valider en phase 1 | Accent américain, déjà intégré | Modèles espeak multilingues (à envisager si le test échoue) |
 | Dictionnaire et voix | CMU + Kokoro (voix américaines) | Cohérents avec l'accent américain | Britfone + voix britanniques (accent abandonné) |
+| Sons des phrases fixes (leçons, vocabulaire, jeux de rôle) | Fabriqués à l'avance sur PC avec Kokoro, livrés avec l'appli en petits fichiers audio compressés (≈ 10-15 Ko par phrase) ; version lente = même fichier ralenti sans changer la hauteur. Voix Kokoro sur l'appareil gardée seulement pour les textes libres (coach), en option. _Décidé le 2026-11-14._ | Son immédiat dès le 1er lancement, même sur un téléphone modeste ; pas 90 Mo de voix à télécharger ni de calcul sur l'appareil | Fabriquer sur l'appareil (≈ 2 s par phrase sur PC, bien plus sur Android, intenable avec des centaines de phrases) ; voix sur plusieurs cœurs (se bloque) |
 | Conversation libre | Gemini, clé optionnelle | Léger et de bonne qualité | IA locale (≈ 1 Go, lente) |
 | Sauvegarde | Navigateur + transfert par QR code | Pas de serveur, rien hébergé ailleurs | Synchro en ligne (Supabase…) |
 | Amis | Partage par lien, moins de 10 | Pas de serveur | Classement en ligne (V2 au mieux) |

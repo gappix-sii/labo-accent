@@ -32,6 +32,7 @@ Risque principal : le moteur note mal, ou le téléphone ne tient pas ≈ 450 Mo
 
 ## Phase 2 — Parcours et progression
 Objectif : un parcours de leçons de prononciation (contenus recyclés de `content.js` et `basics.js`), avec XP, niveaux, série de jours et objectif quotidien.
+Première tâche (décision du 2026-11-14, voir PROJET.md) : outil qui fabrique à l'avance, sur PC, le son de chaque phrase fixe avec Kokoro et l'écrit en fichiers audio compressés livrés avec l'appli ; l'écran joue ces fichiers (version lente = lecture ralentie sans changer la hauteur). Les 10 phrases de la phase 1 y passent aussi.
 Livrable : écran d'accueil avec le parcours, la série et l'objectif du jour.
 Critère de fin : finir une leçon fait gagner de l'XP et avance la série, visible après rechargement ; tests Node de la progression.
 Risque principal : un format de sauvegarde mal pensé, à refaire plus tard → le fixer ici, avec un numéro de version.
