@@ -1,0 +1,13 @@
+{
+  "name": "labo-accent",
+  "private": true,
+  "type": "module",
+  "description": "Appli web pour apprendre à parler anglais, tout dans le navigateur.",
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "start": "node tools/serve.mjs",
+    "test": "node --test \"test/**/*.test.mjs\""
+  }
+}

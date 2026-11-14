@@ -15,11 +15,11 @@ Fichiers : `ancien/` (ancien code), `package.json`, `tools/serve.mjs`, `index.ht
 Critère de fin : `npm test` passe sur le PC de l'utilisateur ; le protocole de la tâche 7 est réussi sur PC et sur Android ; résultats consignés dans PROJET.md.
 Risque principal : le moteur note mal, ou le téléphone ne tient pas ≈ 450 Mo (moteur + voix) → retour au cadrage (modèles espeak multilingues) avant toute autre phase.
 - [x] Tâche 1 — Installer Node.js LTS et vérifier `node --version` (fait le 2026-11-14 : Node 26.13.1, npm 11.20.0, via winget, binaire signé OpenJS Foundation).
-- [ ] Tâche 2 — Déplacer l'ancien code dans `ancien/` ; créer `package.json` (scripts `start` et `test`) et `tools/serve.mjs` ; `npm start` affiche une page vide.
+- [x] Tâche 2 — Déplacer l'ancien code dans `ancien/` ; créer `package.json` (scripts `start` et `test`) et `tools/serve.mjs` ; `npm start` affiche une page vide. (Fait le 2026-11-14 : 3 tests du serveur passent, page vérifiée dans le navigateur.)
 - [ ] Tâche 3 — Reprendre `phonemes.js`, `g2p.js`, `integrity.js`, `sha256.js` dans `js/engine/` avec leurs tests Node (score, alignement, liste blanche, SHA-256) ; `npm test` passe.
 - [ ] Tâche 4 — Reprendre `worker.js` et `audio.js` ; écran unique : phrase affichée → enregistrer → résultat son par son + conseils ; dernier résultat sauvegardé et réaffiché au rechargement. Test sur PC en local.
 - [ ] Tâche 5 — Reprendre la voix Kokoro (bouton « écouter le modèle ») ; noter le temps de chargement.
-- [ ] Tâche 6 — Basculer GitHub Pages sur `refonte/v1` (l'utilisateur), push avec accord, test sur Android : chargement, mémoire, note.
+- [ ] Tâche 6 — Basculer GitHub Pages sur `refonte/v1` (l'utilisateur), push avec accord, test sur Android : chargement, mémoire, note. Avant le push : (a) un `sw.js` à la racine qui efface le cache et se désinscrit, sinon les navigateurs qui ont déjà ouvert l'ancienne appli continuent de l'afficher ; (b) empêcher l'ancienne appli de tourner depuis `/ancien/` (sinon elle reste en ligne à cette adresse).
 - [ ] Tâche 7 — Protocole du moteur : ~10 phrases, chacune dite (a) au mieux, (b) avec des fautes françaises volontaires (« ze » pour *the*, même son pour *ship/sheep*, h muet…). Réussi si les fautes volontaires sont repérées sur le bon son dans la plupart des cas et si la diction soignée obtient nettement mieux. Consigner les résultats dans PROJET.md et fermer ses questions ouvertes.
 
 ## Phase 2 — Parcours et progression

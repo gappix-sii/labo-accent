@@ -2,8 +2,8 @@
 Fiche projet : PROJET.md (quoi et pourquoi) · Plan : PLAN.md (où on en est)
 
 ## Commandes
-- Lancer : `npm start` (puis ouvrir http://localhost:8000) — à confirmer en phase 1, tâche 2
-- Tests : `npm test`
+- Lancer : `npm start` (puis ouvrir http://localhost:8000 ; Ctrl+C pour arrêter)
+- Tests : `npm test` (lanceur intégré de Node, fichiers `test/**/*.test.mjs`, aucune dépendance)
 
 ## Règles de travail
 - Lire PLAN.md avant toute tâche ; une tâche à la fois.
