@@ -1,6 +1,7 @@
 // Voix naturelle côté page : pilote le worker Kokoro et joue l'audio morceau par morceau dès qu'il est prêt.
 // Garde les dernières phrases en mémoire (réécoute instantanée). Repris de ancien/js/tts.js, simplifié.
 import { makeWorker } from "../core/dom.js";
+import { getClip, putClip } from "./clip-store.js";
 
 export const VOICE_MB = 90; // taille de la voix à télécharger la première fois
 export const VOICES = [
@@ -9,7 +10,10 @@ export const VOICES = [
 ];
 const RATE = 24000, GAP = 0.09;
 
-let worker = null, ready = null, ctx = null, cur = null, seq = 0;
+// job : la phrase que le worker est en train de fabriquer (en silence ou pour la jouer).
+// out : la lecture en cours (une phrase déjà prête en mémoire, ou le job lui-même).
+// Les séparer permet de rejouer une phrase prête sans interrompre la préparation des suivantes.
+let worker = null, ready = null, ctx = null, job = null, out = null, seq = 0;
 const listeners = new Set(), memo = new Map();
 export const onVoice = (fn) => { listeners.add(fn); return () => listeners.delete(fn); };
 const emit = (ev) => listeners.forEach((fn) => fn(ev));
@@ -18,11 +22,14 @@ function onMsg(e) {
   const m = e.data || {};
   if (m.type === "progress" || m.type === "ready") return emit(m);
   if (m.type === "error" && m.id === undefined) return emit({ type: "error", message: m.message });
-  const c = cur;
+  const c = job;
   if (!c || m.id !== c.id) return;
   if (m.type === "chunk" && m.audio instanceof Float32Array) { c.parts.push(m.audio); if (!c.silent) play(c, m.audio); }
-  else if (m.type === "end") { c.done = true; if (!m.cancelled && c.parts.length) remember(c.key, c.parts); check(c); }
-  else if (m.type === "error") finish(c, new Error(m.message));
+  else if (m.type === "end") {
+    c.done = true; job = null; // le worker est libre
+    if (!m.cancelled && c.parts.length) { remember(c.key, c.parts); putClip(c.key, c.parts); }
+    check(c);
+  } else if (m.type === "error") finish(c, new Error(m.message));
 }
 
 // Charge la voix (télécharge le modèle la première fois). Se résout quand elle est prête.
@@ -86,13 +93,37 @@ function check(c) { if (c.done && c.playing <= 0) finish(c, null); }
 function finish(c, err) {
   if (c.over) return;
   c.over = true;
-  if (cur === c) cur = null;
+  if (job === c) job = null;
+  if (out === c) out = null;
   err ? c.reject(err) : c.resolve();
+}
+
+function newReq(key, silent, parts = [], done = false) {
+  const c = { id: ++seq, key, silent, parts, sources: [], playing: 0, nextAt: 0, done, over: false, stats: null };
+  c.promise = new Promise((resolve, reject) => { c.resolve = resolve; c.reject = reject; });
+  return c;
+}
+
+// Abandonne la fabrication en cours dans le worker.
+function cancelJob() {
+  const c = job;
+  if (!c) return;
+  if (worker && !c.done) worker.postMessage({ type: "cancel" });
+  for (const s of c.sources) { s.onended = null; try { s.stop(); } catch { /* déjà fini */ } }
+  finish(c, null);
 }
 
 function remember(key, parts) {
   memo.delete(key); memo.set(key, parts);
-  while (memo.size > 30) memo.delete(memo.keys().next().value);
+  while (memo.size > 60) memo.delete(memo.keys().next().value);
+}
+
+// Phrase prête : en mémoire, sinon gardée sur l'appareil par une session précédente.
+async function ready_(key) {
+  if (memo.has(key)) return memo.get(key);
+  const parts = await getClip(key);
+  if (parts) remember(key, parts);
+  return parts;
 }
 
 function request(text, voice, speed) {
@@ -103,10 +134,9 @@ function request(text, voice, speed) {
 }
 
 function start(r, silent) {
-  let c;
-  c = { id: ++seq, key: r.key, silent, parts: [], sources: [], playing: 0, nextAt: 0, done: false, over: false };
-  c.promise = new Promise((resolve, reject) => { c.resolve = resolve; c.reject = reject; });
-  cur = c;
+  const c = newReq(r.key, silent);
+  job = c;
+  if (!silent) out = c;
   if (!r.t) { finish(c, null); return c; }
   prepareVoice().then(() => {
     if (!c.over) worker.postMessage({ type: "say", id: c.id, text: r.t, voice: r.v, speed: r.sp });
@@ -116,29 +146,29 @@ function start(r, silent) {
 
 // Lit un texte anglais. Se résout à la fin de la lecture (ou si une autre lecture l'interrompt).
 // À appeler pendant un clic : le navigateur n'autorise le son qu'après un geste de l'utilisateur.
-export function say(text, { voice = "af_heart", speed = 1 } = {}) {
+export async function say(text, { voice = "af_heart", speed = 1 } = {}) {
   const t0 = performance.now(), fresh = !ctx;
-  audioCtx();
+  audioCtx(); // tout de suite, pendant le clic
   const r = request(text, voice, speed);
-  const hit = memo.get(r.key);
   const st = (prepared) => (stats = { t0, prepared, freshAudio: fresh, firstMs: null, outMs: null, state: "" });
-  if (hit) { // déjà préparée : lecture immédiate
-    stopVoice();
-    const c = { id: ++seq, key: r.key, silent: false, parts: hit, sources: [], playing: 0, nextAt: 0, done: true, over: false, stats: st("oui") };
-    c.promise = new Promise((resolve, reject) => { c.resolve = resolve; c.reject = reject; });
-    cur = c;
+  stopVoice(); // arrête la lecture en cours, sans toucher à une préparation en arrière-plan
+  const hit = await ready_(r.key);
+  if (hit) { // déjà prête : lecture immédiate, pendant que le worker continue de préparer la suite
+    const c = newReq(r.key, false, hit, true);
+    c.stats = st("oui");
+    out = c;
     hit.forEach((a) => play(c, a));
     check(c);
     return c.promise;
   }
-  if (cur && !cur.over && cur.silent && cur.key === r.key) { // en cours de préparation : on la rend audible
-    cur.silent = false;
-    cur.stats = st("en cours");
-    cur.parts.forEach((a) => play(cur, a));
-    check(cur);
-    return cur.promise;
+  if (job && job.silent && job.key === r.key) { // en cours de préparation : on la rend audible
+    const c = job;
+    c.silent = false; c.stats = st("en cours"); out = c;
+    c.parts.forEach((a) => play(c, a));
+    check(c);
+    return c.promise;
   }
-  stopVoice();
+  cancelJob(); // une autre phrase était en préparation : celle qu'on veut entendre passe d'abord
   const c = start(r, false);
   c.stats = st("non");
   return c.promise;
@@ -149,18 +179,27 @@ export function say(text, { voice = "af_heart", speed = 1 } = {}) {
 export function preload(text, { voice = "af_heart", speed = 1 } = {}) {
   const r = request(text, voice, speed);
   if (!r.t || memo.has(r.key)) return Promise.resolve();
-  if (cur && !cur.over) {
-    if (cur.key === r.key) return cur.promise.catch(() => {});
-    if (!cur.silent) return Promise.resolve();
-    stopVoice(); // une autre préparation en cours : on passe à celle-ci
+  return getClip(r.key).then((parts) => {
+    if (parts) { remember(r.key, parts); return; } // gardée sur l'appareil : rien à fabriquer
+    return fabricate(r);
+  });
+}
+
+function fabricate(r) {
+  if (memo.has(r.key)) return Promise.resolve();
+  if (job) {
+    if (job.key === r.key) return job.promise.catch(() => {});
+    if (!job.silent) return Promise.resolve(); // une phrase demandée à l'écoute passe avant
+    cancelJob(); // une autre préparation en cours : on passe à celle-ci
   }
   return start(r, true).promise.catch(() => {});
 }
 
+// Arrête la lecture en cours. Une préparation silencieuse en arrière-plan continue.
 export function stopVoice() {
-  const c = cur;
+  const c = out;
   if (!c) return;
   for (const s of c.sources) { s.onended = null; try { s.stop(); } catch { /* déjà fini */ } }
-  if (worker && !c.done) worker.postMessage({ type: "cancel" });
+  if (job === c && worker && !c.done) worker.postMessage({ type: "cancel" });
   finish(c, null);
 }

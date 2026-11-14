@@ -46,8 +46,8 @@ export function mountSay(root, S) {
     }
     return html`<div class="voice">
       <div class="row start">
-        <button class="btn soft" data-act="listen" type="button">${ui.playing ? "⏹ Stop" : "🔊 Écouter"}</button>
-        <button class="btn soft" data-act="slow" type="button">🐢 Lentement</button>
+        <button class="btn soft" data-act="listen" type="button">${ui.playing === 1 ? "⏹ Stop" : "🔊 Écouter"}</button>
+        <button class="btn soft" data-act="slow" type="button">${ui.playing === SLOW ? "⏹ Stop" : "🐢 Lentement"}</button>
         <label class="small">Voix
           <select data-act="voice-pick">${VOICES.map((v) => v.id === S.voiceId
             ? html`<option value="${v.id}" selected>${v.name}</option>`
@@ -61,7 +61,7 @@ export function mountSay(root, S) {
 
   // Doit être lancé directement par le clic : le navigateur n'autorise le son qu'après un geste.
   async function listen(speed) {
-    if (ui.playing) { stopVoice(); return; }
+    if (ui.playing === speed) { stopVoice(); return; } // même bouton pendant la lecture : stop
     ui.error = "";
     const firstTime = ui.voice !== "ready";
     const playing = speakText(sentence().en, { voice: S.voiceId, speed });
@@ -78,8 +78,9 @@ export function mountSay(root, S) {
         return draw();
       }
     }
-    ui.playing = true; draw();
+    ui.playing = speed; draw();
     try { await playing; } catch (e) { ui.error = `La lecture a échoué (${e.message}).`; }
+    if (ui.playing !== speed) return; // une autre lecture a pris le relais
     const st = lastStats();
     if (st && st.firstMs !== null) {
       ui.voiceInfo = `Dernière écoute : son lancé ${st.firstMs} ms après le clic · phrase préparée : ${st.prepared}`
@@ -89,27 +90,37 @@ export function mountSay(root, S) {
     warm();
   }
 
-  // Prépare en arrière-plan la phrase affichée (vitesse normale, puis lente) : le clic sera immédiat.
+  // Prépare en arrière-plan, l'une après l'autre : la phrase affichée (normale puis lente), puis toutes
+  // les autres (normales, puis lentes). Chaque phrase n'est fabriquée qu'une fois puis gardée sur l'appareil :
+  // après ce premier passage (≈ 2 s par phrase), tout clic est immédiat, même d'une session à l'autre.
+  // Se résout quand la phrase affichée est prête à vitesse normale.
   function warm() {
-    if (ui.voice !== "ready" || ui.playing) return;
-    const text = sentence().en, voice = S.voiceId;
-    const still = () => sentence().en === text && S.voiceId === voice && !ui.playing && !ui.busy;
-    preload(text, { voice, speed: 1 }).then(() => { if (still()) preload(text, { voice, speed: SLOW }); });
+    if (ui.voice !== "ready") return Promise.resolve();
+    const i = S.sentence % SENTENCES.length, voice = S.voiceId, n = SENTENCES.length;
+    const others = Array.from({ length: n - 1 }, (_, k) => (i + 1 + k) % n);
+    const queue = [[i, 1], [i, SLOW], ...others.map((k) => [k, 1]), ...others.map((k) => [k, SLOW])];
+    const still = () => S.sentence % n === i && S.voiceId === voice && !ui.busy;
+    const first = preload(SENTENCES[i].en, { voice, speed: 1 });
+    queue.slice(1).reduce((p, [k, speed]) => p.then(() => still() && preload(SENTENCES[k].en, { voice, speed })), first);
+    return first;
   }
 
   // Voix déjà téléchargée sur cet appareil : on la recharge depuis le cache, puis on prépare la phrase.
   async function startVoice() {
     if (ui.voice !== "off") return;
     ui.voice = "loading"; draw();
+    const t0 = performance.now();
     try {
-      const r = await prepareVoice();
+      await prepareVoice();
       ui.voice = "ready";
-      ui.voiceInfo = `Voix prête en ${Math.round(r.ms / 100) / 10} s`;
+      ui.voiceInfo = "Préparation de la phrase…";
+      draw();
+      await warm(); // « Voix prête » seulement quand la phrase affichée l'est vraiment
+      if (ui.voiceInfo === "Préparation de la phrase…") ui.voiceInfo = `Voix prête en ${Math.round((performance.now() - t0) / 100) / 10} s`;
     } catch {
       ui.voice = "off"; // pas grave : elle sera retentée au premier clic sur « Écouter »
     }
     draw();
-    warm();
   }
 
   function engineBlock() {
