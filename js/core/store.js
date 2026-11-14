@@ -7,9 +7,10 @@ export const STORE_KEY = "labo.v2";
 export const VERSION = 1;
 const LEVELS = new Set(["good", "ok", "bad", "skip"]);
 const STATUSES = new Set(["good", "ok", "bad"]);
+const VOICE_IDS = new Set(["af_heart", "am_michael"]);
 
 export function defaults() {
-  return { version: VERSION, sentence: 0, engine: false, last: null };
+  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", last: null };
 }
 
 const text = (v, max) => (typeof v === "string" ? v.slice(0, max) : "");
@@ -58,6 +59,8 @@ export function sanitize(raw) {
   if (!raw || typeof raw !== "object" || raw.version !== VERSION) return S;
   S.sentence = int(raw.sentence, 0, 10000, 0);
   S.engine = raw.engine === true; // le moteur a déjà été téléchargé sur cet appareil
+  S.voice = raw.voice === true; // la voix aussi
+  S.voiceId = VOICE_IDS.has(raw.voiceId) ? raw.voiceId : "af_heart";
   S.last = cleanResult(raw.last);
   return S;
 }

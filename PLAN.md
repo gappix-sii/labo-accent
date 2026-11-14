@@ -21,6 +21,10 @@ Risque principal : le moteur note mal, ou le téléphone ne tient pas ≈ 450 Mo
   - Fait le 2026-11-14 : code écrit, 33 tests verts ; vrai modèle chargé et analyse de bout en bout vérifiée dans le navigateur intégré (4 cœurs, 0,3 s par analyse) ; résultat relu après rechargement.
   - Validé par l'utilisateur le 2026-11-14 dans Chrome sur PC : note au vrai micro, résultat relu après rechargement, moteur rechargé sans nouveau téléchargement.
 - [ ] Tâche 5 — Reprendre la voix Kokoro (bouton « écouter le modèle ») ; noter le temps de chargement.
+  - Fait le 2026-11-14 : boutons « Écouter » et « Lentement », choix Heart / Michael, voix téléchargée au 1er clic (≈ 90 Mo).
+  - Mesures sur PC (navigateur intégré) : voix prête en 2,1 s, 1re lecture d'une phrase courte ≈ 2 s avant le son, relecture immédiate ; moteur prêt en 3,3 s, analyse de 2 s d'audio en 0,9 s.
+  - Trouvé : en multi-cœurs, le moteur et la voix se bloquaient parfois à l'initialisation, sans erreur. Les deux tournent désormais sur 1 cœur (fiable, analyse 3 × plus lente mais < 1 s).
+  - **Reste (utilisateur)** : écouter la voix dans Chrome et vérifier que le moteur démarre toujours.
 - [ ] Tâche 6 — Basculer GitHub Pages sur `refonte/v1` (l'utilisateur), push avec accord, test sur Android : chargement, mémoire, note. Avant le push : (a) un `sw.js` à la racine qui efface le cache et se désinscrit, sinon les navigateurs qui ont déjà ouvert l'ancienne appli continuent de l'afficher ; (b) empêcher l'ancienne appli de tourner depuis `/ancien/` (sinon elle reste en ligne à cette adresse).
 - [ ] Tâche 7 — Protocole du moteur : ~10 phrases, chacune dite (a) au mieux, (b) avec des fautes françaises volontaires (« ze » pour *the*, même son pour *ship/sheep*, h muet…). Réussi si les fautes volontaires sont repérées sur le bon son dans la plupart des cas et si la diction soignée obtient nettement mieux. Consigner les résultats dans PROJET.md et fermer ses questions ouvertes.
 

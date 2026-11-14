@@ -38,7 +38,7 @@ const scored = { result: res, tips: tipsFor(res) };
 test("un résultat enregistré se relit à l'identique", () => {
   const st = memory();
   const S = defaults();
-  S.sentence = 3; S.engine = true; S.last = summarize(s0, scored, 1763000000000);
+  S.sentence = 3; S.engine = true; S.voice = true; S.voiceId = "am_michael"; S.last = summarize(s0, scored, 1763000000000);
   assert.ok(save(S, st));
   assert.ok(st.m.has(STORE_KEY));
   const back = load(st);
@@ -55,11 +55,13 @@ test("une sauvegarde absente, abîmée ou trafiquée ne casse rien", () => {
   assert.deepEqual(sanitize("n'importe quoi"), defaults());
   assert.deepEqual(sanitize({ version: 999, sentence: 2 }), defaults(), "version inconnue ignorée");
   const t = sanitize({
-    version: 1, sentence: -4, engine: "oui",
+    version: 1, sentence: -4, engine: "oui", voice: 1, voiceId: "../../evil",
     last: { sentence: "x".repeat(5000), score: 1e9, words: [{ display: 5, level: "<script>", phones: [{ p: "θθθθθθ", status: "?" }] }], tips: "nope" }
   });
   assert.equal(t.sentence, 0);
   assert.equal(t.engine, false);
+  assert.equal(t.voice, false);
+  assert.equal(t.voiceId, "af_heart", "voix inconnue remplacée");
   assert.equal(t.last.sentence.length, 200);
   assert.equal(t.last.score, 0);
   assert.equal(t.last.words[0].level, "skip");
@@ -84,7 +86,10 @@ test("les bibliothèques copiées n'ont pas été modifiées", () => {
     "vendor/transformers.min.js": "8b5a3171f8876bab2b1820a7d65eb87628e3d30bb5ea85b9dd398e76eb34decb",
     "vendor/ort-wasm-simd-threaded.asyncify.mjs": "0966b6105cd936744498aa60df7a22cbd47af3374dbc64a9ab561c08a71e3611",
     "vendor/ort-wasm-simd-threaded.asyncify.wasm": "49871f5a4409519797e127440868a6d1923339d9185907f301a5b2a1d90af082",
-    "data/cmudict.json": "ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b"
+    "data/cmudict.json": "ca8e790ec08466b37153a35576e2ac3ede1dfe3b1a16ccdb7605deef4add654b",
+    // Voix Kokoro (Apache 2.0), github.com/hexgrad/kokoro (kokoro.js/voices, commit dfb907a)
+    "data/voices/af_heart.bin": "d583ccff3cdca2f7fae535cb998ac07e9fcb90f09737b9a41fa2734ec44a8f0b",
+    "data/voices/am_michael.bin": "1d1f21dd8da39c30705cd4c75d039d265e9bc4a2a93ed09bc9e1b1225eb95ba1"
   };
   for (const [f, h] of Object.entries(expected)) {
     assert.equal(createHash("sha256").update(readFileSync(new URL("../" + f, import.meta.url))).digest("hex"), h, f);

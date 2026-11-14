@@ -5,12 +5,13 @@ import { SENTENCES } from "../content/sentences.js";
 import { Recorder } from "../engine/recorder.js";
 import { prepare, score, onEngine, MODEL_MB } from "../engine/engine.js";
 import { FR_HINT } from "../engine/phonemes.js";
+import { say as speakText, stopVoice, prepareVoice, onVoice, VOICES, VOICE_MB } from "../engine/voice.js";
 
 const LEVEL_FR = { good: "bien", ok: "presque", bad: "à revoir", skip: "non noté" };
 const STATUS_FR = { good: "bien", ok: "presque", bad: "à revoir" };
 
 export function mountSay(root, S) {
-  const ui = { engine: S.engine ? "loading" : "off", progress: null, busy: "", error: "" };
+  const ui = { engine: S.engine ? "loading" : "off", progress: null, busy: "", error: "", voice: "off", voiceProgress: null, voiceInfo: "", playing: false };
   let rec = null;
 
   const sentence = () => SENTENCES[S.sentence % SENTENCES.length];
@@ -23,6 +24,7 @@ export function mountSay(root, S) {
         <p class="muted small">Phrase ${S.sentence % SENTENCES.length + 1} / ${SENTENCES.length} · ${s.focus}</p>
         <h1 class="sentence" lang="en">${s.en}</h1>
         <p class="muted">${s.fr}</p>
+        ${voiceBlock()}
         <div class="row">
           <button class="btn ghost" data-act="prev" type="button">← Précédente</button>
           <button class="btn ghost" data-act="next" type="button">Suivante →</button>
@@ -32,6 +34,51 @@ export function mountSay(root, S) {
       ${ui.error ? html`<p class="card error" role="alert">${ui.error}</p>` : ""}
       <section class="card" aria-live="polite">${last ? resultBlock(last) : html`<p class="muted">Pas encore de résultat pour cette phrase.</p>`}</section>
     `);
+  }
+
+  function voiceBlock() {
+    if (ui.voice === "loading") {
+      const p = ui.voiceProgress;
+      const pct = p && p.total ? Math.round((p.loaded / p.total) * 100) : null;
+      return html`<div class="voice"><p>Préparation de la voix…${pct !== null ? ` ${pct} %` : ""}</p><progress max="100" value="${pct ?? 0}"></progress></div>`;
+    }
+    return html`<div class="voice">
+      <div class="row start">
+        <button class="btn soft" data-act="listen" type="button">${ui.playing ? "⏹ Stop" : "🔊 Écouter"}</button>
+        <button class="btn soft" data-act="slow" type="button">🐢 Lentement</button>
+        <label class="small">Voix
+          <select data-act="voice-pick">${VOICES.map((v) => v.id === S.voiceId
+            ? html`<option value="${v.id}" selected>${v.name}</option>`
+            : html`<option value="${v.id}">${v.name}</option>`)}</select>
+        </label>
+      </div>
+      ${!S.voice ? html`<p class="muted small">Première écoute : environ ${VOICE_MB} Mo à télécharger, une seule fois. La voix fonctionne ensuite sur ton appareil.</p>` : ""}
+      ${ui.voiceInfo ? html`<p class="muted small">${ui.voiceInfo}</p>` : ""}
+    </div>`;
+  }
+
+  // Doit être lancé directement par le clic : le navigateur n'autorise le son qu'après un geste.
+  async function listen(speed) {
+    if (ui.playing) { stopVoice(); return; }
+    ui.error = "";
+    const firstTime = ui.voice !== "ready";
+    const playing = speakText(sentence().en, { voice: S.voiceId, speed });
+    playing.catch(() => {}); // l'erreur est traitée plus bas
+    if (firstTime) {
+      ui.voice = "loading"; draw();
+      try {
+        const r = await prepareVoice();
+        ui.voiceInfo = `Voix prête en ${Math.round(r.ms / 100) / 10} s`;
+        ui.voice = "ready"; S.voice = true; persist();
+      } catch (e) {
+        ui.voice = "off";
+        ui.error = `La voix n'a pas pu se charger (${e.message}). Vérifie ta connexion puis réessaie.`;
+        return draw();
+      }
+    }
+    ui.playing = true; draw();
+    try { await playing; } catch (e) { ui.error = `La lecture a échoué (${e.message}).`; }
+    ui.playing = false; draw();
   }
 
   function engineBlock() {
@@ -86,6 +133,7 @@ export function mountSay(root, S) {
 
   async function speak() {
     ui.error = "";
+    stopVoice(); // on ne s'enregistre pas par-dessus la voix
     rec = new Recorder({
       onLevel: (v) => { const m = $("#level", root); if (m) m.value = v; },
       onAutoStop: () => finish()
@@ -123,13 +171,29 @@ export function mountSay(root, S) {
   root.addEventListener("click", (e) => {
     const act = e.target.closest("[data-act]")?.dataset.act;
     if (!act || (ui.busy && act !== "stop")) return;
+    if (act === "listen") listen(1);
+    if (act === "slow") listen(0.7);
     if (act === "prev" || act === "next") {
+      stopVoice();
       S.sentence = (S.sentence + (act === "next" ? 1 : SENTENCES.length - 1)) % SENTENCES.length;
       ui.error = ""; persist(); draw();
     }
     if (act === "prepare") startEngine();
     if (act === "speak") speak();
     if (act === "stop") finish();
+  });
+
+  root.addEventListener("change", (e) => {
+    if (e.target.dataset.act !== "voice-pick") return;
+    S.voiceId = VOICES.some((v) => v.id === e.target.value) ? e.target.value : "af_heart";
+    persist();
+  });
+
+  let lastVoiceDraw = 0;
+  onVoice((ev) => {
+    if (ev.type !== "progress" || ui.voice !== "loading") return;
+    ui.voiceProgress = ev;
+    if (performance.now() - lastVoiceDraw > 250) { lastVoiceDraw = performance.now(); draw(); }
   });
 
   let lastDraw = 0; // la progression arrive très souvent : on redessine au plus 4 fois par seconde

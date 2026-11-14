@@ -20,9 +20,10 @@ function configure() {
   env.useBrowserCache = true; // téléchargé une seule fois, puis gardé par le navigateur
   env.backends.onnx.wasm.wasmPaths = new URL("../../vendor/", import.meta.url).href;
   env.backends.onnx.wasm.proxy = false;
-  const threads = self.crossOriginIsolated ? Math.max(1, Math.min(4, (navigator.hardwareConcurrency || 2) - 1)) : 1;
-  env.backends.onnx.wasm.numThreads = threads;
-  return threads;
+  // Un seul cœur : en multi-cœurs, l'initialisation se bloque parfois sans erreur (constaté le 2026-11-14,
+  // surtout quand la voix se charge en même temps). Sur un cœur, c'est fiable et assez rapide.
+  env.backends.onnx.wasm.numThreads = 1;
+  return 1;
 }
 
 async function load() {
