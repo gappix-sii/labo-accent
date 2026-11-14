@@ -5,7 +5,7 @@ import { SENTENCES } from "../content/sentences.js";
 import { Recorder } from "../engine/recorder.js";
 import { prepare, score, onEngine, MODEL_MB } from "../engine/engine.js";
 import { FR_HINT } from "../engine/phonemes.js";
-import { say as speakText, preload, stopVoice, prepareVoice, onVoice, VOICES, VOICE_MB } from "../engine/voice.js";
+import { say as speakText, preload, stopVoice, prepareVoice, onVoice, unlockAudio, lastStats, VOICES, VOICE_MB } from "../engine/voice.js";
 
 const SLOW = 0.7;
 
@@ -80,6 +80,11 @@ export function mountSay(root, S) {
     }
     ui.playing = true; draw();
     try { await playing; } catch (e) { ui.error = `La lecture a échoué (${e.message}).`; }
+    const st = lastStats();
+    if (st && st.firstMs !== null) {
+      ui.voiceInfo = `Dernière écoute : son lancé ${st.firstMs} ms après le clic · phrase préparée : ${st.prepared}`
+        + ` · délai de la sortie audio : ${st.outMs} ms${st.freshAudio ? " · sortie audio ouverte à ce clic" : ""}`;
+    }
     ui.playing = false; draw();
     warm();
   }
@@ -210,6 +215,9 @@ export function mountSay(root, S) {
     if (act === "speak") speak();
     if (act === "stop") finish();
   });
+
+  // Premier geste sur la page : on ouvre la sortie audio tout de suite (le navigateur l'exige après un geste).
+  document.addEventListener("pointerdown", () => { if (S.voice) unlockAudio(); }, { once: true });
 
   root.addEventListener("change", (e) => {
     if (e.target.dataset.act !== "voice-pick") return;

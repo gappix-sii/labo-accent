@@ -45,10 +45,25 @@ export function prepareVoice() {
 }
 
 function audioCtx() {
-  if (!ctx) ctx = new AudioContext();
+  if (!ctx) {
+    ctx = new AudioContext({ latencyHint: "interactive" });
+    // Un son nul joué en continu garde la sortie audio ouverte : sinon Windows (et surtout un casque
+    // Bluetooth) la met en veille, et le réveil ajoute un délai avant chaque lecture.
+    const keep = ctx.createConstantSource(), mute = ctx.createGain();
+    keep.offset.value = 0; mute.gain.value = 0;
+    keep.connect(mute).connect(ctx.destination);
+    keep.start();
+  }
   if (ctx.state === "suspended") ctx.resume().catch(() => {});
   return ctx;
 }
+
+// À appeler au premier geste de l'utilisateur sur la page : la sortie audio est prête avant le 1er clic sur « Écouter ».
+export function unlockAudio() { audioCtx(); }
+
+// Mesure de la dernière lecture (affichée sous les boutons, pour trouver l'origine d'un délai).
+let stats = null;
+export const lastStats = () => stats;
 
 function play(c, audio) {
   if (!audio.length) return;
@@ -57,6 +72,11 @@ function play(c, audio) {
   const src = ctx.createBufferSource();
   src.buffer = buf; src.connect(ctx.destination);
   const at = Math.max(ctx.currentTime + 0.03, c.nextAt);
+  if (c.stats && c.stats.firstMs === null) {
+    c.stats.firstMs = Math.round(performance.now() - c.stats.t0 + (at - ctx.currentTime) * 1000);
+    c.stats.outMs = Math.round(((ctx.baseLatency || 0) + (ctx.outputLatency || 0)) * 1000);
+    c.stats.state = ctx.state;
+  }
   src.start(at);
   c.nextAt = at + buf.duration + GAP;
   c.playing++; c.sources.push(src);
@@ -97,12 +117,14 @@ function start(r, silent) {
 // Lit un texte anglais. Se résout à la fin de la lecture (ou si une autre lecture l'interrompt).
 // À appeler pendant un clic : le navigateur n'autorise le son qu'après un geste de l'utilisateur.
 export function say(text, { voice = "af_heart", speed = 1 } = {}) {
+  const t0 = performance.now(), fresh = !ctx;
   audioCtx();
   const r = request(text, voice, speed);
   const hit = memo.get(r.key);
+  const st = (prepared) => (stats = { t0, prepared, freshAudio: fresh, firstMs: null, outMs: null, state: "" });
   if (hit) { // déjà préparée : lecture immédiate
     stopVoice();
-    const c = { id: ++seq, key: r.key, silent: false, parts: hit, sources: [], playing: 0, nextAt: 0, done: true, over: false };
+    const c = { id: ++seq, key: r.key, silent: false, parts: hit, sources: [], playing: 0, nextAt: 0, done: true, over: false, stats: st("oui") };
     c.promise = new Promise((resolve, reject) => { c.resolve = resolve; c.reject = reject; });
     cur = c;
     hit.forEach((a) => play(c, a));
@@ -111,12 +133,15 @@ export function say(text, { voice = "af_heart", speed = 1 } = {}) {
   }
   if (cur && !cur.over && cur.silent && cur.key === r.key) { // en cours de préparation : on la rend audible
     cur.silent = false;
+    cur.stats = st("en cours");
     cur.parts.forEach((a) => play(cur, a));
     check(cur);
     return cur.promise;
   }
   stopVoice();
-  return start(r, false).promise;
+  const c = start(r, false);
+  c.stats = st("non");
+  return c.promise;
 }
 
 // Prépare une phrase en arrière-plan, sans la jouer : le clic sur « Écouter » sera immédiat.
