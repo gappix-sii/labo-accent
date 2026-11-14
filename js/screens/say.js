@@ -5,7 +5,7 @@ import { SENTENCES } from "../content/sentences.js";
 import { Recorder } from "../engine/recorder.js";
 import { prepare, score, onEngine, MODEL_MB } from "../engine/engine.js";
 import { FR_HINT } from "../engine/phonemes.js";
-import { say as speakText, preload, stopVoice, prepareVoice, onVoice, unlockAudio, lastStats, VOICES, VOICE_MB } from "../engine/voice.js";
+import { say as speakText, preload, isReady, stopVoice, prepareVoice, onVoice, unlockAudio, lastStats, VOICES, VOICE_MB } from "../engine/voice.js";
 
 const SLOW = 0.7;
 
@@ -55,8 +55,16 @@ export function mountSay(root, S) {
         </label>
       </div>
       ${!S.voice ? html`<p class="muted small">Première écoute : environ ${VOICE_MB} Mo à télécharger, une seule fois. La voix fonctionne ensuite sur ton appareil.</p>` : ""}
+      ${ui.voice === "ready" ? prepLine() : ""}
       ${ui.voiceInfo ? html`<p class="muted small">${ui.voiceInfo}</p>` : ""}
     </div>`;
+  }
+
+  function prepLine() {
+    const c = readyCount(), total = SENTENCES.length * 2;
+    return c >= total
+      ? html`<p class="muted small">✓ Les ${total} lectures sont prêtes : le son part tout de suite.</p>`
+      : html`<p class="muted small">Préparation des lectures : ${c} / ${total} prêtes (≈ 2 s chacune, une seule fois). ${isReady(sentence().en, { voice: S.voiceId, speed: 1 }) ? "Celle-ci est prête." : "Celle-ci n'est pas encore prête."}</p>`;
   }
 
   // Doit être lancé directement par le clic : le navigateur n'autorise le son qu'après un geste.
@@ -100,9 +108,20 @@ export function mountSay(root, S) {
     const others = Array.from({ length: n - 1 }, (_, k) => (i + 1 + k) % n);
     const queue = [[i, 1], [i, SLOW], ...others.map((k) => [k, 1]), ...others.map((k) => [k, SLOW])];
     const still = () => S.sentence % n === i && S.voiceId === voice && !ui.busy;
-    const first = preload(SENTENCES[i].en, { voice, speed: 1 });
-    queue.slice(1).reduce((p, [k, speed]) => p.then(() => still() && preload(SENTENCES[k].en, { voice, speed })), first);
+    const step = (p) => p.then(progress);
+    const first = step(preload(SENTENCES[i].en, { voice, speed: 1 }));
+    queue.slice(1).reduce((p, [k, speed]) => p.then(() => still() && step(preload(SENTENCES[k].en, { voice, speed }))), first);
     return first;
+  }
+
+  // Combien de phrases (normales et lentes) sont prêtes à être jouées tout de suite.
+  function readyCount() {
+    return SENTENCES.reduce((a, s) => a + isReady(s.en, { voice: S.voiceId, speed: 1 }) + isReady(s.en, { voice: S.voiceId, speed: SLOW }), 0);
+  }
+  let shownCount = -1;
+  function progress() {
+    const c = readyCount();
+    if (c !== shownCount) { shownCount = c; draw(); }
   }
 
   // Voix déjà téléchargée sur cet appareil : on la recharge depuis le cache, puis on prépare la phrase.

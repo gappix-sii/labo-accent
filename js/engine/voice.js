@@ -174,6 +174,9 @@ export async function say(text, { voice = "af_heart", speed = 1 } = {}) {
   return c.promise;
 }
 
+// La phrase est-elle prête à être jouée tout de suite ?
+export function isReady(text, { voice = "af_heart", speed = 1 } = {}) { return memo.has(request(text, voice, speed).key); }
+
 // Prépare une phrase en arrière-plan, sans la jouer : le clic sur « Écouter » sera immédiat.
 // N'interrompt jamais une lecture en cours.
 export function preload(text, { voice = "af_heart", speed = 1 } = {}) {
