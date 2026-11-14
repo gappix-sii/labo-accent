@@ -12,7 +12,7 @@ Organisation :
 Objectif : un écran qui écoute une phrase, la note son par son avec le **vrai modèle**, enregistre le résultat et le réaffiche après rechargement, sur PC et sur Android.
 Livrable : la page « Dis cette phrase », en ligne sur GitHub Pages.
 Fichiers : `ancien/` (ancien code), `package.json`, `tools/serve.mjs`, `index.html`, `js/engine/` (repris de `phonemes.js`, `g2p.js`, `integrity.js`, `sha256.js`, `worker.js`, `audio.js`, `tts.js`, `tts-worker.js`), `js/core/store.js` (neuf, clé `labo.v2`), `js/screens/say.js`, `test/`.
-Critère de fin : `npm test` passe sur le PC de l'utilisateur ; le protocole de la tâche 7 est réussi sur PC et sur Android ; résultats consignés dans PROJET.md.
+Critère de fin : `npm test` passe sur le PC de l'utilisateur ; le protocole de la tâche 7 est réussi dans Chrome sur PC ; résultats consignés dans PROJET.md. (Android reporté à la demande de l'utilisateur le 2026-11-14 : voir tâche 6.)
 Risque principal : le moteur note mal, ou le téléphone ne tient pas ≈ 450 Mo (moteur + voix) → retour au cadrage (modèles espeak multilingues) avant toute autre phase.
 - [x] Tâche 1 — Installer Node.js LTS et vérifier `node --version` (fait le 2026-11-14 : Node 26.13.1, npm 11.20.0, via winget, binaire signé OpenJS Foundation).
 - [x] Tâche 2 — Déplacer l'ancien code dans `ancien/` ; créer `package.json` (scripts `start` et `test`) et `tools/serve.mjs` ; `npm start` affiche une page vide. (Fait le 2026-11-14 : 3 tests du serveur passent, page vérifiée dans le navigateur.)
@@ -27,7 +27,7 @@ Risque principal : le moteur note mal, ou le téléphone ne tient pas ≈ 450 Mo
   - Retour de l'utilisateur : voix très bien, mais délai trop long au clic. Corrigé : la phrase affichée est préparée en arrière-plan (vitesse normale puis lente) ; au démarrage, le moteur puis la voix se rechargent automatiquement. Mesuré : ≈ 3,4 s d'attente avant, son immédiat après.
   - 2e retour : encore un délai (mesuré chez l'utilisateur : 1 465 ms, phrase « en cours » de préparation). Cause : sur 1 cœur, fabriquer une phrase prend ≈ 2 s, plus que le rythme des clics. Corrigé : chaque phrase n'est fabriquée qu'une fois puis gardée sur l'appareil (IndexedDB, `js/engine/clip-store.js`) ; au 1er lancement, les 20 versions (10 phrases × normale/lente) sont fabriquées en arrière-plan en ≈ 50 s ; ensuite, tout clic part en 30-50 ms, même après fermeture de l'appli. La sortie audio reste ouverte (évite le réveil d'un casque Bluetooth). Une ligne « Dernière écoute » affiche la mesure du délai.
   - Validé par l'utilisateur le 2026-11-14 dans Chrome : son immédiat une fois les 20 lectures prêtes. Limite signalée : ≈ 2 s de préparation par phrase sur l'appareil, intenable avec des centaines de phrases (et plus lent sur Android) → à trancher avant la phase 2.
-- [ ] Tâche 6 — Basculer GitHub Pages sur `refonte/v1` (l'utilisateur), push avec accord, test sur Android : chargement, mémoire, note. Avant le push : (a) un `sw.js` à la racine qui efface le cache et se désinscrit, sinon les navigateurs qui ont déjà ouvert l'ancienne appli continuent de l'afficher ; (b) empêcher l'ancienne appli de tourner depuis `/ancien/` (sinon elle reste en ligne à cette adresse).
+- [ ] Tâche 6 — **Reportée** (2026-11-14, choix de l'utilisateur : tester dans le navigateur du PC pour l'instant ; à refaire avant la publication de la phase 7, la question ouverte de PROJET.md sur la mémoire du téléphone reste ouverte). Basculer GitHub Pages sur `refonte/v1` (l'utilisateur), push avec accord, test sur Android : chargement, mémoire, note. Avant le push : (a) un `sw.js` à la racine qui efface le cache et se désinscrit, sinon les navigateurs qui ont déjà ouvert l'ancienne appli continuent de l'afficher ; (b) empêcher l'ancienne appli de tourner depuis `/ancien/` (sinon elle reste en ligne à cette adresse).
 - [ ] Tâche 7 — Protocole du moteur : ~10 phrases, chacune dite (a) au mieux, (b) avec des fautes françaises volontaires (« ze » pour *the*, même son pour *ship/sheep*, h muet…). Réussi si les fautes volontaires sont repérées sur le bon son dans la plupart des cas et si la diction soignée obtient nettement mieux. Consigner les résultats dans PROJET.md et fermer ses questions ouvertes.
 
 ## Phase 2 — Parcours et progression
@@ -64,7 +64,7 @@ Risque principal : lecture de QR code absente de Chrome sur Windows → le lien 
 ## Phase 7 — Hors ligne, sécurité et publication V1
 Objectif : service worker (cache hors ligne), CSP stricte, `tools/build-sw.mjs`, README et SECURITY à jour ; suppression de `ancien/` ; fusion dans `main` et Pages remis sur `main`.
 Livrable : la V1 installable, publiée.
-Critère de fin : l'appli s'installe et fonctionne en mode avion sur Android ; relecture complète par une session neuve (`/code-review`).
+Critère de fin : la tâche 6 de la phase 1 (test sur Android) est faite ; l'appli s'installe et fonctionne en mode avion sur Android ; relecture complète par une session neuve (`/code-review`).
 Risque principal : un fichier oublié dans le cache hors ligne → `build-sw.mjs` vérifie que chaque module importé est listé.
 
 **Phase la plus risquée : la phase 1.** Le moteur réel n'a jamais été testé ; s'il échoue, la solution de prononciation change. Elle passe donc en premier.
