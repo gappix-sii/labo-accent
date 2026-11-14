@@ -51,7 +51,10 @@ _Mises à jour le 2026-11-14_
 | Conversation libre | Gemini, clé optionnelle | Léger et de bonne qualité | IA locale (≈ 1 Go, lente) |
 | Sauvegarde | Navigateur + transfert par QR code | Pas de serveur, rien hébergé ailleurs | Synchro en ligne (Supabase…) |
 | Amis | Partage par lien, moins de 10 | Pas de serveur | Classement en ligne (V2 au mieux) |
-| Tests | package.json avec outils de test aux versions figées, lançables d'une commande | Pouvoir vérifier chez moi | Tests dans l'espace de Claude seulement |
+| Tests | package.json + lanceur intégré de Node (`node --test`), sans dépendance, lançables d'une commande | Pouvoir vérifier chez moi, rien à surveiller | Tests dans l'espace de Claude seulement ; Vitest/Playwright (dépendances) |
+| Test sur Android | GitHub Pages sert la branche `refonte/v1` pendant la refonte (push avec accord à chaque test) | Le micro exige https ; le plus simple au quotidien | Câble USB (débogage à activer) |
+| Ancienne appli | Retirée du site pendant la refonte ; code rangé dans `ancien/` puis supprimé en fin de V1 | Éviter que les amis utilisent une version fragile | La laisser en ligne sur `main` |
+| Ancienne progression | Repartir de zéro (nouvelle clé de sauvegarde) | L'ancienne appli a surtout servi d'essai | Importer l'ancienne sauvegarde |
 
 ### Questions ouvertes
 - Le moteur actuel note-t-il correctement avec le vrai modèle, sur PC et sur Android ? → test au début de la phase 1.
