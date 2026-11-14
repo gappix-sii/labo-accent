@@ -79,7 +79,9 @@ async function say(msg, my) {
   const v = await voice(String(msg.voice || ""));
   const speed = Math.min(1.25, Math.max(0.6, Number(msg.speed) || 1));
   let seq = 0;
-  for (const ph of chunks(dict, String(msg.text || "").slice(0, 4000))) {
+  // msg.ipa : sons donnés directement (banc de test : prononciations fautives injectées), sinon le texte.
+  const parts = typeof msg.ipa === "string" ? [msg.ipa.slice(0, 500)] : chunks(dict, String(msg.text || "").slice(0, 4000));
+  for (const ph of parts) {
     if (my !== gen) return postMessage({ type: "end", id: msg.id, cancelled: true });
     const audio = await synth(ph, v, speed);
     if (my !== gen) return postMessage({ type: "end", id: msg.id, cancelled: true });
