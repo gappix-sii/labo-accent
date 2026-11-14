@@ -1,0 +1,10 @@
+# Fins de ligne : toujours LF, y compris sur Windows.
+# Sinon git convertit en CRLF à l'extraction, les empreintes SHA-256 des fichiers
+# (bibliothèques copiées, liste du service worker) ne correspondent plus à ce que GitHub sert.
+* text=auto eol=lf
+
+*.wasm binary
+*.bin binary
+*.onnx binary
+*.png binary
+*.woff2 binary
