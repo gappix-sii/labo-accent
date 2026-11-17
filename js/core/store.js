@@ -5,6 +5,7 @@
 
 import { newProgress, sanitizeProgress } from "./progress.js";
 import { newSrs, sanitizeSrs } from "./srs.js";
+import { newListening, sanitizeListening } from "./listening.js";
 
 export const STORE_KEY = "labo.v2";
 export const VERSION = 1;
@@ -15,9 +16,10 @@ const KINDS = new Set(["soigné", "fautes"]);
 const LOG_MAX = 100;
 
 export function defaults() {
-  // progress : XP, niveau, série, leçons (js/core/progress.js) ; srs : révision du vocabulaire (js/core/srs.js).
-  // Chacun a son propre numéro de version « v ».
-  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", last: null, kind: "soigné", log: [], progress: newProgress(), srs: newSrs() };
+  // progress : XP, niveau, série, leçons (js/core/progress.js) ; srs : révision du vocabulaire (js/core/srs.js) ;
+  // listening : paires d'écoute ratées (js/core/listening.js). Chacun a son propre numéro de version « v ».
+  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", last: null, kind: "soigné", log: [],
+    progress: newProgress(), srs: newSrs(), listening: newListening() };
 }
 
 const text = (v, max) => (typeof v === "string" ? v.slice(0, max) : "");
@@ -76,6 +78,7 @@ export function sanitize(raw) {
   }));
   S.progress = sanitizeProgress(raw.progress);
   S.srs = sanitizeSrs(raw.srs);
+  S.listening = sanitizeListening(raw.listening);
   return S;
 }
 

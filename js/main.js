@@ -1,11 +1,12 @@
 // Point d'entrée de l'appli : choisit l'écran selon l'adresse.
-//   #accueil (par défaut) · #lecon/<id> · #vocab · #banc (banc de test du moteur)
+//   #accueil (par défaut) · #lecon/<id> · #vocab · #ecoute · #banc (banc de test du moteur)
 import { $ } from "./core/dom.js";
 import { load, onSaveError } from "./core/store.js";
 import { mountHome } from "./screens/home.js";
 import { mountLesson } from "./screens/lesson.js";
 import { mountSay } from "./screens/say.js";
 import { mountVocab } from "./screens/vocab.js";
+import { mountListening } from "./screens/listening.js";
 
 // Écran à afficher pour une adresse donnée. Exportée pour les tests.
 export function route(hash) {
@@ -14,6 +15,7 @@ export function route(hash) {
   if (m) return { screen: "lesson", id: m[1] };
   if (h === "banc") return { screen: "bench" };
   if (h === "vocab") return { screen: "vocab" };
+  if (h === "ecoute") return { screen: "listening" };
   return { screen: "home" };
 }
 
@@ -26,7 +28,7 @@ function start() {
     const r = route(location.hash), root = document.createElement("div");
     root.className = "screen";
     view.replaceChildren(root); // nouvel élément : les écouteurs de l'écran précédent partent avec lui
-    const screens = { lesson: () => mountLesson(root, S, r.id), bench: () => mountSay(root, S), vocab: () => mountVocab(root, S), home: () => mountHome(root, S) };
+    const screens = { lesson: () => mountLesson(root, S, r.id), bench: () => mountSay(root, S), vocab: () => mountVocab(root, S), listening: () => mountListening(root, S), home: () => mountHome(root, S) };
     cleanup = screens[r.screen]();
     window.scrollTo(0, 0);
   };

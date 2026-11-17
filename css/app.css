@@ -75,3 +75,10 @@ table.bench { border-collapse: collapse; width: 100%; font-size: .9rem; }
 /* Vocabulaire */
 .answer { font-size: 1.4rem; margin: 4px 0; color: var(--accent); }
 details summary { cursor: pointer; }
+/* Écoute : deux choix côte à côte */
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.btn.choice { display: grid; gap: 2px; padding: 16px 8px; font-size: 1.3rem; background: transparent; color: var(--text); border: 2px solid var(--line); }
+.btn.choice .small { font-weight: 400; color: var(--muted); }
+.btn.choice.right { border-color: var(--good); background: color-mix(in srgb, var(--good) 15%, transparent); }
+.btn.choice.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 15%, transparent); }
+.btn.choice:disabled { cursor: default; }
