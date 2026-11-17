@@ -73,10 +73,12 @@ export function recordItem(P, id, item, size, score, now = Date.now()) {
   L.best[item] = Math.max(L.best[item] || 0, s);
   const passed = s >= PASS;
   let xp = 0, lessonDone = false;
+  // Numéros hors de la leçon (contenu raccourci depuis, sauvegarde abîmée) : oubliés, ils ne comptent pas.
+  L.run = L.run.filter((i) => i < size);
   if (passed && !L.run.includes(item)) {
     L.run.push(item);
     xp += XP_ITEM;
-    if (L.run.length >= size) { // tous les éléments réussis dans ce passage
+    if (Array.from({ length: size }, (_, i) => i).every((i) => L.run.includes(i))) { // tous réussis dans ce passage
       xp += XP_LESSON; L.done++; L.run = []; lessonDone = true;
     }
   }

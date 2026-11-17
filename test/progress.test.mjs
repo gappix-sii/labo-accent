@@ -5,7 +5,7 @@ import {
   newProgress, recordItem, levelOf, levelCost, streakNow, todayXp, setGoal, unlocked, dayKey, sanitizeProgress,
   PASS, XP_ITEM, XP_LESSON, DEFAULT_GOAL
 } from "../js/core/progress.js";
-import { defaults, sanitize, load, save } from "../js/core/store.js";
+import { defaults, sanitize, load, save, onSaveError } from "../js/core/store.js";
 import { LESSONS } from "../js/content/lessons.js";
 
 const at = (d, h = 12, m = 0) => new Date(2026, 10, d, h, m).getTime(); // novembre 2026, heure locale
@@ -98,6 +98,28 @@ test("sauvegarde : la progression survit à un rechargement", () => {
   const back = load(storage);
   assert.deepEqual(back.progress, S.progress);
   assert.equal(streakNow(back.progress, at(17)), 1);
+});
+
+test("bonus de fin de leçon seulement quand chaque élément est réussi (relecture phase 2, constat 3)", () => {
+  // passage gardé avec des numéros qui n'existent plus (leçon raccourcie, ou sauvegarde abîmée)
+  const P = sanitizeProgress({ v: 1, lessons: { "s-h": { best: [], run: [4, 5, 6, 7], done: 0 } } });
+  assert.deepEqual(recordItem(P, "s-h", 0, 4, 90, at(17)), { passed: true, xp: XP_ITEM, lessonDone: false });
+  assert.deepEqual(P.lessons["s-h"].run, [0], "les numéros hors de la leçon sont oubliés");
+  recordItem(P, "s-h", 1, 4, 90, at(17));
+  recordItem(P, "s-h", 2, 4, 90, at(17));
+  assert.equal(recordItem(P, "s-h", 3, 4, 90, at(17)).lessonDone, true);
+});
+
+test("sauvegarde impossible : les écrans sont prévenus (relecture phase 2, constat 4)", () => {
+  const full = { getItem: () => null, setItem: () => { throw new Error("QuotaExceededError"); } };
+  let warned = null;
+  const off = onSaveError((e) => { warned = e.message; });
+  assert.equal(save(defaults(), full), false);
+  assert.equal(warned, "QuotaExceededError");
+  off();
+  warned = null;
+  save(defaults(), full);
+  assert.equal(warned, null, "désabonné");
 });
 
 test("sauvegarde abîmée ou trafiquée : nettoyée sans planter", () => {

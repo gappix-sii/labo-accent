@@ -2,7 +2,7 @@
 // Un élément est réussi à 70 ou plus ; la leçon est finie quand tous le sont (règles : js/core/progress.js).
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
-import { recordItem, PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";
+import { recordItem, unlocked, PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";
 import { LESSONS, lessonById } from "../content/lessons.js";
 import { practice, resultBlock } from "./practice.js";
 import { listenControls } from "./listen.js";
@@ -15,9 +15,10 @@ export function firstToDo(L, size) {
 }
 
 export function mountLesson(root, S, id) {
-  const lesson = lessonById(id);
-  if (!lesson) { location.hash = "#accueil"; return () => {}; }
-  const P = S.progress, size = lesson.items.length;
+  const lesson = lessonById(id), P = S.progress;
+  // Leçon inconnue ou encore verrouillée (adresse tapée à la main) : retour au parcours.
+  if (!lesson || !unlocked(P, LESSONS.map((l) => l.id), LESSONS.indexOf(lesson))) { location.hash = "#accueil"; return () => {}; }
+  const size = lesson.items.length;
   const state = () => (Object.hasOwn(P.lessons, id) ? P.lessons[id] : null);
   const ui = { item: firstToDo(state(), size), last: null, gained: 0, feedback: "", finished: false };
   const item = () => lesson.items[ui.item];
@@ -81,7 +82,7 @@ export function mountLesson(root, S, id) {
 
   function goTo(i) {
     voice.stop();
-    ui.item = (i + size) % size; ui.last = null; ui.feedback = "";
+    ui.item = (i + size) % size; ui.last = null; ui.feedback = ""; ui.finished = false;
     mic.clearError(); draw(); voice.warm();
   }
 

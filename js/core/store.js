@@ -90,6 +90,12 @@ export function load(storage = globalThis.localStorage) {
   try { return sanitize(JSON.parse(storage.getItem(STORE_KEY) || "null")); } catch { return defaults(); }
 }
 
+// Échec d'enregistrement (navigation privée, stockage plein ou bloqué) : les écrans abonnés sont prévenus,
+// pour que l'utilisateur ne croie pas sa progression gardée alors qu'elle disparaîtra au rechargement.
+const saveErrorListeners = new Set();
+export const onSaveError = (fn) => { saveErrorListeners.add(fn); return () => saveErrorListeners.delete(fn); };
+
 export function save(S, storage = globalThis.localStorage) {
-  try { storage.setItem(STORE_KEY, JSON.stringify(S)); return true; } catch { return false; } // stockage plein ou bloqué
+  try { storage.setItem(STORE_KEY, JSON.stringify(S)); return true; }
+  catch (e) { saveErrorListeners.forEach((fn) => fn(e)); return false; }
 }

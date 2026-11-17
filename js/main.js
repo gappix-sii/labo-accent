@@ -1,7 +1,7 @@
 // Point d'entrée de l'appli : choisit l'écran selon l'adresse.
 //   #accueil (par défaut) · #lecon/<id> · #banc (banc de test du moteur)
 import { $ } from "./core/dom.js";
-import { load } from "./core/store.js";
+import { load, onSaveError } from "./core/store.js";
 import { mountHome } from "./screens/home.js";
 import { mountLesson } from "./screens/lesson.js";
 import { mountSay } from "./screens/say.js";
@@ -28,6 +28,14 @@ function start() {
     window.scrollTo(0, 0);
   };
   window.addEventListener("hashchange", show);
+  // Sauvegarde impossible : un bandeau reste affiché au-dessus de tous les écrans.
+  onSaveError(() => {
+    if ($("#save-error")) return;
+    const p = document.createElement("p");
+    p.id = "save-error"; p.className = "card error"; p.setAttribute("role", "alert");
+    p.textContent = "Ta progression ne peut pas être enregistrée (navigation privée, ou stockage du navigateur plein ou bloqué). Elle sera perdue en fermant la page.";
+    view.before(p);
+  });
   show();
 }
 
