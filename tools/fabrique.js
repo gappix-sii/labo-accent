@@ -5,15 +5,10 @@
 // une prononciation corrigée donne un nouveau fichier, jamais un ancien son resservi.
 import { chunks } from "../js/engine/g2p.js";
 import { MODEL_ID, REVISION, VOICE_IDS, RATE, GAP } from "../js/engine/voice-model.js";
-import { SENTENCES } from "../js/content/sentences.js";
 import { muxOggOpus, readOgg } from "./ogg-opus.mjs";
+import { fixedTexts } from "../js/content/fixed.js";
 
 const BITRATE = 32000; // Opus à 32 kbit/s : voix nette, ≈ 4 Ko par seconde
-
-// Toutes les phrases fixes livrées avec l'appli (les leçons s'ajouteront ici, tâche 4).
-export function fixedTexts() {
-  return [...new Set(SENTENCES.map((s) => s.en))];
-}
 
 const $ = (id) => document.getElementById(id);
 const status = (t) => { $("status").textContent = t; };

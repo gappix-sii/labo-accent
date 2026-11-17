@@ -3,6 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { SENTENCES } from "../js/content/sentences.js";
+import { fixedTexts } from "../js/content/fixed.js";
 import { fileFor, VOICES } from "../js/engine/clips.js";
 import { REVISION, VOICE_IDS } from "../js/engine/voice-model.js";
 import { readOgg } from "../tools/ogg-opus.mjs";
@@ -16,9 +17,11 @@ test("la liste des sons correspond à la voix actuelle", () => {
 });
 
 test("chaque phrase fixe a un fichier Ogg valide, dans chaque voix", () => {
-  for (const v of VOICE_IDS) for (const s of SENTENCES) {
-    const file = fileFor(index, s.en, v);
-    assert.ok(file, `son manquant : ${v} · ${s.en}`);
+  const texts = fixedTexts();
+  assert.ok(texts.length > SENTENCES.length);
+  for (const v of VOICE_IDS) for (const text of texts) {
+    const file = fileFor(index, text, v);
+    assert.ok(file, `son manquant : ${v} · ${text} (relancer npm run fabrique)`);
     assert.ok(existsSync(new URL(file, dir)), `fichier absent : ${file}`);
     const pages = readOgg(new Uint8Array(readFileSync(new URL(file, dir)))); // CRC vérifiés
     assert.equal(pages.at(-1).type, 4, file);

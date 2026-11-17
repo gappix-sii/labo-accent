@@ -64,6 +64,1170 @@
     "ipa": "ɡˈʊd fˈuːd ɪz ɡˈʊd fɔːɹ juː.",
     "ms": 2025,
     "bytes": 7130
+   },
+   "hello": {
+    "file": "af_heart-466287f11198b663.ogg",
+    "ipa": "həlˈoʊ",
+    "ms": 1325,
+    "bytes": 4129
+   },
+   "happy": {
+    "file": "af_heart-9d70149a5990ecb1.ogg",
+    "ipa": "hˈæpi",
+    "ms": 1425,
+    "bytes": 4446
+   },
+   "house": {
+    "file": "af_heart-b1aa5408b9efa956.ogg",
+    "ipa": "hˈaʊs",
+    "ms": 1300,
+    "bytes": 4056
+   },
+   "hungry": {
+    "file": "af_heart-0717eb05f4a76398.ogg",
+    "ipa": "hˈʌŋɡɹi",
+    "ms": 1400,
+    "bytes": 4429
+   },
+   "How are you?": {
+    "file": "af_heart-60c078386c219346.ogg",
+    "ipa": "hˈaʊ ɑːɹ juː?",
+    "ms": 1550,
+    "bytes": 5152
+   },
+   "He has a huge house.": {
+    "file": "af_heart-760d9dd3472745d6.ogg",
+    "ipa": "hiː hæz ə hjˈuːdʒ hˈaʊs.",
+    "ms": 1825,
+    "bytes": 6354
+   },
+   "How was your day?": {
+    "file": "af_heart-2b114721253cb65a.ogg",
+    "ipa": "hˈaʊ wʌz jʊɹ dˈeɪ?",
+    "ms": 1675,
+    "bytes": 5709
+   },
+   "I miss you so much.": {
+    "file": "af_heart-904f7dc55d74846d.ogg",
+    "ipa": "aɪ mˈɪs juː sˈoʊ mˈʌtʃ.",
+    "ms": 1825,
+    "bytes": 6343
+   },
+   "What do you want to eat tonight?": {
+    "file": "af_heart-dbc11ac6b94823bc.ogg",
+    "ipa": "wˈʌt duː juː wˈɑːnt tə ˈiːt tənˈaɪt?",
+    "ms": 2050,
+    "bytes": 7371
+   },
+   "I'm really happy with you.": {
+    "file": "af_heart-0b07f7da529b2613.ogg",
+    "ipa": "ˈaɪm ɹˈɪli hˈæpi wɪð juː.",
+    "ms": 2100,
+    "bytes": 7363
+   },
+   "Can you help me with my English?": {
+    "file": "af_heart-e440558df201583e.ogg",
+    "ipa": "kæn juː hˈɛlp miː wɪð maɪ ˈɪŋɡlɪʃ?",
+    "ms": 2200,
+    "bytes": 7795
+   },
+   "she": {
+    "file": "af_heart-c710ae1553f20c13.ogg",
+    "ipa": "ʃiː",
+    "ms": 1350,
+    "bytes": 4042
+   },
+   "shop": {
+    "file": "af_heart-43ffd74a825d898b.ogg",
+    "ipa": "ʃˈɑːp",
+    "ms": 1275,
+    "bytes": 3956
+   },
+   "wish": {
+    "file": "af_heart-7dc26f3eab8e43ee.ogg",
+    "ipa": "wˈɪʃ",
+    "ms": 1250,
+    "bytes": 3823
+   },
+   "station": {
+    "file": "af_heart-c457317717a75e52.ogg",
+    "ipa": "stˈeɪʃən",
+    "ms": 1475,
+    "bytes": 4731
+   },
+   "She should push the shopping cart.": {
+    "file": "af_heart-612d8b44406becf9.ogg",
+    "ipa": "ʃiː ʃʊd pˈʊʃ ðə ʃˈɑːpɪŋ kˈɑːɹt.",
+    "ms": 2225,
+    "bytes": 7944
+   },
+   "I wish you a nice vacation.": {
+    "file": "af_heart-048acd847ee70004.ogg",
+    "ipa": "aɪ wˈɪʃ juː ə nˈaɪs veɪkˈeɪʃən.",
+    "ms": 2250,
+    "bytes": 7970
+   },
+   "Let's watch a movie together.": {
+    "file": "af_heart-548280a386074a50.ogg",
+    "ipa": "lˈɛts wˈɑːtʃ ə mˈuːvi təɡˈɛðɚ.",
+    "ms": 2200,
+    "bytes": 7867
+   },
+   "I'm looking forward to the weekend.": {
+    "file": "af_heart-40614ac1388e8e40.ogg",
+    "ipa": "ˈaɪm lˈʊkɪŋ fˈɔːɹwɚd tə ðə wˈiːkˌɛnd.",
+    "ms": 2600,
+    "bytes": 9420
+   },
+   "Thank you for being so patient.": {
+    "file": "af_heart-1db0672fc7cb74ee.ogg",
+    "ipa": "θˈæŋk juː fɔːɹ bˈiːɪŋ sˈoʊ pˈeɪʃənt.",
+    "ms": 2300,
+    "bytes": 8209
+   },
+   "I think we should go out tonight.": {
+    "file": "af_heart-f7a4a3c4f99d7a2e.ogg",
+    "ipa": "aɪ θˈɪŋk wiː ʃʊd ɡˈoʊ ˈaʊt tənˈaɪt.",
+    "ms": 2200,
+    "bytes": 7940
+   },
+   "Sorry, I didn't mean that.": {
+    "file": "af_heart-1a70f39da6556a6f.ogg",
+    "ipa": "sˈɑːɹi, aɪ dˈɪdənt mˈiːn ðˈæt.",
+    "ms": 2075,
+    "bytes": 7458
+   },
+   "day": {
+    "file": "af_heart-a1d9c78f2567bd8d.ogg",
+    "ipa": "dˈeɪ",
+    "ms": 1300,
+    "bytes": 4005
+   },
+   "name": {
+    "file": "af_heart-794de662b6b4c3ed.ogg",
+    "ipa": "nˈeɪm",
+    "ms": 1375,
+    "bytes": 4275
+   },
+   "wait": {
+    "file": "af_heart-ba5766774b6aaa39.ogg",
+    "ipa": "wˈeɪt",
+    "ms": 1275,
+    "bytes": 4053
+   },
+   "great": {
+    "file": "af_heart-fc6b21c22188cc3a.ogg",
+    "ipa": "ɡɹˈeɪt",
+    "ms": 1350,
+    "bytes": 4280
+   },
+   "Wait for me at the gate.": {
+    "file": "af_heart-88853ad883c4c1c3.ogg",
+    "ipa": "wˈeɪt fɔːɹ miː æt ðə ɡˈeɪt.",
+    "ms": 1900,
+    "bytes": 6667
+   },
+   "Have a great day.": {
+    "file": "af_heart-d5be5bffb6318f08.ogg",
+    "ipa": "hæv ə ɡɹˈeɪt dˈeɪ.",
+    "ms": 1675,
+    "bytes": 5778
+   },
+   "I'd like to check in, please.": {
+    "file": "af_heart-35db478b93e0eb53.ogg",
+    "ipa": "ˈaɪd lˈaɪk tə tʃˈɛk ɪn, plˈiːz.",
+    "ms": 2250,
+    "bytes": 8087
+   },
+   "Where is the nearest train station?": {
+    "file": "af_heart-927b872e9fdcd9c9.ogg",
+    "ipa": "wˈɛɹ ɪz ðə nˈɪɹəst tɹˈeɪn stˈeɪʃən?",
+    "ms": 2375,
+    "bytes": 8501
+   },
+   "I have a reservation for two nights.": {
+    "file": "af_heart-2f7a10547d2f4c2e.ogg",
+    "ipa": "aɪ hæv ə ɹˌɛzɚvˈeɪʃən fɔːɹ tˈuː nˈaɪts.",
+    "ms": 2575,
+    "bytes": 9300
+   },
+   "Is breakfast included?": {
+    "file": "af_heart-e27434af292278ef.ogg",
+    "ipa": "ɪz bɹˈɛkfəst ˌɪnklˈuːdəd?",
+    "ms": 2025,
+    "bytes": 7114
+   },
+   "A table for two, please.": {
+    "file": "af_heart-df179521ae353913.ogg",
+    "ipa": "ə tˈeɪbəl fɔːɹ tˈuː, plˈiːz.",
+    "ms": 2175,
+    "bytes": 7756
+   },
+   "is": {
+    "file": "af_heart-247491cf99a492d7.ogg",
+    "ipa": "ɪz",
+    "ms": 1200,
+    "bytes": 3624
+   },
+   "was": {
+    "file": "af_heart-22d23b34606dec9d.ogg",
+    "ipa": "wʌz",
+    "ms": 1350,
+    "bytes": 4157
+   },
+   "easy": {
+    "file": "af_heart-8f7170d49de008a9.ogg",
+    "ipa": "ˈiːzi",
+    "ms": 1450,
+    "bytes": 4431
+   },
+   "busy": {
+    "file": "af_heart-e125b8743bacdcda.ogg",
+    "ipa": "bˈɪzi",
+    "ms": 1425,
+    "bytes": 4390
+   },
+   "These shoes are always cheap.": {
+    "file": "af_heart-90ecbb9605acdcc2.ogg",
+    "ipa": "ðˈiːz ʃˈuːz ɑːɹ ˈɔːlwˌeɪz tʃˈiːp.",
+    "ms": 2125,
+    "bytes": 7496
+   },
+   "Is it easy to use?": {
+    "file": "af_heart-d4d5a133ad383bcd.ogg",
+    "ipa": "ɪz ɪt ˈiːzi tə jˈuːz?",
+    "ms": 1975,
+    "bytes": 6822
+   },
+   "Could we have the bill, please?": {
+    "file": "af_heart-7040917d780a51af.ogg",
+    "ipa": "kʊd wiː hæv ðə bˈɪl, plˈiːz?",
+    "ms": 2075,
+    "bytes": 7347
+   },
+   "How much is a ticket to the city center?": {
+    "file": "af_heart-bfb7838beb1d304c.ogg",
+    "ipa": "hˈaʊ mˈʌtʃ ɪz ə tˈɪkət tə ðə sˈɪɾi sˈɛntɚ?",
+    "ms": 2825,
+    "bytes": 10149
+   },
+   "My flight was delayed by three hours.": {
+    "file": "af_heart-9a434e57c53161f4.ogg",
+    "ipa": "maɪ flˈaɪt wʌz dɪlˈeɪd baɪ θɹˈiː ˈaʊɚz.",
+    "ms": 2750,
+    "bytes": 10078
+   },
+   "Excuse me, I think I'm lost.": {
+    "file": "af_heart-b7fe46e660a4776a.ogg",
+    "ipa": "ɪkskjˈuːs miː, aɪ θˈɪŋk ˈaɪm lˈɔːst.",
+    "ms": 2525,
+    "bytes": 9028
+   },
+   "Can I pay by card?": {
+    "file": "af_heart-382e1c417a22a3ed.ogg",
+    "ipa": "kæn aɪ pˈeɪ baɪ kˈɑːɹd?",
+    "ms": 1950,
+    "bytes": 6739
+   },
+   "go": {
+    "file": "af_heart-1769b0f57174129d.ogg",
+    "ipa": "ɡˈoʊ",
+    "ms": 1275,
+    "bytes": 3940
+   },
+   "no": {
+    "file": "af_heart-23be65413e4a8764.ogg",
+    "ipa": "nˈoʊ",
+    "ms": 1300,
+    "bytes": 4059
+   },
+   "home": {
+    "file": "af_heart-8303f59838044a19.ogg",
+    "ipa": "hˈoʊm",
+    "ms": 1325,
+    "bytes": 4033
+   },
+   "phone": {
+    "file": "af_heart-0dfecb985af1e7c9.ogg",
+    "ipa": "fˈoʊn",
+    "ms": 1400,
+    "bytes": 4354
+   },
+   "I don't know.": {
+    "file": "af_heart-583bb3f3a07eba21.ogg",
+    "ipa": "aɪ dˈoʊnt nˈoʊ.",
+    "ms": 1450,
+    "bytes": 4870
+   },
+   "Go home and call me on the phone.": {
+    "file": "af_heart-68923fd0f547604b.ogg",
+    "ipa": "ɡˈoʊ hˈoʊm ænd kˈɔːl miː ɑːn ðə fˈoʊn.",
+    "ms": 2475,
+    "bytes": 8868
+   },
+   "Hello, nice to meet you.": {
+    "file": "af_heart-72312bd5e5e2ca7e.ogg",
+    "ipa": "həlˈoʊ, nˈaɪs tə mˈiːt juː.",
+    "ms": 2075,
+    "bytes": 7294
+   },
+   "I'm from France and I live in a small town.": {
+    "file": "af_heart-74ebf1f3e5c3f293.ogg",
+    "ipa": "ˈaɪm fɹʌm fɹˈæns ænd aɪ lˈɪv ɪn ə smˈɔːl tˈaʊn.",
+    "ms": 3150,
+    "bytes": 11519
+   },
+   "I work with computers and networks.": {
+    "file": "af_heart-b61d68ccf945a113.ogg",
+    "ipa": "aɪ wˈɜːk wɪð kəmpjˈuːɾɚz ænd nˈɛtwˌɜːks.",
+    "ms": 2550,
+    "bytes": 9253
+   },
+   "I'm learning English every day.": {
+    "file": "af_heart-7d856209bee191b6.ogg",
+    "ipa": "ˈaɪm lˈɜːnɪŋ ˈɪŋɡlɪʃ ˈɛvɚɹi dˈeɪ.",
+    "ms": 2375,
+    "bytes": 8476
+   },
+   "Could you speak more slowly, please?": {
+    "file": "af_heart-ac47335d2dd061df.ogg",
+    "ipa": "kʊd juː spˈiːk mˈɔːɹ slˈoʊli, plˈiːz?",
+    "ms": 2450,
+    "bytes": 8807
+   },
+   "very": {
+    "file": "af_heart-cb7d74b020119b42.ogg",
+    "ipa": "vˈɛɹi",
+    "ms": 1400,
+    "bytes": 4307
+   },
+   "visit": {
+    "file": "af_heart-d627b0f8423ab2db.ogg",
+    "ipa": "vˈɪzɪt",
+    "ms": 1325,
+    "bytes": 4182
+   },
+   "voice": {
+    "file": "af_heart-2bfc2deed2822cd9.ogg",
+    "ipa": "vˈɔɪs",
+    "ms": 1350,
+    "bytes": 4250
+   },
+   "never": {
+    "file": "af_heart-a6b6ed2a879a1a9c.ogg",
+    "ipa": "nˈɛvɚ",
+    "ms": 1400,
+    "bytes": 4334
+   },
+   "I have a very good view.": {
+    "file": "af_heart-44b9d8110a3c12ef.ogg",
+    "ipa": "aɪ hæv ə vˈɛɹi ɡˈʊd vjˈuː.",
+    "ms": 1975,
+    "bytes": 6930
+   },
+   "We visited Venice in November.": {
+    "file": "af_heart-1a05b35c1799cd92.ogg",
+    "ipa": "wiː vˈɪzɪɾᵻd vˈɛnəs ɪn noʊvˈɛmbɚ.",
+    "ms": 2475,
+    "bytes": 8841
+   },
+   "What do you do in your free time?": {
+    "file": "af_heart-e003596d84fee19c.ogg",
+    "ipa": "wˈʌt duː juː duː ɪn jʊɹ fɹˈiː tˈaɪm?",
+    "ms": 2300,
+    "bytes": 8297
+   },
+   "I'm hungry, let's have lunch.": {
+    "file": "af_heart-44b8663b0aea41d0.ogg",
+    "ipa": "ˈaɪm hˈʌŋɡɹi, lˈɛts hæv lˈʌntʃ.",
+    "ms": 2300,
+    "bytes": 8256
+   },
+   "It's very hot today.": {
+    "file": "af_heart-5b8a7f9c3be7f92b.ogg",
+    "ipa": "ˈɪts vˈɛɹi hˈɑːt tədˈeɪ.",
+    "ms": 1950,
+    "bytes": 6755
+   },
+   "I usually get up at seven.": {
+    "file": "af_heart-237deee5e5cb5b2c.ogg",
+    "ipa": "aɪ jˈuːʒəwəli ɡˈɛt ˈʌp æt sˈɛvən.",
+    "ms": 2175,
+    "bytes": 7784
+   },
+   "See you tomorrow!": {
+    "file": "af_heart-10be86bb8dd5753c.ogg",
+    "ipa": "sˈiː juː təmˈɑːɹˌoʊ!",
+    "ms": 1650,
+    "bytes": 5622
+   },
+   "red": {
+    "file": "af_heart-7e84fdb502bde21a.ogg",
+    "ipa": "ɹˈɛd",
+    "ms": 1200,
+    "bytes": 3751
+   },
+   "right": {
+    "file": "af_heart-604c3b02755b98d2.ogg",
+    "ipa": "ɹˈaɪt",
+    "ms": 1275,
+    "bytes": 4069
+   },
+   "really": {
+    "file": "af_heart-8929e1fac2a2bd92.ogg",
+    "ipa": "ɹˈɪli",
+    "ms": 1400,
+    "bytes": 4346
+   },
+   "The red car is really fast.": {
+    "file": "af_heart-f3ec994522ad1793.ogg",
+    "ipa": "ðə ɹˈɛd kˈɑːɹ ɪz ɹˈɪli fˈæst.",
+    "ms": 2325,
+    "bytes": 8256
+   },
+   "I'm ready for the trip.": {
+    "file": "af_heart-3af714543e86d17b.ogg",
+    "ipa": "ˈaɪm ɹˈɛdi fɔːɹ ðə tɹˈɪp.",
+    "ms": 1900,
+    "bytes": 6583
+   },
+   "I worked late yesterday.": {
+    "file": "af_heart-6f6429181ccf1f88.ogg",
+    "ipa": "aɪ wˈɜːkt lˈeɪt jˈɛstɚdˌeɪ.",
+    "ms": 2025,
+    "bytes": 7166
+   },
+   "We watched a great movie.": {
+    "file": "af_heart-f4c2e8426caacb86.ogg",
+    "ipa": "wiː wˈɑːtʃt ə ɡɹˈeɪt mˈuːvi.",
+    "ms": 1975,
+    "bytes": 6950
+   },
+   "She called me this morning.": {
+    "file": "af_heart-8c38a315179ddfdc.ogg",
+    "ipa": "ʃiː kˈɔːld miː ðˈɪs mˈɔːɹnɪŋ.",
+    "ms": 1900,
+    "bytes": 6679
+   },
+   "I needed a break.": {
+    "file": "af_heart-31e033653a264f76.ogg",
+    "ipa": "aɪ nˈiːdəd ə bɹˈeɪk.",
+    "ms": 1700,
+    "bytes": 5830
+   },
+   "we": {
+    "file": "af_heart-56e7f41107acc5c3.ogg",
+    "ipa": "wiː",
+    "ms": 1250,
+    "bytes": 3869
+   },
+   "water": {
+    "file": "af_heart-7dd807e3cea325d2.ogg",
+    "ipa": "wˈɔːɾɚ",
+    "ms": 1350,
+    "bytes": 4246
+   },
+   "want": {
+    "file": "af_heart-5af35d2bef7b45b6.ogg",
+    "ipa": "wˈɑːnt",
+    "ms": 1325,
+    "bytes": 4185
+   },
+   "word": {
+    "file": "af_heart-804a72f19a19deb8.ogg",
+    "ipa": "wˈɜːd",
+    "ms": 1325,
+    "bytes": 4129
+   },
+   "We want some water.": {
+    "file": "af_heart-8654d2549cf9e230.ogg",
+    "ipa": "wiː wˈɑːnt sˈʌm wˈɔːɾɚ.",
+    "ms": 1800,
+    "bytes": 6217
+   },
+   "What a wonderful week.": {
+    "file": "af_heart-3994551af8347e38.ogg",
+    "ipa": "wˈʌt ə wˈʌndɚfəl wˈiːk.",
+    "ms": 1975,
+    "bytes": 6851
+   },
+   "We visited London last year.": {
+    "file": "af_heart-566260db3d954d87.ogg",
+    "ipa": "wiː vˈɪzɪɾᵻd lˈʌndən lˈæst jˈɪɹ.",
+    "ms": 2200,
+    "bytes": 7844
+   },
+   "He wanted to stay home.": {
+    "file": "af_heart-a984629446c3f078.ogg",
+    "ipa": "hiː wˈɔːntᵻd tə stˈeɪ hˈoʊm.",
+    "ms": 1900,
+    "bytes": 6677
+   },
+   "I stopped and asked for help.": {
+    "file": "af_heart-de19687816cc8e78.ogg",
+    "ipa": "aɪ stˈɑːpt ænd ˈæskt fɔːɹ hˈɛlp.",
+    "ms": 2175,
+    "bytes": 7660
+   },
+   "We played tennis on Sunday.": {
+    "file": "af_heart-5f210d34d4ba0c4b.ogg",
+    "ipa": "wiː plˈeɪd tˈɛnəs ɑːn sˈʌndˌeɪ.",
+    "ms": 2300,
+    "bytes": 8188
+   },
+   "this": {
+    "file": "af_heart-f214e51d30231f47.ogg",
+    "ipa": "ðˈɪs",
+    "ms": 1225,
+    "bytes": 3777
+   },
+   "the": {
+    "file": "af_heart-b9a09f26972a5298.ogg",
+    "ipa": "ðə",
+    "ms": 1075,
+    "bytes": 3228
+   },
+   "mother": {
+    "file": "af_heart-38a72836f577c83a.ogg",
+    "ipa": "mˈʌðɚ",
+    "ms": 950,
+    "bytes": 2983
+   },
+   "together": {
+    "file": "af_heart-f5503a1bd2221c23.ogg",
+    "ipa": "təɡˈɛðɚ",
+    "ms": 1425,
+    "bytes": 4478
+   },
+   "This is the other one.": {
+    "file": "af_heart-b9f852a2f28eed1b.ogg",
+    "ipa": "ðˈɪs ɪz ði ˈʌðɚ wˈʌn.",
+    "ms": 1975,
+    "bytes": 6910
+   },
+   "My brother is there.": {
+    "file": "af_heart-3bdc78bd446f2ea1.ogg",
+    "ipa": "maɪ bɹˈʌðɚ ɪz ðˈɛɹ.",
+    "ms": 1700,
+    "bytes": 5865
+   },
+   "I'm a system and network administrator.": {
+    "file": "af_heart-dcae8bcacb392a58.ogg",
+    "ipa": "ˈaɪm ə sˈɪstəm ænd nˈɛtwˌɜːk ədmˈɪnəstɹˌeɪɾɚ.",
+    "ms": 3150,
+    "bytes": 11489
+   },
+   "The server is down again.": {
+    "file": "af_heart-cc3f579e1d19f19a.ogg",
+    "ipa": "ðə sˈɜːvɚ ɪz dˈaʊn əɡˈɛn.",
+    "ms": 2025,
+    "bytes": 7090
+   },
+   "Did you restart the router?": {
+    "file": "af_heart-a1ab22e2bb513de3.ogg",
+    "ipa": "dˈɪd juː ɹistˈɑːɹt ðə ɹˈuːɾɚ?",
+    "ms": 2000,
+    "bytes": 7064
+   },
+   "I need to update the software tonight.": {
+    "file": "af_heart-4bb4fe88a2607bbd.ogg",
+    "ipa": "aɪ nˈiːd tə əpdˈeɪt ðə sˈɔːftwˌɛɹ tənˈaɪt.",
+    "ms": 2525,
+    "bytes": 9147
+   },
+   "Can you send me the report by email?": {
+    "file": "af_heart-f1a3e67ea250197f.ogg",
+    "ipa": "kæn juː sˈɛnd miː ðə ɹipˈɔːɹt baɪ imˈeɪl?",
+    "ms": 2500,
+    "bytes": 9025
+   },
+   "sing": {
+    "file": "af_heart-56b5637bed6b1763.ogg",
+    "ipa": "sˈɪŋ",
+    "ms": 1375,
+    "bytes": 4163
+   },
+   "thing": {
+    "file": "af_heart-0f71832d43e3f98f.ogg",
+    "ipa": "θˈɪŋ",
+    "ms": 1325,
+    "bytes": 4031
+   },
+   "morning": {
+    "file": "af_heart-71a3911d911ec069.ogg",
+    "ipa": "mˈɔːɹnɪŋ",
+    "ms": 1375,
+    "bytes": 4419
+   },
+   "long": {
+    "file": "af_heart-6abcaf7d7e98e8ba.ogg",
+    "ipa": "lˈɔːŋ",
+    "ms": 1300,
+    "bytes": 4049
+   },
+   "I'm going shopping this morning.": {
+    "file": "af_heart-6a4187db0f13f3e7.ogg",
+    "ipa": "ˈaɪm ɡˈoʊɪŋ ʃˈɑːpɪŋ ðˈɪs mˈɔːɹnɪŋ.",
+    "ms": 2450,
+    "bytes": 8783
+   },
+   "She is singing a long song.": {
+    "file": "af_heart-0ca856f03dce20fc.ogg",
+    "ipa": "ʃiː ɪz sˈɪŋɪŋ ə lˈɔːŋ sˈɔːŋ.",
+    "ms": 2100,
+    "bytes": 7388
+   },
+   "The meeting starts at nine thirty.": {
+    "file": "af_heart-d27cfc61c11f2a78.ogg",
+    "ipa": "ðə mˈiːɾɪŋ stˈɑːɹts æt nˈaɪn θˈɜːdi.",
+    "ms": 2400,
+    "bytes": 8554
+   },
+   "Please change your password every month.": {
+    "file": "af_heart-4942dab69964b327.ogg",
+    "ipa": "plˈiːz tʃˈeɪndʒ jʊɹ pˈæswˌɜːd ˈɛvɚɹi mˈʌnθ.",
+    "ms": 2825,
+    "bytes": 10198
+   },
+   "We made a backup before the update.": {
+    "file": "af_heart-2985729a93025e03.ogg",
+    "ipa": "wiː mˈeɪd ə bˈækˌʌp bɪfˈɔːɹ ði əpdˈeɪt.",
+    "ms": 2400,
+    "bytes": 8712
+   },
+   "I'm working from home on Friday.": {
+    "file": "af_heart-3d70e9a63f92fce4.ogg",
+    "ipa": "ˈaɪm wˈɜːkɪŋ fɹʌm hˈoʊm ɑːn fɹˈaɪdi.",
+    "ms": 2550,
+    "bytes": 9120
+   },
+   "Could you share your screen, please?": {
+    "file": "af_heart-ecf2b75a73c34510.ogg",
+    "ipa": "kʊd juː ʃˈɛɹ jʊɹ skɹˈiːn, plˈiːz?",
+    "ms": 2175,
+    "bytes": 7709
+   },
+   "banana": {
+    "file": "af_heart-8905b2af0bd89ff5.ogg",
+    "ipa": "bənˈænə",
+    "ms": 1450,
+    "bytes": 4597
+   },
+   "about": {
+    "file": "af_heart-0a2b5e9c342e0197.ogg",
+    "ipa": "əbˈaʊt",
+    "ms": 1250,
+    "bytes": 4017
+   },
+   "today": {
+    "file": "af_heart-df0cb7e7c716dab6.ogg",
+    "ipa": "tədˈeɪ",
+    "ms": 1400,
+    "bytes": 4378
+   },
+   "problem": {
+    "file": "af_heart-94303bf9b3a42686.ogg",
+    "ipa": "pɹˈɑːbləm",
+    "ms": 1425,
+    "bytes": 4607
+   },
+   "A cup of coffee, please.": {
+    "file": "af_heart-ddc3fbe81491ca84.ogg",
+    "ipa": "ə kˈʌp ʌv kˈɑːfi, plˈiːz.",
+    "ms": 2100,
+    "bytes": 7459
+   },
+   "What about tomorrow?": {
+    "file": "af_heart-1e3aa5f98509c0fb.ogg",
+    "ipa": "wˈʌt əbˈaʊt təmˈɑːɹˌoʊ?",
+    "ms": 1775,
+    "bytes": 6176
+   },
+   "Can we see the menu, please?": {
+    "file": "af_heart-df5c5548c17f4375.ogg",
+    "ipa": "kæn wiː sˈiː ðə mˈɛnju, plˈiːz?",
+    "ms": 2125,
+    "bytes": 7533
+   },
+   "I'll have the chicken with rice.": {
+    "file": "af_heart-e888d1f32fdb8392.ogg",
+    "ipa": "ˈaɪl hæv ðə tʃˈɪkən wɪð ɹˈaɪs.",
+    "ms": 2275,
+    "bytes": 8132
+   },
+   "Is this dish spicy?": {
+    "file": "af_heart-cd66d15c8fec6a42.ogg",
+    "ipa": "ɪz ðˈɪs dˈɪʃ spˈaɪsi?",
+    "ms": 1950,
+    "bytes": 6677
+   },
+   "Could I have some water, please?": {
+    "file": "af_heart-8400574695db254e.ogg",
+    "ipa": "kʊd aɪ hæv sˈʌm wˈɔːɾɚ, plˈiːz?",
+    "ms": 2200,
+    "bytes": 7863
+   },
+   "Do you have this in a bigger size?": {
+    "file": "af_heart-3b277c4009edfe6e.ogg",
+    "ipa": "duː juː hæv ðˈɪs ɪn ə bˈɪɡɚ sˈaɪz?",
+    "ms": 2375,
+    "bytes": 8503
+   },
+   "think": {
+    "file": "af_heart-a694ffd7ff1e9190.ogg",
+    "ipa": "θˈɪŋk",
+    "ms": 1275,
+    "bytes": 3944
+   },
+   "three": {
+    "file": "af_heart-6916ba1404db2edc.ogg",
+    "ipa": "θɹˈiː",
+    "ms": 1350,
+    "bytes": 4243
+   },
+   "thank you": {
+    "file": "af_heart-b0108443622dabe2.ogg",
+    "ipa": "θˈæŋk juː",
+    "ms": 1425,
+    "bytes": 4636
+   },
+   "birthday": {
+    "file": "af_heart-c492d6ccfa18ca72.ogg",
+    "ipa": "bˈɜːθdˌeɪ",
+    "ms": 1450,
+    "bytes": 4682
+   },
+   "I think it's Thursday.": {
+    "file": "af_heart-9a33188d69aa4822.ogg",
+    "ipa": "aɪ θˈɪŋk ˈɪts θˈɜːzdˌeɪ.",
+    "ms": 1800,
+    "bytes": 6300
+   },
+   "Thank you for the three things.": {
+    "file": "af_heart-5215b1c39ae49814.ogg",
+    "ipa": "θˈæŋk juː fɔːɹ ðə θɹˈiː θˈɪŋz.",
+    "ms": 2100,
+    "bytes": 7439
+   },
+   "Can I try it on?": {
+    "file": "af_heart-6d91c08ceab0f73c.ogg",
+    "ipa": "kæn aɪ tɹˈaɪ ɪt ɑːn?",
+    "ms": 1725,
+    "bytes": 5872
+   },
+   "How much does this cost?": {
+    "file": "af_heart-a12e16fdd2e5db98.ogg",
+    "ipa": "hˈaʊ mˈʌtʃ dʌz ðˈɪs kˈɑːst?",
+    "ms": 2100,
+    "bytes": 7386
+   },
+   "I'm just looking, thank you.": {
+    "file": "af_heart-01fd00b20f9d95c5.ogg",
+    "ipa": "ˈaɪm dʒˈʌst lˈʊkɪŋ, θˈæŋk juː.",
+    "ms": 2150,
+    "bytes": 7560
+   },
+   "Keep the change.": {
+    "file": "af_heart-46f9b320e63daece.ogg",
+    "ipa": "kˈiːp ðə tʃˈeɪndʒ.",
+    "ms": 1625,
+    "bytes": 5472
+   },
+   "That was delicious, thank you!": {
+    "file": "af_heart-e102ba214b52d3a7.ogg",
+    "ipa": "ðˈæt wʌz dɪlˈɪʃəs, θˈæŋk juː!",
+    "ms": 2225,
+    "bytes": 7872
+   },
+   "job": {
+    "file": "af_heart-8ca9a31071b6a779.ogg",
+    "ipa": "dʒˈɑːb",
+    "ms": 1300,
+    "bytes": 4098
+   },
+   "just": {
+    "file": "af_heart-59fe5ee35f0fa89a.ogg",
+    "ipa": "dʒˈʌst",
+    "ms": 1250,
+    "bytes": 3911
+   },
+   "jacket": {
+    "file": "af_heart-1b942362294a32ab.ogg",
+    "ipa": "dʒˈækət",
+    "ms": 1400,
+    "bytes": 4475
+   },
+   "orange": {
+    "file": "af_heart-a1ca17eb3b760ba4.ogg",
+    "ipa": "ˈɔːɹəndʒ",
+    "ms": 1425,
+    "bytes": 4521
+   },
+   "I just changed my job.": {
+    "file": "af_heart-9ac6fda5b6cbf373.ogg",
+    "ipa": "aɪ dʒˈʌst tʃˈeɪndʒd maɪ dʒˈɑːb.",
+    "ms": 2050,
+    "bytes": 7215
+   },
+   "John enjoys orange juice.": {
+    "file": "af_heart-c92db74d798393b5.ogg",
+    "ipa": "dʒˈɑːn ˌɛndʒˈɔɪz ˈɔːɹəndʒ dʒˈuːs.",
+    "ms": 2475,
+    "bytes": 8888
+   },
+   "I have a terrible headache.": {
+    "file": "af_heart-a04fad7abafdc202.ogg",
+    "ipa": "aɪ hæv ə tˈɛɹəbəl hˈɛdˌeɪk.",
+    "ms": 2050,
+    "bytes": 7286
+   },
+   "I need to see a doctor.": {
+    "file": "af_heart-67d1afa33cceef89.ogg",
+    "ipa": "aɪ nˈiːd tə sˈiː ə dˈɑːktɚ.",
+    "ms": 2000,
+    "bytes": 6969
+   },
+   "Where is the nearest pharmacy?": {
+    "file": "af_heart-68027aa36c21db1c.ogg",
+    "ipa": "wˈɛɹ ɪz ðə nˈɪɹəst fˈɑːɹməsi?",
+    "ms": 2250,
+    "bytes": 7878
+   },
+   "I think I have a fever.": {
+    "file": "af_heart-16d9ccf15eab6d53.ogg",
+    "ipa": "aɪ θˈɪŋk aɪ hæv ə fˈiːvɚ.",
+    "ms": 2000,
+    "bytes": 7014
+   },
+   "I'm allergic to peanuts.": {
+    "file": "af_heart-ec2a32273da73d87.ogg",
+    "ipa": "ˈaɪm əlˈɜːdʒɪk tə pˈiːnəts.",
+    "ms": 2250,
+    "bytes": 7954
+   },
+   "sheep": {
+    "file": "af_heart-849727c2993c368e.ogg",
+    "ipa": "ʃˈiːp",
+    "ms": 1225,
+    "bytes": 3787
+   },
+   "seat": {
+    "file": "af_heart-51d421c8ae9be707.ogg",
+    "ipa": "sˈiːt",
+    "ms": 1250,
+    "bytes": 3881
+   },
+   "leave": {
+    "file": "af_heart-4e767bfaffe1ff7e.ogg",
+    "ipa": "lˈiːv",
+    "ms": 1075,
+    "bytes": 3379
+   },
+   "feel": {
+    "file": "af_heart-37bc616f13ddd3b2.ogg",
+    "ipa": "fˈiːl",
+    "ms": 1250,
+    "bytes": 3874
+   },
+   "Please eat the cheese.": {
+    "file": "af_heart-de198bc662794fce.ogg",
+    "ipa": "plˈiːz ˈiːt ðə tʃˈiːz.",
+    "ms": 1800,
+    "bytes": 6233
+   },
+   "We need to sleep.": {
+    "file": "af_heart-fedbec67f48a84eb.ogg",
+    "ipa": "wiː nˈiːd tə slˈiːp.",
+    "ms": 1700,
+    "bytes": 5800
+   },
+   "I lost my phone and my wallet.": {
+    "file": "af_heart-55a0d427ff4dc098.ogg",
+    "ipa": "aɪ lˈɔːst maɪ fˈoʊn ænd maɪ wˈɔːlət.",
+    "ms": 2575,
+    "bytes": 9376
+   },
+   "Can you call a taxi for me?": {
+    "file": "af_heart-21acb78096d53850.ogg",
+    "ipa": "kæn juː kˈɔːl ə tˈæksi fɔːɹ miː?",
+    "ms": 2125,
+    "bytes": 7522
+   },
+   "My train was cancelled.": {
+    "file": "af_heart-cb098742ce8eeb43.ogg",
+    "ipa": "maɪ tɹˈeɪn wʌz kˈænsəld.",
+    "ms": 1900,
+    "bytes": 6639
+   },
+   "Is there a bank near here?": {
+    "file": "af_heart-d47c0b8617dd1488.ogg",
+    "ipa": "ɪz ðˈɛɹ ə bˈæŋk nˈɪɹ hˈiːɹ?",
+    "ms": 2075,
+    "bytes": 7322
+   },
+   "Please help me, it's urgent.": {
+    "file": "af_heart-7cd9e9e38418e40b.ogg",
+    "ipa": "plˈiːz hˈɛlp miː, ˈɪts ˈɜːdʒənt.",
+    "ms": 2300,
+    "bytes": 8150
+   },
+   "ship": {
+    "file": "af_heart-98753ea1a474781f.ogg",
+    "ipa": "ʃˈɪp",
+    "ms": 1200,
+    "bytes": 3683
+   },
+   "sit": {
+    "file": "af_heart-553f0cf2e000b776.ogg",
+    "ipa": "sˈɪt",
+    "ms": 1225,
+    "bytes": 3721
+   },
+   "live": {
+    "file": "af_heart-52c719a705c48f6b.ogg",
+    "ipa": "lˈɪv",
+    "ms": 1300,
+    "bytes": 4029
+   },
+   "fill": {
+    "file": "af_heart-a2f77608b67de90f.ogg",
+    "ipa": "fˈɪl",
+    "ms": 1350,
+    "bytes": 4137
+   },
+   "This is my little sister.": {
+    "file": "af_heart-a46b5360f653a1dd.ogg",
+    "ipa": "ðˈɪs ɪz maɪ lˈɪɾəl sˈɪstɚ.",
+    "ms": 2200,
+    "bytes": 7640
+   },
+   "It is a big city.": {
+    "file": "af_heart-b3ef41585053a143.ogg",
+    "ipa": "ɪt ɪz ə bˈɪɡ sˈɪɾi.",
+    "ms": 1800,
+    "bytes": 6122
+   },
+   "I really like playing video games.": {
+    "file": "af_heart-25b5860bd443747f.ogg",
+    "ipa": "aɪ ɹˈɪli lˈaɪk plˈeɪɪŋ vˈɪdioʊ ɡˈeɪmz.",
+    "ms": 2475,
+    "bytes": 9006
+   },
+   "What kind of music do you listen to?": {
+    "file": "af_heart-c061585ae1305435.ogg",
+    "ipa": "wˈʌt kˈaɪnd ʌv mjˈuːzɪk duː juː lˈɪsən tˈuː?",
+    "ms": 2575,
+    "bytes": 9322
+   },
+   "In my opinion, the book was better.": {
+    "file": "af_heart-92bceba8142443f4.ogg",
+    "ipa": "ɪn maɪ əpˈɪnjən, ðə bˈʊk wʌz bˈɛɾɚ.",
+    "ms": 2675,
+    "bytes": 9595
+   },
+   "I don't agree with you.": {
+    "file": "af_heart-09be0873b244c354.ogg",
+    "ipa": "aɪ dˈoʊnt əɡɹˈiː wɪð juː.",
+    "ms": 1675,
+    "bytes": 5895
+   },
+   "That sounds like a great idea.": {
+    "file": "af_heart-9f6a0400f2b4f28e.ogg",
+    "ipa": "ðˈæt sˈaʊndz lˈaɪk ə ɡɹˈeɪt aɪdˈiːə.",
+    "ms": 2350,
+    "bytes": 8458
+   },
+   "bird": {
+    "file": "af_heart-18c7f766295f7ec1.ogg",
+    "ipa": "bˈɜːd",
+    "ms": 1250,
+    "bytes": 3876
+   },
+   "work": {
+    "file": "af_heart-f4eb06d72683c72b.ogg",
+    "ipa": "wˈɜːk",
+    "ms": 1275,
+    "bytes": 4493
+   },
+   "her": {
+    "file": "af_heart-9a66d91126cccdc1.ogg",
+    "ipa": "hɜː",
+    "ms": 1225,
+    "bytes": 3701
+   },
+   "first": {
+    "file": "af_heart-91b19b3d8c778da9.ogg",
+    "ipa": "fˈɜːst",
+    "ms": 1325,
+    "bytes": 4109
+   },
+   "Her first word was bird.": {
+    "file": "af_heart-1a97687aae7fdea6.ogg",
+    "ipa": "hɜː fˈɜːst wˈɜːd wʌz bˈɜːd.",
+    "ms": 2025,
+    "bytes": 7141
+   },
+   "I work on Thursday.": {
+    "file": "af_heart-4a71c9b26d8e5f1d.ogg",
+    "ipa": "aɪ wˈɜːk ɑːn θˈɜːzdˌeɪ.",
+    "ms": 1900,
+    "bytes": 6605
+   },
+   "I've never been to Australia.": {
+    "file": "af_heart-5bb6aeca7911b5e1.ogg",
+    "ipa": "ˈaɪv nˈɛvɚ bɪn tə ɔːstɹˈeɪljə.",
+    "ms": 2325,
+    "bytes": 8245
+   },
+   "Have you ever tried sushi?": {
+    "file": "af_heart-40ea1c05438ea1b0.ogg",
+    "ipa": "hæv juː ˈɛvɚ tɹˈaɪd sˈuːʃi?",
+    "ms": 2075,
+    "bytes": 7304
+   },
+   "I'd rather stay home tonight.": {
+    "file": "af_heart-14c28d7377d7b32e.ogg",
+    "ipa": "ˈaɪd ɹˈæðɚ stˈeɪ hˈoʊm tənˈaɪt.",
+    "ms": 2150,
+    "bytes": 7643
+   },
+   "It depends on the weather.": {
+    "file": "af_heart-6c4cbb0f77137800.ogg",
+    "ipa": "ɪt dɪpˈɛndz ɑːn ðə wˈɛðɚ.",
+    "ms": 1975,
+    "bytes": 6898
+   },
+   "What are you doing this weekend?": {
+    "file": "af_heart-7e3e690923815618.ogg",
+    "ipa": "wˈʌt ɑːɹ juː dˈuːɪŋ ðˈɪs wˈiːkˌɛnd?",
+    "ms": 2150,
+    "bytes": 7702
+   },
+   "I": {
+    "file": "af_heart-83854d0e846f1234.ogg",
+    "ipa": "aɪ",
+    "ms": 1175,
+    "bytes": 3490
+   },
+   "my": {
+    "file": "af_heart-df02ed6ac30677f8.ogg",
+    "ipa": "maɪ",
+    "ms": 1350,
+    "bytes": 4107
+   },
+   "time": {
+    "file": "af_heart-49f0b4e135bf4e1d.ogg",
+    "ipa": "tˈaɪm",
+    "ms": 1400,
+    "bytes": 4308
+   },
+   "nice": {
+    "file": "af_heart-2e93995d1fbeb2c6.ogg",
+    "ipa": "nˈaɪs",
+    "ms": 1375,
+    "bytes": 4350
+   },
+   "I like my new bike.": {
+    "file": "af_heart-6b9f957eec6e04d8.ogg",
+    "ipa": "aɪ lˈaɪk maɪ nˈuː bˈaɪk.",
+    "ms": 1825,
+    "bytes": 6348
+   },
+   "It's time to fly to Miami.": {
+    "file": "af_heart-6444e85274ef3199.ogg",
+    "ipa": "ˈɪts tˈaɪm tə flˈaɪ tə maɪˈæmi.",
+    "ms": 2375,
+    "bytes": 8396
+   },
+   "Hello, this is Alex speaking.": {
+    "file": "af_heart-4d2083f42f9dc5ff.ogg",
+    "ipa": "həlˈoʊ, ðˈɪs ɪz ˈæləks spˈiːkɪŋ.",
+    "ms": 2425,
+    "bytes": 8632
+   },
+   "Could you repeat that, please?": {
+    "file": "af_heart-bdff2eb2ad69f2bd.ogg",
+    "ipa": "kʊd juː ɹɪpˈiːt ðˈæt, plˈiːz?",
+    "ms": 2000,
+    "bytes": 7174
+   },
+   "Sorry, the line is very bad.": {
+    "file": "af_heart-315f8dd7a3ac1f12.ogg",
+    "ipa": "sˈɑːɹi, ðə lˈaɪn ɪz vˈɛɹi bˈæd.",
+    "ms": 2450,
+    "bytes": 8761
+   },
+   "I'd like to book a table for Saturday.": {
+    "file": "af_heart-caa4fdaba011c0ee.ogg",
+    "ipa": "ˈaɪd lˈaɪk tə bˈʊk ə tˈeɪbəl fɔːɹ sˈæɾɚdi.",
+    "ms": 2600,
+    "bytes": 9498
+   },
+   "Can I leave a message?": {
+    "file": "af_heart-30090b6c22277421.ogg",
+    "ipa": "kæn aɪ lˈiːv ə mˈɛsədʒ?",
+    "ms": 1925,
+    "bytes": 6640
+   },
+   "cat": {
+    "file": "af_heart-635f7d0517219e46.ogg",
+    "ipa": "kˈæt",
+    "ms": 1200,
+    "bytes": 3703
+   },
+   "bad": {
+    "file": "af_heart-3b4ed3f4d416b31c.ogg",
+    "ipa": "bˈæd",
+    "ms": 1325,
+    "bytes": 4497
+   },
+   "black": {
+    "file": "af_heart-983c67687f6f5fb5.ogg",
+    "ipa": "blˈæk",
+    "ms": 1250,
+    "bytes": 3933
+   },
+   "That man has a cat.": {
+    "file": "af_heart-a3b645a568220387.ogg",
+    "ipa": "ðˈæt mˈæn hæz ə kˈæt.",
+    "ms": 1875,
+    "bytes": 6561
+   },
+   "I am happy to have a map.": {
+    "file": "af_heart-dbf79f091220e678.ogg",
+    "ipa": "aɪ æm hˈæpi tə hæv ə mˈæp.",
+    "ms": 2050,
+    "bytes": 7164
+   },
+   "I'll call you back later.": {
+    "file": "af_heart-ef419af996813786.ogg",
+    "ipa": "ˈaɪl kˈɔːl juː bˈæk lˈeɪɾɚ.",
+    "ms": 1950,
+    "bytes": 6861
+   },
+   "Could you spell your name, please?": {
+    "file": "af_heart-1e48c136811faf96.ogg",
+    "ipa": "kʊd juː spˈɛl jʊɹ nˈeɪm, plˈiːz?",
+    "ms": 2125,
+    "bytes": 7540
+   },
+   "What time do you open tomorrow?": {
+    "file": "af_heart-68683bc292ce6c36.ogg",
+    "ipa": "wˈʌt tˈaɪm duː juː ˈoʊpən təmˈɑːɹˌoʊ?",
+    "ms": 2400,
+    "bytes": 8659
+   },
+   "Thanks for calling.": {
+    "file": "af_heart-93b0fd708d26bf7c.ogg",
+    "ipa": "θˈæŋks fɔːɹ kˈɔːlɪŋ.",
+    "ms": 1675,
+    "bytes": 5747
+   },
+   "Talk to you soon!": {
+    "file": "af_heart-d89b726ad3c35c0f.ogg",
+    "ipa": "tˈɔːk tə juː sˈuːn!",
+    "ms": 1675,
+    "bytes": 5666
    }
   },
   "am_michael": {
@@ -126,6 +1290,1170 @@
     "ipa": "ɡˈʊd fˈuːd ɪz ɡˈʊd fɔːɹ juː.",
     "ms": 2475,
     "bytes": 8923
+   },
+   "hello": {
+    "file": "am_michael-0071106da9622df8.ogg",
+    "ipa": "həlˈoʊ",
+    "ms": 1375,
+    "bytes": 4619
+   },
+   "happy": {
+    "file": "am_michael-f2119a218e9168e4.ogg",
+    "ipa": "hˈæpi",
+    "ms": 1300,
+    "bytes": 4316
+   },
+   "house": {
+    "file": "am_michael-b31a891a96a0f2bf.ogg",
+    "ipa": "hˈaʊs",
+    "ms": 1175,
+    "bytes": 3895
+   },
+   "hungry": {
+    "file": "am_michael-872867fbbce776e6.ogg",
+    "ipa": "hˈʌŋɡɹi",
+    "ms": 1425,
+    "bytes": 4795
+   },
+   "How are you?": {
+    "file": "am_michael-acefced8c6551bc2.ogg",
+    "ipa": "hˈaʊ ɑːɹ juː?",
+    "ms": 1625,
+    "bytes": 5603
+   },
+   "He has a huge house.": {
+    "file": "am_michael-8eedde934a42fb50.ogg",
+    "ipa": "hiː hæz ə hjˈuːdʒ hˈaʊs.",
+    "ms": 2150,
+    "bytes": 7644
+   },
+   "How was your day?": {
+    "file": "am_michael-65fbf4efa2a3e7ef.ogg",
+    "ipa": "hˈaʊ wʌz jʊɹ dˈeɪ?",
+    "ms": 1975,
+    "bytes": 6963
+   },
+   "I miss you so much.": {
+    "file": "am_michael-47cb5cea7944d382.ogg",
+    "ipa": "aɪ mˈɪs juː sˈoʊ mˈʌtʃ.",
+    "ms": 2100,
+    "bytes": 7478
+   },
+   "What do you want to eat tonight?": {
+    "file": "am_michael-586859a23aaac4f1.ogg",
+    "ipa": "wˈʌt duː juː wˈɑːnt tə ˈiːt tənˈaɪt?",
+    "ms": 2450,
+    "bytes": 8965
+   },
+   "I'm really happy with you.": {
+    "file": "am_michael-97ff77285d167cb8.ogg",
+    "ipa": "ˈaɪm ɹˈɪli hˈæpi wɪð juː.",
+    "ms": 2375,
+    "bytes": 8520
+   },
+   "Can you help me with my English?": {
+    "file": "am_michael-d49a3cd6414d86a5.ogg",
+    "ipa": "kæn juː hˈɛlp miː wɪð maɪ ˈɪŋɡlɪʃ?",
+    "ms": 2550,
+    "bytes": 9305
+   },
+   "she": {
+    "file": "am_michael-9133582eed84456b.ogg",
+    "ipa": "ʃiː",
+    "ms": 1125,
+    "bytes": 3685
+   },
+   "shop": {
+    "file": "am_michael-6b58606ead3aa4e5.ogg",
+    "ipa": "ʃˈɑːp",
+    "ms": 1250,
+    "bytes": 4141
+   },
+   "wish": {
+    "file": "am_michael-361642cabd10603d.ogg",
+    "ipa": "wˈɪʃ",
+    "ms": 1225,
+    "bytes": 3992
+   },
+   "station": {
+    "file": "am_michael-9ee0d5a970d574e9.ogg",
+    "ipa": "stˈeɪʃən",
+    "ms": 1425,
+    "bytes": 4751
+   },
+   "She should push the shopping cart.": {
+    "file": "am_michael-f6dafce89083fa8c.ogg",
+    "ipa": "ʃiː ʃʊd pˈʊʃ ðə ʃˈɑːpɪŋ kˈɑːɹt.",
+    "ms": 2575,
+    "bytes": 9313
+   },
+   "I wish you a nice vacation.": {
+    "file": "am_michael-e8f0d5ee39403a51.ogg",
+    "ipa": "aɪ wˈɪʃ juː ə nˈaɪs veɪkˈeɪʃən.",
+    "ms": 2825,
+    "bytes": 10266
+   },
+   "Let's watch a movie together.": {
+    "file": "am_michael-e1ff2d1d2ffea1ef.ogg",
+    "ipa": "lˈɛts wˈɑːtʃ ə mˈuːvi təɡˈɛðɚ.",
+    "ms": 2575,
+    "bytes": 9378
+   },
+   "I'm looking forward to the weekend.": {
+    "file": "am_michael-977259e982165dbe.ogg",
+    "ipa": "ˈaɪm lˈʊkɪŋ fˈɔːɹwɚd tə ðə wˈiːkˌɛnd.",
+    "ms": 2900,
+    "bytes": 10680
+   },
+   "Thank you for being so patient.": {
+    "file": "am_michael-3eead70a122187fb.ogg",
+    "ipa": "θˈæŋk juː fɔːɹ bˈiːɪŋ sˈoʊ pˈeɪʃənt.",
+    "ms": 2675,
+    "bytes": 9789
+   },
+   "I think we should go out tonight.": {
+    "file": "am_michael-5219ecf75f4cf6ad.ogg",
+    "ipa": "aɪ θˈɪŋk wiː ʃʊd ɡˈoʊ ˈaʊt tənˈaɪt.",
+    "ms": 2850,
+    "bytes": 10472
+   },
+   "Sorry, I didn't mean that.": {
+    "file": "am_michael-b87285df9fb977b6.ogg",
+    "ipa": "sˈɑːɹi, aɪ dˈɪdənt mˈiːn ðˈæt.",
+    "ms": 2325,
+    "bytes": 8370
+   },
+   "day": {
+    "file": "am_michael-777ac3ab67f1b5ac.ogg",
+    "ipa": "dˈeɪ",
+    "ms": 1275,
+    "bytes": 4192
+   },
+   "name": {
+    "file": "am_michael-45a6b7b6ee728187.ogg",
+    "ipa": "nˈeɪm",
+    "ms": 1400,
+    "bytes": 4644
+   },
+   "wait": {
+    "file": "am_michael-da5b702b638f9161.ogg",
+    "ipa": "wˈeɪt",
+    "ms": 1150,
+    "bytes": 3825
+   },
+   "great": {
+    "file": "am_michael-de50a8d8edafc2a7.ogg",
+    "ipa": "ɡɹˈeɪt",
+    "ms": 1300,
+    "bytes": 4326
+   },
+   "Wait for me at the gate.": {
+    "file": "am_michael-6e95dbc4c8baf3b8.ogg",
+    "ipa": "wˈeɪt fɔːɹ miː æt ðə ɡˈeɪt.",
+    "ms": 2200,
+    "bytes": 7937
+   },
+   "Have a great day.": {
+    "file": "am_michael-1b4a56dec2ecbf7b.ogg",
+    "ipa": "hæv ə ɡɹˈeɪt dˈeɪ.",
+    "ms": 1875,
+    "bytes": 6609
+   },
+   "I'd like to check in, please.": {
+    "file": "am_michael-64fae3834d0f874b.ogg",
+    "ipa": "ˈaɪd lˈaɪk tə tʃˈɛk ɪn, plˈiːz.",
+    "ms": 2450,
+    "bytes": 8963
+   },
+   "Where is the nearest train station?": {
+    "file": "am_michael-4b0474a2228d9a8f.ogg",
+    "ipa": "wˈɛɹ ɪz ðə nˈɪɹəst tɹˈeɪn stˈeɪʃən?",
+    "ms": 2850,
+    "bytes": 10438
+   },
+   "I have a reservation for two nights.": {
+    "file": "am_michael-9ac71ccb77eda794.ogg",
+    "ipa": "aɪ hæv ə ɹˌɛzɚvˈeɪʃən fɔːɹ tˈuː nˈaɪts.",
+    "ms": 2900,
+    "bytes": 10665
+   },
+   "Is breakfast included?": {
+    "file": "am_michael-7b20a18441d48d6b.ogg",
+    "ipa": "ɪz bɹˈɛkfəst ˌɪnklˈuːdəd?",
+    "ms": 2350,
+    "bytes": 8413
+   },
+   "A table for two, please.": {
+    "file": "am_michael-c34ed0d7a52b8fff.ogg",
+    "ipa": "ə tˈeɪbəl fɔːɹ tˈuː, plˈiːz.",
+    "ms": 2475,
+    "bytes": 8955
+   },
+   "is": {
+    "file": "am_michael-b91d2b34581799ee.ogg",
+    "ipa": "ɪz",
+    "ms": 925,
+    "bytes": 3002
+   },
+   "was": {
+    "file": "am_michael-522fa39ed863a898.ogg",
+    "ipa": "wʌz",
+    "ms": 1225,
+    "bytes": 4001
+   },
+   "easy": {
+    "file": "am_michael-14338214b8b66d4f.ogg",
+    "ipa": "ˈiːzi",
+    "ms": 1425,
+    "bytes": 4675
+   },
+   "busy": {
+    "file": "am_michael-8987d453ce4a696a.ogg",
+    "ipa": "bˈɪzi",
+    "ms": 1275,
+    "bytes": 4253
+   },
+   "These shoes are always cheap.": {
+    "file": "am_michael-4627d69db5428186.ogg",
+    "ipa": "ðˈiːz ʃˈuːz ɑːɹ ˈɔːlwˌeɪz tʃˈiːp.",
+    "ms": 2625,
+    "bytes": 9477
+   },
+   "Is it easy to use?": {
+    "file": "am_michael-9c48ee8422c01465.ogg",
+    "ipa": "ɪz ɪt ˈiːzi tə jˈuːz?",
+    "ms": 2275,
+    "bytes": 8596
+   },
+   "Could we have the bill, please?": {
+    "file": "am_michael-389a8af1c7f68ec0.ogg",
+    "ipa": "kʊd wiː hæv ðə bˈɪl, plˈiːz?",
+    "ms": 2375,
+    "bytes": 8623
+   },
+   "How much is a ticket to the city center?": {
+    "file": "am_michael-c7206d1e4942ded5.ogg",
+    "ipa": "hˈaʊ mˈʌtʃ ɪz ə tˈɪkət tə ðə sˈɪɾi sˈɛntɚ?",
+    "ms": 3275,
+    "bytes": 12410
+   },
+   "My flight was delayed by three hours.": {
+    "file": "am_michael-83c238d1ae1e1e5c.ogg",
+    "ipa": "maɪ flˈaɪt wʌz dɪlˈeɪd baɪ θɹˈiː ˈaʊɚz.",
+    "ms": 3175,
+    "bytes": 11797
+   },
+   "Excuse me, I think I'm lost.": {
+    "file": "am_michael-12011d549c90de1a.ogg",
+    "ipa": "ɪkskjˈuːs miː, aɪ θˈɪŋk ˈaɪm lˈɔːst.",
+    "ms": 2775,
+    "bytes": 10174
+   },
+   "Can I pay by card?": {
+    "file": "am_michael-44871b48173d2247.ogg",
+    "ipa": "kæn aɪ pˈeɪ baɪ kˈɑːɹd?",
+    "ms": 2250,
+    "bytes": 8982
+   },
+   "go": {
+    "file": "am_michael-a2072e0c04b34aa6.ogg",
+    "ipa": "ɡˈoʊ",
+    "ms": 1275,
+    "bytes": 4254
+   },
+   "no": {
+    "file": "am_michael-33a5f82bbc4a3ea6.ogg",
+    "ipa": "nˈoʊ",
+    "ms": 1275,
+    "bytes": 4217
+   },
+   "home": {
+    "file": "am_michael-2fff3fcf92398a57.ogg",
+    "ipa": "hˈoʊm",
+    "ms": 1300,
+    "bytes": 4335
+   },
+   "phone": {
+    "file": "am_michael-2ccb6206003d455d.ogg",
+    "ipa": "fˈoʊn",
+    "ms": 1375,
+    "bytes": 4605
+   },
+   "I don't know.": {
+    "file": "am_michael-578899ba61918ff1.ogg",
+    "ipa": "aɪ dˈoʊnt nˈoʊ.",
+    "ms": 1600,
+    "bytes": 5538
+   },
+   "Go home and call me on the phone.": {
+    "file": "am_michael-9d55c984a3f0ea45.ogg",
+    "ipa": "ɡˈoʊ hˈoʊm ænd kˈɔːl miː ɑːn ðə fˈoʊn.",
+    "ms": 2975,
+    "bytes": 10943
+   },
+   "Hello, nice to meet you.": {
+    "file": "am_michael-6a8f8ae336074f0c.ogg",
+    "ipa": "həlˈoʊ, nˈaɪs tə mˈiːt juː.",
+    "ms": 2375,
+    "bytes": 8599
+   },
+   "I'm from France and I live in a small town.": {
+    "file": "am_michael-9c2f76204aea489f.ogg",
+    "ipa": "ˈaɪm fɹʌm fɹˈæns ænd aɪ lˈɪv ɪn ə smˈɔːl tˈaʊn.",
+    "ms": 3750,
+    "bytes": 14036
+   },
+   "I work with computers and networks.": {
+    "file": "am_michael-f5cec2ef16cfe545.ogg",
+    "ipa": "aɪ wˈɜːk wɪð kəmpjˈuːɾɚz ænd nˈɛtwˌɜːks.",
+    "ms": 2925,
+    "bytes": 11778
+   },
+   "I'm learning English every day.": {
+    "file": "am_michael-980a84a0260416b3.ogg",
+    "ipa": "ˈaɪm lˈɜːnɪŋ ˈɪŋɡlɪʃ ˈɛvɚɹi dˈeɪ.",
+    "ms": 2825,
+    "bytes": 10354
+   },
+   "Could you speak more slowly, please?": {
+    "file": "am_michael-46c0636a3472b4b4.ogg",
+    "ipa": "kʊd juː spˈiːk mˈɔːɹ slˈoʊli, plˈiːz?",
+    "ms": 2725,
+    "bytes": 9972
+   },
+   "very": {
+    "file": "am_michael-95be62fb6f13f488.ogg",
+    "ipa": "vˈɛɹi",
+    "ms": 1350,
+    "bytes": 4472
+   },
+   "visit": {
+    "file": "am_michael-c728b414240260e7.ogg",
+    "ipa": "vˈɪzɪt",
+    "ms": 1200,
+    "bytes": 4014
+   },
+   "voice": {
+    "file": "am_michael-6e379aacbbb96bcd.ogg",
+    "ipa": "vˈɔɪs",
+    "ms": 1275,
+    "bytes": 4258
+   },
+   "never": {
+    "file": "am_michael-0520615d67384cff.ogg",
+    "ipa": "nˈɛvɚ",
+    "ms": 1350,
+    "bytes": 4450
+   },
+   "I have a very good view.": {
+    "file": "am_michael-d1235c748443ad64.ogg",
+    "ipa": "aɪ hæv ə vˈɛɹi ɡˈʊd vjˈuː.",
+    "ms": 2325,
+    "bytes": 9078
+   },
+   "We visited Venice in November.": {
+    "file": "am_michael-05389721278af96f.ogg",
+    "ipa": "wiː vˈɪzɪɾᵻd vˈɛnəs ɪn noʊvˈɛmbɚ.",
+    "ms": 2900,
+    "bytes": 10615
+   },
+   "What do you do in your free time?": {
+    "file": "am_michael-6984e0d64417e3b0.ogg",
+    "ipa": "wˈʌt duː juː duː ɪn jʊɹ fɹˈiː tˈaɪm?",
+    "ms": 2800,
+    "bytes": 10315
+   },
+   "I'm hungry, let's have lunch.": {
+    "file": "am_michael-318d9887dff87a4f.ogg",
+    "ipa": "ˈaɪm hˈʌŋɡɹi, lˈɛts hæv lˈʌntʃ.",
+    "ms": 2450,
+    "bytes": 8880
+   },
+   "It's very hot today.": {
+    "file": "am_michael-7f48dce9d818863e.ogg",
+    "ipa": "ˈɪts vˈɛɹi hˈɑːt tədˈeɪ.",
+    "ms": 2250,
+    "bytes": 8040
+   },
+   "I usually get up at seven.": {
+    "file": "am_michael-8b30e9291502f674.ogg",
+    "ipa": "aɪ jˈuːʒəwəli ɡˈɛt ˈʌp æt sˈɛvən.",
+    "ms": 2625,
+    "bytes": 9529
+   },
+   "See you tomorrow!": {
+    "file": "am_michael-eaf7c78ee7dfa3ca.ogg",
+    "ipa": "sˈiː juː təmˈɑːɹˌoʊ!",
+    "ms": 2000,
+    "bytes": 7125
+   },
+   "red": {
+    "file": "am_michael-584f128b9f4ee875.ogg",
+    "ipa": "ɹˈɛd",
+    "ms": 1075,
+    "bytes": 3561
+   },
+   "right": {
+    "file": "am_michael-ca1cb0c7669672cc.ogg",
+    "ipa": "ɹˈaɪt",
+    "ms": 1250,
+    "bytes": 4128
+   },
+   "really": {
+    "file": "am_michael-bf277f3c22efd7c7.ogg",
+    "ipa": "ɹˈɪli",
+    "ms": 1325,
+    "bytes": 4407
+   },
+   "The red car is really fast.": {
+    "file": "am_michael-b212dff9ec96fbd7.ogg",
+    "ipa": "ðə ɹˈɛd kˈɑːɹ ɪz ɹˈɪli fˈæst.",
+    "ms": 2625,
+    "bytes": 9961
+   },
+   "I'm ready for the trip.": {
+    "file": "am_michael-1313ce360a459290.ogg",
+    "ipa": "ˈaɪm ɹˈɛdi fɔːɹ ðə tɹˈɪp.",
+    "ms": 2275,
+    "bytes": 8106
+   },
+   "I worked late yesterday.": {
+    "file": "am_michael-2e2cfd847a4a1978.ogg",
+    "ipa": "aɪ wˈɜːkt lˈeɪt jˈɛstɚdˌeɪ.",
+    "ms": 2375,
+    "bytes": 8652
+   },
+   "We watched a great movie.": {
+    "file": "am_michael-495e9a9c778fdf8f.ogg",
+    "ipa": "wiː wˈɑːtʃt ə ɡɹˈeɪt mˈuːvi.",
+    "ms": 2325,
+    "bytes": 8430
+   },
+   "She called me this morning.": {
+    "file": "am_michael-4a3532dd8f6d9349.ogg",
+    "ipa": "ʃiː kˈɔːld miː ðˈɪs mˈɔːɹnɪŋ.",
+    "ms": 2325,
+    "bytes": 8405
+   },
+   "I needed a break.": {
+    "file": "am_michael-89a22537904f0871.ogg",
+    "ipa": "aɪ nˈiːdəd ə bɹˈeɪk.",
+    "ms": 1975,
+    "bytes": 6956
+   },
+   "we": {
+    "file": "am_michael-a7b2314a7a3569e1.ogg",
+    "ipa": "wiː",
+    "ms": 1225,
+    "bytes": 3999
+   },
+   "water": {
+    "file": "am_michael-54a966fb0ebbafc3.ogg",
+    "ipa": "wˈɔːɾɚ",
+    "ms": 1350,
+    "bytes": 4504
+   },
+   "want": {
+    "file": "am_michael-12c995bc1cb8eba7.ogg",
+    "ipa": "wˈɑːnt",
+    "ms": 1250,
+    "bytes": 4151
+   },
+   "word": {
+    "file": "am_michael-be53ce6fd4a25cbd.ogg",
+    "ipa": "wˈɜːd",
+    "ms": 1350,
+    "bytes": 4449
+   },
+   "We want some water.": {
+    "file": "am_michael-71bcdb8d877ee496.ogg",
+    "ipa": "wiː wˈɑːnt sˈʌm wˈɔːɾɚ.",
+    "ms": 2075,
+    "bytes": 7387
+   },
+   "What a wonderful week.": {
+    "file": "am_michael-a203c6349c152c1c.ogg",
+    "ipa": "wˈʌt ə wˈʌndɚfəl wˈiːk.",
+    "ms": 2275,
+    "bytes": 8172
+   },
+   "We visited London last year.": {
+    "file": "am_michael-e23478e978a34ce4.ogg",
+    "ipa": "wiː vˈɪzɪɾᵻd lˈʌndən lˈæst jˈɪɹ.",
+    "ms": 2675,
+    "bytes": 9716
+   },
+   "He wanted to stay home.": {
+    "file": "am_michael-39b3bd23c65b29b3.ogg",
+    "ipa": "hiː wˈɔːntᵻd tə stˈeɪ hˈoʊm.",
+    "ms": 2175,
+    "bytes": 7761
+   },
+   "I stopped and asked for help.": {
+    "file": "am_michael-de5a78065b4a23ce.ogg",
+    "ipa": "aɪ stˈɑːpt ænd ˈæskt fɔːɹ hˈɛlp.",
+    "ms": 2425,
+    "bytes": 8792
+   },
+   "We played tennis on Sunday.": {
+    "file": "am_michael-371bacc1d5242da1.ogg",
+    "ipa": "wiː plˈeɪd tˈɛnəs ɑːn sˈʌndˌeɪ.",
+    "ms": 2700,
+    "bytes": 9865
+   },
+   "this": {
+    "file": "am_michael-4e6a47d42badc11d.ogg",
+    "ipa": "ðˈɪs",
+    "ms": 1250,
+    "bytes": 4054
+   },
+   "the": {
+    "file": "am_michael-8ba74f395fa18aea.ogg",
+    "ipa": "ðə",
+    "ms": 775,
+    "bytes": 2512
+   },
+   "mother": {
+    "file": "am_michael-85524002a6fa6415.ogg",
+    "ipa": "mˈʌðɚ",
+    "ms": 950,
+    "bytes": 3196
+   },
+   "together": {
+    "file": "am_michael-e4108f5a65c24484.ogg",
+    "ipa": "təɡˈɛðɚ",
+    "ms": 1450,
+    "bytes": 4861
+   },
+   "This is the other one.": {
+    "file": "am_michael-9ae506ec050569e8.ogg",
+    "ipa": "ðˈɪs ɪz ði ˈʌðɚ wˈʌn.",
+    "ms": 2350,
+    "bytes": 8423
+   },
+   "My brother is there.": {
+    "file": "am_michael-d64e602c104b2355.ogg",
+    "ipa": "maɪ bɹˈʌðɚ ɪz ðˈɛɹ.",
+    "ms": 1975,
+    "bytes": 7008
+   },
+   "I'm a system and network administrator.": {
+    "file": "am_michael-e74823805d362c26.ogg",
+    "ipa": "ˈaɪm ə sˈɪstəm ænd nˈɛtwˌɜːk ədmˈɪnəstɹˌeɪɾɚ.",
+    "ms": 3625,
+    "bytes": 13593
+   },
+   "The server is down again.": {
+    "file": "am_michael-6d1b75995271facf.ogg",
+    "ipa": "ðə sˈɜːvɚ ɪz dˈaʊn əɡˈɛn.",
+    "ms": 2425,
+    "bytes": 8706
+   },
+   "Did you restart the router?": {
+    "file": "am_michael-2ee3b1c31568bea0.ogg",
+    "ipa": "dˈɪd juː ɹistˈɑːɹt ðə ɹˈuːɾɚ?",
+    "ms": 2425,
+    "bytes": 8784
+   },
+   "I need to update the software tonight.": {
+    "file": "am_michael-99efbf49bae11a8a.ogg",
+    "ipa": "aɪ nˈiːd tə əpdˈeɪt ðə sˈɔːftwˌɛɹ tənˈaɪt.",
+    "ms": 2975,
+    "bytes": 11028
+   },
+   "Can you send me the report by email?": {
+    "file": "am_michael-549b56e393b963a7.ogg",
+    "ipa": "kæn juː sˈɛnd miː ðə ɹipˈɔːɹt baɪ imˈeɪl?",
+    "ms": 2825,
+    "bytes": 10415
+   },
+   "sing": {
+    "file": "am_michael-d69e60ee4354ce8e.ogg",
+    "ipa": "sˈɪŋ",
+    "ms": 1325,
+    "bytes": 4348
+   },
+   "thing": {
+    "file": "am_michael-e4a2879e4c75818b.ogg",
+    "ipa": "θˈɪŋ",
+    "ms": 1300,
+    "bytes": 4322
+   },
+   "morning": {
+    "file": "am_michael-605094e317c2b456.ogg",
+    "ipa": "mˈɔːɹnɪŋ",
+    "ms": 1450,
+    "bytes": 4868
+   },
+   "long": {
+    "file": "am_michael-1a280cc43f96db4a.ogg",
+    "ipa": "lˈɔːŋ",
+    "ms": 1325,
+    "bytes": 4424
+   },
+   "I'm going shopping this morning.": {
+    "file": "am_michael-068f4b1f0fc1a8dc.ogg",
+    "ipa": "ˈaɪm ɡˈoʊɪŋ ʃˈɑːpɪŋ ðˈɪs mˈɔːɹnɪŋ.",
+    "ms": 2825,
+    "bytes": 10340
+   },
+   "She is singing a long song.": {
+    "file": "am_michael-afc27b8cc3f813f6.ogg",
+    "ipa": "ʃiː ɪz sˈɪŋɪŋ ə lˈɔːŋ sˈɔːŋ.",
+    "ms": 2500,
+    "bytes": 8970
+   },
+   "The meeting starts at nine thirty.": {
+    "file": "am_michael-bb5e6bacc6e1e956.ogg",
+    "ipa": "ðə mˈiːɾɪŋ stˈɑːɹts æt nˈaɪn θˈɜːdi.",
+    "ms": 2750,
+    "bytes": 10081
+   },
+   "Please change your password every month.": {
+    "file": "am_michael-8d96bd31588b3cde.ogg",
+    "ipa": "plˈiːz tʃˈeɪndʒ jʊɹ pˈæswˌɜːd ˈɛvɚɹi mˈʌnθ.",
+    "ms": 3100,
+    "bytes": 11482
+   },
+   "We made a backup before the update.": {
+    "file": "am_michael-cd87bf9efb66cde7.ogg",
+    "ipa": "wiː mˈeɪd ə bˈækˌʌp bɪfˈɔːɹ ði əpdˈeɪt.",
+    "ms": 2850,
+    "bytes": 11430
+   },
+   "I'm working from home on Friday.": {
+    "file": "am_michael-af2355de31da5340.ogg",
+    "ipa": "ˈaɪm wˈɜːkɪŋ fɹʌm hˈoʊm ɑːn fɹˈaɪdi.",
+    "ms": 3000,
+    "bytes": 11074
+   },
+   "Could you share your screen, please?": {
+    "file": "am_michael-6e6ec1d4b96a96cb.ogg",
+    "ipa": "kʊd juː ʃˈɛɹ jʊɹ skɹˈiːn, plˈiːz?",
+    "ms": 2575,
+    "bytes": 9353
+   },
+   "banana": {
+    "file": "am_michael-6448e8e859233af3.ogg",
+    "ipa": "bənˈænə",
+    "ms": 1550,
+    "bytes": 6087
+   },
+   "about": {
+    "file": "am_michael-11bedbe6e55c7220.ogg",
+    "ipa": "əbˈaʊt",
+    "ms": 1275,
+    "bytes": 4283
+   },
+   "today": {
+    "file": "am_michael-c555acbae38e97e3.ogg",
+    "ipa": "tədˈeɪ",
+    "ms": 1400,
+    "bytes": 4603
+   },
+   "problem": {
+    "file": "am_michael-8b81f6e71c37800a.ogg",
+    "ipa": "pɹˈɑːbləm",
+    "ms": 1450,
+    "bytes": 4839
+   },
+   "A cup of coffee, please.": {
+    "file": "am_michael-3fbc138a16ea5ba0.ogg",
+    "ipa": "ə kˈʌp ʌv kˈɑːfi, plˈiːz.",
+    "ms": 2400,
+    "bytes": 8697
+   },
+   "What about tomorrow?": {
+    "file": "am_michael-06c70c501b6a1fc2.ogg",
+    "ipa": "wˈʌt əbˈaʊt təmˈɑːɹˌoʊ?",
+    "ms": 2150,
+    "bytes": 7709
+   },
+   "Can we see the menu, please?": {
+    "file": "am_michael-7c4672c9cfae6515.ogg",
+    "ipa": "kæn wiː sˈiː ðə mˈɛnju, plˈiːz?",
+    "ms": 2450,
+    "bytes": 8884
+   },
+   "I'll have the chicken with rice.": {
+    "file": "am_michael-b481c0c6ae9f345c.ogg",
+    "ipa": "ˈaɪl hæv ðə tʃˈɪkən wɪð ɹˈaɪs.",
+    "ms": 2675,
+    "bytes": 9891
+   },
+   "Is this dish spicy?": {
+    "file": "am_michael-3f5bb406a6661ef9.ogg",
+    "ipa": "ɪz ðˈɪs dˈɪʃ spˈaɪsi?",
+    "ms": 2300,
+    "bytes": 8158
+   },
+   "Could I have some water, please?": {
+    "file": "am_michael-771b4004daa47aab.ogg",
+    "ipa": "kʊd aɪ hæv sˈʌm wˈɔːɾɚ, plˈiːz?",
+    "ms": 2575,
+    "bytes": 9388
+   },
+   "Do you have this in a bigger size?": {
+    "file": "am_michael-f30f4b02793bd675.ogg",
+    "ipa": "duː juː hæv ðˈɪs ɪn ə bˈɪɡɚ sˈaɪz?",
+    "ms": 2825,
+    "bytes": 11100
+   },
+   "think": {
+    "file": "am_michael-31d54dcea0bdcaef.ogg",
+    "ipa": "θˈɪŋk",
+    "ms": 1250,
+    "bytes": 4141
+   },
+   "three": {
+    "file": "am_michael-138dec050e07b426.ogg",
+    "ipa": "θɹˈiː",
+    "ms": 1300,
+    "bytes": 4334
+   },
+   "thank you": {
+    "file": "am_michael-9293f8c99ea72a6f.ogg",
+    "ipa": "θˈæŋk juː",
+    "ms": 1575,
+    "bytes": 5438
+   },
+   "birthday": {
+    "file": "am_michael-08510f9d5d73be4e.ogg",
+    "ipa": "bˈɜːθdˌeɪ",
+    "ms": 1525,
+    "bytes": 5133
+   },
+   "I think it's Thursday.": {
+    "file": "am_michael-6f7393c7326974cb.ogg",
+    "ipa": "aɪ θˈɪŋk ˈɪts θˈɜːzdˌeɪ.",
+    "ms": 2200,
+    "bytes": 7875
+   },
+   "Thank you for the three things.": {
+    "file": "am_michael-3c7fbfa3c812a95a.ogg",
+    "ipa": "θˈæŋk juː fɔːɹ ðə θɹˈiː θˈɪŋz.",
+    "ms": 2425,
+    "bytes": 8766
+   },
+   "Can I try it on?": {
+    "file": "am_michael-e7746bc46d54a2b7.ogg",
+    "ipa": "kæn aɪ tɹˈaɪ ɪt ɑːn?",
+    "ms": 2075,
+    "bytes": 7359
+   },
+   "How much does this cost?": {
+    "file": "am_michael-d6c99824e580e4ec.ogg",
+    "ipa": "hˈaʊ mˈʌtʃ dʌz ðˈɪs kˈɑːst?",
+    "ms": 2450,
+    "bytes": 8823
+   },
+   "I'm just looking, thank you.": {
+    "file": "am_michael-9c02831ac19a247f.ogg",
+    "ipa": "ˈaɪm dʒˈʌst lˈʊkɪŋ, θˈæŋk juː.",
+    "ms": 2450,
+    "bytes": 8867
+   },
+   "Keep the change.": {
+    "file": "am_michael-9428028875362bf9.ogg",
+    "ipa": "kˈiːp ðə tʃˈeɪndʒ.",
+    "ms": 1825,
+    "bytes": 6356
+   },
+   "That was delicious, thank you!": {
+    "file": "am_michael-91a43dac962734ff.ogg",
+    "ipa": "ðˈæt wʌz dɪlˈɪʃəs, θˈæŋk juː!",
+    "ms": 2550,
+    "bytes": 9225
+   },
+   "job": {
+    "file": "am_michael-891237486bb2a23b.ogg",
+    "ipa": "dʒˈɑːb",
+    "ms": 1300,
+    "bytes": 4314
+   },
+   "just": {
+    "file": "am_michael-45f58508af4fc444.ogg",
+    "ipa": "dʒˈʌst",
+    "ms": 1150,
+    "bytes": 3826
+   },
+   "jacket": {
+    "file": "am_michael-33e3f1b846cdcbb8.ogg",
+    "ipa": "dʒˈækət",
+    "ms": 1425,
+    "bytes": 4772
+   },
+   "orange": {
+    "file": "am_michael-eeea500bd9f1b6ab.ogg",
+    "ipa": "ˈɔːɹəndʒ",
+    "ms": 1475,
+    "bytes": 4967
+   },
+   "I just changed my job.": {
+    "file": "am_michael-3b3efd45c66a5f2c.ogg",
+    "ipa": "aɪ dʒˈʌst tʃˈeɪndʒd maɪ dʒˈɑːb.",
+    "ms": 2425,
+    "bytes": 8759
+   },
+   "John enjoys orange juice.": {
+    "file": "am_michael-c33cc36f04c88779.ogg",
+    "ipa": "dʒˈɑːn ˌɛndʒˈɔɪz ˈɔːɹəndʒ dʒˈuːs.",
+    "ms": 2900,
+    "bytes": 10624
+   },
+   "I have a terrible headache.": {
+    "file": "am_michael-e7275c16c850a9a3.ogg",
+    "ipa": "aɪ hæv ə tˈɛɹəbəl hˈɛdˌeɪk.",
+    "ms": 2325,
+    "bytes": 8350
+   },
+   "I need to see a doctor.": {
+    "file": "am_michael-2c64a549d34c34c8.ogg",
+    "ipa": "aɪ nˈiːd tə sˈiː ə dˈɑːktɚ.",
+    "ms": 2275,
+    "bytes": 8165
+   },
+   "Where is the nearest pharmacy?": {
+    "file": "am_michael-53e8487da7523e4a.ogg",
+    "ipa": "wˈɛɹ ɪz ðə nˈɪɹəst fˈɑːɹməsi?",
+    "ms": 2700,
+    "bytes": 9778
+   },
+   "I think I have a fever.": {
+    "file": "am_michael-c7bc9ad869e02040.ogg",
+    "ipa": "aɪ θˈɪŋk aɪ hæv ə fˈiːvɚ.",
+    "ms": 2250,
+    "bytes": 8067
+   },
+   "I'm allergic to peanuts.": {
+    "file": "am_michael-d71ad3a08212330c.ogg",
+    "ipa": "ˈaɪm əlˈɜːdʒɪk tə pˈiːnəts.",
+    "ms": 2550,
+    "bytes": 9864
+   },
+   "sheep": {
+    "file": "am_michael-c82bcc6a3bf538a7.ogg",
+    "ipa": "ʃˈiːp",
+    "ms": 1075,
+    "bytes": 3555
+   },
+   "seat": {
+    "file": "am_michael-da370f527e307c11.ogg",
+    "ipa": "sˈiːt",
+    "ms": 1150,
+    "bytes": 3794
+   },
+   "leave": {
+    "file": "am_michael-f9321bc03a8ef9e1.ogg",
+    "ipa": "lˈiːv",
+    "ms": 925,
+    "bytes": 3105
+   },
+   "feel": {
+    "file": "am_michael-f1130b90f8f60df3.ogg",
+    "ipa": "fˈiːl",
+    "ms": 925,
+    "bytes": 3179
+   },
+   "Please eat the cheese.": {
+    "file": "am_michael-3a5eefb2149e5404.ogg",
+    "ipa": "plˈiːz ˈiːt ðə tʃˈiːz.",
+    "ms": 2100,
+    "bytes": 7491
+   },
+   "We need to sleep.": {
+    "file": "am_michael-d56d14066c005094.ogg",
+    "ipa": "wiː nˈiːd tə slˈiːp.",
+    "ms": 1925,
+    "bytes": 6738
+   },
+   "I lost my phone and my wallet.": {
+    "file": "am_michael-9897b5a859035359.ogg",
+    "ipa": "aɪ lˈɔːst maɪ fˈoʊn ænd maɪ wˈɔːlət.",
+    "ms": 2875,
+    "bytes": 10611
+   },
+   "Can you call a taxi for me?": {
+    "file": "am_michael-b84615a356751ed9.ogg",
+    "ipa": "kæn juː kˈɔːl ə tˈæksi fɔːɹ miː?",
+    "ms": 2425,
+    "bytes": 8893
+   },
+   "My train was cancelled.": {
+    "file": "am_michael-bfb3cfef9f7e242b.ogg",
+    "ipa": "maɪ tɹˈeɪn wʌz kˈænsəld.",
+    "ms": 2300,
+    "bytes": 8261
+   },
+   "Is there a bank near here?": {
+    "file": "am_michael-def87e6f8bd22ca4.ogg",
+    "ipa": "ɪz ðˈɛɹ ə bˈæŋk nˈɪɹ hˈiːɹ?",
+    "ms": 2350,
+    "bytes": 8432
+   },
+   "Please help me, it's urgent.": {
+    "file": "am_michael-fbbddf3a37a89e3b.ogg",
+    "ipa": "plˈiːz hˈɛlp miː, ˈɪts ˈɜːdʒənt.",
+    "ms": 2550,
+    "bytes": 9256
+   },
+   "ship": {
+    "file": "am_michael-19f1d279987abb53.ogg",
+    "ipa": "ʃˈɪp",
+    "ms": 1025,
+    "bytes": 3375
+   },
+   "sit": {
+    "file": "am_michael-1e9968f32b799440.ogg",
+    "ipa": "sˈɪt",
+    "ms": 1100,
+    "bytes": 3629
+   },
+   "live": {
+    "file": "am_michael-938adf65f95aa942.ogg",
+    "ipa": "lˈɪv",
+    "ms": 1250,
+    "bytes": 4074
+   },
+   "fill": {
+    "file": "am_michael-b8624bd561bd6b3d.ogg",
+    "ipa": "fˈɪl",
+    "ms": 1225,
+    "bytes": 4052
+   },
+   "This is my little sister.": {
+    "file": "am_michael-45c9804a8a6968f2.ogg",
+    "ipa": "ðˈɪs ɪz maɪ lˈɪɾəl sˈɪstɚ.",
+    "ms": 2550,
+    "bytes": 9151
+   },
+   "It is a big city.": {
+    "file": "am_michael-452f65a5f2161342.ogg",
+    "ipa": "ɪt ɪz ə bˈɪɡ sˈɪɾi.",
+    "ms": 2025,
+    "bytes": 7126
+   },
+   "I really like playing video games.": {
+    "file": "am_michael-9ab63908ff7f8be8.ogg",
+    "ipa": "aɪ ɹˈɪli lˈaɪk plˈeɪɪŋ vˈɪdioʊ ɡˈeɪmz.",
+    "ms": 2975,
+    "bytes": 12064
+   },
+   "What kind of music do you listen to?": {
+    "file": "am_michael-ef8cbc19f335cd0b.ogg",
+    "ipa": "wˈʌt kˈaɪnd ʌv mjˈuːzɪk duː juː lˈɪsən tˈuː?",
+    "ms": 2925,
+    "bytes": 10911
+   },
+   "In my opinion, the book was better.": {
+    "file": "am_michael-8bf7154800582499.ogg",
+    "ipa": "ɪn maɪ əpˈɪnjən, ðə bˈʊk wʌz bˈɛɾɚ.",
+    "ms": 3100,
+    "bytes": 12454
+   },
+   "I don't agree with you.": {
+    "file": "am_michael-7b5ed35550e4cd01.ogg",
+    "ipa": "aɪ dˈoʊnt əɡɹˈiː wɪð juː.",
+    "ms": 1925,
+    "bytes": 6784
+   },
+   "That sounds like a great idea.": {
+    "file": "am_michael-e17f81efcc90e7bd.ogg",
+    "ipa": "ðˈæt sˈaʊndz lˈaɪk ə ɡɹˈeɪt aɪdˈiːə.",
+    "ms": 2725,
+    "bytes": 10046
+   },
+   "bird": {
+    "file": "am_michael-290dd9f3d12c6d4d.ogg",
+    "ipa": "bˈɜːd",
+    "ms": 1150,
+    "bytes": 3786
+   },
+   "work": {
+    "file": "am_michael-45be51c49ac5a24a.ogg",
+    "ipa": "wˈɜːk",
+    "ms": 1225,
+    "bytes": 4066
+   },
+   "her": {
+    "file": "am_michael-ce2b45b237ad2b5d.ogg",
+    "ipa": "hɜː",
+    "ms": 1100,
+    "bytes": 3560
+   },
+   "first": {
+    "file": "am_michael-b80c5e017d6f6384.ogg",
+    "ipa": "fˈɜːst",
+    "ms": 1275,
+    "bytes": 4250
+   },
+   "Her first word was bird.": {
+    "file": "am_michael-096801ab98d5d993.ogg",
+    "ipa": "hɜː fˈɜːst wˈɜːd wʌz bˈɜːd.",
+    "ms": 2450,
+    "bytes": 8839
+   },
+   "I work on Thursday.": {
+    "file": "am_michael-e57b8e910d1e4e29.ogg",
+    "ipa": "aɪ wˈɜːk ɑːn θˈɜːzdˌeɪ.",
+    "ms": 2250,
+    "bytes": 8029
+   },
+   "I've never been to Australia.": {
+    "file": "am_michael-e3bfcae2b6e28a7b.ogg",
+    "ipa": "ˈaɪv nˈɛvɚ bɪn tə ɔːstɹˈeɪljə.",
+    "ms": 2675,
+    "bytes": 9759
+   },
+   "Have you ever tried sushi?": {
+    "file": "am_michael-acac685ec7f4999e.ogg",
+    "ipa": "hæv juː ˈɛvɚ tɹˈaɪd sˈuːʃi?",
+    "ms": 2425,
+    "bytes": 8768
+   },
+   "I'd rather stay home tonight.": {
+    "file": "am_michael-5d0896f91d5965dc.ogg",
+    "ipa": "ˈaɪd ɹˈæðɚ stˈeɪ hˈoʊm tənˈaɪt.",
+    "ms": 2575,
+    "bytes": 9362
+   },
+   "It depends on the weather.": {
+    "file": "am_michael-df986aafb03b5b24.ogg",
+    "ipa": "ɪt dɪpˈɛndz ɑːn ðə wˈɛðɚ.",
+    "ms": 2450,
+    "bytes": 9494
+   },
+   "What are you doing this weekend?": {
+    "file": "am_michael-ed018603254b74c1.ogg",
+    "ipa": "wˈʌt ɑːɹ juː dˈuːɪŋ ðˈɪs wˈiːkˌɛnd?",
+    "ms": 2625,
+    "bytes": 9571
+   },
+   "I": {
+    "file": "am_michael-a9dac217c452002f.ogg",
+    "ipa": "aɪ",
+    "ms": 975,
+    "bytes": 3128
+   },
+   "my": {
+    "file": "am_michael-f94b6551bdee5201.ogg",
+    "ipa": "maɪ",
+    "ms": 1250,
+    "bytes": 4042
+   },
+   "time": {
+    "file": "am_michael-8f49fc091da5b1c0.ogg",
+    "ipa": "tˈaɪm",
+    "ms": 1300,
+    "bytes": 4266
+   },
+   "nice": {
+    "file": "am_michael-2cf32a952d8df0eb.ogg",
+    "ipa": "nˈaɪs",
+    "ms": 1325,
+    "bytes": 4377
+   },
+   "I like my new bike.": {
+    "file": "am_michael-cccbed1654ecefa8.ogg",
+    "ipa": "aɪ lˈaɪk maɪ nˈuː bˈaɪk.",
+    "ms": 2075,
+    "bytes": 7434
+   },
+   "It's time to fly to Miami.": {
+    "file": "am_michael-79ff501008534cfb.ogg",
+    "ipa": "ˈɪts tˈaɪm tə flˈaɪ tə maɪˈæmi.",
+    "ms": 2700,
+    "bytes": 9827
+   },
+   "Hello, this is Alex speaking.": {
+    "file": "am_michael-2d7d2479fd80e61f.ogg",
+    "ipa": "həlˈoʊ, ðˈɪs ɪz ˈæləks spˈiːkɪŋ.",
+    "ms": 2650,
+    "bytes": 9594
+   },
+   "Could you repeat that, please?": {
+    "file": "am_michael-270568bc98f566a8.ogg",
+    "ipa": "kʊd juː ɹɪpˈiːt ðˈæt, plˈiːz?",
+    "ms": 2350,
+    "bytes": 8549
+   },
+   "Sorry, the line is very bad.": {
+    "file": "am_michael-f1dab9a60c636b1a.ogg",
+    "ipa": "sˈɑːɹi, ðə lˈaɪn ɪz vˈɛɹi bˈæd.",
+    "ms": 2775,
+    "bytes": 10109
+   },
+   "I'd like to book a table for Saturday.": {
+    "file": "am_michael-27f6e4baee5b2b81.ogg",
+    "ipa": "ˈaɪd lˈaɪk tə bˈʊk ə tˈeɪbəl fɔːɹ sˈæɾɚdi.",
+    "ms": 3025,
+    "bytes": 11249
+   },
+   "Can I leave a message?": {
+    "file": "am_michael-449259b120786a18.ogg",
+    "ipa": "kæn aɪ lˈiːv ə mˈɛsədʒ?",
+    "ms": 2200,
+    "bytes": 7802
+   },
+   "cat": {
+    "file": "am_michael-a436f61db99d0eaf.ogg",
+    "ipa": "kˈæt",
+    "ms": 1100,
+    "bytes": 3594
+   },
+   "bad": {
+    "file": "am_michael-922b35184e7eb097.ogg",
+    "ipa": "bˈæd",
+    "ms": 1225,
+    "bytes": 3953
+   },
+   "black": {
+    "file": "am_michael-80623159061828fe.ogg",
+    "ipa": "blˈæk",
+    "ms": 1100,
+    "bytes": 3701
+   },
+   "That man has a cat.": {
+    "file": "am_michael-e6ad1f17f516fa1a.ogg",
+    "ipa": "ðˈæt mˈæn hæz ə kˈæt.",
+    "ms": 2250,
+    "bytes": 7984
+   },
+   "I am happy to have a map.": {
+    "file": "am_michael-1610597f160f0cf9.ogg",
+    "ipa": "aɪ æm hˈæpi tə hæv ə mˈæp.",
+    "ms": 2375,
+    "bytes": 9530
+   },
+   "I'll call you back later.": {
+    "file": "am_michael-024b99a48852fef5.ogg",
+    "ipa": "ˈaɪl kˈɔːl juː bˈæk lˈeɪɾɚ.",
+    "ms": 2275,
+    "bytes": 8243
+   },
+   "Could you spell your name, please?": {
+    "file": "am_michael-74c1f7d9fd438191.ogg",
+    "ipa": "kʊd juː spˈɛl jʊɹ nˈeɪm, plˈiːz?",
+    "ms": 2500,
+    "bytes": 9092
+   },
+   "What time do you open tomorrow?": {
+    "file": "am_michael-9064bee7a3cab9ac.ogg",
+    "ipa": "wˈʌt tˈaɪm duː juː ˈoʊpən təmˈɑːɹˌoʊ?",
+    "ms": 2975,
+    "bytes": 11051
+   },
+   "Thanks for calling.": {
+    "file": "am_michael-99a8bcdcd3ced4b5.ogg",
+    "ipa": "θˈæŋks fɔːɹ kˈɔːlɪŋ.",
+    "ms": 1975,
+    "bytes": 7000
+   },
+   "Talk to you soon!": {
+    "file": "am_michael-d90768919e79d0d2.ogg",
+    "ipa": "tˈɔːk tə juː sˈuːn!",
+    "ms": 1925,
+    "bytes": 6725
    }
   }
  }
