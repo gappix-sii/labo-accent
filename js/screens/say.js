@@ -6,7 +6,7 @@ import { SENTENCES } from "../content/sentences.js";
 import { Recorder } from "../engine/recorder.js";
 import { prepare, score, onEngine, MODEL_MB } from "../engine/engine.js";
 import { FR_HINT } from "../engine/phonemes.js";
-import { say as speakText, preload, isReady, stopVoice, prepareVoice, onVoice, unlockAudio, lastStats, VOICES, VOICE_MB } from "../engine/voice.js";
+import { say as speakText, preload, stopVoice, lastStats, VOICES } from "../engine/clips.js";
 
 const SLOW = 0.7;
 
@@ -14,7 +14,7 @@ const LEVEL_FR = { good: "bien", ok: "presque", bad: "à revoir", skip: "non not
 const STATUS_FR = { good: "bien", ok: "presque", bad: "à revoir" };
 
 export function mountSay(root, S) {
-  const ui = { engine: S.engine ? "loading" : "off", progress: null, busy: "", error: "", voice: "off", voiceProgress: null, voiceInfo: "", playing: false };
+  const ui = { engine: S.engine ? "loading" : "off", progress: null, busy: "", error: "", voiceInfo: "", playing: false };
   let rec = null;
 
   const sentence = () => SENTENCES[S.sentence % SENTENCES.length];
@@ -41,11 +41,6 @@ export function mountSay(root, S) {
   }
 
   function voiceBlock() {
-    if (ui.voice === "loading") {
-      const p = ui.voiceProgress;
-      const pct = p && p.total ? Math.round((p.loaded / p.total) * 100) : null;
-      return html`<div class="voice"><p>Préparation de la voix…${pct !== null ? ` ${pct} %` : ""}</p><progress max="100" value="${pct ?? 0}"></progress></div>`;
-    }
     return html`<div class="voice">
       <div class="row start">
         <button class="btn soft" data-act="listen" type="button">${ui.playing === 1 ? "⏹ Stop" : "🔊 Écouter"}</button>
@@ -56,93 +51,25 @@ export function mountSay(root, S) {
             : html`<option value="${v.id}">${v.name}</option>`)}</select>
         </label>
       </div>
-      ${!S.voice ? html`<p class="muted small">Première écoute : environ ${VOICE_MB} Mo à télécharger, une seule fois. La voix fonctionne ensuite sur ton appareil.</p>` : ""}
-      ${ui.voice === "ready" ? prepLine() : ""}
       ${ui.voiceInfo ? html`<p class="muted small">${ui.voiceInfo}</p>` : ""}
     </div>`;
   }
 
-  function prepLine() {
-    const c = readyCount(), total = SENTENCES.length * 2;
-    return c >= total
-      ? html`<p class="muted small">✓ Les ${total} lectures sont prêtes : le son part tout de suite.</p>`
-      : html`<p class="muted small">Préparation des lectures : ${c} / ${total} prêtes (≈ 2 s chacune, une seule fois). ${isReady(sentence().en, { voice: S.voiceId, speed: 1 }) ? "Celle-ci est prête." : "Celle-ci n'est pas encore prête."}</p>`;
-  }
-
-  // Doit être lancé directement par le clic : le navigateur n'autorise le son qu'après un geste.
+  // Joue le son livré avec l'appli. Lancé directement par le clic : le navigateur n'autorise le son qu'après un geste.
   async function listen(speed) {
     if (ui.playing === speed) { stopVoice(); return; } // même bouton pendant la lecture : stop
     ui.error = "";
-    const firstTime = ui.voice !== "ready";
     const playing = speakText(sentence().en, { voice: S.voiceId, speed });
-    playing.catch(() => {}); // l'erreur est traitée plus bas
-    if (firstTime) {
-      ui.voice = "loading"; draw();
-      try {
-        const r = await prepareVoice();
-        ui.voiceInfo = `Voix prête en ${Math.round(r.ms / 100) / 10} s`;
-        ui.voice = "ready"; S.voice = true; persist();
-      } catch (e) {
-        ui.voice = "off";
-        ui.error = `La voix n'a pas pu se charger (${e.message}). Vérifie ta connexion puis réessaie.`;
-        return draw();
-      }
-    }
     ui.playing = speed; draw();
     try { await playing; } catch (e) { ui.error = `La lecture a échoué (${e.message}).`; }
     if (ui.playing !== speed) return; // une autre lecture a pris le relais
     const st = lastStats();
-    if (st && st.firstMs !== null) {
-      ui.voiceInfo = `Dernière écoute : son lancé ${st.firstMs} ms après le clic · phrase préparée : ${st.prepared}`
-        + ` · délai de la sortie audio : ${st.outMs} ms${st.freshAudio ? " · sortie audio ouverte à ce clic" : ""}`;
-    }
+    if (st && st.firstMs !== null) ui.voiceInfo = `Dernière écoute : son lancé ${st.firstMs} ms après le clic`;
     ui.playing = false; draw();
-    warm();
   }
 
-  // Prépare en arrière-plan, l'une après l'autre : la phrase affichée (normale puis lente), puis toutes
-  // les autres (normales, puis lentes). Chaque phrase n'est fabriquée qu'une fois puis gardée sur l'appareil :
-  // après ce premier passage (≈ 2 s par phrase), tout clic est immédiat, même d'une session à l'autre.
-  // Se résout quand la phrase affichée est prête à vitesse normale.
-  function warm() {
-    if (ui.voice !== "ready") return Promise.resolve();
-    const i = S.sentence % SENTENCES.length, voice = S.voiceId, n = SENTENCES.length;
-    const others = Array.from({ length: n - 1 }, (_, k) => (i + 1 + k) % n);
-    const queue = [[i, 1], [i, SLOW], ...others.map((k) => [k, 1]), ...others.map((k) => [k, SLOW])];
-    const still = () => S.sentence % n === i && S.voiceId === voice && !ui.busy;
-    const step = (p) => p.then(progress);
-    const first = step(preload(SENTENCES[i].en, { voice, speed: 1 }));
-    queue.slice(1).reduce((p, [k, speed]) => p.then(() => still() && step(preload(SENTENCES[k].en, { voice, speed }))), first);
-    return first;
-  }
-
-  // Combien de phrases (normales et lentes) sont prêtes à être jouées tout de suite.
-  function readyCount() {
-    return SENTENCES.reduce((a, s) => a + isReady(s.en, { voice: S.voiceId, speed: 1 }) + isReady(s.en, { voice: S.voiceId, speed: SLOW }), 0);
-  }
-  let shownCount = -1;
-  function progress() {
-    const c = readyCount();
-    if (c !== shownCount) { shownCount = c; draw(); }
-  }
-
-  // Voix déjà téléchargée sur cet appareil : on la recharge depuis le cache, puis on prépare la phrase.
-  async function startVoice() {
-    if (ui.voice !== "off") return;
-    ui.voice = "loading"; draw();
-    const t0 = performance.now();
-    try {
-      await prepareVoice();
-      ui.voice = "ready";
-      ui.voiceInfo = "Préparation de la phrase…";
-      draw();
-      await warm(); // « Voix prête » seulement quand la phrase affichée l'est vraiment
-      if (ui.voiceInfo === "Préparation de la phrase…") ui.voiceInfo = `Voix prête en ${Math.round((performance.now() - t0) / 100) / 10} s`;
-    } catch {
-      ui.voice = "off"; // pas grave : elle sera retentée au premier clic sur « Écouter »
-    }
-    draw();
-  }
+  // Charge à l'avance le son de la phrase affichée (quelques Ko) : le clic part tout de suite.
+  function warm() { preload(sentence().en, { voice: S.voiceId }).catch(() => {}); }
 
   function engineBlock() {
     if (ui.engine === "off") {
@@ -192,7 +119,6 @@ export function mountSay(root, S) {
       ui.error = `Le moteur n'a pas pu se charger (${e.message}). Vérifie ta connexion puis réessaie.`;
     }
     draw();
-    if (S.voice) startVoice(); // l'un après l'autre : le démarrage reste fluide
   }
 
   let starting = false; // micro en cours d'ouverture (le navigateur peut demander l'autorisation)
@@ -237,7 +163,6 @@ export function mountSay(root, S) {
       ui.error = `L'analyse a échoué (${e.message}).`;
     }
     ui.busy = ""; draw();
-    warm();
   }
 
   root.addEventListener("click", (e) => {
@@ -262,20 +187,10 @@ export function mountSay(root, S) {
     if (act === "stop") finish();
   });
 
-  // Premier geste sur la page : on ouvre la sortie audio tout de suite (le navigateur l'exige après un geste).
-  document.addEventListener("pointerdown", () => { if (S.voice) unlockAudio(); }, { once: true });
-
   root.addEventListener("change", (e) => {
     if (e.target.dataset.act !== "voice-pick") return;
     S.voiceId = VOICES.some((v) => v.id === e.target.value) ? e.target.value : "af_heart";
     persist(); warm();
-  });
-
-  let lastVoiceDraw = 0;
-  onVoice((ev) => {
-    if (ev.type !== "progress" || ui.voice !== "loading") return;
-    ui.voiceProgress = ev;
-    if (performance.now() - lastVoiceDraw > 250) { lastVoiceDraw = performance.now(); draw(); }
   });
 
   let lastDraw = 0; // la progression arrive très souvent : on redessine au plus 4 fois par seconde
@@ -286,6 +201,6 @@ export function mountSay(root, S) {
   });
 
   draw();
-  if (S.engine) startEngine(); // déjà téléchargé : on le recharge depuis le cache (puis la voix)
-  else if (S.voice) startVoice();
+  warm();
+  if (S.engine) startEngine(); // déjà téléchargé : on le recharge depuis le cache
 }
