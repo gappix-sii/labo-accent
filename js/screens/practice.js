@@ -113,7 +113,9 @@ export function practice({ S, persist, draw, root, target, onScored, speakLabel 
     return false;
   }
 
-  if (S.engine) startEngine(); // déjà téléchargé : on le recharge depuis le cache
+  // Déjà téléchargé : on le recharge depuis le cache. Lancé juste après la construction de l'écran,
+  // pas pendant : startEngine redessine, et l'écran n'a pas encore fini de se monter.
+  if (S.engine) queueMicrotask(startEngine);
 
   return {
     block, errorBlock, handle,
