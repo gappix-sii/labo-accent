@@ -59,6 +59,9 @@ _Mises à jour le 2026-11-17_
 | Parcours (2026-11-17) | Leçons de sons et thèmes de phrases alternés (son → thème qui le réutilise) | On travaille un son puis on l'emploie dans des phrases utiles | Tous les sons d'abord ; tous les thèmes d'abord |
 | Réussite d'une leçon (2026-11-17) | Chaque élément noté 70 ou plus, réessais libres ; 10 XP par élément réussi + 20 XP en fin de leçon | Oblige à travailler chaque son sans bloquer | Tout dire une fois (trop facile) ; moyenne ≥ 80 (trop dur au début) |
 | Objectif quotidien (2026-11-17) | 50 XP par jour (≈ une leçon), réglable 20 / 50 / 100 ; la série compte les jours où il est atteint | Rythme tenable de 10-15 min | 20 XP ; 100 XP |
+| Révision du vocabulaire (2026-11-17) | Mot affiché en français, dit en anglais au micro et noté (réussi à 70) ; « Je ne sais pas » montre et fait écouter le mot ; répétition espacée à 5 boîtes ; 10 nouveaux mots par jour (5 / 10 / 20), niveau A1 au départ | Travaille à la fois le mot et sa prononciation ; une version simple, réglable à un seul endroit | Choisir la traduction parmi 4 (pas de prononciation) ; les deux alternés (plus de code) |
+| Exercice d'écoute (2026-11-17) | Paires de mots (ship / sheep) : un mot joué, choisir lequel | Entraîne l'oreille aux sons que les Français confondent | Phrase à reconnaître parmi 3 ; les deux |
+| Hors ligne (2026-11-17) | Tout le hors-ligne en phase 7, avec le service worker | Un seul chantier, au moment de la publication | Service worker dès la phase 3 (à retoucher ensuite) |
 | Voix des sons fabriqués (2026-11-17) | Les deux voix (Heart et Michael), ≈ 5 Mo livrés | Garder le choix de la voix | Heart seule (≈ 2,5 Mo) |
 
 ### Questions ouvertes
