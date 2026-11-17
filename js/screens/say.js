@@ -195,20 +195,25 @@ export function mountSay(root, S) {
     if (S.voice) startVoice(); // l'un après l'autre : le démarrage reste fluide
   }
 
+  let starting = false; // micro en cours d'ouverture (le navigateur peut demander l'autorisation)
   async function speak() {
+    if (rec || starting) return; // un 2e clic pendant l'ouverture ouvrirait un 2e micro, jamais coupé
+    starting = true;
     ui.error = "";
     stopVoice(); // on ne s'enregistre pas par-dessus la voix
-    rec = new Recorder({
+    const r = new Recorder({
       onLevel: (v) => { const m = $("#level", root); if (m) m.value = v; },
       onAutoStop: () => finish()
     });
     try {
-      await rec.start();
+      await r.start();
     } catch {
-      rec = null;
       ui.error = "Je n'ai pas accès au micro. Autorise-le dans le navigateur (icône à gauche de l'adresse), puis réessaie.";
       return draw();
+    } finally {
+      starting = false;
     }
+    rec = r;
     ui.busy = "rec"; draw();
   }
 

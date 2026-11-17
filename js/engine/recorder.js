@@ -13,17 +13,24 @@ export class Recorder {
     this.stream = await navigator.mediaDevices.getUserMedia({
       audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true }
     });
-    this.ctx = new AudioContext();
-    if (this.ctx.state === "suspended") await this.ctx.resume();
-    const src = this.ctx.createMediaStreamSource(this.stream);
-    this.analyser = this.ctx.createAnalyser();
-    this.analyser.fftSize = 1024;
-    src.connect(this.analyser);
-    this.chunks = [];
-    this.rec = new MediaRecorder(this.stream);
-    this.rec.ondataavailable = (e) => { if (e.data && e.data.size) this.chunks.push(e.data); };
-    this.done = new Promise((res) => { this.rec.onstop = res; });
-    this.rec.start();
+    try {
+      this.ctx = new AudioContext();
+      if (this.ctx.state === "suspended") await this.ctx.resume();
+      const src = this.ctx.createMediaStreamSource(this.stream);
+      this.analyser = this.ctx.createAnalyser();
+      this.analyser.fftSize = 1024;
+      src.connect(this.analyser);
+      this.chunks = [];
+      this.rec = new MediaRecorder(this.stream);
+      this.rec.ondataavailable = (e) => { if (e.data && e.data.size) this.chunks.push(e.data); };
+      this.done = new Promise((res) => { this.rec.onstop = res; });
+      this.rec.start();
+    } catch (e) {
+      // Échec après l'ouverture du micro : on le coupe tout de suite, sinon il resterait allumé.
+      this.stream.getTracks().forEach((t) => t.stop());
+      if (this.ctx) this.ctx.close().catch(() => {});
+      throw e;
+    }
     this.active = true;
     this.t0 = performance.now();
     this.speechAt = 0; this.lastLoud = 0;

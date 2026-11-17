@@ -13,7 +13,7 @@ const RATE = 24000, GAP = 0.09;
 // job : la phrase que le worker est en train de fabriquer (en silence ou pour la jouer).
 // out : la lecture en cours (une phrase déjà prête en mémoire, ou le job lui-même).
 // Les séparer permet de rejouer une phrase prête sans interrompre la préparation des suivantes.
-let worker = null, ready = null, ctx = null, job = null, out = null, seq = 0;
+let worker = null, ready = null, ctx = null, job = null, out = null, seq = 0, sayGen = 0;
 const listeners = new Set(), memo = new Map();
 export const onVoice = (fn) => { listeners.add(fn); return () => listeners.delete(fn); };
 const emit = (ev) => listeners.forEach((fn) => fn(ev));
@@ -37,18 +37,30 @@ export function prepareVoice() {
   if (!worker) {
     worker = makeWorker(new URL("./tts-worker.js", import.meta.url));
     worker.onmessage = onMsg;
-    worker.onerror = (e) => emit({ type: "error", message: e.message || "la voix s'est arrêtée" });
+    worker.onerror = (e) => crash(e.message || "la voix s'est arrêtée");
   }
   if (!ready) {
     ready = new Promise((res, rej) => {
       const off = onVoice((ev) => {
         if (ev.type === "ready") { off(); res(ev); }
-        if (ev.type === "error") { off(); ready = null; worker.terminate(); worker = null; rej(new Error(ev.message)); }
+        if (ev.type === "error") { off(); ready = null; if (worker) { worker.terminate(); worker = null; } rej(new Error(ev.message)); }
       });
     });
     worker.postMessage({ type: "init" });
   }
   return ready;
+}
+
+// Le worker a planté : la phrase en cours échoue, et le prochain appel en relance un neuf.
+function crash(message) {
+  if (worker) { worker.terminate(); worker = null; }
+  ready = null;
+  const c = job;
+  if (c) {
+    for (const s of c.sources) { s.onended = null; try { s.stop(); } catch { /* déjà fini */ } }
+    finish(c, new Error(message));
+  }
+  emit({ type: "error", message });
 }
 
 function audioCtx() {
@@ -152,7 +164,10 @@ export async function say(text, { voice = "af_heart", speed = 1 } = {}) {
   const r = request(text, voice, speed);
   const st = (prepared) => (stats = { t0, prepared, freshAudio: fresh, firstMs: null, outMs: null, state: "" });
   stopVoice(); // arrête la lecture en cours, sans toucher à une préparation en arrière-plan
+  const my = ++sayGen;
   const hit = await ready_(r.key);
+  // Un autre clic est arrivé pendant la lecture sur l'appareil : c'est lui qui joue, pas nous.
+  if (my !== sayGen) return;
   if (hit) { // déjà prête : lecture immédiate, pendant que le worker continue de préparer la suite
     const c = newReq(r.key, false, hit, true);
     c.stats = st("oui");

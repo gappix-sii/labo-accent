@@ -33,7 +33,17 @@ function spawn() {
       else emit({ type: "error", message: m.message });
     }
   };
-  worker.onerror = (e) => emit({ type: "error", message: e.message || "le moteur s'est arrêté" });
+  worker.onerror = (e) => crash(e.message || "le moteur s'est arrêté");
+}
+
+// Le worker a planté (mémoire pleine…) : on rejette les analyses en attente et on l'abandonne.
+// Le prochain appel à prepare() en relance un neuf (le modèle revient du cache du navigateur).
+function crash(message) {
+  for (const p of pending.values()) p.rej(new Error(message));
+  pending.clear();
+  if (worker) { worker.terminate(); worker = null; }
+  ready = null;
+  emit({ type: "error", message });
 }
 
 // Charge le moteur (télécharge le modèle la première fois). Se résout quand il est prêt.
