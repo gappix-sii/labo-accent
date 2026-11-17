@@ -60,8 +60,9 @@ export async function run(voices = ["af_heart", "am_michael"]) {
   try {
     for (const voice of voices) for (let i = 0; i < SENTENCES.length; i++) {
       const s = SENTENCES[i];
-      const good = await score(s.en, await to16k(await synth(phonemize(dict, s.en), voice)));
-      const bad = await score(s.en, await to16k(await synth(FAULTY[i], voice)));
+      const focus = { focus: s.expect }; // comme l'écran : les sons de la consigne comptent plus
+      const good = await score(s.en, await to16k(await synth(phonemize(dict, s.en), voice)), focus);
+      const bad = await score(s.en, await to16k(await synth(FAULTY[i], voice)), focus);
       const badSet = new Set(bad.result.words.flatMap((x) => x.phones.filter((ph) => ph.status === "bad").map((ph) => ph.p)));
       rows.push({ voice, phrase: i + 1, correct: good.result.score, signalésCorrect: flags(good).join(" "),
         fautes: bad.result.score, signalésFautes: flags(bad).join(" "), attendus: s.expect.map((p) => `${p} ${badSet.has(p) ? "oui" : "NON"}`).join(", ") });

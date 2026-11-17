@@ -153,7 +153,7 @@ export function mountSay(root, S) {
         ui.error = "Je n'ai rien entendu. Rapproche-toi du micro et parle un peu plus fort.";
       } else {
         const s = sentence().en;
-        const res = await score(s, out.pcm.samples);
+        const res = await score(s, out.pcm.samples, { focus: sentence().expect });
         S.last = summarize(s, res);
         addLog(S, logEntry(S.sentence % SENTENCES.length, S.kind, S.last));
         persist();

@@ -62,13 +62,14 @@ export function prepare() {
 }
 
 // Analyse un enregistrement (16 kHz mono) et le note par rapport à la phrase attendue.
-export async function score(sentence, samples) {
+// focus : sons travaillés, qui comptent plus dans la note (voir FOCUS_WEIGHT dans phonemes.js).
+export async function score(sentence, samples, { focus = [] } = {}) {
   const [d] = await Promise.all([loadDict(), prepare()]);
   const id = nextId++;
   const res = await new Promise((resolve, reject) => {
     pending.set(id, { res: resolve, rej: reject });
     worker.postMessage({ type: "analyze", id, audio: samples }, [samples.buffer]);
   });
-  const result = evaluate(buildReference(d, sentence), res.segs);
+  const result = evaluate(buildReference(d, sentence), res.segs, { focus });
   return { result, tips: tipsFor(result), ms: res.ms };
 }

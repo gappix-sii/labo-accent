@@ -54,14 +54,21 @@ export function arpaToIpa(arpa) {
   }).filter(Boolean);
 }
 
+// Variante à essayer en premier quand le dictionnaire liste d'abord la moins courante. À égalité,
+// c'est elle qui sert de référence : « I live here » dit « liv » est noté contre lɪv (faute sur ɪ),
+// pas contre laɪv (faute sur aɪ, incompréhensible). L'autre variante reste acceptée si elle colle mieux.
+export const PREFER_FIRST = { live: "L IH1 V" };
+
 // Prononciations d'un mot : [ [ {p,stress}, ... ], variante2, ... ]
 export function lookupProns(dict, word) {
   const w = normWord(word);
   if (!w) return null;
-  const out = [];
-  if (dict[w]) out.push(arpaToIpa(dict[w]));
-  for (let i = 1; i <= 4; i++) { const k = `${w}(${i})`; if (dict[k]) out.push(arpaToIpa(dict[k])); }
-  return out.length ? out : null;
+  const arpa = [];
+  if (Object.hasOwn(dict, w)) arpa.push(dict[w]);
+  for (let i = 1; i <= 4; i++) { const k = `${w}(${i})`; if (Object.hasOwn(dict, k)) arpa.push(dict[k]); }
+  const pref = Object.hasOwn(PREFER_FIRST, w) ? arpa.indexOf(PREFER_FIRST[w]) : -1;
+  if (pref > 0) arpa.unshift(...arpa.splice(pref, 1));
+  return arpa.length ? arpa.map(arpaToIpa) : null;
 }
 
 // Référence d'une phrase : [{display, norm, prons|null}]
@@ -121,8 +128,12 @@ export function tokenizeIpa(str) {
 // ---------- Alignement ----------
 const EQUIV = new Set(["t|ɾ", "ɾ|t", "d|ɾ", "ɾ|d", "ə|ɪ", "ɪ|ə", "ɑ|ə", "ə|ɑ", "ɝ|ə", "ə|ɝ"]);
 // Ces équivalences ne valent que pour des voyelles non accentuées (ə, ɪ, ɝ réduits) ou des t/d intervocaliques.
-function subCost(r, h) {
+// r anglais : ɹ et ɝ sont le même geste (langue en arrière) ; le modèle entend souvent ɝ dans « here »
+// (h i ɹ) ou ɹ dans « bird » (b ɝ d). Toujours accepté, quel que soit l'accent.
+const R_LIKE = new Set(["ɹ|ɝ", "ɝ|ɹ"]);
+export function subCost(r, h) {
   if (r.p === h.p) return 0;
+  if (R_LIKE.has(r.p + "|" + h.p)) return 0.15;
   if (EQUIV.has(r.p + "|" + h.p) && (r.stress <= 0 || ["t", "d"].includes(r.p))) return 0.15;
   const rv = VOWELS.has(r.p), hv = VOWELS.has(h.p);
   if (rv && hv) return 0.75;
@@ -189,7 +200,13 @@ function bestAlignment(refWords, hyp) {
   return { flat, ops: best.ops, choice };
 }
 
-export function evaluate(refWords, hyp) {
+// Poids du son travaillé dans la note globale : un « h » oublié dans « He is happy in his house »
+// coûte ≈ 14 points au lieu de ≈ 5 (la note de chaque mot, elle, ne change pas).
+export const FOCUS_WEIGHT = 3;
+
+// focus : les sons travaillés (leçon de son, ou consigne de la phrase), qui comptent plus dans la note.
+export function evaluate(refWords, hyp, { focus = [] } = {}) {
+  const focusSet = new Set(focus);
   const { flat, ops, choice } = bestAlignment(refWords, hyp);
   const words = refWords.map((w, wi) => ({
     display: w.display, scored: !!w.prons, phones: [], score: null, level: "skip", start: null, end: null,
@@ -212,7 +229,8 @@ export function evaluate(refWords, hyp) {
       else { status = "bad"; weight = 0; }
     }
     W.phones.push({ p: r.p, stress: r.stress, status, heard });
-    total += weight; count++;
+    const k = focusSet.has(r.p) ? FOCUS_WEIGHT : 1;
+    total += weight * k; count += k;
   }
   for (const W of words) {
     if (!W.scored || !W.phones.length) continue;
