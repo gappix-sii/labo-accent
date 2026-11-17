@@ -99,3 +99,5 @@ details summary { cursor: pointer; }
 .examples li { display: flex; gap: 10px; align-items: flex-start; }
 .btn.small-btn { padding: 6px 10px; }
 .btn:disabled:not(.choice) { opacity: .45; cursor: not-allowed; }
+/* Fautes typiques : la phrase fausse, barrée */
+.wrong-line { font-size: 1.3rem; margin: 4px 0; color: var(--bad); }

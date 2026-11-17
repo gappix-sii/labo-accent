@@ -9,6 +9,7 @@ import { DIALOGUES } from "../js/content/dialogues.js";
 import { ALL_MISTAKES } from "../js/content/mistakes.js";
 import { LESSONS } from "../js/content/lessons.js";
 import { defaults, sanitize } from "../js/core/store.js";
+import { route } from "../js/main.js";
 
 const day = Date.UTC(2026, 10, 17, 12);
 const seeded = (s) => () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648);
@@ -79,4 +80,9 @@ test("sauvegarde des fautes : nettoyée si abîmée ou trafiquée", () => {
   assert.deepEqual(sanitizeMistakes(null), newMistakes());
   assert.deepEqual(defaults().mistakes, newMistakes());
   assert.deepEqual(sanitize({ version: 1 }).mistakes, newMistakes());
+});
+
+test("adresse de l'écran des fautes", () => {
+  assert.deepEqual(route("#fautes"), { screen: "mistakes" });
+  assert.deepEqual(route("#fautes/x"), { screen: "home" });
 });
