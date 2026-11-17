@@ -3,6 +3,8 @@
 // ni injecter du contenu (les textes sont de toute façon échappés à l'affichage).
 // Nouvelle clé : l'ancienne sauvegarde (« labo.v1 ») n'est pas reprise (décision de PROJET.md).
 
+import { newProgress, sanitizeProgress } from "./progress.js";
+
 export const STORE_KEY = "labo.v2";
 export const VERSION = 1;
 const LEVELS = new Set(["good", "ok", "bad", "skip"]);
@@ -12,7 +14,8 @@ const KINDS = new Set(["soigné", "fautes"]);
 const LOG_MAX = 100;
 
 export function defaults() {
-  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", last: null, kind: "soigné", log: [] };
+  // progress : XP, niveau, série, leçons (js/core/progress.js, avec son propre numéro de version « v »).
+  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", last: null, kind: "soigné", log: [], progress: newProgress() };
 }
 
 const text = (v, max) => (typeof v === "string" ? v.slice(0, max) : "");
@@ -69,6 +72,7 @@ export function sanitize(raw) {
     s: int(e.s, 0, 999, 0), kind: e.kind, score: int(e.score, 0, 100, 0), at: int(e.at, 0, 8.64e15, 0),
     bad: list(e.bad, 30).filter((b) => b && typeof b === "object").map((b) => ({ p: text(b.p, 4), heard: typeof b.heard === "string" ? text(b.heard, 4) : null }))
   }));
+  S.progress = sanitizeProgress(raw.progress);
   return S;
 }
 
