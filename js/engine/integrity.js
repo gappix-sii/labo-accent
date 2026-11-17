@@ -68,7 +68,7 @@ export function guardedFetch(base, origin = self.location.origin) {
     const req = typeof Request !== "undefined" && input instanceof Request ? input : null;
     const href = new URL(req ? req.url : String(input), origin + "/").href;
     // Fichiers de l'appli (même origine) : pas vérifiés ici. Ils viennent du même serveur que le code
-    // lui-même ; le service worker de la phase 7 les mettra en cache. Seuls les modèles externes sont contrôlés.
+    // lui-même ; le service worker de la phase 8 les mettra en cache. Seuls les modèles externes sont contrôlés.
     if (new URL(href).origin === origin) return base(input, init);
     const m = lookup(href);
     if (m.deny) throw new TypeError(`Accès réseau refusé par l'appli : ${new URL(href).hostname}`);
