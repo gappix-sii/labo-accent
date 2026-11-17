@@ -39,7 +39,7 @@ _Audit du 2026-11-14 — dépôt gappix-sii/labo-accent_
 - Supprimé : IA locale Whisper + Gemma (≈ 1 Go, remplacée par Gemini), anti-triche scellé (inutile entre amis), code secret.
 
 ## Décisions
-_Mises à jour le 2026-11-14_
+_Mises à jour le 2026-11-17_
 
 | Sujet | Choix | Pourquoi | Alternatives écartées |
 |---|---|---|---|
@@ -56,6 +56,10 @@ _Mises à jour le 2026-11-14_
 | Test sur Android | GitHub Pages sert la branche `refonte/v1` pendant la refonte (push avec accord à chaque test) | Le micro exige https ; le plus simple au quotidien | Câble USB (débogage à activer) |
 | Ancienne appli | Retirée du site pendant la refonte ; code rangé dans `ancien/` puis supprimé en fin de V1 | Éviter que les amis utilisent une version fragile | La laisser en ligne sur `main` |
 | Ancienne progression | Repartir de zéro (nouvelle clé de sauvegarde) | L'ancienne appli a surtout servi d'essai | Importer l'ancienne sauvegarde |
+| Parcours (2026-11-17) | Leçons de sons et thèmes de phrases alternés (son → thème qui le réutilise) | On travaille un son puis on l'emploie dans des phrases utiles | Tous les sons d'abord ; tous les thèmes d'abord |
+| Réussite d'une leçon (2026-11-17) | Chaque élément noté 70 ou plus, réessais libres ; 10 XP par élément réussi + 20 XP en fin de leçon | Oblige à travailler chaque son sans bloquer | Tout dire une fois (trop facile) ; moyenne ≥ 80 (trop dur au début) |
+| Objectif quotidien (2026-11-17) | 50 XP par jour (≈ une leçon), réglable 20 / 50 / 100 ; la série compte les jours où il est atteint | Rythme tenable de 10-15 min | 20 XP ; 100 XP |
+| Voix des sons fabriqués (2026-11-17) | Les deux voix (Heart et Michael), ≈ 5 Mo livrés | Garder le choix de la voix | Heart seule (≈ 2,5 Mo) |
 
 ### Questions ouvertes
 - ~~Le moteur actuel note-t-il correctement avec le vrai modèle ?~~ **Oui sur PC (2026-11-14)** : avec la voix Kokoro comme élève-témoin, prononciation correcte notée 95 en moyenne et fautes de Français injectées repérées sur le bon son 37 fois sur 40 ; l'essai de l'utilisateur au micro repère 15 fautes volontaires sur 16. Moteur gardé. Limite : voix de synthèse plus « propre » qu'une vraie voix ; quelques signalements peu plausibles sur la voix réelle de l'utilisateur, à surveiller.
