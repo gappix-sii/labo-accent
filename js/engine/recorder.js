@@ -45,17 +45,20 @@ export class Recorder {
       if (rms > 0.025) { if (!this.speechAt) this.speechAt = now; this.lastLoud = now; }
       // Arrêt automatique : 1,4 s de silence après avoir parlé, ou 15 s au maximum.
       if ((this.speechAt && now - this.lastLoud > 1400 && now - this.speechAt > 500) || now - this.t0 > 15000) {
-        this.onAutoStop(); return;
+        clearInterval(this.timer);
+        this.onAutoStop();
       }
-      this.raf = requestAnimationFrame(tick);
     };
-    this.raf = requestAnimationFrame(tick);
+    // Minuteur plutôt que requestAnimationFrame : celui-ci s'arrête quand l'onglet est caché,
+    // et l'enregistrement (micro ouvert) continuerait alors sans limite. Un onglet caché ralentit
+    // le minuteur à environ 1 fois par seconde, ce qui suffit pour les arrêts à 1,4 s et 15 s.
+    this.timer = setInterval(tick, 50);
   }
 
   async stop() {
     if (!this.active) return null;
     this.active = false;
-    cancelAnimationFrame(this.raf);
+    clearInterval(this.timer);
     try { this.rec.stop(); } catch { /* déjà arrêté */ }
     await this.done;
     this.stream.getTracks().forEach((t) => t.stop()); // coupe le micro tout de suite

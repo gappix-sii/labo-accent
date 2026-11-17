@@ -39,14 +39,22 @@ export async function run(voices = ["af_heart", "am_michael"]) {
   const dict = await loadDict(); await prepare();
   const w = makeWorker(new URL("../js/engine/tts-worker.js", import.meta.url));
   const pend = new Map(); let id = 0;
+  // Erreur sans numéro (chargement de la voix) ou plantage du worker : tout ce qui attend échoue,
+  // au lieu d'attendre pour toujours.
+  const failAll = (msg) => { for (const p of pend.values()) p.rej(new Error(msg)); pend.clear(); };
+  w.onerror = (e) => failAll(e.message || "la voix s'est arrêtée");
   w.onmessage = (e) => {
-    const m = e.data; if (m.type === "ready") pend.get("ready")?.();
+    const m = e.data;
+    if (m.type === "ready") { pend.get("ready")?.res(); pend.delete("ready"); return; }
+    if (m.type === "error" && m.id === undefined) return failAll(m.message);
     const p = pend.get(m.id); if (!p) return;
     if (m.type === "chunk") p.parts.push(m.audio);
-    if (m.type === "end") p.res(p.parts);
-    if (m.type === "error") p.rej(new Error(m.message));
+    if (m.type === "end") { pend.delete(m.id); p.res(p.parts); }
+    if (m.type === "error") { pend.delete(m.id); p.rej(new Error(m.message)); }
   };
-  await new Promise((r) => { pend.set("ready", r); w.postMessage({ type: "init" }); });
+  try {
+    await new Promise((res, rej) => { pend.set("ready", { res, rej }); w.postMessage({ type: "init" }); });
+  } catch (e) { w.terminate(); throw e; }
   const synth = (ipa, voice) => new Promise((res, rej) => { const k = ++id; pend.set(k, { parts: [], res, rej }); w.postMessage({ type: "say", id: k, ipa, voice, speed: 1 }); });
   const rows = [];
   try {

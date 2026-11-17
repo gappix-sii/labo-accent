@@ -37,6 +37,8 @@ export const HEADERS = {
   "Cross-Origin-Embedder-Policy": "require-corp",
   "Cross-Origin-Resource-Policy": "same-origin",
   "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Content-Security-Policy": "frame-ancestors 'none'",
   "Referrer-Policy": "no-referrer",
   "Cache-Control": "no-store"
 };

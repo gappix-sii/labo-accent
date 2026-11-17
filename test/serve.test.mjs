@@ -28,6 +28,7 @@ test("répond avec les bons en-têtes, et 404 pour une note perso", async () => 
     assert.equal(ok.status, 200);
     assert.match(ok.headers.get("content-type"), /text\/html/);
     assert.equal(ok.headers.get("cross-origin-embedder-policy"), "require-corp");
+    assert.equal(ok.headers.get("x-frame-options"), "DENY");
     assert.match(await ok.text(), /Labo d'accent/);
     const note = await fetch(base + "/conversation-anglais.md");
     assert.equal(note.status, 404);
