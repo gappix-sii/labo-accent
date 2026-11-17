@@ -53,3 +53,22 @@ table.bench { border-collapse: collapse; width: 100%; font-size: .9rem; }
 .bench tr.cur { background: color-mix(in srgb, var(--accent) 10%, transparent); }
 .bench .hit { color: var(--good); } .bench .miss { color: var(--bad); font-weight: 600; }
 .tips { padding-left: 20px; margin: 0; display: grid; gap: 6px; }
+.screen { display: grid; gap: 16px; }
+.screen > p { margin: 0; }
+/* Accueil : niveau, série, objectif, parcours */
+.stats { display: grid; gap: 14px; }
+.stat { display: grid; gap: 4px; }
+.path { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.lesson { font: inherit; width: 100%; display: flex; justify-content: space-between; gap: 8px; text-align: left; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--text); cursor: pointer; }
+.lesson:hover:not(:disabled) { border-color: var(--accent); }
+.lesson.done { border-color: color-mix(in srgb, var(--good) 60%, var(--line)); }
+.lesson.locked { opacity: .5; cursor: not-allowed; }
+.lesson:focus-visible, .dot:focus-visible, .chip:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+/* Leçon : pastilles des éléments, retour après une note */
+.dots { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.dot { font: inherit; font-size: .85rem; width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--line); background: transparent; color: var(--text); cursor: pointer; }
+.dot.ok { background: var(--good); border-color: var(--good); color: #fff; }
+.dot.cur { border-color: var(--accent); }
+.feedback { font-weight: 700; margin: 0 0 8px; }
+.done-card { border-color: var(--good); }
