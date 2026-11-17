@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { route } from "../js/main.js";
-import { lessonState } from "../js/screens/home.js";
+import { lessonState, vocabToday } from "../js/screens/home.js";
 import { firstToDo } from "../js/screens/lesson.js";
 import { newProgress, recordItem } from "../js/core/progress.js";
 import { LESSONS } from "../js/content/lessons.js";
@@ -45,4 +45,13 @@ test("état des leçons : première ouverte, suivantes verrouillées, avancement
   assert.deepEqual(lessonState(P, 0), { open: true, done: 1, run: 0 });
   assert.equal(lessonState(P, 1).open, true);
   assert.equal(firstToDo(null, n), 0);
+});
+
+test("accueil : compteur du vocabulaire du jour (nouveaux, puis à revoir)", () => {
+  const R = newSrs(), day = Date.UTC(2026, 10, 17, 12);
+  assert.deepEqual(vocabToday(R, day), { review: 0, fresh: 10 });
+  const q = buildQueue(R, day);
+  answer(R, q[0].id, false, day); answer(R, q[1].id, true, day);
+  assert.deepEqual(vocabToday(R, day), { review: 1, fresh: 8 }, "le mot raté est à revoir le jour même");
+  assert.deepEqual(vocabToday(R, day + 86400000), { review: 2, fresh: 10 }, "le lendemain : les deux mots, et 10 nouveaux");
 });

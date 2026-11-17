@@ -3,6 +3,7 @@ import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
 import { levelOf, streakNow, todayXp, setGoal, unlocked, GOALS } from "../core/progress.js";
 import { LESSONS } from "../content/lessons.js";
+import { buildQueue } from "./vocab.js";
 
 const IDS = LESSONS.map((l) => l.id);
 
@@ -11,6 +12,20 @@ export function lessonState(P, index) {
   const l = LESSONS[index], L = Object.hasOwn(P.lessons, l.id) ? P.lessons[l.id] : null;
   if (!unlocked(P, IDS, index)) return { open: false, done: 0, run: 0 };
   return { open: true, done: L ? L.done : 0, run: L ? L.run.length : 0 };
+}
+
+// Vocabulaire du jour : mots à revoir et nouveaux mots encore disponibles aujourd'hui.
+export function vocabToday(R, now = Date.now()) {
+  const q = buildQueue(R, now), fresh = q.filter((x) => x.fresh).length;
+  return { review: q.length - fresh, fresh };
+}
+
+function vocabLabel({ review, fresh }) {
+  if (!review && !fresh) return "rien à revoir aujourd'hui ✓";
+  const parts = [];
+  if (review) parts.push(`${review} mot${review > 1 ? "s" : ""} à revoir`);
+  if (fresh) parts.push(`${fresh} nouveau${fresh > 1 ? "x" : ""}`);
+  return parts.join(" · ");
 }
 
 export function mountHome(root, S) {
@@ -32,6 +47,13 @@ export function mountHome(root, S) {
       </section>
       ${next >= 0 ? html`<button class="btn big" data-act="open" data-id="${LESSONS[next].id}" type="button">▶ Continuer : ${LESSONS[next].title}</button>` : ""}
       <section class="card">
+        <h2>Entraînements</h2>
+        <div class="choices">
+          <button class="btn choice" data-act="vocab" type="button"><b>📚 Vocabulaire</b><span class="small">${vocabLabel(vocabToday(S.srs, now))}</span></button>
+          <button class="btn choice" data-act="listen" type="button"><b>👂 Écoute</b><span class="small">ship ou sheep ? 10 questions</span></button>
+        </div>
+      </section>
+      <section class="card">
         <h2>Parcours</h2>
         <ol class="path">${LESSONS.map((l, i) => {
           const st = lessonState(P, i), icon = l.kind === "sound" ? "🔊" : "💬";
@@ -51,6 +73,8 @@ export function mountHome(root, S) {
     if (act === "goal") { if (setGoal(P, Number(el.dataset.goal))) { persist(); draw(); } }
     if (act === "open" && IDS.includes(el.dataset.id) && lessonState(P, IDS.indexOf(el.dataset.id)).open) location.hash = "#lecon/" + el.dataset.id;
     if (act === "bench") location.hash = "#banc";
+    if (act === "vocab") location.hash = "#vocab";
+    if (act === "listen") location.hash = "#ecoute";
   });
 
   draw();
