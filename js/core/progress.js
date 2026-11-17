@@ -2,12 +2,18 @@
 // Module pur, sans DOM : tout se teste avec Node (test/progress.test.mjs). Règles décidées le 2026-11-17 :
 // - un élément est réussi à PASS (70) ou plus ; réessais libres ;
 // - 10 XP par élément réussi, une fois par passage de la leçon, + 20 XP quand la leçon est finie ;
+// - vocabulaire : 5 XP par mot réussi ; écoute : 2 XP par bonne réponse ; + 10 XP en fin de séance ;
 // - objectif du jour : 50 XP (20, 50 ou 100 au choix) ; la série compte les jours où il est atteint,
 //   d'affilée, et repart à zéro après un jour manqué (date locale de l'appareil).
 // Tous les réglages sont ici, à un seul endroit.
 export const PASS = 70;
 export const XP_ITEM = 10;
 export const XP_LESSON = 20;
+// Phase 3 : vocabulaire (mot dit au micro, réussi à PASS) et écoute (bonne réponse sur une paire de mots).
+export const XP_WORD = 5;
+export const XP_LISTEN = 2;
+export const XP_SESSION = 10; // bonus de fin de séance (vocabulaire ou écoute)
+export const SESSION_MIN = 5; // le bonus demande au moins 5 réponses dans la séance
 export const GOALS = [20, 50, 100];
 export const DEFAULT_GOAL = 50;
 const DAYS_KEPT = 60; // historique des XP par jour
@@ -84,6 +90,27 @@ export function recordItem(P, id, item, size, score, now = Date.now()) {
   }
   addXp(P, xp, now);
   return { passed, xp, lessonDone };
+}
+
+// Un mot du vocabulaire : réussi s'il est noté PASS ou plus. Renvoie les XP gagnés.
+export function recordWord(P, score, now = Date.now()) {
+  const xp = (Math.round(score) || 0) >= PASS ? XP_WORD : 0;
+  addXp(P, xp, now);
+  return xp;
+}
+
+// Une réponse de l'exercice d'écoute. Renvoie les XP gagnés.
+export function recordListen(P, ok, now = Date.now()) {
+  const xp = ok === true ? XP_LISTEN : 0;
+  addXp(P, xp, now);
+  return xp;
+}
+
+// Fin d'une séance de vocabulaire ou d'écoute : bonus si elle compte au moins SESSION_MIN réponses.
+export function finishSession(P, answers, now = Date.now()) {
+  const xp = Number.isInteger(answers) && answers >= SESSION_MIN ? XP_SESSION : 0;
+  addXp(P, xp, now);
+  return xp;
 }
 
 // Une leçon est ouverte si c'est la première, ou si la précédente a été finie au moins une fois.

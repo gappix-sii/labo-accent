@@ -3,7 +3,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   newProgress, recordItem, levelOf, levelCost, streakNow, todayXp, setGoal, unlocked, dayKey, sanitizeProgress,
-  PASS, XP_ITEM, XP_LESSON, DEFAULT_GOAL
+  PASS, XP_ITEM, XP_LESSON, DEFAULT_GOAL,
+  recordWord, recordListen, finishSession, XP_WORD, XP_LISTEN, XP_SESSION, SESSION_MIN
 } from "../js/core/progress.js";
 import { defaults, sanitize, load, save, onSaveError } from "../js/core/store.js";
 import { LESSONS } from "../js/content/lessons.js";
@@ -25,6 +26,26 @@ test("XP : 10 par élément réussi, une fois par passage, + 20 en fin de leçon
   assert.equal(recordItem(P, "s-h", 0, 3, 90, at(17)).xp, XP_ITEM);
   // élément hors de la leçon : ignoré
   assert.equal(recordItem(P, "s-h", 7, 3, 90, at(17)).xp, 0);
+});
+
+test("vocabulaire et écoute : XP comptés dans l'objectif du jour et la série (phase 3)", () => {
+  const P = newProgress();
+  assert.equal(recordWord(P, PASS, at(17)), XP_WORD);
+  assert.equal(recordWord(P, PASS - 1, at(17)), 0, "mot raté : rien");
+  assert.equal(recordWord(P, NaN, at(17)), 0);
+  assert.equal(recordListen(P, true, at(17)), XP_LISTEN);
+  assert.equal(recordListen(P, false, at(17)), 0);
+  assert.equal(recordListen(P, "oui", at(17)), 0);
+  assert.equal(finishSession(P, SESSION_MIN - 1, at(17)), 0, "séance trop courte : pas de bonus");
+  assert.equal(finishSession(P, SESSION_MIN, at(17)), XP_SESSION);
+  assert.equal(P.xp, XP_WORD + XP_LISTEN + XP_SESSION);
+  assert.equal(todayXp(P, at(17)), 17);
+  // une séance de 10 mots réussis + 10 bonnes réponses d'écoute + 2 bonus = l'objectif de 50 XP
+  const Q = newProgress();
+  for (let i = 0; i < 10; i++) { recordWord(Q, 90, at(18)); recordListen(Q, true, at(18)); }
+  finishSession(Q, 10, at(18)); finishSession(Q, 10, at(18));
+  assert.equal(todayXp(Q, at(18)), 90);
+  assert.equal(streakNow(Q, at(18)), 1);
 });
 
 test("niveaux : 100 XP, puis 50 de plus à chaque niveau", () => {
