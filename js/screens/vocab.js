@@ -11,14 +11,14 @@ import { listenControls } from "./listen.js";
 
 // File de la séance : mots à revoir puis nouveaux mots (ids). Exportée pour les tests.
 export function buildQueue(R, now = Date.now()) {
-  const s = session(R, VOCAB[R.level], now);
-  return s.all.map((id) => ({ id, fresh: s.fresh.includes(id), again: false })).filter((q) => wordById(q.id));
+  const s = session(R, VOCAB[R.level], now, (id) => !!wordById(id));
+  return s.all.map((id) => ({ id, fresh: s.fresh.includes(id), again: false }));
 }
 
 export function mountVocab(root, S) {
   const R = S.srs, P = S.progress;
   const persist = () => save(S);
-  const ui = { queue: buildQueue(R), i: 0, reveal: false, last: null, ok: null, answered: 0, good: 0, xp: 0, done: false, bonus: 0 };
+  const ui = { queue: buildQueue(R), i: 0, reveal: false, last: null, ok: null, answered: 0, spoken: 0, good: 0, xp: 0, done: false, bonus: 0 };
   const cur = () => ui.queue[ui.i];
   const word = () => wordById(cur().id);
 
@@ -77,7 +77,7 @@ export function mountVocab(root, S) {
     target: () => ({ text: sayText(word()), focus: [] }),
     onScored: (last) => {
       const got = recordWord(P, last.score);
-      ui.xp += got;
+      ui.xp += got; ui.spoken++;
       respond(got > 0, last);
     }
   });
@@ -86,11 +86,11 @@ export function mountVocab(root, S) {
     voice.stop();
     ui.i++; ui.reveal = false; ui.last = null; ui.ok = null;
     mic.clearError();
-    if (ui.i >= ui.queue.length) { ui.done = true; ui.bonus = finishSession(P, ui.answered); ui.xp += ui.bonus; persist(); }
+    if (ui.i >= ui.queue.length) { ui.done = true; ui.bonus = finishSession(P, ui.spoken); ui.xp += ui.bonus; persist(); } // bonus : seuls les mots dits au micro comptent
     draw();
   }
 
-  function restart() { ui.queue = buildQueue(R); Object.assign(ui, { i: 0, reveal: false, last: null, ok: null, answered: 0, good: 0, xp: 0, done: false, bonus: 0 }); draw(); }
+  function restart() { ui.queue = buildQueue(R); Object.assign(ui, { i: 0, reveal: false, last: null, ok: null, answered: 0, spoken: 0, good: 0, xp: 0, done: false, bonus: 0 }); draw(); }
 
   root.addEventListener("click", (e) => {
     const el = e.target.closest("[data-act]");

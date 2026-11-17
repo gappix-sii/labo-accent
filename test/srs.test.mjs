@@ -94,3 +94,12 @@ test("sauvegarde : relue à l'identique, et nettoyée si abîmée ou trafiquée"
   assert.deepEqual(sanitizeSrs({ v: 2 }), newSrs(), "version inconnue");
   assert.deepEqual(sanitize({ version: 1 }).srs, newSrs(), "sauvegarde sans révision");
 });
+
+test("mots retirés de la liste : écartés avant la limite de révision (relecture phase 3)", () => {
+  const R = newSrs(), day = Date.UTC(2026, 10, 17, 12);
+  for (let k = 0; k < REVIEW_MAX; k++) R.cards["A1:retire" + k] = { box: 1, due: "2026-01-01", seen: 1, ok: 0 };
+  R.cards["A1:vrai"] = { box: 1, due: "2026-11-10", seen: 1, ok: 0 };
+  const known = (id) => !id.startsWith("A1:retire");
+  assert.deepEqual(session(R, [], day, known).review, ["A1:vrai"]);
+  assert.equal(session(R, [], day).review.length, REVIEW_MAX, "sans filtre, les mots retirés prennent toute la place");
+});

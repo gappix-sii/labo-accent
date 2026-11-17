@@ -38,9 +38,11 @@ export function dueToday(R, now = Date.now()) {
 }
 
 // Séance du jour : ids des mots à revoir, puis des nouveaux mots du niveau choisi (dans l'ordre de la liste).
-// words : les mots du niveau choisi ({ id }).
-export function session(R, words, now = Date.now()) {
-  const review = dueToday(R, now).slice(0, REVIEW_MAX);
+// words : les mots du niveau choisi ({ id }). known(id) : le mot existe-t-il encore dans la liste ?
+// Les mots retirés de la liste sont écartés AVANT la limite, sinon, jamais revus, ils restent
+// « les plus en retard » et finissent par prendre toutes les places de révision.
+export function session(R, words, now = Date.now(), known = () => true) {
+  const review = dueToday(R, now).filter(known).slice(0, REVIEW_MAX);
   const fresh = words.filter((w) => !Object.hasOwn(R.cards, w.id)).slice(0, freshLeft(R, now)).map((w) => w.id);
   return { review, fresh, all: [...review, ...fresh] };
 }

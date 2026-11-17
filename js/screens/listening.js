@@ -17,7 +17,7 @@ export function mountListening(root, S) {
 
   function newSession() {
     Object.assign(ui, { qs: pickQuestions(L, PAIRS), i: 0, picked: null, good: 0, xp: 0, bonus: 0, done: false, error: "" });
-    for (const { pair } of ui.qs) { preload(pair.a.en, { voice: S.voiceId }); preload(pair.b.en, { voice: S.voiceId }); }
+    for (const { pair } of ui.qs) { for (const w of [pair.a, pair.b]) preload(w.en, { voice: S.voiceId }).catch(() => {}); } // échec : le son sera chargé au clic
   }
 
   async function play(text) {
@@ -27,11 +27,14 @@ export function mountListening(root, S) {
   }
 
   // Après une erreur : le mot joué, puis l'autre, pour entendre la différence.
+  // Le 2e mot n'est joué que si rien n'a bougé entre-temps (même question, pas d'autre comparaison).
+  let cmp = 0;
   async function compare() {
-    const { pair, side } = q(), other = side === "a" ? "b" : "a";
+    const id = ++cmp, i = ui.i, { pair, side } = q(), other = side === "a" ? "b" : "a";
+    const still = () => alive && id === cmp && ui.i === i && ui.picked;
     await play(pair[side].en);
     await new Promise((r) => setTimeout(r, 350));
-    if (alive && ui.picked) await play(pair[other].en);
+    if (still()) await play(pair[other].en);
   }
 
   function choice(side) {
@@ -79,7 +82,7 @@ export function mountListening(root, S) {
   }
 
   function next() {
-    stopVoice();
+    stopVoice(); cmp++;
     ui.picked = null; ui.i++;
     if (ui.i >= ui.qs.length) {
       ui.done = true; ui.bonus = finishSession(P, ui.qs.length); ui.xp += ui.bonus; persist(); draw(); return;
