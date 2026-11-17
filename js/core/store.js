@@ -4,6 +4,7 @@
 // Nouvelle clé : l'ancienne sauvegarde (« labo.v1 ») n'est pas reprise (décision de PROJET.md).
 
 import { newProgress, sanitizeProgress } from "./progress.js";
+import { newSrs, sanitizeSrs } from "./srs.js";
 
 export const STORE_KEY = "labo.v2";
 export const VERSION = 1;
@@ -14,8 +15,9 @@ const KINDS = new Set(["soigné", "fautes"]);
 const LOG_MAX = 100;
 
 export function defaults() {
-  // progress : XP, niveau, série, leçons (js/core/progress.js, avec son propre numéro de version « v »).
-  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", last: null, kind: "soigné", log: [], progress: newProgress() };
+  // progress : XP, niveau, série, leçons (js/core/progress.js) ; srs : révision du vocabulaire (js/core/srs.js).
+  // Chacun a son propre numéro de version « v ».
+  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", last: null, kind: "soigné", log: [], progress: newProgress(), srs: newSrs() };
 }
 
 const text = (v, max) => (typeof v === "string" ? v.slice(0, max) : "");
@@ -73,6 +75,7 @@ export function sanitize(raw) {
     bad: list(e.bad, 30).filter((b) => b && typeof b === "object").map((b) => ({ p: text(b.p, 4), heard: typeof b.heard === "string" ? text(b.heard, 4) : null }))
   }));
   S.progress = sanitizeProgress(raw.progress);
+  S.srs = sanitizeSrs(raw.srs);
   return S;
 }
 
