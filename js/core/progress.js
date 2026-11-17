@@ -1,13 +1,13 @@
 // Progression du joueur (phase 2) : XP, niveau, série de jours, objectif du jour, état des leçons.
 // Module pur, sans DOM : tout se teste avec Node (test/progress.test.mjs). Règles décidées le 2026-11-17 :
-// - un élément est réussi à PASS (70) ou plus ; réessais libres ;
+// - un élément est réussi à PASS (65) ou plus ; réessais libres ;
 // - 10 XP par élément réussi, une fois par passage de la leçon, + 20 XP quand la leçon est finie ;
 // - vocabulaire : 5 XP par mot réussi ; écoute : 2 XP par bonne réponse ; + 10 XP en fin de séance ;
 // - grammaire, jeux de rôle et fautes (phase 4) : voir js/core/tracks.js ;
 // - objectif du jour : 50 XP (20, 50 ou 100 au choix) ; la série compte les jours où il est atteint,
 //   d'affilée, et repart à zéro après un jour manqué (date locale de l'appareil).
 // Tous les réglages sont ici, à un seul endroit.
-export const PASS = 70;
+export const PASS = 65; // abaissé de 70 à 65 le 2026-11-17, à la demande de l'utilisateur
 export const XP_ITEM = 10;
 export const XP_LESSON = 20;
 // Phase 3 : vocabulaire (mot dit au micro, réussi à PASS) et écoute (bonne réponse sur une paire de mots).

@@ -1,5 +1,5 @@
 // Répétition espacée « à boîtes » pour le vocabulaire (phase 3). Module pur, sans DOM : test/srs.test.mjs.
-// Chaque mot vu est dans une boîte de 1 à 5. Réussi (70 ou plus au micro) → boîte suivante ;
+// Chaque mot vu est dans une boîte de 1 à 5. Réussi (65 ou plus au micro) → boîte suivante ;
 // raté ou « Je ne sais pas » → boîte 1. Un mot revient après le délai de sa boîte (0 = le jour même).
 // Séance du jour : les mots à revoir (les plus en retard d'abord), puis des nouveaux mots du niveau choisi,
 // jusqu'au quota du jour. Tous les réglages sont ici.

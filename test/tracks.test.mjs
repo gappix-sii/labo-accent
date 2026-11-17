@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { recordGrammar, recordRole, trackState, grammarKey, roleKey, myTurns, newMistakes, pickMistakes,
   recordMistake, sanitizeMistakes, MISTAKE_SESSION } from "../js/core/tracks.js";
-import { newProgress, recordWord, finishSession, sanitizeProgress, unlocked, todayXp, XP_ITEM, XP_LESSON, XP_WORD, XP_SESSION } from "../js/core/progress.js";
+import { PASS, newProgress, recordWord, finishSession, sanitizeProgress, unlocked, todayXp, XP_ITEM, XP_LESSON, XP_WORD, XP_SESSION } from "../js/core/progress.js";
 import { GRAMMAR } from "../js/content/grammar.js";
 import { DIALOGUES } from "../js/content/dialogues.js";
 import { ALL_MISTAKES } from "../js/content/mistakes.js";
@@ -15,7 +15,7 @@ const seeded = (s) => () => ((s = (s * 1103515245 + 12345) % 2147483648) / 21474
 
 test("grammaire : 10 XP par exercice réussi, une fois par passage, + 20 à la fin de la règle", () => {
   const P = newProgress(), rule = GRAMMAR[0], n = rule.ex.length;
-  assert.deepEqual(recordGrammar(P, rule, 0, 69, day), { passed: false, xp: 0, lessonDone: false });
+  assert.deepEqual(recordGrammar(P, rule, 0, PASS - 1, day), { passed: false, xp: 0, lessonDone: false });
   assert.equal(recordGrammar(P, rule, 0, 85, day).xp, XP_ITEM);
   assert.equal(recordGrammar(P, rule, 0, 95, day).xp, 0, "même exercice réussi deux fois : une seule fois");
   for (let i = 1; i < n - 1; i++) recordGrammar(P, rule, i, 80, day);

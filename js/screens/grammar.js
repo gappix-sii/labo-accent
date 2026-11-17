@@ -1,7 +1,7 @@
 // Écran « Grammaire » (phase 4) : #grammaire = liste des règles par niveau ; #grammaire/<id> = une règle.
 // Une règle : explication, exemples à écouter, piège des Français, puis ses exercices. Chaque exercice se
 // répond à l'écran (js/screens/exercises.js), puis on dit la phrase correcte au micro : c'est cette note qui
-// rapporte l'XP (10 par phrase réussie à 70, + 20 quand la règle est finie ; règles : js/core/tracks.js).
+// rapporte l'XP (10 par phrase réussie à 65, + 20 quand la règle est finie ; règles : js/core/tracks.js).
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
 import { PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";

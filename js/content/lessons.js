@@ -1,7 +1,7 @@
 // Parcours de leçons (phase 2) : une leçon sur un son, puis une leçon de phrases d'un thème qui réutilise ce son.
 // Contenus repris de l'ancienne appli (ancien/js/content.js : SOUND_LESSONS et CATEGORIES) ; chaque thème
 // d'une dizaine de phrases est coupé en deux leçons d'environ 5 phrases.
-// Un élément est réussi à 70 ou plus (voir js/core/progress.js) ; chaque élément a son son fabriqué à l'avance.
+// Un élément est réussi à 65 ou plus (voir js/core/progress.js) ; chaque élément a son son fabriqué à l'avance.
 
 // Leçons par son : p = le son travaillé (IPA du dictionnaire), tip = comment le faire.
 export const SOUNDS = [

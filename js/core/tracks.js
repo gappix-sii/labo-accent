@@ -1,7 +1,7 @@
 // Grammaire, jeux de rôle et fautes typiques (phase 4) : XP et suivi. Module pur, sans DOM (test/tracks.test.mjs).
 // Règles décidées le 2026-11-17 (PROJET.md) :
 // - grammaire et jeux de rôle : même mécanique que les leçons (progress.js, recordItem) : 10 XP par phrase
-//   réussie à 70, une fois par passage, + 20 XP quand la règle ou le dialogue est fini. Rangés avec les
+//   réussie à 65, une fois par passage, + 20 XP quand la règle ou le dialogue est fini. Rangés avec les
 //   leçons dans progress.lessons, sous les clés « g-<règle> » et « r-<dialogue> » ;
 // - fautes : comme le vocabulaire (5 XP par phrase réussie, bonus de séance pour 5 phrases dites au micro) ;
 //   les phrases ratées pèsent plus lourd au tirage, comme les paires de l'écoute.

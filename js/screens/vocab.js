@@ -1,5 +1,5 @@
 // Écran « Vocabulaire » (#vocab) : le mot s'affiche en français, on le dit en anglais au micro.
-// Réussi à 70 ou plus → il reviendra plus tard ; raté ou « Je ne sais pas » → il revient vite
+// Réussi à 65 ou plus → il reviendra plus tard ; raté ou « Je ne sais pas » → il revient vite
 // (répétition espacée : js/core/srs.js). Un mot raté revient aussi une fois en fin de séance.
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";

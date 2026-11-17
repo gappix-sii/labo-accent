@@ -1,5 +1,5 @@
 // Écran de leçon (#lecon/<id>) : un élément à la fois — écouter, parler, voir la note, réessayer ou passer.
-// Un élément est réussi à 70 ou plus ; la leçon est finie quand tous le sont (règles : js/core/progress.js).
+// Un élément est réussi à 65 ou plus ; la leçon est finie quand tous le sont (règles : js/core/progress.js).
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
 import { recordItem, unlocked, PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";
