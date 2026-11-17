@@ -3,6 +3,7 @@
 // - un élément est réussi à PASS (70) ou plus ; réessais libres ;
 // - 10 XP par élément réussi, une fois par passage de la leçon, + 20 XP quand la leçon est finie ;
 // - vocabulaire : 5 XP par mot réussi ; écoute : 2 XP par bonne réponse ; + 10 XP en fin de séance ;
+// - grammaire, jeux de rôle et fautes (phase 4) : voir js/core/tracks.js ;
 // - objectif du jour : 50 XP (20, 50 ou 100 au choix) ; la série compte les jours où il est atteint,
 //   d'affilée, et repart à zéro après un jour manqué (date locale de l'appareil).
 // Tous les réglages sont ici, à un seul endroit.
