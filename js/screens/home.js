@@ -4,6 +4,10 @@ import { save } from "../core/store.js";
 import { levelOf, streakNow, todayXp, setGoal, unlocked, GOALS } from "../core/progress.js";
 import { LESSONS } from "../content/lessons.js";
 import { buildQueue } from "./vocab.js";
+import { QUESTIONS } from "../core/listening.js";
+import { trackState, grammarKey, roleKey, MISTAKE_SESSION } from "../core/tracks.js";
+import { GRAMMAR } from "../content/grammar.js";
+import { DIALOGUES } from "../content/dialogues.js";
 
 const IDS = LESSONS.map((l) => l.id);
 
@@ -28,12 +32,22 @@ function vocabLabel({ review, fresh }) {
   return parts.join(" · ");
 }
 
+// Avancement des entraînements de la phase 4, pour les boutons de l'accueil.
+export function practiceCounts(S) {
+  return {
+    grammar: GRAMMAR.filter((g) => trackState(S.progress, grammarKey(g.id)).done > 0).length,
+    roles: DIALOGUES.filter((d) => trackState(S.progress, roleKey(d.id)).done > 0).length,
+    mistakes: Object.keys(S.mistakes.miss).length
+  };
+}
+
 export function mountHome(root, S) {
   const P = S.progress;
   const persist = () => save(S);
 
   function draw() {
     const now = Date.now(), lv = levelOf(P.xp), streak = streakNow(P, now), today = todayXp(P, now);
+    const n = practiceCounts(S);
     const next = LESSONS.findIndex((_, i) => { const st = lessonState(P, i); return st.open && st.done === 0; });
     render(root, html`
       <section class="card stats">
@@ -50,7 +64,10 @@ export function mountHome(root, S) {
         <h2>Entraînements</h2>
         <div class="choices">
           <button class="btn choice" data-act="vocab" type="button"><b>📚 Vocabulaire</b><span class="small">${vocabLabel(vocabToday(S.srs, now))}</span></button>
-          <button class="btn choice" data-act="listen" type="button"><b>👂 Écoute</b><span class="small">ship ou sheep ? 10 questions</span></button>
+          <button class="btn choice" data-act="listen" type="button"><b>👂 Écoute</b><span class="small">ship ou sheep ? ${QUESTIONS} questions</span></button>
+          <button class="btn choice" data-act="grammar" type="button"><b>📘 Grammaire</b><span class="small">${n.grammar} / ${GRAMMAR.length} règles finies</span></button>
+          <button class="btn choice" data-act="mistakes" type="button"><b>✏️ Fautes typiques</b><span class="small">${n.mistakes ? `${n.mistakes} à retravailler` : `${MISTAKE_SESSION} phrases à corriger`}</span></button>
+          <button class="btn choice" data-act="roles" type="button"><b>🎭 Jeux de rôle</b><span class="small">${n.roles} / ${DIALOGUES.length} dialogues finis</span></button>
         </div>
       </section>
       <section class="card">
@@ -75,6 +92,9 @@ export function mountHome(root, S) {
     if (act === "bench") location.hash = "#banc";
     if (act === "vocab") location.hash = "#vocab";
     if (act === "listen") location.hash = "#ecoute";
+    if (act === "grammar") location.hash = "#grammaire";
+    if (act === "mistakes") location.hash = "#fautes";
+    if (act === "roles") location.hash = "#role";
   });
 
   draw();
