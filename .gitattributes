@@ -8,3 +8,4 @@
 *.onnx binary
 *.png binary
 *.woff2 binary
+*.ogg binary

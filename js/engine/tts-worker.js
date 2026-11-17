@@ -4,13 +4,12 @@
 import { env, AutoTokenizer, StyleTextToSpeech2Model, Tensor } from "../../vendor/transformers.min.js";
 import { installGuard } from "./integrity.js";
 import { chunks } from "./g2p.js";
+import { MODEL_ID, REVISION, VOICE_IDS } from "./voice-model.js";
 
 // Tout téléchargement passe par la liste blanche et la vérification SHA-256 (voir integrity.js).
 installGuard(env);
 
-export const MODEL_ID = "onnx-community/Kokoro-82M-v1.0-ONNX";
-export const REVISION = "1939ad2a8e416c0acfeecc08a694d14ef25f2231";
-const VOICES = new Set(["af_heart", "am_michael"]);
+const VOICES = new Set(VOICE_IDS);
 const STYLE = 256, ROWS = 510, VOICE_BYTES = ROWS * STYLE * 4;
 
 let tok = null, model = null, dict = null, loading = null, gen = 0, chain = Promise.resolve();

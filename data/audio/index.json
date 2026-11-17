@@ -1,0 +1,132 @@
+{
+ "version": 1,
+ "model": "onnx-community/Kokoro-82M-v1.0-ONNX",
+ "revision": "1939ad2a8e416c0acfeecc08a694d14ef25f2231",
+ "rate": 24000,
+ "clips": {
+  "af_heart": {
+   "I think this is the third one.": {
+    "file": "af_heart-ab5b43ef96ae84d4.ogg",
+    "ipa": "aɪ θˈɪŋk ðˈɪs ɪz ðə θˈɜːd wˈʌn.",
+    "ms": 2300,
+    "bytes": 8284
+   },
+   "He is happy in his house.": {
+    "file": "af_heart-c534669168d3a686.ogg",
+    "ipa": "hiː ɪz hˈæpi ɪn hɪz hˈaʊs.",
+    "ms": 2000,
+    "bytes": 6993
+   },
+   "Sit on the seat.": {
+    "file": "af_heart-8624522fd507f400.ogg",
+    "ipa": "sˈɪt ɑːn ðə sˈiːt.",
+    "ms": 1650,
+    "bytes": 5582
+   },
+   "I live here, I don't leave.": {
+    "file": "af_heart-7fae8a3f849c7dfd.ogg",
+    "ipa": "aɪ lˈɪv hˈiːɹ, aɪ dˈoʊnt lˈiːv.",
+    "ms": 2200,
+    "bytes": 7829
+   },
+   "We want warm water.": {
+    "file": "af_heart-99dbb33b565a7290.ogg",
+    "ipa": "wiː wˈɑːnt wˈɔːɹm wˈɔːɾɚ.",
+    "ms": 1875,
+    "bytes": 6553
+   },
+   "The red car is very far.": {
+    "file": "af_heart-2a6883570ca0a890.ogg",
+    "ipa": "ðə ɹˈɛd kˈɑːɹ ɪz vˈɛɹi fˈɑːɹ.",
+    "ms": 2250,
+    "bytes": 7934
+   },
+   "She watched the old cat.": {
+    "file": "af_heart-9fab1a1bb4543189.ogg",
+    "ipa": "ʃiː wˈɑːtʃt ði ˈoʊld kˈæt.",
+    "ms": 1800,
+    "bytes": 6313
+   },
+   "Can I have a receipt?": {
+    "file": "af_heart-56b04704af2ce2ef.ogg",
+    "ipa": "kæn aɪ hæv ə ɹɪsˈiːt?",
+    "ms": 1775,
+    "bytes": 6177
+   },
+   "I'm hungry, not angry.": {
+    "file": "af_heart-ab7063ee0b8d5c6b.ogg",
+    "ipa": "ˈaɪm hˈʌŋɡɹi, nˈɑːt ˈæŋɡɹi.",
+    "ms": 2300,
+    "bytes": 8045
+   },
+   "Good food is good for you.": {
+    "file": "af_heart-cfcf32ce1153b29c.ogg",
+    "ipa": "ɡˈʊd fˈuːd ɪz ɡˈʊd fɔːɹ juː.",
+    "ms": 2025,
+    "bytes": 7130
+   }
+  },
+  "am_michael": {
+   "I think this is the third one.": {
+    "file": "am_michael-26e2c8bb15502731.ogg",
+    "ipa": "aɪ θˈɪŋk ðˈɪs ɪz ðə θˈɜːd wˈʌn.",
+    "ms": 2650,
+    "bytes": 9670
+   },
+   "He is happy in his house.": {
+    "file": "am_michael-4ca504995f1e68b4.ogg",
+    "ipa": "hiː ɪz hˈæpi ɪn hɪz hˈaʊs.",
+    "ms": 2300,
+    "bytes": 8230
+   },
+   "Sit on the seat.": {
+    "file": "am_michael-a98a187d87653230.ogg",
+    "ipa": "sˈɪt ɑːn ðə sˈiːt.",
+    "ms": 1800,
+    "bytes": 6240
+   },
+   "I live here, I don't leave.": {
+    "file": "am_michael-f6e9e04ab29932ad.ogg",
+    "ipa": "aɪ lˈɪv hˈiːɹ, aɪ dˈoʊnt lˈiːv.",
+    "ms": 2425,
+    "bytes": 8784
+   },
+   "We want warm water.": {
+    "file": "am_michael-25673e036f884da2.ogg",
+    "ipa": "wiː wˈɑːnt wˈɔːɹm wˈɔːɾɚ.",
+    "ms": 2275,
+    "bytes": 8179
+   },
+   "The red car is very far.": {
+    "file": "am_michael-5e6f904f2f5b36ef.ogg",
+    "ipa": "ðə ɹˈɛd kˈɑːɹ ɪz vˈɛɹi fˈɑːɹ.",
+    "ms": 2550,
+    "bytes": 9645
+   },
+   "She watched the old cat.": {
+    "file": "am_michael-66bf27d4badfcdd9.ogg",
+    "ipa": "ʃiː wˈɑːtʃt ði ˈoʊld kˈæt.",
+    "ms": 2275,
+    "bytes": 8170
+   },
+   "Can I have a receipt?": {
+    "file": "am_michael-e22f3f3e8eb3834c.ogg",
+    "ipa": "kæn aɪ hæv ə ɹɪsˈiːt?",
+    "ms": 2100,
+    "bytes": 7397
+   },
+   "I'm hungry, not angry.": {
+    "file": "am_michael-9647a790ffbae6fb.ogg",
+    "ipa": "ˈaɪm hˈʌŋɡɹi, nˈɑːt ˈæŋɡɹi.",
+    "ms": 2525,
+    "bytes": 9160
+   },
+   "Good food is good for you.": {
+    "file": "am_michael-452132f7b2db4d5f.ogg",
+    "ipa": "ɡˈʊd fˈuːd ɪz ɡˈʊd fɔːɹ juː.",
+    "ms": 2475,
+    "bytes": 8923
+   }
+  }
+ }
+}

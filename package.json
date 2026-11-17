@@ -8,6 +8,7 @@
   },
   "scripts": {
     "start": "node tools/serve.mjs",
+    "fabrique": "node tools/serve.mjs --fabrique",
     "test": "node --test \"test/**/*.test.mjs\""
   }
 }

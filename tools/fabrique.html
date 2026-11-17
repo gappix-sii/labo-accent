@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; worker-src 'self'; connect-src 'self'; media-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Fabrique des sons</title>
+  <link rel="stylesheet" href="../css/app.css">
+  <script type="module" src="fabrique.js"></script>
+</head>
+<body>
+  <header class="top"><b>Labo</b> d'accent · fabrique des sons</header>
+  <main>
+    <section class="card">
+      <p>Outil de développement : fait lire chaque phrase fixe par la voix Kokoro (les deux voix), compresse le son en Opus et l'écrit dans <code>data/audio/</code>. Ne fonctionne qu'avec <code>npm run fabrique</code>.</p>
+      <p class="muted small">Une phrase déjà fabriquée avec la même prononciation et la même révision de la voix n'est pas refaite.</p>
+      <div class="row start">
+        <button class="btn" id="go" type="button">Fabriquer</button>
+        <label class="small"><input type="checkbox" id="all"> Tout refaire</label>
+      </div>
+      <p id="status" class="small" role="status"></p>
+      <progress id="bar" max="100" value="0"></progress>
+    </section>
+    <section class="card"><ol id="list" class="small"></ol></section>
+  </main>
+</body>
+</html>
