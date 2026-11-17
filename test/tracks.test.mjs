@@ -86,3 +86,14 @@ test("adresse de l'écran des fautes", () => {
   assert.deepEqual(route("#fautes"), { screen: "mistakes" });
   assert.deepEqual(route("#fautes/x"), { screen: "home" });
 });
+
+test("jeux de rôle : rang des tours où l'on parle, adresses", async () => {
+  const { myIndex } = await import("../js/screens/roleplay.js");
+  const cafe = DIALOGUES.find((d) => d.id === "cafe"), way = DIALOGUES.find((d) => d.id === "way");
+  assert.deepEqual(cafe.turns.map((_, i) => myIndex(cafe, i)), [-1, 0, -1, 1, -1, 2, -1, 3, -1]);
+  assert.equal(myIndex(way, 0), 0, "« way » commence par toi");
+  assert.equal(myIndex(cafe, 99), -1);
+  assert.deepEqual(route("#role"), { screen: "roleList" });
+  assert.deepEqual(route("#role/cafe"), { screen: "role", id: "cafe" });
+  assert.deepEqual(route("#role/../x"), { screen: "home" });
+});

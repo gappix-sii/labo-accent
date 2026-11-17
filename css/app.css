@@ -101,3 +101,10 @@ details summary { cursor: pointer; }
 .btn:disabled:not(.choice) { opacity: .45; cursor: not-allowed; }
 /* Fautes typiques : la phrase fausse, barrée */
 .wrong-line { font-size: 1.3rem; margin: 4px 0; color: var(--bad); }
+/* Jeux de rôle : conversation en bulles, objectifs */
+.chat { display: grid; gap: 8px; }
+.bubble { display: flex; gap: 8px; align-items: flex-start; max-width: 90%; padding: 8px 12px; border-radius: 14px; }
+.bubble.ai { background: color-mix(in srgb, var(--accent) 12%, transparent); justify-self: start; }
+.bubble.me { background: color-mix(in srgb, var(--good) 15%, transparent); justify-self: end; }
+.tasks { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 4px; }
+.tasks li.ok { color: var(--good); font-weight: 600; }

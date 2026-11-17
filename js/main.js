@@ -1,5 +1,5 @@
 // Point d'entrée de l'appli : choisit l'écran selon l'adresse.
-//   #accueil (par défaut) · #lecon/<id> · #vocab · #ecoute · #grammaire[/<id>] · #fautes · #banc (banc de test du moteur)
+//   #accueil (par défaut) · #lecon/<id> · #vocab · #ecoute · #grammaire[/<id>] · #fautes · #role[/<id>] · #banc (banc de test du moteur)
 import { $ } from "./core/dom.js";
 import { load, onSaveError } from "./core/store.js";
 import { mountHome } from "./screens/home.js";
@@ -9,6 +9,7 @@ import { mountVocab } from "./screens/vocab.js";
 import { mountListening } from "./screens/listening.js";
 import { mountGrammarList, mountGrammar } from "./screens/grammar.js";
 import { mountMistakes } from "./screens/mistakes.js";
+import { mountRoleList, mountRole } from "./screens/roleplay.js";
 
 // Écran à afficher pour une adresse donnée. Exportée pour les tests.
 export function route(hash) {
@@ -19,6 +20,9 @@ export function route(hash) {
   if (g) return { screen: "grammar", id: g[1] };
   if (h === "grammaire") return { screen: "grammarList" };
   if (h === "fautes") return { screen: "mistakes" };
+  const rp = /^role\/([a-z0-9-]{1,24})$/.exec(h);
+  if (rp) return { screen: "role", id: rp[1] };
+  if (h === "role") return { screen: "roleList" };
   if (h === "banc") return { screen: "bench" };
   if (h === "vocab") return { screen: "vocab" };
   if (h === "ecoute") return { screen: "listening" };
@@ -36,7 +40,8 @@ function start() {
     view.replaceChildren(root); // nouvel élément : les écouteurs de l'écran précédent partent avec lui
     const screens = { lesson: () => mountLesson(root, S, r.id), bench: () => mountSay(root, S), vocab: () => mountVocab(root, S), listening: () => mountListening(root, S),
       grammarList: () => mountGrammarList(root, S), grammar: () => mountGrammar(root, S, r.id),
-      mistakes: () => mountMistakes(root, S), home: () => mountHome(root, S) };
+      mistakes: () => mountMistakes(root, S),
+      roleList: () => mountRoleList(root, S), role: () => mountRole(root, S, r.id), home: () => mountHome(root, S) };
     cleanup = screens[r.screen]();
     window.scrollTo(0, 0);
   };
