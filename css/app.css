@@ -72,3 +72,6 @@ table.bench { border-collapse: collapse; width: 100%; font-size: .9rem; }
 .dot.cur { border-color: var(--accent); }
 .feedback { font-weight: 700; margin: 0 0 8px; }
 .done-card { border-color: var(--good); }
+/* Vocabulaire */
+.answer { font-size: 1.4rem; margin: 4px 0; color: var(--accent); }
+details summary { cursor: pointer; }

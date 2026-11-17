@@ -6,14 +6,31 @@ import { lessonState } from "../js/screens/home.js";
 import { firstToDo } from "../js/screens/lesson.js";
 import { newProgress, recordItem } from "../js/core/progress.js";
 import { LESSONS } from "../js/content/lessons.js";
+import { buildQueue } from "../js/screens/vocab.js";
+import { newSrs, answer, setLevel } from "../js/core/srs.js";
 
 test("navigation par l'adresse", () => {
   assert.deepEqual(route(""), { screen: "home" });
   assert.deepEqual(route("#accueil"), { screen: "home" });
   assert.deepEqual(route("#lecon/s-h"), { screen: "lesson", id: "s-h" });
   assert.deepEqual(route("#banc"), { screen: "bench" });
+  assert.deepEqual(route("#vocab"), { screen: "vocab" });
   assert.deepEqual(route("#lecon/../x"), { screen: "home" });
   assert.deepEqual(route("#lecon/<img>"), { screen: "home" });
+});
+
+test("séance de vocabulaire : nouveaux mots du niveau choisi, puis révisions", () => {
+  const R = newSrs(), now = new Date(2026, 10, 17, 12).getTime();
+  let q = buildQueue(R, now);
+  assert.equal(q.length, 10);
+  assert.ok(q.every((x) => x.fresh && x.id.startsWith("A1:")));
+  answer(R, q[0].id, false, now);
+  setLevel(R, "B1");
+  q = buildQueue(R, now);
+  assert.equal(q[0].id, "A1:hello", "le mot raté revient d'abord, même après un changement de niveau");
+  assert.equal(q[0].fresh, false);
+  assert.ok(q.slice(1).every((x) => x.id.startsWith("B1:")));
+  assert.equal(q.length, 1 + 9, "quota du jour : 9 nouveaux mots restants");
 });
 
 test("état des leçons : première ouverte, suivantes verrouillées, avancement du passage", () => {

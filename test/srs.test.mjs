@@ -67,6 +67,14 @@ test("séance limitée à 30 mots à revoir ; niveau et quota réglables", () =>
   assert.deepEqual(boxes(R), [50, 0, 0, 0, 0]);
 });
 
+test("sans date donnée, c'est aujourd'hui qui compte (bug trouvé à l'essai de l'écran)", () => {
+  const R = newSrs(), c = answer(R, A1[0].id, true);
+  assert.match(c.due, /^\d{4}-\d{2}-\d{2}$/);
+  assert.match(R.fresh.day, /^\d{4}-\d{2}-\d{2}$/);
+  assert.deepEqual(sanitizeSrs(JSON.parse(JSON.stringify(R))), R, "relu sans perte");
+  assert.equal(freshLeft(R), 9);
+});
+
 test("sauvegarde : relue à l'identique, et nettoyée si abîmée ou trafiquée", () => {
   const mem = new Map(), storage = { getItem: (k) => mem.get(k) ?? null, setItem: (k, v) => mem.set(k, v) };
   const S = defaults();

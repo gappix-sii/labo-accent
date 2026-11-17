@@ -23,13 +23,13 @@ export function addDays(key, n) {
 }
 
 // Nouveaux mots encore permis aujourd'hui.
-export function freshLeft(R, now) {
+export function freshLeft(R, now = Date.now()) {
   const used = R.fresh.day === dayKey(now) ? R.fresh.n : 0;
   return Math.max(0, R.perDay - used);
 }
 
 // Mots à revoir aujourd'hui, les plus en retard d'abord (puis les boîtes basses).
-export function dueToday(R, now) {
+export function dueToday(R, now = Date.now()) {
   const today = dayKey(now);
   return Object.entries(R.cards)
     .filter(([, c]) => c.due <= today)
@@ -39,14 +39,14 @@ export function dueToday(R, now) {
 
 // Séance du jour : ids des mots à revoir, puis des nouveaux mots du niveau choisi (dans l'ordre de la liste).
 // words : les mots du niveau choisi ({ id }).
-export function session(R, words, now) {
+export function session(R, words, now = Date.now()) {
   const review = dueToday(R, now).slice(0, REVIEW_MAX);
   const fresh = words.filter((w) => !Object.hasOwn(R.cards, w.id)).slice(0, freshLeft(R, now)).map((w) => w.id);
   return { review, fresh, all: [...review, ...fresh] };
 }
 
 // Réponse à un mot : ok = réussi. Renvoie la carte mise à jour.
-export function answer(R, id, ok, now) {
+export function answer(R, id, ok, now = Date.now()) {
   const today = dayKey(now);
   let c = Object.hasOwn(R.cards, id) ? R.cards[id] : null;
   if (!c) { // premier passage : le mot compte dans les nouveaux mots du jour
