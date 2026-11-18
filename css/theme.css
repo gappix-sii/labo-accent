@@ -1,0 +1,161 @@
+/* Thème « aventure / quête » (phase 8, tâche 1) — chargé APRÈS app.css, il s'applique par-dessus.
+   Toutes les couleurs sont des variables (« jetons ») définies ici : un futur thème n'aura qu'à les redéfinir.
+   Contrastes vérifiés le 2026-11-18 (au moins 4,5 : 1 pour le texte) ; animations seulement sur transform et opacity,
+   toutes coupées par « Effets réduits » (classe fx-reduced, js/screens/effects.js). Polices : fonts/LICENSE-OFL.txt. */
+
+@font-face { font-family: "Barlow Condensed"; font-style: italic; font-weight: 800; font-display: swap; src: url(../fonts/barlow-condensed-latin-800-italic.woff2) format("woff2"); }
+@font-face { font-family: "Barlow Condensed"; font-style: italic; font-weight: 900; font-display: swap; src: url(../fonts/barlow-condensed-latin-900-italic.woff2) format("woff2"); }
+@font-face { font-family: "Nunito"; font-weight: 400; font-display: swap; src: url(../fonts/nunito-latin-400-normal.woff2) format("woff2"); }
+@font-face { font-family: "Nunito"; font-weight: 700; font-display: swap; src: url(../fonts/nunito-latin-700-normal.woff2) format("woff2"); }
+@font-face { font-family: "Nunito"; font-weight: 800; font-display: swap; src: url(../fonts/nunito-latin-800-normal.woff2) format("woff2"); }
+
+/* ---------- Jetons : thème clair « parchemin » (si l'appareil est en clair) ---------- */
+:root {
+  --font-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bg: #f3ead6; --bg2: #e9dcbd; --card: #fffaf0; --card2: #f7eedb; --text: #2b1d0e; --muted: #6b5a43; --line: #d9c7a3;
+  --frame: #c9a35a; --frame-glow: rgba(201, 163, 90, .25);
+  --accent: #5b3df5; --good: #1f7a45; --ok: #8a5a00; --bad: #b3261e;
+  --gold: #8a5a00; --gold-fill: #e8a92a; --gold-hi: #ffd977; --gold-d: #9c6a12; --on-gold: #2a1a00;
+  --btn: #ece0c6; --btn-d: #c9b48c; --btn-ink: #2b1d0e;
+  --violet: #6d4ee0; --violet-d: #4a2fb0; --red: #c62f3f; --red-d: #8e1c2a;
+  --rar-common: #6b5a43; --rar-rare: #08739a; --rar-epic: #7a3fd6; --rar-legendary: #8a5a00; --rar-mythic: #c2187a;
+  --glow-common: #9aa3b5; --glow-rare: #4cc9f0; --glow-epic: #b388ff; --glow-legendary: #ffd23f; --glow-mythic: #ff4fd0;
+  --halo1: rgba(232, 169, 42, .22); --halo2: rgba(109, 78, 224, .14); --halo3: rgba(194, 24, 122, .10); --spark: rgba(138, 90, 0, .35);
+  --shadow: rgba(60, 40, 10, .18);
+  color-scheme: light;
+}
+/* ---------- Jetons : thème sombre « nuit » (le thème principal) ---------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0a1c; --bg2: #1a1238; --card: #1b1535; --card2: #241b47; --text: #f5efe0; --muted: #b5abd0; --line: #3b2f6b;
+    --frame: #7a6230; --frame-glow: rgba(242, 193, 78, .18);
+    --accent: #b49bff; --good: #4ade80; --ok: #f2b134; --bad: #ff7a7a;
+    --gold: #f2c14e; --gold-fill: #f2b632; --gold-hi: #ffe08a; --gold-d: #a8741a; --on-gold: #2a1a00;
+    --btn: #2e2459; --btn-d: #160f33; --btn-ink: #f5efe0;
+    --rar-common: #c9c2dd; --rar-rare: #4cc9f0; --rar-epic: #b388ff; --rar-legendary: #ffb020; --rar-mythic: #ff6fae;
+    --halo1: rgba(109, 78, 224, .40); --halo2: rgba(196, 61, 156, .22); --halo3: rgba(242, 182, 50, .16); --spark: rgba(255, 224, 138, .55);
+    --shadow: rgba(0, 0, 0, .45);
+    color-scheme: dark;
+  }
+}
+
+/* ---------- Base ---------- */
+body { font-family: var(--font-body); font-size: 17px; line-height: 1.5; background: radial-gradient(120% 80% at 50% 0%, var(--bg2), var(--bg) 70%) fixed; color: var(--text); overflow-x: hidden; }
+h1, h2, h3, .disp { font-family: var(--font-display); font-style: italic; font-weight: 900; text-transform: uppercase; letter-spacing: .01em; line-height: 1.05; text-wrap: balance; }
+h1.sentence { font-size: clamp(1.7rem, 6vw, 2.3rem); }
+h2 { font-size: 1.45rem; margin: 4px 0 10px; color: var(--gold); }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--gold-fill); outline-offset: 3px; }
+.top { font-family: var(--font-display); font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 1.35rem; letter-spacing: .02em; border-bottom: 2px solid var(--line); background: color-mix(in srgb, var(--bg) 85%, transparent); }
+.top b { color: var(--gold); }
+
+/* Fond animé : halos qui dérivent lentement et poussière d'étoiles (élément .bgfx de index.html) */
+.bgfx { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.bgfx i { position: absolute; width: 70vmax; height: 70vmax; border-radius: 50%; will-change: transform; }
+.bgfx i:nth-child(1) { left: -25vmax; top: -30vmax; background: radial-gradient(circle, var(--halo1) 0%, transparent 62%); animation: drift1 26s ease-in-out infinite alternate; }
+.bgfx i:nth-child(2) { right: -30vmax; top: 15vh; background: radial-gradient(circle, var(--halo2) 0%, transparent 60%); animation: drift2 32s ease-in-out infinite alternate; }
+.bgfx i:nth-child(3) { left: 10vw; bottom: -45vmax; background: radial-gradient(circle, var(--halo3) 0%, transparent 60%); animation: drift1 38s ease-in-out infinite alternate-reverse; }
+.bgfx::after { content: ""; position: absolute; inset: -60px; opacity: .5; background-image: radial-gradient(circle at 1px 1px, var(--spark) 1px, transparent 1.6px), radial-gradient(circle at 13px 17px, var(--spark) .8px, transparent 1.4px); background-size: 34px 34px, 57px 57px; animation: stars 40s linear infinite; }
+@keyframes drift1 { to { transform: translate(12vw, 10vh) scale(1.15); } }
+@keyframes drift2 { to { transform: translate(-14vw, 18vh) scale(.9); } }
+@keyframes stars { to { transform: translate(34px, 68px); } }
+
+/* Entrée de l'écran : les blocs montent un par un */
+.screen > * { animation: rise .42s cubic-bezier(.2, .8, .2, 1) both; }
+.screen > *:nth-child(2) { animation-delay: .05s; } .screen > *:nth-child(3) { animation-delay: .1s; } .screen > *:nth-child(4) { animation-delay: .15s; } .screen > *:nth-child(n+5) { animation-delay: .2s; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px) scale(.985); } }
+
+/* ---------- Cartes : cadre de quête ---------- */
+.card { position: relative; background: linear-gradient(180deg, var(--card2), var(--card)); border: 2px solid var(--frame); border-radius: 18px; padding: 18px;
+  box-shadow: inset 0 0 0 1px var(--frame-glow), inset 0 1px 0 rgba(255, 255, 255, .06), 0 6px 0 var(--shadow); }
+.card.error { border-color: var(--bad); }
+/* Cadre orné (coins en losange) pour les cartes importantes */
+.quest::before, .quest::after { content: ""; position: absolute; top: -7px; width: 12px; height: 12px; background: var(--gold-fill); border: 2px solid var(--bg); transform: rotate(45deg); border-radius: 2px; }
+.quest::before { left: 16px; } .quest::after { right: 16px; }
+.quest-title { display: inline-block; margin: -30px 0 10px; padding: 2px 14px; background: linear-gradient(180deg, var(--gold-hi), var(--gold-fill)); color: var(--on-gold); border-radius: 8px; box-shadow: 0 3px 0 var(--gold-d); font-family: var(--font-display); font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 1.05rem; }
+
+/* ---------- Boutons qui s'enfoncent ---------- */
+.btn { --c: var(--btn); --d: var(--btn-d); --ink: var(--btn-ink); position: relative; font-family: var(--font-body); font-weight: 800; color: var(--ink); background: var(--c); border: 0; border-radius: 14px; padding: 11px 18px; min-height: 46px;
+  box-shadow: 0 5px 0 var(--d), inset 0 1px 0 rgba(255, 255, 255, .12); transition: transform .08s, box-shadow .08s, filter .15s; cursor: pointer; }
+.btn:hover:not(:disabled) { filter: brightness(1.08); }
+.btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 1px 0 var(--d), inset 0 1px 0 rgba(255, 255, 255, .12); }
+.btn:not(.ghost):not(.soft):not(.red):not(.choice) { --c: linear-gradient(180deg, var(--gold-hi), var(--gold-fill)); --d: var(--gold-d); --ink: var(--on-gold); }
+.btn.soft { --c: var(--violet); --d: var(--violet-d); --ink: #ffffff; }
+.btn.red { --c: var(--red); --d: var(--red-d); --ink: #ffffff; }
+.btn.ghost { --c: transparent; --d: transparent; --ink: var(--text); border: 2px solid var(--line); box-shadow: none; }
+.btn.ghost:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+.btn.big { font-family: var(--font-display); font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 1.5rem; letter-spacing: .02em; padding: 14px 22px; min-height: 60px; }
+/* Grand bouton principal : un reflet passe dessus de temps en temps */
+.btn.big:not(:disabled) { overflow: hidden; }
+.btn.big:not(:disabled)::after { content: ""; position: absolute; top: 0; bottom: 0; left: -40%; width: 30%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .45), transparent); transform: skewX(-20deg); animation: shine 3.2s ease-in-out infinite; pointer-events: none; }
+@keyframes shine { 0%, 60% { transform: translateX(0) skewX(-20deg); } 100% { transform: translateX(480%) skewX(-20deg); } }
+.btn.choice { --c: var(--card2); --d: var(--btn-d); --ink: var(--text); border: 2px solid var(--line); }
+/* Chaque variante pose aussi son fond et sa couleur : sinon les règles plus précises de app.css (.btn.soft, .btn.red…) l'emporteraient. */
+.btn.soft, .btn.red, .btn.ghost, .btn.choice, .btn.big, .btn:not(.ghost):not(.soft):not(.red):not(.choice) { background: var(--c); color: var(--ink); }
+.btn.choice.right { --c: color-mix(in srgb, var(--good) 22%, var(--card)); border-color: var(--good); }
+.btn.choice.wrong { --c: color-mix(in srgb, var(--bad) 22%, var(--card)); border-color: var(--bad); animation: shake .35s; }
+.btn.small-btn { min-height: 36px; padding: 6px 12px; box-shadow: 0 3px 0 var(--d); }
+.btn:disabled:not(.choice) { opacity: .5; filter: grayscale(.4); }
+@keyframes shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+
+/* ---------- Puces ---------- */
+.chip { font-family: var(--font-body); font-weight: 700; border: 2px solid var(--line); background: color-mix(in srgb, var(--card2) 70%, transparent); color: var(--text); border-radius: 999px; padding: 6px 14px; transition: transform .1s; }
+.chip:active { transform: scale(.94); }
+.chip.on { background: linear-gradient(180deg, var(--gold-hi), var(--gold-fill)); border-color: var(--gold-d); color: var(--on-gold); }
+
+/* ---------- Barres : XP (or) et progression ---------- */
+progress, meter { appearance: none; -webkit-appearance: none; height: 14px; border: 2px solid var(--frame); border-radius: 999px; background: color-mix(in srgb, var(--bg) 70%, #000 10%); overflow: hidden; }
+progress::-webkit-progress-bar { background: transparent; }
+progress::-webkit-progress-value { border-radius: 999px; background: linear-gradient(90deg, var(--gold-fill), var(--gold-hi), var(--gold-fill)); background-size: 200% 100%; animation: flow 2.4s linear infinite; }
+progress::-moz-progress-bar { border-radius: 999px; background: linear-gradient(90deg, var(--gold-fill), var(--gold-hi)); }
+@keyframes flow { to { background-position: -200% 0; } }
+/* Barre maison (largeur par data-css="--p:42%") : se remplit à l'apparition */
+.bar { position: relative; height: 16px; border: 2px solid var(--frame); border-radius: 999px; background: color-mix(in srgb, var(--bg) 70%, #000 10%); overflow: hidden; }
+.bar > i { position: absolute; inset: 0 auto 0 0; width: var(--p, 0%); border-radius: 999px; background: linear-gradient(90deg, var(--gold-fill), var(--gold-hi)); transform-origin: left; animation: fill .9s cubic-bezier(.2, .8, .2, 1) both; }
+.bar.violet > i { background: linear-gradient(90deg, var(--violet), var(--accent)); }
+.bar.good > i { background: linear-gradient(90deg, color-mix(in srgb, var(--good) 70%, #000), var(--good)); }
+@keyframes fill { from { transform: scaleX(0); } }
+
+/* ---------- Cases d'inventaire (raretés qui brillent) ---------- */
+.slot { --rc: var(--glow-common); position: relative; display: grid; place-items: center; aspect-ratio: 1; border-radius: 14px; border: 2px solid color-mix(in srgb, var(--rc) 70%, var(--line));
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--rc) 22%, var(--card2)), var(--card)); box-shadow: inset 0 0 12px color-mix(in srgb, var(--rc) 30%, transparent), 0 4px 0 var(--shadow); overflow: hidden; }
+.slot.rar-rare { --rc: var(--glow-rare); } .slot.rar-epic { --rc: var(--glow-epic); } .slot.rar-legendary { --rc: var(--glow-legendary); } .slot.rar-mythic { --rc: var(--glow-mythic); }
+.slot.rar-legendary, .slot.rar-mythic { box-shadow: inset 0 0 14px color-mix(in srgb, var(--rc) 45%, transparent), 0 0 16px color-mix(in srgb, var(--rc) 45%, transparent), 0 4px 0 var(--shadow); }
+.slot.rar-legendary::after, .slot.rar-mythic::after { content: ""; position: absolute; inset: -50%; background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, .35) 50%, transparent 60%); animation: sweep 3s ease-in-out infinite; pointer-events: none; }
+.slot.rar-mythic { animation: pulse 2s ease-in-out infinite; }
+@keyframes sweep { 0%, 50% { transform: translateX(-60%); } 100% { transform: translateX(60%); } }
+@keyframes pulse { 50% { box-shadow: inset 0 0 18px color-mix(in srgb, var(--rc) 60%, transparent), 0 0 26px color-mix(in srgb, var(--rc) 60%, transparent), 0 4px 0 var(--shadow); } }
+
+/* ---------- Messages, champs, notes ---------- */
+.feedback { font-weight: 800; }
+.feedback.error, p.error { color: var(--bad); }
+.field input, .send input, select { border: 2px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--card) 80%, var(--bg)); color: var(--text); }
+.field input:focus, .send input:focus { border-color: var(--gold-fill); outline: none; box-shadow: 0 0 0 3px var(--frame-glow); }
+.score { font-family: var(--font-display); font-style: italic; font-weight: 900; font-size: 3.2rem; line-height: 1; animation: pop .5s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes pop { from { transform: scale(.3); opacity: 0; } }
+.word { border-radius: 12px; background: var(--card2); }
+
+/* ---------- Page d'exemple (#style) ---------- */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr)); gap: 8px; }
+.swatch { border-radius: 10px; border: 2px solid var(--line); padding: 8px; font-size: .8rem; display: grid; gap: 4px; }
+.swatch i { display: block; height: 28px; border-radius: 6px; border: 1px solid var(--line); }
+.sw-bg { background: var(--bg) !important; }
+.sw-card { background: var(--card) !important; }
+.sw-text { background: var(--text) !important; }
+.sw-muted { background: var(--muted) !important; }
+.sw-gold { background: var(--gold) !important; }
+.sw-gold-fill { background: var(--gold-fill) !important; }
+.sw-accent { background: var(--accent) !important; }
+.sw-violet { background: var(--violet) !important; }
+.sw-good { background: var(--good) !important; }
+.sw-ok { background: var(--ok) !important; }
+.sw-bad { background: var(--bad) !important; }
+.sw-frame { background: var(--frame) !important; }
+.slots-demo { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.slots-demo .slot { font-size: 1.6rem; }
+.slots-demo figure { margin: 0; display: grid; gap: 4px; text-align: center; font-size: .75rem; }
+
+/* Effets réduits : le fond ne bouge plus (les animations sont déjà coupées par .fx-reduced * dans app.css) */
+.fx-reduced .bgfx i, .fx-reduced .bgfx::after { animation: none; }
+.fx-reduced .screen > * { animation: none; }

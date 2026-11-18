@@ -86,7 +86,8 @@ export function mountHome(root, S) {
         })}</ol>
       </section>
       <p class="row start muted small"><button class="btn ghost" data-act="settings" type="button">⚙️ Réglages</button>
-        <button class="btn ghost" data-act="bench" type="button">Banc de test du moteur</button></p>
+        <button class="btn ghost" data-act="bench" type="button">Banc de test du moteur</button>
+        <button class="btn ghost" data-act="style" type="button">🎨 Style</button></p>
     `);
   }
 
@@ -97,6 +98,7 @@ export function mountHome(root, S) {
     if (act === "goal") { if (setGoal(P, Number(el.dataset.goal))) { persist(); draw(); } }
     if (act === "open" && IDS.includes(el.dataset.id) && lessonState(P, IDS.indexOf(el.dataset.id)).open) location.hash = "#lecon/" + el.dataset.id;
     if (act === "bench") location.hash = "#banc";
+    if (act === "style") location.hash = "#style";
     if (act === "settings") location.hash = "#reglages";
     if (act === "vocab") location.hash = "#vocab";
     if (act === "listen") location.hash = "#ecoute";
