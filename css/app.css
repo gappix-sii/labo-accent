@@ -313,3 +313,6 @@ code { font-size: .9em; overflow-wrap: anywhere; }
 @keyframes fxFall { to { transform: translateY(110vh) rotate(720deg); } }
 .fx-toast.still, .fx-level.still .fx-level-box, .fx-toast.still .fx-fill { animation: none; }
 .fx-reduced *, .fx-reduced *::before, .fx-reduced *::after { animation: none !important; transition: none !important; }
+
+/* QR code du transfert (phase 7) : noir sur blanc dans les deux thèmes, grand pour être lu sur un écran */
+.qr { display: block; width: min(100%, 36rem); height: auto; margin: 0 auto; background: #ffffff; border-radius: .4rem; }
