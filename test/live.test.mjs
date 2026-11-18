@@ -178,3 +178,32 @@ test("son : conversions, rééchantillonnage 48 → 16 kHz, fin de phrase détec
   assert.equal(quiet.heard, false, "silence seul : rien entendu");
   assert.equal(rms(new Float32Array(0)), 0);
 });
+
+test("voix du direct : 30 voix, réglage sauvegardé et nettoyé, écoute d'une voix", async () => {
+  const { LIVE_VOICES, DEFAULT_LIVE_VOICE, liveVoiceOk, SAMPLE_TEXT } = await import("../js/core/chat.js");
+  const { defaults, sanitize } = await import("../js/core/store.js");
+  const { sayOnce } = await import("../js/engine/live.js");
+  assert.equal(LIVE_VOICES.length, 30);
+  assert.equal(new Set(LIVE_VOICES.map((v) => v.id)).size, 30);
+  assert.ok(LIVE_VOICES.every((v) => /^[A-Z][a-z]{2,20}$/.test(v.id) && v.style));
+  assert.equal(defaults().liveVoice, DEFAULT_LIVE_VOICE);
+  assert.equal(sanitize({ ...defaults(), liveVoice: "Puck" }).liveVoice, "Puck");
+  assert.equal(sanitize({ ...defaults(), liveVoice: "<img>" }).liveVoice, "Kore");
+  assert.equal(liveVoiceOk("Sulafat"), true);
+  assert.deepEqual(setupMessage({ instructions: "x", correction: false }).setup.tools, []);
+  FakeWS.all = [];
+  const played = [];
+  const p = sayOnce({ key: FAKE, voice: "Puck", text: SAMPLE_TEXT, play: (b) => played.push(b), deps: { fetchFn: async () => json(200, { name: TOKEN }), WS: FakeWS } });
+  await tick(); await tick();
+  const ws = FakeWS.all[0];
+  await tick();
+  assert.equal(ws.sent[0].setup.generationConfig.speechConfig.voiceConfig.prebuiltVoiceConfig.voiceName, "Puck");
+  assert.deepEqual(ws.sent[0].setup.tools, [], "pas de correction pour un échantillon");
+  await ws.srv({ setupComplete: {} });
+  assert.match(ws.sent[1].clientContent.turns[0].parts[0].text, /Shall we have a little chat/);
+  await ws.srv({ serverContent: { modelTurn: { parts: [{ inlineData: { mimeType: "audio/pcm;rate=24000", data: "AAAA" } }] } } });
+  await ws.srv({ serverContent: { turnComplete: true } });
+  assert.deepEqual(await p, { ok: true });
+  assert.deepEqual(played, ["AAAA"]);
+  assert.equal(ws.closedWith, 1000, "on raccroche après l'échantillon");
+});

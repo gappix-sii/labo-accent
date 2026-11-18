@@ -7,6 +7,7 @@ import { newProgress, sanitizeProgress } from "./progress.js";
 import { newSrs, sanitizeSrs } from "./srs.js";
 import { newListening, sanitizeListening } from "./listening.js";
 import { newMistakes, sanitizeMistakes } from "./tracks.js";
+import { DEFAULT_LIVE_VOICE, liveVoiceOk } from "./chat.js";
 import { mistakeById } from "../content/mistakes.js";
 
 export const STORE_KEY = "labo.v2";
@@ -20,7 +21,7 @@ const LOG_MAX = 100;
 export function defaults() {
   // progress : XP, niveau, série, leçons (js/core/progress.js) ; srs : révision du vocabulaire (js/core/srs.js) ;
   // listening : paires d'écoute ratées (js/core/listening.js) ; mistakes : fautes typiques ratées (js/core/tracks.js). Chacun a son propre numéro de version « v ».
-  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", last: null, kind: "soigné", log: [],
+  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", liveVoice: DEFAULT_LIVE_VOICE, last: null, kind: "soigné", log: [],
     progress: newProgress(), srs: newSrs(), listening: newListening(), mistakes: newMistakes() };
 }
 
@@ -72,6 +73,7 @@ export function sanitize(raw) {
   S.engine = raw.engine === true; // le moteur a déjà été téléchargé sur cet appareil
   S.voice = raw.voice === true; // la voix aussi
   S.voiceId = VOICE_IDS.has(raw.voiceId) ? raw.voiceId : "af_heart";
+  S.liveVoice = liveVoiceOk(raw.liveVoice) ? raw.liveVoice : DEFAULT_LIVE_VOICE; // voix du direct (phase 5)
   S.last = cleanResult(raw.last);
   S.kind = KINDS.has(raw.kind) ? raw.kind : "soigné";
   S.log = list(raw.log, LOG_MAX).filter((e) => e && typeof e === "object" && KINDS.has(e.kind)).map((e) => ({

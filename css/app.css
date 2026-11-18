@@ -117,3 +117,7 @@ code { font-size: .9em; overflow-wrap: anywhere; }
 
 /* Essai du direct (tools/essai-live.html) */
 .bubble.correction span { white-space: pre-line; }
+.voices { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: .4rem; }
+.voices li { display: flex; gap: .4rem; align-items: center; }
+.voices .chip { flex: 1; text-align: left; }
+.chip.on .muted { color: inherit; opacity: .85; }

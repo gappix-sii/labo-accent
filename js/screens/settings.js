@@ -1,11 +1,16 @@
 // Écran « Réglages » (#reglages, phase 5) : clé Gemini pour la conversation libre, avec ce qui part chez Google.
 // La clé reste sur cet appareil (js/core/keys.js) ; « Tester la clé » demande à Google la fiche du modèle (js/engine/gemini.js).
 import { html, render } from "../core/dom.js";
+import { save } from "../core/store.js";
+import { LIVE_VOICES, liveVoiceOk, SAMPLE_TEXT } from "../core/chat.js";
+import { sayOnce } from "../engine/live.js";
+import { Player } from "../engine/live-audio.js";
 import { loadKey, saveKey, clearKey, maskKey } from "../core/keys.js";
 import { checkKey, errorText, MODELS } from "../engine/gemini.js";
 
-export function mountSettings(root) {
-  const ui = { msg: "", bad: false, busy: false };
+export function mountSettings(root, S) {
+  const ui = { msg: "", bad: false, busy: false, hearing: null, voiceMsg: "" };
+  const player = new Player();
   let alive = true;
 
   function draw() {
@@ -45,6 +50,15 @@ export function mountSettings(root) {
       </section>
 
       <section class="card">
+        <h2>🗣 Voix de la conversation</h2>
+        <p class="muted small">Voix de Gemini pour la conversation libre. Touche ▶ pour l'écouter, puis choisis-la.${key ? "" : " (Il faut d'abord une clé pour écouter.)"}</p>
+        ${ui.voiceMsg ? html`<p class="feedback error" role="status">${ui.voiceMsg}</p>` : ""}
+        <ul class="voices">${LIVE_VOICES.map((v) => html`<li>
+          <button class="chip${v.id === S.liveVoice ? " on" : ""}" data-act="voice" data-v="${v.id}" type="button" aria-pressed="${v.id === S.liveVoice ? "true" : "false"}">${v.id === S.liveVoice ? "✓ " : ""}${v.id} <span class="muted small">· ${v.style}</span></button>
+          <button class="btn soft small-btn" data-act="hear" data-v="${v.id}" type="button" aria-label="${`Écouter ${v.id}`}" ${key && !ui.hearing ? "" : "disabled"}>${ui.hearing === v.id ? "…" : "▶"}</button></li>`)}</ul>
+      </section>
+
+      <section class="card">
         <h2>⚠️ Ce qui part chez Google</h2>
         <ul class="steps">
           <li>Seulement pendant la conversation libre : ce que tu dis (l'enregistrement de ta voix) ou ce que tu tapes, et le fil de la conversation.</li>
@@ -75,10 +89,21 @@ export function mountSettings(root) {
     draw();
   }
 
+  async function hear(v) {
+    ui.hearing = v; ui.voiceMsg = ""; draw();
+    player.unlock(); // le son doit être autorisé par le clic
+    const r = await sayOnce({ key: loadKey(), voice: v, text: SAMPLE_TEXT, play: (b64) => player.play(b64) });
+    if (!alive) return;
+    ui.hearing = null; ui.voiceMsg = r.ok ? "" : errorText(r.error);
+    draw();
+  }
+
   root.addEventListener("click", (e) => {
     const el = e.target.closest("[data-act]");
     if (!el || ui.busy) return;
     const act = el.dataset.act;
+    if (act === "voice" && liveVoiceOk(el.dataset.v)) { S.liveVoice = el.dataset.v; save(S); draw(); }
+    if (act === "hear" && liveVoiceOk(el.dataset.v) && !ui.hearing && loadKey()) hear(el.dataset.v);
     if (act === "home") location.hash = "#accueil";
     if (act === "save") saveInput();
     if (act === "test") test();
@@ -87,5 +112,5 @@ export function mountSettings(root) {
   root.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.id === "key-input" && !ui.busy) saveInput(); });
 
   draw();
-  return () => { alive = false; };
+  return () => { alive = false; player.close(); };
 }

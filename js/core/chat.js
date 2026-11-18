@@ -90,3 +90,19 @@ export function closeError(code, reason = "") {
   if (code === 1006) return "network";
   return "closed";
 }
+
+// Voix du direct (Gemini Live), relevées le 2026-11-18 dans la doc de Google (aistudio.google.com/docs/speech-generation),
+// avec leur style traduit. « Kore » par défaut : celle que l'utilisateur a écoutée et aimée à l'essai.
+export const DEFAULT_LIVE_VOICE = "Kore";
+export const LIVE_VOICES = [
+  ["Kore", "ferme"], ["Zephyr", "lumineuse"], ["Puck", "enjouée"], ["Charon", "posée, informative"], ["Fenrir", "vive"],
+  ["Leda", "jeune"], ["Orus", "ferme"], ["Aoede", "légère"], ["Callirrhoe", "décontractée"], ["Autonoe", "lumineuse"],
+  ["Enceladus", "soufflée"], ["Iapetus", "claire"], ["Umbriel", "décontractée"], ["Algieba", "douce"], ["Despina", "douce"],
+  ["Erinome", "claire"], ["Algenib", "rocailleuse"], ["Rasalgethi", "informative"], ["Laomedeia", "enjouée"], ["Achernar", "tendre"],
+  ["Alnilam", "ferme"], ["Schedar", "égale"], ["Gacrux", "mûre"], ["Pulcherrima", "directe"], ["Achird", "amicale"],
+  ["Zubenelgenubi", "familière"], ["Vindemiatrix", "délicate"], ["Sadachbia", "animée"], ["Sadaltager", "savante"], ["Sulafat", "chaleureuse"]
+].map(([id, style]) => ({ id, style }));
+export const liveVoiceOk = (v) => LIVE_VOICES.some((x) => x.id === v);
+
+// Phrase dite par une voix quand on l'écoute dans les réglages.
+export const SAMPLE_TEXT = "Hi! I'm your English partner. Shall we have a little chat?";

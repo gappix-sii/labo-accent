@@ -8,7 +8,8 @@ import { CORRECTION_TOOL, cleanCorrection, cleanText, cleanChunk, closeError } f
 import { f32ToPcm64 } from "./live-audio.js";
 
 export const WS_URL = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained";
-export const DEFAULT_VOICE = "Kore";
+export { DEFAULT_LIVE_VOICE as DEFAULT_VOICE } from "../core/chat.js";
+import { DEFAULT_LIVE_VOICE as DEFAULT_VOICE } from "../core/chat.js";
 export const SLOW_MS = 8000, NO_REPLY_MS = 20000; // « Google prend son temps… », puis « Réessaie »
 const TOKEN_MS = 30 * 60e3, OPEN_MS = 60e3, MAX_RECONNECT = 3;
 
@@ -24,12 +25,12 @@ export async function createToken(key, { now = Date.now(), ...opts } = {}) {
 }
 
 // Premier message : modèle, voix, consignes, fonction de correction, transcriptions, fin de phrase signalée par nous.
-export function setupMessage({ instructions, voice = DEFAULT_VOICE, handle = null }) {
+export function setupMessage({ instructions, voice = DEFAULT_VOICE, handle = null, correction = true }) {
   return { setup: {
     model: `models/${MODELS.live}`,
     generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } } },
     systemInstruction: { parts: [{ text: instructions }] },
-    tools: [CORRECTION_TOOL],
+    tools: correction ? [CORRECTION_TOOL] : [],
     inputAudioTranscription: {}, outputAudioTranscription: {},
     realtimeInputConfig: { automaticActivityDetection: { disabled: true } },
     sessionResumption: handle ? { handle } : {}
@@ -70,8 +71,8 @@ export function parseServer(m) {
 // Une conversation. on(type, data) reçoit : status (texte), ready, audio, heard, reply, correction, turnDone,
 // interrupted, slow, error (code), closed. Méthodes : start, text, beginTurn, audio, endTurn, retry, close.
 export class LiveChat {
-  constructor({ key, instructions, voice = DEFAULT_VOICE, opening, on, deps = {} }) {
-    Object.assign(this, { key, instructions, voice, opening, on });
+  constructor({ key, instructions, voice = DEFAULT_VOICE, opening, on, correction = true, deps = {} }) {
+    Object.assign(this, { key, instructions, voice, opening, on, correction });
     this.d = { fetchFn: globalThis.fetch, WS: globalThis.WebSocket, setTimeout: globalThis.setTimeout.bind(globalThis), clearTimeout: globalThis.clearTimeout.bind(globalThis), now: Date.now, ...deps };
     this.ws = null; this.token = null; this.handle = null; this.ready = false; this.closed = false;
     this.turn = []; this.lastTurn = null; this.timers = []; this.reconnects = 0; this.waiting = false;
@@ -89,7 +90,7 @@ export class LiveChat {
   open() {
     const ws = new this.d.WS(`${WS_URL}?access_token=${encodeURIComponent(this.token.token)}`);
     this.ws = ws; this.ready = false;
-    ws.onopen = () => ws.send(JSON.stringify(setupMessage({ instructions: this.instructions, voice: this.voice, handle: this.handle })));
+    ws.onopen = () => ws.send(JSON.stringify(setupMessage({ instructions: this.instructions, voice: this.voice, handle: this.handle, correction: this.correction })));
     ws.onmessage = async (e) => {
       let m;
       try { m = JSON.parse(typeof e.data === "string" ? e.data : await e.data.text()); } catch { return; }
@@ -181,4 +182,24 @@ export class LiveChat {
     this.ws = null; this.ready = false;
     this.on("closed");
   }
+}
+
+// Écoute d'une voix (réglages) : courte conversation en direct où la voix dit `text`, puis on raccroche.
+// play(b64) joue le son reçu. Renvoie une promesse : { ok: true } ou { ok: false, error }.
+export function sayOnce({ key, voice, text, play, deps }) {
+  return new Promise((resolve) => {
+    let done = false;
+    const end = (r) => { if (done) return; done = true; chat.close(); resolve(r); };
+    const chat = new LiveChat({
+      key, voice, deps, correction: false,
+      instructions: "You are a voice sample. Say exactly the sentence you are given, in a warm and natural tone, and nothing else.",
+      opening: `Say exactly: "${cleanText(text, 200)}"`,
+      on: (type, data) => {
+        if (type === "audio") play(data);
+        else if (type === "turnDone") end({ ok: true });
+        else if (type === "error") end({ ok: false, error: data });
+      }
+    });
+    chat.start();
+  });
 }
