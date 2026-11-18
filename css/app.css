@@ -242,3 +242,52 @@ code { font-size: .9em; overflow-wrap: anywhere; }
 .shop-item .row { gap: .3rem; flex-wrap: wrap; justify-content: center; }
 .rar-rare { color: #4cc9f0; } .rar-epic { color: #b388ff; } .rar-legendary { color: #ffb020; } .rar-mythic { color: #ff6fae; }
 .shop-cats { flex-wrap: wrap; }
+
+/* Écran Coffres (phase 6, tâche 5 ; dessins et animations repris de ancien/css/app.css) */
+.chest{width:100%;height:100%;overflow:visible}
+.chest .chest-rays{opacity:0;transform-origin:100px 92px}
+.chest .chest-glow{opacity:.5;transform-origin:100px 92px}
+.chest .chest-lid{transform-origin:34px 92px;transition:transform .5s cubic-bezier(.3,1.7,.5,1)}
+.chest.idle{animation:chestIdle 1.6s ease-in-out infinite;transform-origin:100px 160px}
+.chest.idle .chest-glow{animation:glowP 1.6s ease-in-out infinite}
+.chest.shake{animation:chestShake .9s ease-in-out;transform-origin:100px 160px}
+.chest.open .chest-lid{transform:translate(-4px,-18px) rotate(-16deg)}
+.chest.open .chest-rays{opacity:1;animation:spin 9s linear infinite}
+.chest.open .chest-glow{animation:glowP 1s ease-in-out infinite}
+.chest-gold.idle{filter:drop-shadow(0 0 12px rgba(255,210,63,.6))}
+@keyframes chestIdle{50%{transform:translateY(-8px) scale(1.03)}}
+@keyframes chestShake{10%,30%,50%,70%{transform:rotate(-7deg) scale(1.05)}20%,40%,60%,80%{transform:rotate(7deg) scale(1.08)}100%{transform:scale(1.12)}}
+@keyframes glowP{50%{transform:scale(1.18);opacity:.8}}
+@keyframes lootIn{from{transform:scale(.2) translateY(-40px);opacity:0}}
+.lbox{width:100%;height:100%;overflow:visible;display:block}
+.lbox .lbox-lid{transform-origin:100px 100px}
+.lbox.idle{animation:boxIdle 1.8s ease-in-out infinite;transform-origin:100px 186px}
+.lbox.charging{--s:1;animation:boxShake .16s linear infinite;transform-origin:100px 186px}
+.lbox.lvl-1{--s:1.05} .lbox.lvl-2{--s:1.1;animation-duration:.12s} .lbox.lvl-3{--s:1.16;animation-duration:.09s} .lbox.lvl-4{--s:1.22;animation-duration:.07s}
+.lbox.charging .lbox-lid{animation:lidJitter .22s linear infinite}
+.lbox.lvl-3 .lbox-lid,.lbox.lvl-4 .lbox-lid{animation-duration:.12s}
+@keyframes boxShake{0%,100%{transform:rotate(-3deg) scale(var(--s))}50%{transform:rotate(3deg) scale(var(--s))}}
+@keyframes boxIdle{50%{transform:translateY(-8px) rotate(-2deg)}}
+@keyframes lidJitter{50%{transform:translateY(-7px) rotate(-2deg)}}
+.box-rgb{fill:#ff2fd0;animation:rgbF 2.4s linear infinite}
+.chest-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.chest-mini { width: 7rem; height: 7rem; display: block; }
+.box-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: .6rem; margin-top: .6rem; }
+.box-card { border: 2px solid var(--line); border-radius: .8rem; padding: .6rem; display: grid; justify-items: center; gap: .3rem; }
+.odds { border-collapse: collapse; width: 100%; } .odds th { text-align: left; font-weight: 600; } .odds td { text-align: right; } .odds caption { text-align: left; }
+.reveal { --rc: #9aa3b5; position: relative; display: grid; justify-items: center; gap: .6rem; overflow: hidden; min-height: 18rem; }
+.reveal.r-rare { --rc: #4cc9f0; } .reveal.r-epic { --rc: #c08bff; } .reveal.r-legendary { --rc: #ffd23f; } .reveal.r-mythic { --rc: #ff2fd0; }
+.reveal > :not(.rv-fx) { position: relative; }
+.rv-fx { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.rv-rays { width: 30rem; height: 30rem; border-radius: 50%; opacity: 0; background: repeating-conic-gradient(from 0deg, var(--rc) 0 7deg, transparent 7deg 16deg); -webkit-mask: radial-gradient(circle, #000 16%, transparent 66%); mask: radial-gradient(circle, #000 16%, transparent 66%); }
+.reveal[class*="r-"] .rv-rays { opacity: .3; animation: spin 14s linear infinite; }
+.r-epic .rv-rays { opacity: .45; animation-duration: 10s; } .r-legendary .rv-rays { opacity: .65; animation-duration: 7s; }
+.r-mythic .rv-rays { opacity: .75; background: repeating-conic-gradient(#ff5470 0 6deg, #ffd23f 6deg 12deg, #3ddc84 12deg 18deg, #4cc9f0 18deg 24deg, #a98bff 24deg 30deg, transparent 30deg 40deg); animation-duration: 3.5s; }
+.rv-art { width: 11rem; height: 10rem; } .rv-art.gone { display: none; }
+.loot { display: grid; justify-items: center; gap: .6rem; }
+.loot-coins { font-size: 1.1rem; margin: 0; animation: lootIn .5s cubic-bezier(.2,1.5,.4,1) both; } .loot-coins b { font-size: 1.8rem; color: #ffd23f; }
+.loot-item { --rc: #9aa3b5; display: grid; justify-items: center; gap: .3rem; padding: .8rem 1.1rem; border-radius: 1rem; border: 3px solid var(--rc); box-shadow: 0 0 24px color-mix(in srgb, var(--rc) 45%, transparent); animation: lootIn .7s cubic-bezier(.2,1.5,.4,1) .2s both; }
+.loot-item.rar-rare { --rc: #4cc9f0; } .loot-item.rar-epic { --rc: #c08bff; } .loot-item.rar-legendary { --rc: #ffd23f; } .loot-item.rar-mythic { --rc: #ff2fd0; }
+.loot-item { color: inherit; }
+.loot-prev { width: 7.5rem; height: 7.5rem; display: block; } .loot-prev .item-ico { width: 100%; height: 100%; }
+@media (prefers-reduced-motion: reduce) { .chest, .chest *, .lbox, .lbox *, .rv-rays, .loot-coins, .loot-item { animation: none !important; transition: none !important; } }

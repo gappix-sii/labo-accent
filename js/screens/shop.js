@@ -49,7 +49,8 @@ export function mountShop(root, S) {
     const shown = ui.trying ? tryOn(G.avatar, ui.trying) : G.avatar;
     render(root, html`
       <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button>
-        <button class="btn ghost" data-act="companion" type="button">🐾 Mon compagnon</button></p>
+        <button class="btn ghost" data-act="companion" type="button">🐾 Mon compagnon</button>
+        <button class="btn ghost" data-act="chests" type="button">🎁 Coffres</button></p>
       <section class="card comp-hero">
         <div class="comp-big">${avatarSvg(shown)}</div>
         <div><h1 class="sentence">🛒 Boutique</h1>
@@ -77,6 +78,7 @@ export function mountShop(root, S) {
     const { act, id } = el.dataset;
     if (act === "home") return void (location.hash = "#accueil");
     if (act === "companion") return void (location.hash = "#compagnon");
+    if (act === "chests") return void (location.hash = "#coffres");
     if (act === "cat" && CATEGORIES.some(([c]) => c === el.dataset.cat)) ui.cat = el.dataset.cat;
     if (act === "try" && describeOwned(id)) { ui.trying = ui.trying === id ? "" : id; say(""); }
     if (act === "buy") {

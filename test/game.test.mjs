@@ -176,3 +176,20 @@ test("écran Boutique : adresse, catégories et essayage", async () => {
   assert.equal(tryOn(av, "inconnu"), av);
   assert.deepEqual(av, DEFAULT_AVATAR, "l'essayage ne touche pas au compagnon");
 });
+
+test("écran Coffres : adresse, probabilités affichées telles que tirées, dessins sûrs", async () => {
+  const { route } = await import("../js/main.js");
+  const { pct, oddsRows, nextGold } = await import("../js/screens/chests.js");
+  const { chestSvg, boxSvg } = await import("../js/content/chest-art.js");
+  const { isSafe } = await import("../js/core/dom.js");
+  assert.deepEqual(route("#coffres"), { screen: "chests" });
+  assert.equal(pct(0.002), "0,2 %"); assert.equal(pct(0.62), "62 %"); assert.equal(pct(0.018), "1,8 %");
+  for (const B of Object.values(BOXES)) {
+    const rows = oddsRows(B.odds);
+    assert.equal(rows.length, Object.keys(B.odds).length, "toutes les raretés affichées");
+    assert.ok(Math.abs(rows.reduce((s, [, p]) => s + p, 0) - 1) < 1e-9, "total 100 %");
+  }
+  assert.equal(nextGold(1), 5); assert.equal(nextGold(5), 10); assert.equal(nextGold(7), 10);
+  for (const t of Object.keys(CHESTS)) assert.ok(isSafe(chestSvg(t, "idle")));
+  for (const b of Object.keys(BOXES)) assert.ok(isSafe(boxSvg(b, "idle")));
+});
