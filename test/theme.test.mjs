@@ -76,3 +76,12 @@ test("carte du parcours : régions, étapes et quête du jour", async () => {
   assert.equal(dailyQuest(Q, now).done, true); assert.equal(dailyQuest(Q, now).pct, 100);
   assert.equal(dailyQuest(newProgress(), now).next, 1, "récompense : la série démarre");
 });
+
+test("exercices : barre d'avancement sûre, bornée et lisible par un lecteur d'écran", async () => {
+  const { progressBar } = await import("../js/screens/practice.js");
+  const { toHTMLString, isSafe } = await import("../js/core/dom.js");
+  const s = (t) => toHTMLString(t);
+  assert.ok(isSafe(progressBar(3, 10)));
+  assert.match(s(progressBar(3, 10, "Séance")), /data-css="--p:30%".*role="progressbar".*aria-label="Séance".*aria-valuemax="10".*aria-valuenow="3"/);
+  assert.match(s(progressBar(12, 10)), /--p:100%/); assert.match(s(progressBar(-1, 0)), /--p:0%/);
+});

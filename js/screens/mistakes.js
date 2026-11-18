@@ -7,7 +7,7 @@ import { save } from "../core/store.js";
 import { newMistakeSession, answerMistake } from "../core/tracks.js";
 import { recordWord, finishSession, PASS, XP_WORD } from "../core/progress.js";
 import { ALL_MISTAKES, MISTAKE_CATS } from "../content/mistakes.js";
-import { practice, resultBlock } from "./practice.js";
+import { practice, resultBlock, progressBar } from "./practice.js";
 import { listenControls } from "./listen.js";
 
 const CAT_TITLE = Object.fromEntries(MISTAKE_CATS.map((c) => [c.id, c.title]));
@@ -38,7 +38,7 @@ export function mountMistakes(root, S) {
     const { m, again } = cur();
     render(root, html`${head}
       <section class="card">
-        <p class="muted small">Phrase ${ui.i + 1} / ${ui.queue.length} · ${CAT_TITLE[m.cat] || ""}${again ? " · encore une fois" : ""}</p>
+        ${progressBar(ui.i + 1, ui.queue.length, "Avancement de la séance")}<p class="muted small ex-count">Phrase ${ui.i + 1} / ${ui.queue.length} · ${CAT_TITLE[m.cat] || ""}${again ? " · encore une fois" : ""}</p>
         <p class="wrong-line" lang="en"><span aria-hidden="true">✗ </span><s>${m.wrong}</s></p>
         <p class="muted small">Cette phrase est fausse. Dis la bonne version en anglais.</p>
         ${ui.reveal ? html`<h1 class="sentence answer" lang="en">✓ ${m.right}</h1><p class="small">${m.why}</p>${voice.block()}` : ""}

@@ -10,7 +10,7 @@ import { PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";
 import { scoreTurn, trackState, roleKey } from "../core/tracks.js";
 import { DIALOGUES, dialogueById } from "../content/dialogues.js";
 import { say, stopVoice } from "../engine/clips.js";
-import { practice, resultBlock } from "./practice.js";
+import { practice, resultBlock, progressBar } from "./practice.js";
 import { listenControls } from "./listen.js";
 
 export function mountRoleList(root, S) {
@@ -89,6 +89,7 @@ export function mountRole(root, S, id) {
       <p class="row"><button class="btn ghost" data-act="list" type="button">← Jeux de rôle</button>
         <span class="muted small">${ui.gained ? `+${ui.gained} XP dans ce dialogue` : ""}</span></p>
       <section class="card"><p class="muted small">${d.level} · ${d.role}</p><h1 class="sentence">${d.title}</h1>
+        ${ui.started ? progressBar(Math.min(ui.pos, d.turns.length), d.turns.length, "Avancement du dialogue") : ""}
         <p>🎯 ${d.goal}</p>${tasksBlock()}
         <p><button class="chip${ui.fr ? " on" : ""}" data-act="fr" type="button" aria-pressed="${ui.fr ? "true" : "false"}">Traduction en français</button></p></section>
       ${!ui.started ? html`<button class="btn big" data-act="start" type="button">▶ Commencer</button>

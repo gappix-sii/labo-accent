@@ -1,6 +1,7 @@
 // Écran « Écoute » (#ecoute) : un mot d'une paire est joué (ship ou sheep ?), on choisit lequel.
 // Erreur → les deux mots sont réécoutés l'un après l'autre ; les paires ratées reviennent plus souvent.
 import { html, render } from "../core/dom.js";
+import { progressBar } from "./practice.js";
 import { save } from "../core/store.js";
 import { pickQuestions, recordPair } from "../core/listening.js";
 import { recordListen, finishSession, XP_LISTEN } from "../core/progress.js";
@@ -56,7 +57,7 @@ export function mountListening(root, S) {
     const ok = ui.picked === q().side, w = played();
     render(root, html`${head}
       <section class="card">
-        <p class="muted small">Question ${ui.i + 1} / ${ui.qs.length} · sons : ${q().pair.sounds.replace("|", " ou ").replace("-", "rien")}</p>
+        ${progressBar(ui.i + 1, ui.qs.length, "Avancement de la séance")}<p class="muted small ex-count">Question ${ui.i + 1} / ${ui.qs.length} · sons : ${q().pair.sounds.replace("|", " ou ").replace("-", "rien")}</p>
         <h1 class="sentence">Quel mot entends-tu ?</h1>
         ${ui.started
           ? html`<button class="btn soft" data-act="replay" type="button">🔊 Réécouter</button>`

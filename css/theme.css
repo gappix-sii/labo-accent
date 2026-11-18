@@ -178,3 +178,40 @@ progress::-moz-progress-bar { border-radius: 999px; background: linear-gradient(
 /* Effets réduits : le fond ne bouge plus (les animations sont déjà coupées par .fx-reduced * dans app.css) */
 .fx-reduced .bgfx i, .fx-reduced .bgfx::after { animation: none; }
 .fx-reduced .screen > * { animation: none; }
+
+/* Exercices (phase 8, tâche 4) : en-tête de quête, barre d'avancement, gros micro, sons en tuiles */
+.in-exercise .screen > section.card:first-of-type::before, .in-exercise .screen > section.card:first-of-type::after { content: ""; position: absolute; top: -7px; width: 12px; height: 12px; background: var(--gold-fill); border: 2px solid var(--bg); transform: rotate(45deg); border-radius: 2px; }
+.in-exercise .screen > section.card:first-of-type::before { left: 16px; } .in-exercise .screen > section.card:first-of-type::after { right: 16px; }
+.ex-bar { margin: 6px 0 4px; height: 12px; }
+.ex-count { font-weight: 800; letter-spacing: .01em; }
+.mic-zone { display: grid; justify-items: center; padding: 10px 0 4px; }
+.btn.mic { border-radius: 999px; min-width: min(100%, 17rem); }
+.btn.mic.rec { animation: micPulse 1.1s ease-in-out infinite; }
+@keyframes micPulse { 0%, 100% { box-shadow: 0 5px 0 var(--red-d), 0 0 0 0 color-mix(in srgb, var(--red) 55%, transparent); } 50% { box-shadow: 0 5px 0 var(--red-d), 0 0 0 14px color-mix(in srgb, var(--red) 0%, transparent); } }
+meter#level { width: 100%; height: 14px; margin-top: 10px; }
+.analyzing { font-weight: 800; display: flex; gap: 8px; align-items: center; justify-content: center; padding: 14px 0; }
+.spin { display: inline-block; color: var(--gold); animation: spin 1s linear infinite; }
+/* Résultat : chaque mot est une tuile, chaque son une petite pastille colorée qui apparaît l'une après l'autre */
+.words { gap: 10px; }
+.word { border-width: 3px; box-shadow: 0 4px 0 var(--shadow); animation: tileIn .4s cubic-bezier(.2, 1.4, .4, 1) both; }
+.word:nth-child(2) { animation-delay: .06s; } .word:nth-child(3) { animation-delay: .12s; } .word:nth-child(4) { animation-delay: .18s; } .word:nth-child(n+5) { animation-delay: .24s; }
+.word.lv-good { background: color-mix(in srgb, var(--good) 14%, var(--card2)); } .word.lv-ok { background: color-mix(in srgb, var(--ok) 14%, var(--card2)); } .word.lv-bad { background: color-mix(in srgb, var(--bad) 14%, var(--card2)); }
+.ph { font-weight: 800; padding: 1px 6px; border-radius: 6px; border: 1px solid transparent; }
+.ph.st-good { background: color-mix(in srgb, var(--good) 28%, transparent); border-color: color-mix(in srgb, var(--good) 60%, transparent); }
+.ph.st-ok { background: color-mix(in srgb, var(--ok) 30%, transparent); border-color: color-mix(in srgb, var(--ok) 60%, transparent); }
+.ph.st-bad { background: var(--red); color: #ffffff; border-color: var(--red-d); }
+@keyframes tileIn { from { opacity: 0; transform: translateY(10px) scale(.9); } }
+.score-row .mood { animation: rise .5s .2s both; }
+.dot { border-width: 3px; font-weight: 800; }
+.dot.ok { background: linear-gradient(180deg, var(--gold-hi), var(--gold-fill)); border-color: var(--gold-d); color: var(--on-gold); }
+.dot.cur { border-color: var(--violet); box-shadow: 0 0 0 3px color-mix(in srgb, var(--violet) 35%, transparent); }
+.bubble { border: 2px solid var(--line); box-shadow: 0 3px 0 var(--shadow); animation: tileIn .3s both; }
+.bubble.ai { background: color-mix(in srgb, var(--violet) 18%, var(--card2)); }
+.bubble.me { background: color-mix(in srgb, var(--gold-fill) 14%, var(--card2)); }
+.correction-card { border-left-width: 5px; animation: tileIn .35s both; }
+.tile { border-width: 2px; font-weight: 700; box-shadow: 0 3px 0 var(--btn-d); background: var(--card2); }
+.tile:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--btn-d); }
+.answer { color: var(--gold); font-family: var(--font-display); font-style: italic; font-weight: 900; font-size: 1.8rem; }
+.gap { color: var(--gold); border-bottom-color: var(--gold-fill); }
+/* La phrase à dire reste en écriture normale (plus lisible que les titres en majuscules italiques) */
+.in-exercise h1.sentence, .in-exercise .sentence[lang="en"] { font-family: var(--font-body); font-style: normal; font-weight: 800; text-transform: none; letter-spacing: 0; line-height: 1.3; }

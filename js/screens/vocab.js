@@ -6,7 +6,7 @@ import { save } from "../core/store.js";
 import { session, answer, setLevel, setPerDay, boxes, PER_DAY } from "../core/srs.js";
 import { recordWord, finishSession, PASS, XP_WORD } from "../core/progress.js";
 import { LEVELS, VOCAB, wordById, sayText } from "../content/vocab.js";
-import { practice, resultBlock } from "./practice.js";
+import { practice, resultBlock, progressBar } from "./practice.js";
 import { listenControls } from "./listen.js";
 
 // File de la séance : mots à revoir puis nouveaux mots (ids). Exportée pour les tests.
@@ -45,7 +45,7 @@ export function mountVocab(root, S) {
     const w = word(), q = cur();
     render(root, html`${head}
       <section class="card">
-        <p class="muted small">Mot ${ui.i + 1} / ${ui.queue.length} · ${q.fresh ? "nouveau" : q.again ? "encore une fois" : "à revoir"} · ${w.level}</p>
+        ${progressBar(ui.i + 1, ui.queue.length, "Avancement de la séance")}<p class="muted small ex-count">Mot ${ui.i + 1} / ${ui.queue.length} · ${q.fresh ? "nouveau" : q.again ? "encore une fois" : "à revoir"} · ${w.level}</p>
         <h1 class="sentence">${w.fr}</h1>
         ${ui.reveal ? html`<p class="answer" lang="en"><b>${sayText(w)}</b></p>${voice.block()}` : html`<p class="muted small">Dis-le en anglais.</p>`}
       </section>

@@ -96,11 +96,11 @@ export function practice({ S, persist, draw, root, target, onScored, speakLabel 
     }
     if (ui.busy === "rec") {
       return html`<p>Je t'écoute… parle, puis tais-toi : l'enregistrement s'arrête tout seul.</p>
-        <meter id="level" min="0" max="1" value="0"></meter>
-        <button class="btn red" data-act="stop" type="button">Arrêter</button>`;
+        <div class="mic-zone"><button class="btn red big mic rec" data-act="stop" type="button"><span class="mic-ico" aria-hidden="true">⏹</span> Arrêter</button></div>
+        <meter id="level" min="0" max="1" value="0" aria-label="Volume de ta voix"></meter>`;
     }
-    if (ui.busy === "analyze") return html`<p>Analyse en cours…</p>`;
-    return html`${extra}<button class="btn big" data-act="speak" type="button">${speakLabel}</button>
+    if (ui.busy === "analyze") return html`<p class="analyzing"><span class="spin" aria-hidden="true">✦</span> Analyse en cours…</p>`;
+    return html`${extra}<div class="mic-zone"><button class="btn big mic" data-act="speak" type="button">${speakLabel}</button></div>
       ${ui.info ? html`<p class="muted small">${ui.info}</p>` : ""}`;
   }
 
@@ -124,6 +124,12 @@ export function practice({ S, persist, draw, root, target, onScored, speakLabel 
     clearError: () => { ui.error = ""; },
     dispose: () => { alive = false; off(); if (rec) { rec.stop(); rec = null; } }
   };
+}
+
+// Barre d'avancement d'un exercice (phase 8, tâche 4) : « n / total » en barre dorée qui se remplit.
+export function progressBar(done, total, label = "Avancement") {
+  const t = Math.max(1, total), d = Math.max(0, Math.min(done, t)), pct = Math.round((d / t) * 100);
+  return html`<div class="bar ex-bar" data-css="${`--p:${pct}%`}" role="progressbar" aria-label="${label}" aria-valuemin="0" aria-valuemax="${t}" aria-valuenow="${d}"><i></i></div>`;
 }
 
 // Réaction du compagnon à une note : content à 85, triste sous 55.

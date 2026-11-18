@@ -8,7 +8,7 @@ import { PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";
 import { recordGrammar, trackState, grammarKey } from "../core/tracks.js";
 import { GRAMMAR, GLEVELS, grammarById, answerOf } from "../content/grammar.js";
 import { say, stopVoice } from "../engine/clips.js";
-import { practice, resultBlock } from "./practice.js";
+import { practice, resultBlock, progressBar } from "./practice.js";
 import { listenControls } from "./listen.js";
 import { optionsOf, exerciseBlock, exerciseClick } from "./exercises.js";
 import { firstToDo, nextToDo, dotsBlock } from "./lesson.js";
@@ -64,7 +64,7 @@ export function mountGrammar(root, S, id) {
   function exView() {
     const target = answerOf(ex());
     return html`
-      <section class="card"><p class="muted small">${rule.title} · exercice ${ui.i + 1} / ${size}</p>${dots()}</section>
+      <section class="card"><p class="muted small ex-count">${rule.title} · exercice ${ui.i + 1} / ${size}</p>${progressBar(ui.i + 1, size, "Avancement de la règle")}${dots()}</section>
       ${ui.finished ? html`<section class="card done-card" role="status"><h2>🎉 Règle finie !</h2>
         <p>+${XP_LESSON} XP de bonus. Tu as gagné ${ui.gained} XP sur cette règle.</p>
         <div class="row start"><button class="btn" data-act="list" type="button">Autres règles</button>

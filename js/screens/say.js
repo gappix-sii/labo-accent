@@ -4,7 +4,7 @@ import { html, render } from "../core/dom.js";
 import { save, logEntry, addLog } from "../core/store.js";
 import { kindBlock, benchBlock, benchText } from "./bench.js";
 import { SENTENCES } from "../content/sentences.js";
-import { practice, resultBlock } from "./practice.js";
+import { practice, resultBlock, progressBar } from "./practice.js";
 import { listenControls } from "./listen.js";
 
 export function mountSay(root, S) {
@@ -16,7 +16,7 @@ export function mountSay(root, S) {
     render(root, html`
       <p><button class="btn ghost" data-act="home" type="button">← Parcours</button></p>
       <section class="card">
-        <p class="muted small">Banc de test du moteur · phrase ${S.sentence % SENTENCES.length + 1} / ${SENTENCES.length} · ${s.focus}</p>
+        ${progressBar(S.sentence % SENTENCES.length + 1, SENTENCES.length, "Phrase du banc")}<p class="muted small ex-count">Banc de test du moteur · phrase ${S.sentence % SENTENCES.length + 1} / ${SENTENCES.length} · ${s.focus}</p>
         <h1 class="sentence" lang="en">${s.en}</h1>
         <p class="muted">${s.fr}</p>
         ${voice.block()}
