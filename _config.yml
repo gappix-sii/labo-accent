@@ -1,0 +1,11 @@
+# Réglage de GitHub Pages (phase 7, tâche 4 ; précaution (b) de la tâche 6 de la phase 1).
+# GitHub Pages passe le site dans « Jekyll » avant de le publier ; ce fichier ne sert qu'à lui dire ce qu'il ne doit
+# PAS publier. Surtout `ancien/` : sinon l'ancienne appli resterait en ligne à l'adresse …/labo-accent/ancien/.
+# Les fichiers de l'appli n'ont pas d'en-tête Jekyll : ils sont publiés tels quels. (Test : test/pages.test.mjs.)
+exclude:
+  - ancien/
+  - test/
+  - tools/
+  - .claude/
+  - package.json
+  - "*.md"
