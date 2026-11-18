@@ -75,7 +75,7 @@ export function mountChests(root, S) {
           — encore <b>${PITY - G.pity}</b> boîte${PITY - G.pity > 1 ? "s" : ""} au plus. Un objet déjà à toi est changé en pièces.</p>
         <p class="small${G.pity === PITY - 1 ? " feedback" : " muted"}">${G.pity === PITY - 1 ? "Ta prochaine boîte est la boîte garantie, quelle qu'elle soit : " : "Boîte garantie (la 10e sans légendaire ni mythique), quelle qu'elle soit : "}
           ${oddsRows(PITY_ODDS).map(([r, p]) => `${RARITY[r]} ${pct(p)}`).join(" · ")} (à la place des probabilités ci-dessous).</p>
-        <div class="box-grid">${Object.entries(BOXES).map(([id, B]) => html`<div class="box-card">
+        <div class="box-grid">${Object.entries(BOXES).map(([id, B]) => html`<div class="${`box-card glow-${{ classic: "rare", epic: "epic", mythic: "mythic" }[id] || "common"}`}">
           <span class="chest-mini">${boxSvg(id, busy ? "" : "idle")}</span><b>${B.name}</b>
           <table class="odds"><caption class="small muted">Probabilités</caption>
             ${oddsRows(B.odds).map(([r, p]) => html`<tr><th class="small rar-${r}" scope="row">${RARITY[r]}</th><td class="small">${pct(p)}</td></tr>`)}</table>

@@ -37,7 +37,7 @@ export function mountCompanion(root, S) {
       <section class="card"><h2>Couleur</h2>
         <div class="comp-grid">${sp.skins.map((k) => {
           const mine = ownsSkin(G.owned, sp.id, k.id), on = k.id === av.skin;
-          return html`<button class="comp-pick${on ? " on" : ""}" data-act="skin" data-id="${k.id}" type="button" aria-pressed="${on ? "true" : "false"}" ${mine ? "" : "disabled"}>
+          return html`<button class="${`comp-pick glow-${k.rarity}${on ? " on" : ""}`}" data-act="skin" data-id="${k.id}" type="button" aria-pressed="${on ? "true" : "false"}" ${mine ? "" : "disabled"}>
             <span class="comp-mini">${avatarSvg({ ...av, skin: k.id }, { label: `${sp.name} ${k.name}` })}</span>
             <span class="small">${k.name}</span><span class="muted small">${mine ? RARITY[k.rarity] : k.box ? "🔒 boîtes à butin" : "🔒 boutique ou coffres"}</span></button>`;
         })}</div>
@@ -50,7 +50,7 @@ export function mountCompanion(root, S) {
             <button class="comp-pick${av[slot] ? "" : " on"}" data-act="equip" data-slot="${slot}" data-id="" type="button" aria-pressed="${av[slot] ? "false" : "true"}">
               <span class="comp-mini comp-none">∅</span><span class="small">Rien</span></button>
             ${mine.map((i) => { const on = av[slot] === i.id;
-              return html`<button class="comp-pick${on ? " on" : ""}" data-act="equip" data-slot="${slot}" data-id="${i.id}" type="button" aria-pressed="${on ? "true" : "false"}">
+              return html`<button class="${`comp-pick glow-${i.rarity}${on ? " on" : ""}`}" data-act="equip" data-slot="${slot}" data-id="${i.id}" type="button" aria-pressed="${on ? "true" : "false"}">
                 <span class="comp-mini">${itemPreview(i.id)}</span><span class="small">${i.name}</span><span class="muted small">${RARITY[i.rarity]}</span></button>`; })}
           </div>
           ${mine.length ? "" : html`<p class="muted small">Aucun accessoire ici pour l'instant : gagne-en dans les coffres ou à la boutique.</p>`}

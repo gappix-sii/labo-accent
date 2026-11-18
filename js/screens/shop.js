@@ -28,7 +28,7 @@ export function mountShop(root, S) {
     const d = describeOwned(id), base = basePrice(id), price = priceOf(G, id, lv, now), need = levelFor(id);
     const mine = owns(G, id), deal = todays.includes(id), tooLow = need > lv, short = price - G.coins;
     const pic = d.kind === "skin" ? avatarSvg(tryOn({ ...G.avatar, head: "", eyes: "", neck: "", hand: "", back: "", aura: "" }, id), { label: d.name }) : itemPreview(id);
-    return html`<li class="shop-item${ui.trying === id ? " on" : ""}${deal ? " deal" : ""}">
+    return html`<li class="${`shop-item glow-${d.rarity}${ui.trying === id ? " on" : ""}${deal ? " deal" : ""}`}">
       <span class="comp-mini">${pic}</span>
       <b class="small">${d.name}</b>
       <span class="muted small rar-${d.rarity}">${RARITY[d.rarity]}${need > 1 ? ` · niveau ${need}` : ""}</span>
