@@ -316,3 +316,4 @@ code { font-size: .9em; overflow-wrap: anywhere; }
 
 /* QR code du transfert (phase 7) : noir sur blanc dans les deux thèmes, grand pour être lu sur un écran */
 .qr { display: block; width: min(100%, 36rem); height: auto; margin: 0 auto; background: #ffffff; border-radius: .4rem; }
+.compare td { text-align: right; } .compare th[scope=col] { text-align: right; font-weight: 600; }

@@ -23,6 +23,12 @@ export function mountSettings(root, S) {
         <p class="muted small">La conversation libre utilise Gemini, l'IA de Google, avec ta propre clé (gratuite).</p></section>
 
       <section class="card">
+        <h2>📲 Transfert vers un autre appareil</h2>
+        <p class="muted small">Retrouve ta progression sur ton téléphone (ou ton PC) grâce à un QR code ou un lien.</p>
+        <button class="btn soft" data-act="transfer" type="button">Ouvrir le transfert</button>
+      </section>
+
+      <section class="card">
         <h2>✨ Effets de jeu</h2>
         <p class="muted small">« NIVEAU n ! » avec confettis, « +XP » qui s'envole, coffres qui tremblent. « Effets réduits » les remplace par de simples messages, sans mouvement.</p>
         <p class="kind shop-cats">${FX_MODES.map(([id, label]) => html`<button class="chip${S.fx === id ? " on" : ""}" data-act="fx" data-v="${id}" type="button" aria-pressed="${S.fx === id ? "true" : "false"}">${label}</button>`)}</p>
@@ -116,6 +122,7 @@ export function mountSettings(root, S) {
     if (act === "hear" && liveVoiceOk(el.dataset.v) && !ui.hearing && loadKey()) hear(el.dataset.v);
     if (act === "fx" && fxModeOk(el.dataset.v)) { S.fx = el.dataset.v; applyFx(S); save(S); draw(); }
     if (act === "home") location.hash = "#accueil";
+    if (act === "transfer") location.hash = "#transfert";
     if (act === "save") saveInput();
     if (act === "test") test();
     if (act === "clear") { clearKey(); ui.bad = false; ui.msg = "Clé effacée de cet appareil."; draw(); }

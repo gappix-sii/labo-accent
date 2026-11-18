@@ -106,3 +106,22 @@ test("lien et code collé", () => {
   const bytes = new Uint8Array([0, 1, 250, 251, 252, 253, 254, 255]);
   assert.deepEqual(fromB64url(toB64url(bytes)), bytes);
 });
+
+test("écran Transfert : adresses, résumé pour comparer", async () => {
+  const { route } = await import("../js/main.js");
+  const { summary } = await import("../js/screens/transfer.js");
+  assert.deepEqual(route("#transfert"), { screen: "transfer", code: null });
+  assert.deepEqual(route("#transfert/1.abcdefgh_-"), { screen: "transfer", code: "1.abcdefgh_-" });
+  assert.deepEqual(route("#transfert/1.abc<x>defgh"), { screen: "home" });
+  assert.deepEqual(route("#transfert/x"), { screen: "home" });
+  const S = yearOfUse(), s = summary(S);
+  assert.equal(s.xp, S.progress.xp); assert.equal(s.words, Object.keys(S.srs.cards).length); assert.ok(s.level > 1 && s.lessons > 0);
+});
+
+test("import sur un appareil qui n'avait rien enregistré : « Annuler » ramène à une progression vierge", async () => {
+  const { backupOf } = await import("../js/screens/transfer.js");
+  assert.deepEqual(sanitize(JSON.parse(backupOf(null))), defaults());
+  assert.deepEqual(sanitize(JSON.parse(backupOf(""))), defaults());
+  const raw = JSON.stringify(yearOfUse());
+  assert.equal(backupOf(raw), raw, "sinon la sauvegarde telle quelle");
+});
