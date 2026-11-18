@@ -207,3 +207,28 @@ test("voix du direct : 30 voix, réglage sauvegardé et nettoyé, écoute d'une 
   assert.deepEqual(played, ["AAAA"]);
   assert.equal(ws.closedWith, 1000, "on raccroche après l'échantillon");
 });
+
+test("discussion libre : scène du coach, XP une fois par phrase corrigée redite à 65", async () => {
+  const { coachScene, TOPICS, rewardOnce } = await import("../js/core/chat.js");
+  const { newProgress, recordFree, PASS, XP_ITEM, todayXp } = await import("../js/core/progress.js");
+  assert.ok(TOPICS.length >= 6 && TOPICS.every((t) => t.fr && t.en));
+  const sc = coachScene("travelling", "B1");
+  assert.equal(sc.level, "B1");
+  assert.match(instructions(sc), /You are Alex/);
+  assert.match(instructions(sc), /travelling/);
+  assert.equal(coachScene("", "zz").level, "A2");
+  const P = newProgress(), now = Date.UTC(2026, 10, 18, 12);
+  assert.equal(recordFree(P, PASS - 1, now), 0);
+  assert.equal(recordFree(P, PASS, now), XP_ITEM);
+  assert.equal(todayXp(P, now), XP_ITEM);
+  const c = { corrected: "I also want tea." };
+  assert.equal(rewardOnce(c), true);
+  assert.equal(rewardOnce(c), false, "une seule fois par correction");
+  assert.equal(rewardOnce(null), false);
+});
+
+test("adresse de la discussion libre", async () => {
+  const { route } = await import("../js/main.js");
+  assert.deepEqual(route("#discussion"), { screen: "chat" });
+  assert.deepEqual(route("#discussion/x"), { screen: "home" });
+});

@@ -106,3 +106,22 @@ export const liveVoiceOk = (v) => LIVE_VOICES.some((x) => x.id === v);
 
 // Phrase dite par une voix quand on l'écoute dans les réglages.
 export const SAMPLE_TEXT = "Hi! I'm your English partner. Shall we have a little chat?";
+
+// Sujets proposés pour la discussion libre (le sujet peut aussi être tapé).
+export const TOPICS = [
+  ["Ta journée", "your day"], ["Ton travail", "your job"], ["Les voyages", "travelling"], ["Films et séries", "films and TV series"],
+  ["La cuisine", "food and cooking"], ["Le sport", "sport"], ["Tes projets du week-end", "weekend plans"], ["La technologie", "technology"]
+].map(([fr, en]) => ({ fr, en }));
+
+// Scène du coach de la discussion libre, sur le sujet choisi.
+export function coachScene(topic, level) {
+  const t = cleanText(topic, 120) || "anything the learner likes";
+  return {
+    title: `Discussion libre : ${t}`, level: LEVELS.includes(level) ? level : "A2",
+    persona: "Alex, a friendly English conversation coach", situation: `A relaxed conversation about: ${t}.`,
+    goal: `talk about ${t} for a few minutes`, opening: "(Start the conversation: greet the learner and ask a first simple question about the topic.)"
+  };
+}
+
+// Une correction rapporte des XP une seule fois : marque-la, et dis si c'est la première fois.
+export function rewardOnce(c) { if (!c || c.rewarded) return false; c.rewarded = true; return true; }

@@ -100,6 +100,14 @@ export function recordWord(P, score, now = Date.now()) {
   return xp;
 }
 
+// Conversation libre (phase 5) : phrase corrigée redite au micro, 10 XP si elle est notée PASS ou plus.
+// L'écran ne l'appelle qu'une fois par correction réussie. Renvoie les XP gagnés.
+export function recordFree(P, score, now = Date.now()) {
+  const xp = (Math.round(score) || 0) >= PASS ? XP_ITEM : 0;
+  addXp(P, xp, now);
+  return xp;
+}
+
 // Une réponse de l'exercice d'écoute. Renvoie les XP gagnés.
 export function recordListen(P, ok, now = Date.now()) {
   const xp = ok === true ? XP_LISTEN : 0;

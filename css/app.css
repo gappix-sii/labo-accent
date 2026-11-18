@@ -121,3 +121,9 @@ code { font-size: .9em; overflow-wrap: anywhere; }
 .voices li { display: flex; gap: .4rem; align-items: center; }
 .voices .chip { flex: 1; text-align: left; }
 .chip.on .muted { color: inherit; opacity: .85; }
+/* Conversation libre (phase 5) */
+.correction-card { border-left: 4px solid var(--ok); background: color-mix(in srgb, var(--ok) 8%, transparent); border-radius: .6rem; padding: .5rem .8rem; margin: .3rem 0 .6rem; }
+.correction-card.ok { border-left-color: var(--good); background: color-mix(in srgb, var(--good) 8%, transparent); }
+.correction-card p { margin: .25rem 0; }
+.send { margin-top: .6rem; }
+.send input { flex: 1; min-width: 0; font: inherit; padding: .6rem .7rem; border: 1px solid var(--line); border-radius: .6rem; background: var(--card); color: inherit; }

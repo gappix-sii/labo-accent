@@ -68,6 +68,7 @@ export function mountHome(root, S) {
           <button class="btn choice" data-act="grammar" type="button"><b>📘 Grammaire</b><span class="small">${n.grammar} / ${GRAMMAR.length} règles finies</span></button>
           <button class="btn choice" data-act="mistakes" type="button"><b>✏️ Fautes typiques</b><span class="small">${n.mistakes ? `${n.mistakes} à retravailler` : `${MISTAKE_SESSION} phrases à corriger`}</span></button>
           <button class="btn choice" data-act="roles" type="button"><b>🎭 Jeux de rôle</b><span class="small">${n.roles} / ${DIALOGUES.length} dialogues finis</span></button>
+          <button class="btn choice" data-act="chat" type="button"><b>💬 Discussion libre</b><span class="small">parle de tout avec Gemini, il te corrige</span></button>
         </div>
       </section>
       <section class="card">
@@ -97,6 +98,7 @@ export function mountHome(root, S) {
     if (act === "grammar") location.hash = "#grammaire";
     if (act === "mistakes") location.hash = "#fautes";
     if (act === "roles") location.hash = "#role";
+    if (act === "chat") location.hash = "#discussion";
   });
 
   draw();
