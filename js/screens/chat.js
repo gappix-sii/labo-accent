@@ -6,7 +6,8 @@ import { html, render, $ } from "../core/dom.js";
 import { save } from "../core/store.js";
 import { loadKey } from "../core/keys.js";
 import { recordFree, PASS, XP_ITEM } from "../core/progress.js";
-import { instructions, coachScene, rewardOnce, cleanText, TOPICS, LEVELS } from "../core/chat.js";
+import { instructions, coachScene, roleScene, rewardOnce, cleanText, TOPICS, LEVELS } from "../core/chat.js";
+import { dialogueById } from "../content/dialogues.js";
 import { LiveChat } from "../engine/live.js";
 import { MicStream, Player } from "../engine/live-audio.js";
 import { errorText } from "../engine/gemini.js";
@@ -44,7 +45,14 @@ export function mountChat(root, S) {
   return () => { if (child) child(); };
 }
 
-// scene : { title, level, persona, situation, goal, opening } ; back : adresse du bouton retour.
+// #role/<id>/libre : un jeu de rôle en conversation libre.
+export function mountRoleFree(root, S, id) {
+  const d = dialogueById(id);
+  if (!d) { location.hash = "#role"; return () => {}; }
+  return mountFreeChat(root, S, roleScene(d), `#role/${d.id}`);
+}
+
+// scene : { title, level, persona, situation, goal, opening, goalFr?, tasks? } ; back : adresse du bouton retour.
 export function mountFreeChat(root, S, scene, back = "#accueil") {
   const P = S.progress, persist = () => save(S);
   const ui = { log: [], status: "", error: "", talking: false, waiting: false, ready: false, redo: -1, gained: 0, draft: "", ended: false };
@@ -138,7 +146,8 @@ export function mountFreeChat(root, S, scene, back = "#accueil") {
       <p class="row"><button class="btn ghost" data-act="back" type="button">← Terminer</button>
         <span class="muted small">${ui.gained ? `+${ui.gained} XP dans cette conversation` : ""}</span></p>
       <section class="card"><p class="muted small">${scene.level} · conversation libre avec Gemini</p><h1 class="sentence">${scene.title}</h1>
-        ${scene.goal ? html`<p class="small">🎯 ${scene.goal}</p>` : ""}</section>
+        ${scene.goalFr ? html`<p class="small">🎯 ${scene.goalFr}</p><ul class="tasks">${scene.tasks.map((t) => html`<li>○ ${t}</li>`)}</ul>`
+          : scene.goal ? html`<p class="small">🎯 ${scene.goal}</p>` : ""}</section>
       ${!key ? html`<section class="card"><p>Il faut d'abord ta clé Gemini (gratuite).</p><button class="btn" data-act="settings" type="button">⚙️ Aller aux Réglages</button></section>`
         : !chat ? html`<section class="card"><p class="muted small">Ta voix (ou ce que tu tapes) est envoyée à Google pendant la conversation. Ne donne pas d'informations personnelles.</p>
             <button class="btn big" data-act="start" type="button">▶ Démarrer la conversation</button></section>`

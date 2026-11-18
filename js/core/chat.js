@@ -125,3 +125,17 @@ export function coachScene(topic, level) {
 
 // Une correction rapporte des XP une seule fois : marque-la, et dis si c'est la première fois.
 export function rewardOnce(c) { if (!c || c.rewarded) return false; c.rewarded = true; return true; }
+
+// Scène d'un jeu de rôle (js/content/dialogues.js) jouée en conversation libre : Gemini joue le personnage,
+// connaît le décor, l'objectif et ses étapes, et parle au niveau du dialogue.
+export function roleScene(d) {
+  const first = (d.turns.find((t) => t.ai) || {}).ai || "";
+  return {
+    title: `${d.title} · conversation libre`, level: LEVELS.includes(d.level) ? d.level : "A2",
+    persona: `this character: ${cleanText(d.role, 80)} (description in French). Stay in this role the whole time`,
+    situation: `Scene "${cleanText(d.title, 80)}" (title in French). The learner plays themselves. A typical first line for you: "${cleanText(first, 200)}"`,
+    goal: `${cleanText(d.goal, 200)} (in French). Steps: ${d.tasks.map((t) => cleanText(t, 80)).join(" ; ")}`,
+    goalFr: d.goal, tasks: d.tasks,
+    opening: "(Start the scene now in your role, with a short first line.)"
+  };
+}

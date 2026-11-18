@@ -232,3 +232,18 @@ test("adresse de la discussion libre", async () => {
   assert.deepEqual(route("#discussion"), { screen: "chat" });
   assert.deepEqual(route("#discussion/x"), { screen: "home" });
 });
+
+test("jeu de rôle en conversation libre : scène du personnage, adresses", async () => {
+  const { roleScene } = await import("../js/core/chat.js");
+  const { DIALOGUES } = await import("../js/content/dialogues.js");
+  const { route } = await import("../js/main.js");
+  for (const d of DIALOGUES) {
+    const sc = roleScene(d), t = instructions(sc);
+    assert.equal(sc.level, d.level);
+    assert.ok(t.includes(d.role) && t.includes(d.goal) && d.tasks.every((x) => t.includes(x)), d.id);
+    assert.match(t, /show_correction/);
+  }
+  assert.deepEqual(route("#role/cafe/libre"), { screen: "roleFree", id: "cafe" });
+  assert.deepEqual(route("#role/cafe"), { screen: "role", id: "cafe" });
+  assert.deepEqual(route("#role/../libre"), { screen: "home" });
+});

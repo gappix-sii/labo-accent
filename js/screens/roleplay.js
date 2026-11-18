@@ -91,7 +91,9 @@ export function mountRole(root, S, id) {
       <section class="card"><p class="muted small">${d.level} · ${d.role}</p><h1 class="sentence">${d.title}</h1>
         <p>🎯 ${d.goal}</p>${tasksBlock()}
         <p><button class="chip${ui.fr ? " on" : ""}" data-act="fr" type="button" aria-pressed="${ui.fr ? "true" : "false"}">Traduction en français</button></p></section>
-      ${!ui.started ? html`<button class="btn big" data-act="start" type="button">▶ Commencer</button>` : ui.log.length ? html`<section class="card">${bubbles()}</section>` : ""}
+      ${!ui.started ? html`<button class="btn big" data-act="start" type="button">▶ Commencer</button>
+        <p><button class="btn soft" data-act="free" type="button">💬 Conversation libre</button>
+          <span class="muted small">la même scène, sans réponses toutes faites : tu dis ce que tu veux, Gemini joue le personnage et te corrige</span></p>` : ui.log.length ? html`<section class="card">${bubbles()}</section>` : ""}
       ${end ? html`<section class="card done-card" role="status"><h2>🎉 Dialogue fini !</h2>
           <p>${ui.tasks.size} objectif${ui.tasks.size > 1 ? "s" : ""} sur ${d.tasks.length} · +${ui.gained} XP${ui.bonus ? ` (dont ${XP_LESSON} de bonus)` : ""}.</p>
           <div class="row start"><button class="btn" data-act="restart" type="button">Rejouer</button>
@@ -131,6 +133,7 @@ export function mountRole(root, S, id) {
     if (mic.busy() && act !== "stop") return;
     if (ui.choice !== null && (mic.handle(act) || voice.handle(act))) return;
     if (act === "list") location.hash = "#role";
+    if (act === "free") location.hash = `#role/${d.id}/libre`;
     if (act === "fr") { ui.fr = !ui.fr; draw(); }
     if (act === "start") { ui.started = true; advance(); }
     if (act === "restart") { stopVoice(); reset(); ui.started = true; advance(); }
