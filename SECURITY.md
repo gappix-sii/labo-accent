@@ -1,5 +1,7 @@
 # Sécurité et confidentialité
 
+> **Attention (2026-11-18) : ce document décrit l'ANCIENNE version de l'appli** (dossier `ancien/`). La nouvelle version (branche `refonte/v1`) n'a ni clé chiffrée, ni sauvegarde scellée, ni service worker à pré-cache vérifié : la clé Gemini y est gardée en clair dans le navigateur (`labo.gemini`), à part de la progression. Ce fichier sera réécrit pour la nouvelle version en phase 9 (publication).
+
 ## Modèle de menace (ce qui est protégé, et contre quoi)
 
 | Risque | Protection |

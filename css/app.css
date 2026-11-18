@@ -1,13 +1,16 @@
 /* Style minimal de la phase 1 : il sera refait avec le jeu (phase 5). */
 :root {
   --bg: #f6f5fb; --card: #ffffff; --text: #1d1b2e; --muted: #6b6880; --line: #e3e1ee;
-  --accent: #5b3df5; --good: #1f9d55; --ok: #d08700; --bad: #d63a3a;
+  --accent: #5b3df5; --good: #1f9d55; --ok: #8a5a00; --bad: #d63a3a;
+  /* raretés et or : foncés en thème clair pour rester lisibles (relecture complète, n° 7) */
+  --rar-rare: #08739a; --rar-epic: #7a3fd6; --rar-legendary: #8a5a00; --rar-mythic: #c2187a; --gold: #8a5a00;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #14121f; --card: #1f1c2e; --text: #f1effa; --muted: #a29fb8; --line: #322e47;
     --accent: #8f7bff; --good: #3ccf7a; --ok: #f2b134; --bad: #ff6b6b;
+    --rar-rare: #4cc9f0; --rar-epic: #b388ff; --rar-legendary: #ffb020; --rar-mythic: #ff6fae; --gold: #ffd23f;
     color-scheme: dark;
   }
 }
@@ -43,7 +46,7 @@ progress, meter { width: 100%; height: 14px; }
 .ph.st-good { background: color-mix(in srgb, var(--good) 20%, transparent); }
 .ph.st-ok { background: color-mix(in srgb, var(--ok) 25%, transparent); }
 .ph.st-bad { background: var(--bad); color: #fff; }
-.kind { display: flex; gap: 8px; margin-bottom: 6px; }
+.kind { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
 .chip { font: inherit; font-size: .9rem; border: 1px solid var(--line); background: transparent; color: var(--text); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
 .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 .fault { color: var(--ok); font-weight: 600; }
@@ -240,7 +243,7 @@ code { font-size: .9em; overflow-wrap: anywhere; }
 .shop-item.on { border-color: var(--accent); }
 .shop-item.deal { border-style: dashed; border-color: #ffb020; }
 .shop-item .row { gap: .3rem; flex-wrap: wrap; justify-content: center; }
-.rar-rare { color: #4cc9f0; } .rar-epic { color: #b388ff; } .rar-legendary { color: #ffb020; } .rar-mythic { color: #ff6fae; }
+.rar-rare { color: var(--rar-rare); } .rar-epic { color: var(--rar-epic); } .rar-legendary { color: var(--rar-legendary); } .rar-mythic { color: var(--rar-mythic); }
 .shop-cats { flex-wrap: wrap; }
 
 /* Écran Coffres (phase 6, tâche 5 ; dessins et animations repris de ancien/css/app.css) */
@@ -285,7 +288,7 @@ code { font-size: .9em; overflow-wrap: anywhere; }
 .r-mythic .rv-rays { opacity: .75; background: repeating-conic-gradient(#ff5470 0 6deg, #ffd23f 6deg 12deg, #3ddc84 12deg 18deg, #4cc9f0 18deg 24deg, #a98bff 24deg 30deg, transparent 30deg 40deg); animation-duration: 3.5s; }
 .rv-art { width: 11rem; height: 10rem; } .rv-art.gone { display: none; }
 .loot { display: grid; justify-items: center; gap: .6rem; }
-.loot-coins { font-size: 1.1rem; margin: 0; animation: lootIn .5s cubic-bezier(.2,1.5,.4,1) both; } .loot-coins b { font-size: 1.8rem; color: #ffd23f; }
+.loot-coins { font-size: 1.1rem; margin: 0; animation: lootIn .5s cubic-bezier(.2,1.5,.4,1) both; } .loot-coins b { font-size: 1.8rem; color: var(--gold); }
 .loot-item { --rc: #9aa3b5; display: grid; justify-items: center; gap: .3rem; padding: .8rem 1.1rem; border-radius: 1rem; border: 3px solid var(--rc); box-shadow: 0 0 24px color-mix(in srgb, var(--rc) 45%, transparent); animation: lootIn .7s cubic-bezier(.2,1.5,.4,1) .2s both; }
 .loot-item.rar-rare { --rc: #4cc9f0; } .loot-item.rar-epic { --rc: #c08bff; } .loot-item.rar-legendary { --rc: #ffd23f; } .loot-item.rar-mythic { --rc: #ff2fd0; }
 .loot-item { color: inherit; }
@@ -306,7 +309,7 @@ code { font-size: .9em; overflow-wrap: anywhere; }
 @keyframes fxUp { 0% { transform: translateY(20px) scale(.8); opacity: 0; } 15% { transform: translateY(0) scale(1.08); opacity: 1; } 70% { transform: translateY(-10px); opacity: 1; } 100% { transform: translateY(-60px); opacity: 0; } }
 .fx-level { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(10, 8, 25, .72); overflow: hidden; }
 .fx-level-box { position: relative; z-index: 1; background: var(--card); color: var(--text); border: 3px solid #ffd23f; border-radius: 1.2rem; padding: 1.4rem 1.6rem; margin: 0 16px; text-align: center; display: grid; gap: .6rem; justify-items: center; box-shadow: 0 0 40px rgba(255, 210, 63, .45); animation: fxPop .6s cubic-bezier(.2, 1.6, .4, 1) both; }
-.fx-level-title { margin: 0; font-size: clamp(1.6rem, 9vw, 2.4rem); overflow-wrap: anywhere; font-weight: 900; font-style: italic; color: #ffb020; letter-spacing: .03em; }
+.fx-level-title { margin: 0; font-size: clamp(1.6rem, 9vw, 2.4rem); overflow-wrap: anywhere; font-weight: 900; font-style: italic; color: var(--gold); letter-spacing: .03em; }
 .fx-level-sub { margin: 0; }
 @keyframes fxPop { from { transform: scale(.3); opacity: 0; } }
 .fx-confetti { position: absolute; top: -2rem; left: var(--x); width: .55rem; height: .9rem; background: var(--c); border-radius: 2px; animation: fxFall var(--d) linear var(--w) forwards; }
@@ -317,3 +320,5 @@ code { font-size: .9em; overflow-wrap: anywhere; }
 /* QR code du transfert (phase 7) : noir sur blanc dans les deux thèmes, grand pour être lu sur un écran */
 .qr { display: block; width: min(100%, 36rem); height: auto; margin: 0 auto; background: #ffffff; border-radius: .4rem; }
 .compare td { text-align: right; } .compare th[scope=col] { text-align: right; font-weight: 600; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.banner { margin: 0 0 12px; } .banner .btn { margin-top: .4rem; }

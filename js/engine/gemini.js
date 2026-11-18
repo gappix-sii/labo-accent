@@ -54,10 +54,13 @@ export async function request(path, key, { method = "GET", body, fetchFn = globa
     });
   } catch (e) {
     const offline = globalThis.navigator && globalThis.navigator.onLine === false;
+    clearTimeout(timer);
     return { ok: false, error: ctl.signal.aborted ? "timeout" : offline ? "offline" : "network" };
-  } finally { clearTimeout(timer); }
-  if (!r.ok) return { ok: false, error: statusCode(r.status) };
-  try { return { ok: true, data: await r.json() }; } catch { return { ok: false, error: "unexpected" }; }
+  }
+  if (!r.ok) { clearTimeout(timer); return { ok: false, error: statusCode(r.status) }; }
+  // Le minuteur court aussi pendant la lecture du corps : si Google envoie l'en-tête puis s'arrête, on abandonne quand même.
+  try { return { ok: true, data: await r.json() }; } catch { return { ok: false, error: ctl.signal.aborted ? "timeout" : "unexpected" }; }
+  finally { clearTimeout(timer); }
 }
 
 // Vérifie la clé en demandant à Google la fiche du modèle de conversation (ne génère rien).

@@ -125,7 +125,32 @@ function hydrate(root) {
   }
 }
 
-export function render(el, tpl) { el.innerHTML = toTrusted(tpl); hydrate(el); return el; }
+// Redessin d'un écran (relecture complète, n° 6) : le clavier et le lecteur d'écran ne perdent pas leur place.
+// - l'élément qui avait le focus est retrouvé dans le nouveau dessin (même id, ou mêmes data-act / data-id / data-i…) ;
+// - les messages (role="status" ou "alert") sont recopiés dans la zone d'annonce #annonce, qui, elle, n'est jamais redessinée.
+const KEY_ATTRS = ["act", "id", "i", "v", "slot", "cat", "side", "goal", "q"];
+const cssq = (v) => String(v).replace(/["\\]/g, "\\$&");
+export function focusKey(node) {
+  if (!node || !node.getAttribute || node === node.ownerDocument?.body) return null;
+  if (node.id) return `#${typeof CSS !== "undefined" && CSS.escape ? CSS.escape(node.id) : node.id}`;
+  const d = node.dataset || {};
+  if (!d.act) return null;
+  return KEY_ATTRS.filter((k) => d[k] !== undefined).map((k) => `[data-${k}="${cssq(d[k])}"]`).join("");
+}
+let lastAnnounce = "";
+export function render(el, tpl) {
+  const doc = el.ownerDocument, active = doc && doc.activeElement;
+  const key = active && active !== el && el.contains(active) ? focusKey(active) : null;
+  el.innerHTML = toTrusted(tpl); hydrate(el);
+  if (key) { let t = null; try { t = el.querySelector(key); } catch { /* sélecteur refusé */ } if (t && t.focus) t.focus({ preventScroll: true }); }
+  const live = doc && doc.getElementById("annonce");
+  if (live) {
+    const msg = [...el.querySelectorAll('[role="status"], [role="alert"]')].map((n) => n.textContent.trim()).filter(Boolean).join(" ");
+    if (msg && msg !== lastAnnounce) live.textContent = msg;
+    lastAnnounce = msg;
+  }
+  return el;
+}
 export function frag(tpl) {
   const t = document.createElement("template");
   t.innerHTML = toTrusted(tpl);

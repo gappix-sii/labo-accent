@@ -10,9 +10,10 @@ const read = (p) => readFileSync(new URL(p, root), "utf8");
 test("(a) sw.js efface l'ancienne appli, se désinstalle et ne sert aucune page", () => {
   const s = read("sw.js").replace(/^\s*\/\/.*$/gm, "");
   assert.match(s, /caches\.delete/); assert.match(s, /registration\.unregister\(\)/); assert.match(s, /skipWaiting\(\)/);
+  assert.match(s, /if \(key\.startsWith\("labo-"\)\) await caches\.delete\(key\)/, "seulement les caches de l'ancienne appli, pas le moteur");
   assert.ok(!/addEventListener\(\s*["']fetch/.test(s), "pas d'écouteur fetch");
   assert.ok(!/importScripts|fetch\(/.test(s));
-  assert.ok(!/serviceWorker\.register/.test(read("index.html") + read("js/main.js")), "la nouvelle appli n'installe pas de service worker (phase 8)");
+  assert.ok(!/serviceWorker\.register/.test(read("index.html") + read("js/main.js")), "la nouvelle appli n'installe pas de service worker (phase 9)");
 });
 
 test("(b) GitHub Pages ne publie ni ancien/, ni les tests, ni les outils", () => {

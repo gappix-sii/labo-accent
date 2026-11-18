@@ -14,9 +14,11 @@ export function mountSettings(root, S) {
   const player = new Player();
   let alive = true;
 
+  let keepDraft = true; // false juste après « Enregistrer » ou « Effacer » : le champ repart vide
   function draw() {
     if (!alive) return;
-    const key = loadKey();
+    const key = loadKey(), draft = keepDraft ? root.querySelector("#key-input")?.value || "" : "";
+    keepDraft = true;
     render(root, html`
       <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button></p>
       <section class="card"><h1 class="sentence">⚙️ Réglages</h1>
@@ -81,6 +83,7 @@ export function mountSettings(root, S) {
           <li>En ligne, l'appli est sur <code>gappix-sii.github.io</code> : toute autre page publiée à cette même adresse (un autre de tes dépôts GitHub Pages) pourrait lire la clé. N'y publie que des pages de confiance, et garde la clé limitée à Gemini.</li>
         </ul>
       </section>`);
+    if (draft) { const inp = root.querySelector("#key-input"); if (inp) inp.value = draft; }
   }
 
   async function test() {
@@ -95,6 +98,7 @@ export function mountSettings(root, S) {
 
   function saveInput() {
     const input = root.querySelector("#key-input");
+    keepDraft = false;
     const res = saveKey(input ? input.value : "");
     ui.bad = res !== "ok";
     ui.msg = res === "ok" ? "Clé enregistrée sur cet appareil. Tu peux la tester."
@@ -125,7 +129,7 @@ export function mountSettings(root, S) {
     if (act === "transfer") location.hash = "#transfert";
     if (act === "save") saveInput();
     if (act === "test") test();
-    if (act === "clear") { clearKey(); ui.bad = false; ui.msg = "Clé effacée de cet appareil."; draw(); }
+    if (act === "clear") { keepDraft = false; clearKey(); ui.bad = false; ui.msg = "Clé effacée de cet appareil."; draw(); }
   });
   root.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.id === "key-input" && !ui.busy) saveInput(); });
 

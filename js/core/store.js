@@ -23,7 +23,8 @@ const LOG_MAX = 100;
 export function defaults() {
   // progress : XP, niveau, série, leçons (js/core/progress.js) ; srs : révision du vocabulaire (js/core/srs.js) ;
   // listening : paires d'écoute ratées (js/core/listening.js) ; mistakes : fautes typiques ratées (js/core/tracks.js). Chacun a son propre numéro de version « v ».
-  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", liveVoice: DEFAULT_LIVE_VOICE, fx: "auto", last: null, kind: "soigné", log: [],
+  // rev : numéro de révision, augmenté à chaque enregistrement (deux onglets ne s'écrasent pas, voir save).
+  return { version: VERSION, rev: 0, sentence: 0, engine: false, voice: false, voiceId: "af_heart", liveVoice: DEFAULT_LIVE_VOICE, fx: "auto", last: null, kind: "soigné", log: [],
     progress: newProgress(), srs: newSrs(), listening: newListening(), mistakes: newMistakes(), game: newGame() };
 }
 
@@ -71,6 +72,7 @@ function cleanResult(r) {
 export function sanitize(raw) {
   const S = defaults();
   if (!raw || typeof raw !== "object" || raw.version !== VERSION) return S;
+  S.rev = int(raw.rev, 0, 1e12, 0);
   S.sentence = int(raw.sentence, 0, 10000, 0);
   S.engine = raw.engine === true; // le moteur a déjà été téléchargé sur cet appareil
   S.voice = raw.voice === true; // la voix aussi
@@ -101,9 +103,44 @@ export function addLog(S, entry) {
   S.log = [...S.log, entry].slice(-LOG_MAX);
 }
 
+// Lecture au démarrage. Une sauvegarde présente mais refusée n'est jamais perdue en silence (relecture complète, n° 3) :
+// - illisible ou abîmée : copiée d'abord sous DAMAGED_KEY (sans écraser une copie déjà faite), et l'utilisateur est prévenu ;
+// - d'une version PLUS RÉCENTE de l'appli (onglet resté sur une ancienne version) : rien n'est écrit tant que la page
+//   n'est pas rechargée.
+export const DAMAGED_KEY = "labo.v2.abimee";
+const blocked = new WeakMap(); // sauvegarde en mémoire → raison du refus d'écrire ("newer" | "other-tab")
+const noticeListeners = new Set();
+// Prévient l'écran d'un problème de sauvegarde : "damaged" (copie de secours faite), "newer", "other-tab".
+export const onStoreNotice = (fn) => { noticeListeners.add(fn); return () => noticeListeners.delete(fn); };
+const notice = (kind) => noticeListeners.forEach((fn) => { try { fn(kind); } catch (e) { console.error(e); } });
+const pending = []; // avis donnés avant qu'un écran ne s'abonne (au chargement)
+export const takeNotices = () => pending.splice(0);
+export const isBlocked = (S) => blocked.get(S) || null;
+
 export function load(storage = globalThis.localStorage) {
-  try { return sanitize(JSON.parse(storage.getItem(STORE_KEY) || "null")); } catch { return defaults(); }
+  let text = null;
+  try { text = storage.getItem(STORE_KEY); } catch { return defaults(); }
+  if (!text) return defaults();
+  let raw = null;
+  try { raw = JSON.parse(text); } catch { /* illisible */ }
+  if (raw && typeof raw === "object" && Number.isInteger(raw.version) && raw.version > VERSION) {
+    const S = defaults(); blocked.set(S, "newer"); pending.push("newer"); return S;
+  }
+  if (raw && typeof raw === "object" && raw.version === VERSION) {
+    try { return sanitize(raw); } catch { /* abîmée */ }
+  }
+  try { if (!storage.getItem(DAMAGED_KEY)) storage.setItem(DAMAGED_KEY, text); } catch { /* rien */ }
+  pending.push("damaged");
+  return defaults();
 }
+
+// Numéro de révision de ce qui est enregistré (−1 si rien ou illisible).
+function storedRev(storage) {
+  try { const t = storage.getItem ? storage.getItem(STORE_KEY) : null; if (!t) return -1; const r = JSON.parse(t).rev; return Number.isInteger(r) ? r : 0; }
+  catch { return -1; }
+}
+// Un autre onglet a enregistré depuis : cette copie en mémoire est périmée, elle n'écrira plus (relecture complète, n° 1).
+export function markStale(S) { if (!blocked.has(S)) { blocked.set(S, "other-tab"); notice("other-tab"); } }
 
 // Échec d'enregistrement (navigation privée, stockage plein ou bloqué) : les écrans abonnés sont prévenus,
 // pour que l'utilisateur ne croie pas sa progression gardée alors qu'elle disparaîtra au rechargement.
@@ -118,10 +155,14 @@ const savedListeners = new Set();
 export const onSaved = (fn) => { savedListeners.add(fn); return () => savedListeners.delete(fn); };
 
 export function save(S, storage = globalThis.localStorage) {
+  if (blocked.has(S)) { notice(blocked.get(S)); return false; }
+  // Deux onglets : si ce qui est enregistré est plus récent que ce que cet onglet a lu, on n'écrase pas.
+  if (storedRev(storage) > (S.rev || 0)) { markStale(S); return false; }
   const g = S.game && S.progress ? syncGame(S.game, S.progress) : { coins: 0, chests: [], levels: [] };
   let ok = true;
+  S.rev = (S.rev || 0) + 1;
   try { storage.setItem(STORE_KEY, JSON.stringify(S)); }
-  catch (e) { ok = false; saveErrorListeners.forEach((fn) => fn(e)); }
+  catch (e) { ok = false; S.rev--; saveErrorListeners.forEach((fn) => fn(e)); }
   savedListeners.forEach((fn) => { try { fn(g); } catch (e) { console.error(e); } });
   return ok;
 }

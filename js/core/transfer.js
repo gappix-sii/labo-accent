@@ -13,7 +13,7 @@ export const FORMAT = "1"; // numéro du format du code, en tête : « 1.<donné
 export const CODE_MAX = 12000; // caractères au plus dans un code reçu
 export const JSON_MAX = 2_000_000; // octets au plus une fois décompressé (refuse un code qui gonfle énormément)
 export const SENT = ["sentence", "voiceId", "liveVoice", "fx", "kind", "progress", "srs", "listening", "mistakes", "game"];
-const DEVICE = ["engine", "voice", "last", "log"]; // propres à l'appareil : gardés tels quels à l'import
+const DEVICE = ["engine", "voice", "last", "log", "rev"]; // propres à l'appareil : gardés tels quels à l'import
 
 // ---------- Forme compacte (mesuré le 2026-11-18 : les 501 mots révisés font 30 Ko en clair, 790 octets ainsi) ----------
 // Vocabulaire : pour chaque mot vu, dans l'ordre de ALL_WORDS, [écart avec le mot précédent, boîte, jour de révision − t].
@@ -36,7 +36,8 @@ function packCards(cards) {
 }
 function unpackCards(t, c) {
   const cards = {};
-  if (!Number.isInteger(t) || !Array.isArray(c) || c.length % 3 || c.length > WORD_IDS.length * 3) return cards;
+  // t borné : un jour aberrant (code fabriqué) ferait planter la conversion en date (relecture complète, n° 8)
+  if (!Number.isInteger(t) || Math.abs(t) > 1e6 || !Array.isArray(c) || c.length % 3 || c.length > WORD_IDS.length * 3) return cards;
   let i = -1;
   for (let k = 0; k < c.length; k += 3) {
     const [gap, box, off] = c.slice(k, k + 3);
@@ -108,13 +109,20 @@ async function inflate(bytes, max) {
 }
 
 // Sauvegarde → code « 1.xxxx ».
+// Le navigateur sait-il compresser ? (Absent avant Safari 16.4 et Firefox 113 : relecture complète, n° 9.)
+export const canTransfer = () => typeof CompressionStream === "function" && typeof DecompressionStream === "function";
 export async function pack(S) {
+  if (!canTransfer()) throw new Error("old-browser");
   return `${FORMAT}.${toB64url(await deflate(JSON.stringify(pick(S))))}`;
 }
 
 // Code → { ok: true, data } (données reçues, pas encore nettoyées) ou { ok: false, error }.
 // error : "format" (pas un code du Labo), "version" (code d'une autre version), "size" (trop gros), "damaged" (abîmé).
 export async function unpack(code) {
+  if (!canTransfer()) return { ok: false, error: "old-browser" };
+  try { return await unpackChecked(code); } catch { return { ok: false, error: "damaged" }; } // jamais d'erreur non prévue
+}
+async function unpackChecked(code) {
   if (typeof code !== "string") return { ok: false, error: "format" };
   const c = code.trim();
   if (c.length > CODE_MAX) return { ok: false, error: "size" };
@@ -154,5 +162,6 @@ export function codeFrom(text) {
 // Messages en français pour l'écran.
 export function transferError(code) {
   return { format: "Ce n'est pas un code de transfert du Labo d'accent.", version: "Ce code vient d'une autre version de l'appli : mets les deux appareils à jour, puis recommence.",
-    size: "Ce code est trop long : il n'a pas pu venir du Labo d'accent.", damaged: "Ce code est abîmé (lien coupé ou mal copié ?). Recommence depuis l'autre appareil." }[code] || "Transfert impossible.";
+    size: "Ce code est trop long : il n'a pas pu venir du Labo d'accent.",
+    "old-browser": "Ton navigateur est trop ancien pour le transfert : mets-le à jour, puis recommence.", damaged: "Ce code est abîmé (lien coupé ou mal copié ?). Recommence depuis l'autre appareil." }[code] || "Transfert impossible.";
 }

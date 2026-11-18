@@ -1,7 +1,7 @@
 // Point d'entrée de l'appli : choisit l'écran selon l'adresse.
 //   #accueil (par défaut) · #lecon/<id> · #vocab · #ecoute · #grammaire[/<id>] · #fautes · #role[/<id>] · #compagnon · #boutique · #coffres · #transfert[/<code>] · #banc (banc de test du moteur)
 import { $ } from "./core/dom.js";
-import { load, onSaveError } from "./core/store.js";
+import { load, onSaveError, onStoreNotice, takeNotices, markStale, STORE_KEY, DAMAGED_KEY } from "./core/store.js";
 import { mountHome } from "./screens/home.js";
 import { mountLesson } from "./screens/lesson.js";
 import { mountSay } from "./screens/say.js";
@@ -49,6 +49,23 @@ export function route(hash) {
 function start() {
   const view = $("#view");
   const S = load();
+  // Un autre onglet a enregistré : cette copie en mémoire est périmée (relecture complète, n° 1).
+  window.addEventListener("storage", (e) => { if (e.key === STORE_KEY || e.key === null) markStale(S); });
+  const banner = (id, text, withReload) => {
+    if ($("#" + id)) return;
+    const p = document.createElement("div");
+    p.id = id; p.className = "card error banner"; p.setAttribute("role", "alert");
+    p.append(document.createTextNode(text));
+    if (withReload) { const b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = "Recharger la page"; b.addEventListener("click", () => location.reload()); p.append(" ", b); }
+    view.before(p);
+  };
+  const NOTICES = {
+    "other-tab": ["store-other-tab", "Ta progression a été modifiée dans un autre onglet (ou par un import). Recharge cette page pour continuer ici : d'ici là, rien n'y est enregistré, pour ne pas effacer l'autre.", true],
+    newer: ["store-newer", "Cette page est une ancienne version de l'appli et ta sauvegarde vient d'une version plus récente. Recharge la page pour la mettre à jour : rien n'est enregistré d'ici là.", true],
+    damaged: ["store-damaged", `Ta sauvegarde était illisible : l'appli repart de zéro. Une copie de l'ancienne est gardée de côté dans ce navigateur (« ${DAMAGED_KEY} »).`, false]
+  };
+  const showNotice = (kind) => { const n = NOTICES[kind]; if (n) banner(...n); };
+  onStoreNotice(showNotice);
   watchGains(S); // effets de jeu sur tous les écrans
   let cleanup = () => {};
   const show = () => {
@@ -72,6 +89,7 @@ function start() {
     p.textContent = "Ta progression ne peut pas être enregistrée (navigation privée, ou stockage du navigateur plein ou bloqué). Elle sera perdue en fermant la page.";
     view.before(p);
   });
+  takeNotices().forEach(showNotice);
   show();
 }
 
