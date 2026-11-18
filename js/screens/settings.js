@@ -20,8 +20,8 @@ export function mountSettings(root, S) {
     const key = loadKey(), draft = keepDraft ? root.querySelector("#key-input")?.value || "" : "";
     keepDraft = true;
     render(root, html`
-      <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button></p>
-      <section class="card"><h1 class="sentence">⚙️ Réglages</h1>
+      <p class="row"><button class="btn ghost" data-act="home" type="button">← Profil</button></p>
+      <section class="card quest"><span class="quest-title">Profil</span><h1 class="sentence">⚙️ Réglages</h1>
         <p class="muted small">La conversation libre utilise Gemini, l'IA de Google, avec ta propre clé (gratuite).</p></section>
 
       <section class="card">
@@ -125,7 +125,7 @@ export function mountSettings(root, S) {
     if (act === "voice" && liveVoiceOk(el.dataset.v)) { S.liveVoice = el.dataset.v; save(S); draw(); }
     if (act === "hear" && liveVoiceOk(el.dataset.v) && !ui.hearing && loadKey()) hear(el.dataset.v);
     if (act === "fx" && fxModeOk(el.dataset.v)) { S.fx = el.dataset.v; applyFx(S); save(S); draw(); }
-    if (act === "home") location.hash = "#accueil";
+    if (act === "home") location.hash = "#profil";
     if (act === "transfer") location.hash = "#transfert";
     if (act === "save") saveInput();
     if (act === "test") test();

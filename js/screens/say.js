@@ -14,7 +14,7 @@ export function mountSay(root, S) {
   const draw = () => {
     const s = sentence(), last = S.last && S.last.sentence === s.en ? S.last : null;
     render(root, html`
-      <p><button class="btn ghost" data-act="home" type="button">← Parcours</button></p>
+      <p><button class="btn ghost" data-act="home" type="button">← Profil</button></p>
       <section class="card">
         ${progressBar(S.sentence % SENTENCES.length + 1, SENTENCES.length, "Phrase du banc")}<p class="muted small ex-count">Banc de test du moteur · phrase ${S.sentence % SENTENCES.length + 1} / ${SENTENCES.length} · ${s.focus}</p>
         <h1 class="sentence" lang="en">${s.en}</h1>
@@ -47,7 +47,7 @@ export function mountSay(root, S) {
     const act = e.target.closest("[data-act]")?.dataset.act;
     if (!act || (mic.busy() && act !== "stop")) return;
     if (mic.handle(act) || voice.handle(act)) return;
-    if (act === "home") { location.hash = "#accueil"; return; }
+    if (act === "home") { location.hash = "#profil"; return; }
     if (act === "kind-soigné" || act === "kind-fautes") { S.kind = act.slice(5); persist(); draw(); }
     if (act === "copy-log") {
       navigator.clipboard.writeText(benchText(S)).then(
