@@ -1,5 +1,5 @@
 // Le direct (phase 5) : conversation vocale avec Gemini Live, qui répond avec sa voix et envoie la correction
-// de chaque phrase par la fonction show_correction (js/core/chat.js). Repris de la page d'essai tools/essai-live.*.
+// de chaque phrase par la fonction show_correction (js/core/chat.js). Mis au point sur une page d'essai (retirée en fin de phase).
 // Sécurité : la clé ne part que dans l'en-tête x-goog-api-key, pour créer un jeton à usage unique (1 min pour
 // ouvrir la connexion, 30 min de validité) ; seul ce jeton va dans l'adresse de la connexion.
 // Réseau et minuteurs sont injectables (deps) : les tests Node utilisent un faux WebSocket (test/live.test.mjs).
