@@ -112,20 +112,16 @@ export const onSaveError = (fn) => { saveErrorListeners.add(fn); return () => sa
 
 // Gains du jeu (pièces, coffres de niveau) : calculés ici, d'après les XP, à chaque enregistrement.
 // Ainsi tous les écrans qui donnent des XP donnent aussi des pièces, sans rien changer chez eux.
-const gameListeners = new Set();
-export const onGameGain = (fn) => { gameListeners.add(fn); return () => gameListeners.delete(fn); };
-
-// Après chaque enregistrement (effets de jeu : « +XP », niveau gagné), avec les gains du jeu de cet enregistrement.
+// Après l'écriture, les effets de jeu (« +XP », niveau gagné) sont prévenus avec ces gains ; une erreur
+// dans un effet n'empêche jamais l'enregistrement.
 const savedListeners = new Set();
 export const onSaved = (fn) => { savedListeners.add(fn); return () => savedListeners.delete(fn); };
 
 export function save(S, storage = globalThis.localStorage) {
-  let g = { coins: 0, chests: [], levels: [] };
-  if (S.game && S.progress) {
-    g = syncGame(S.game, S.progress);
-    if (g.coins || g.chests.length) gameListeners.forEach((fn) => fn(g));
-  }
-  savedListeners.forEach((fn) => fn(g));
-  try { storage.setItem(STORE_KEY, JSON.stringify(S)); return true; }
-  catch (e) { saveErrorListeners.forEach((fn) => fn(e)); return false; }
+  const g = S.game && S.progress ? syncGame(S.game, S.progress) : { coins: 0, chests: [], levels: [] };
+  let ok = true;
+  try { storage.setItem(STORE_KEY, JSON.stringify(S)); }
+  catch (e) { ok = false; saveErrorListeners.forEach((fn) => fn(e)); }
+  savedListeners.forEach((fn) => { try { fn(g); } catch (e) { console.error(e); } });
+  return ok;
 }

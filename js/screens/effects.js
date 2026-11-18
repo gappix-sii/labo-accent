@@ -12,7 +12,7 @@ const deviceReduced = () => typeof matchMedia === "function" && matchMedia("(pre
 // Effets réduits : choisi dans les réglages, ou (« Selon l'appareil ») demandé par le système.
 export const reducedFx = (S) => S.fx === "reduced" || (S.fx !== "full" && deviceReduced());
 
-// Classe sur <html> : coupe aussi les petites animations du compagnon (CSS).
+// Classe sur <html> : coupe toutes les animations (CSS) ; « Tous les effets » les garde même si l'appareil en demande moins.
 export function applyFx(S) { if (typeof document !== "undefined") document.documentElement.classList.toggle("fx-reduced", reducedFx(S)); }
 
 // Ce qu'il faut montrer après un enregistrement, d'après les XP avant et après (fonction pure, testée).
@@ -48,7 +48,8 @@ const COLORS = ["#ff5470", "#ffd23f", "#3ddc84", "#4cc9f0", "#a98bff", "#ff8a3d"
 function levelUp(gain, reduced) {
   document.getElementById("fx-level")?.remove();
   const o = el("div", `fx-level${reduced ? " still" : ""}`); o.id = "fx-level";
-  o.setAttribute("role", "dialog"); o.setAttribute("aria-label", `Niveau ${gain.level} atteint`);
+  o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true"); o.setAttribute("aria-label", `Niveau ${gain.level} atteint`);
+  const back = document.activeElement; // rendu à la fermeture
   const box = el("div", "fx-level-box");
   box.append(el("p", "fx-level-title", `NIVEAU ${gain.level} !`));
   box.append(el("p", "fx-level-sub", gain.chests ? `🎁 ${gain.chests > 1 ? `${gain.chests} coffres gagnés` : "Un coffre gagné"} : ouvre-le dans « Coffres ».` : "Continue comme ça !"));
@@ -62,11 +63,11 @@ function levelUp(gain, reduced) {
     c.style.setProperty("--c", COLORS[i % COLORS.length]);
     o.append(c);
   }
-  const close = () => { o.remove(); document.removeEventListener("keydown", onKey); };
-  const onKey = (e) => { if (e.key === "Escape") close(); };
+  // Ne se ferme pas toute seule (le temps de lire) : un toucher, « Continuer » ou Échap.
+  const close = () => { o.remove(); document.removeEventListener("keydown", onKey); if (back && back.isConnected && back.focus) back.focus({ preventScroll: true }); };
+  const onKey = (e) => { if (e.key === "Escape") close(); else if (e.key === "Tab") { e.preventDefault(); ok.focus(); } };
   o.addEventListener("click", close);
   document.addEventListener("keydown", onKey);
-  setTimeout(close, 5000);
   document.body.append(o);
   ok.focus({ preventScroll: true });
 }

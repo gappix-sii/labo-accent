@@ -4,7 +4,7 @@ import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
 import { levelOf } from "../core/progress.js";
 import { SLOTS, RARITY, CATALOG, describeOwned, basePrice, levelFor, avatarSvg, itemPreview } from "../content/avatar.js";
-import { deals, priceOf, buy, owns, equip, setSpecies, setSkin } from "../core/game.js";
+import { deals, priceOf, buy, owns, wear, noteDealDay, sameDay } from "../core/game.js";
 
 export const CATEGORIES = [...SLOTS, ["skin", "Couleurs"]];
 
@@ -21,7 +21,7 @@ export function tryOn(av, id) {
 const ERRORS = { coins: "Pas assez de pièces.", level: "Niveau trop bas pour cet objet.", owned: "Tu l'as déjà.", unknown: "Cet objet ne s'achète pas." };
 
 export function mountShop(root, S) {
-  const G = S.game, ui = { cat: "head", trying: "", msg: "", bad: false, bought: "" };
+  const G = S.game, ui = { cat: "head", trying: "", msg: "", bad: false, bought: "", shownAt: Date.now() };
   const level = () => levelOf(S.progress.xp).level;
 
   function card(id, lv, now, todays) {
@@ -43,7 +43,10 @@ export function mountShop(root, S) {
   }
 
   function draw() {
-    const lv = level(), now = Date.now(), todays = deals(G, lv, now);
+    const lv = level(), now = Date.now();
+    if (noteDealDay(G, lv, now)) save(S); // 1er passage du jour : les offres sont fixées pour la journée
+    ui.shownAt = now;
+    const todays = deals(G, lv, now);
     const list = CATALOG.filter((id) => categoryOf(id) === ui.cat)
       .sort((a, b) => levelFor(a) - levelFor(b) || basePrice(a) - basePrice(b));
     const shown = ui.trying ? tryOn(G.avatar, ui.trying) : G.avatar;
@@ -81,15 +84,16 @@ export function mountShop(root, S) {
     if (act === "chests") return void (location.hash = "#coffres");
     if (act === "cat" && CATEGORIES.some(([c]) => c === el.dataset.cat)) ui.cat = el.dataset.cat;
     if (act === "try" && describeOwned(id)) { ui.trying = ui.trying === id ? "" : id; say(""); }
+    if (act === "buy" && !sameDay(ui.shownAt, Date.now())) { say("Minuit est passé : les offres du jour ont changé. Vérifie le prix, puis réessaie.", true); return void draw(); }
     if (act === "buy") {
-      const r = buy(G, id, level());
+      const r = buy(G, id, level(), ui.shownAt);
       if (r.ok) { save(S); say(`Acheté pour ${r.price} 🪙 : ${describeOwned(id).name} est à toi !`, false, id); }
       else say(ERRORS[r.error] || "Achat impossible.", true);
     }
     if (act === "wear") {
-      const d = describeOwned(id);
-      const ok = d && owns(G, id) && (d.kind === "skin" ? setSpecies(G, d.sp, level()) && setSkin(G, d.sk) : equip(G, id));
-      if (ok) { save(S); ui.trying = ""; say(`${d.name} : équipé ✓`); } else say("Impossible d'équiper cet objet.", true);
+      const r = wear(G, id, level()), d = describeOwned(id);
+      if (r === "ok") { save(S); ui.trying = ""; say(`${d.name} : équipé ✓`); }
+      else say(r === "level" ? "Cet animal se débloque à un niveau plus haut : la couleur t'attend." : "Impossible d'équiper cet objet.", true);
     }
     draw();
   });

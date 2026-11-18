@@ -173,7 +173,8 @@ export const SPECIES = [
       { id: "crystal", name: "Cristal", rarity: "mythic", box: true, fx: "crystal", c: { fur: "#b9f2ff", fur2: "#7cc4ff", line: "#4c8fd6", belly: "#ffffff", wing: "#c9b6ff", horn: "#ffffff", spike: "#ff6fae", iris: "#ff6fae", cheek: "#ffc6e5" } }
     ] }
 ];
-export const SPECIES_BY_ID = Object.fromEntries(SPECIES.map(s => [s.id, s]));
+// Sans prototype : un id venu d'une sauvegarde comme « constructor » ou « toString » ne trouve rien (relecture de la phase 6).
+export const SPECIES_BY_ID = Object.assign(Object.create(null), Object.fromEntries(SPECIES.map(s => [s.id, s])));
 
 // ---------- Accessoires ----------
 // rarity : common, rare, epic, legendary, mythic (boîtes uniquement). price : en pièces (null = pas en boutique). lvl : niveau minimum pour l'acheter.
@@ -368,7 +369,7 @@ export const ITEMS = [
   { id: "phoenix", slot: "back", name: "Ailes de phénix", rarity: "mythic", price: null, lvl: 1, box: true,
     draw: () => pair(html`<path d="M74 120C44 72 12 62 2 78c6 6 4 14 10 20-6 6-2 14 6 18-4 8 2 14 12 16 0 8 10 12 18 10 8-2 18-8 26-14z" fill="#ff5a1f" stroke="#ffd23f" stroke-width="3" stroke-linejoin="round"/><path d="M70 118C48 84 26 78 18 88c6 4 6 10 8 14-4 6 0 10 6 12 0 6 8 10 14 8 8-2 16-6 24-4z" fill="#ff9f43"/><path d="M66 116c-14-18-26-22-32-18 6 4 6 8 6 12 8 0 16 2 26 6z" fill="#ffd23f"/><g transform="translate(8 80) scale(.32) rotate(-60)"><g class="av-flame"><path d="${flameD}" fill="#ffd23f"/></g></g>`) },
 ];
-export const ITEM_BY_ID = Object.fromEntries(ITEMS.map(i => [i.id, i]));
+export const ITEM_BY_ID = Object.assign(Object.create(null), Object.fromEntries(ITEMS.map(i => [i.id, i])));
 export const SLOTS = [["head", "Tête"], ["eyes", "Yeux"], ["neck", "Cou"], ["hand", "Main"], ["back", "Dos"], ["aura", "Aura"]];
 
 export const RARITY = { common: "Commun", rare: "Rare", epic: "Épique", legendary: "Légendaire", mythic: "Mythique" };

@@ -24,7 +24,7 @@ export const BOXES = {
 };
 export const BOX_DUP = { common: 20, rare: 50, epic: 110, legendary: 250, mythic: 500 };
 export const PITY = 10; // au plus 10 boîtes pour un objet légendaire ou mythique
-export const PITY_ODDS = { legendary: 0.8, mythic: 0.2 };
+export const PITY_ODDS = { legendary: 0.8, mythic: 0.2 }; // probabilités de la boîte garantie (affichées aussi)
 export const DEAL_COUNT = 3, DEAL_OFF = 0.3; // offres du jour : 3 objets à −30 %
 export const NAME_MAX = 20;
 
@@ -47,9 +47,10 @@ function pickWeighted(weights, rng) {
 const pickOne = (list, rng) => list[Math.floor(rng() * list.length)];
 
 // ---------- État du jeu (sauvegardé dans labo.v2, section « game ») ----------
-// xpPaid : XP déjà changés en pièces ; levelPaid : dernier niveau dont le coffre a été donné.
+// xpPaid : XP déjà changés en pièces ; levelPaid : dernier niveau dont le coffre a été donné ;
+// deal : jour et niveau qui fixent les offres du jour (un niveau gagné dans la journée ne les change pas).
 export function newGame() {
-  return { v: 1, coins: 0, xpPaid: 0, levelPaid: 1, owned: [...DEFAULT_OWNED], avatar: { ...DEFAULT_AVATAR }, chests: [], pity: 0 };
+  return { v: 1, coins: 0, xpPaid: 0, levelPaid: 1, owned: [...DEFAULT_OWNED], avatar: { ...DEFAULT_AVATAR }, chests: [], pity: 0, deal: { day: "", level: 1 } };
 }
 
 // Pièces et coffres gagnés depuis la dernière fois, d'après les XP. Appelé à chaque enregistrement (store.save).
@@ -130,10 +131,17 @@ export function buyBox(G, boxId, rng = cryptoRng()) {
 // ---------- Boutique ----------
 export const dealPrice = (base) => Math.max(5, Math.round((base * (1 - DEAL_OFF)) / 5) * 5);
 // Offres du jour : 3 objets pas encore à toi et achetables à ton niveau, les mêmes toute la journée.
-// Le tirage ne dépend pas de ce que tu as : acheter une offre la remplace sans changer les deux autres.
-export function deals(G, level, now = Date.now()) {
+// Le tirage ne dépend pas de ce que tu as (acheter une offre la remplace sans changer les deux autres),
+// ni d'un niveau gagné dans la journée : il prend le niveau du premier passage du jour (noteDealDay).
+export const sameDay = (a, b) => dayKey(a) === dayKey(b);
+export function noteDealDay(G, level, now = Date.now()) {
   const day = dayKey(now);
-  const list = CATALOG.filter((id) => levelFor(id) <= level).sort();
+  if (G.deal.day === day) return false;
+  G.deal = { day, level }; return true;
+}
+export function deals(G, level, now = Date.now()) {
+  const day = dayKey(now), lv = G.deal.day === day ? Math.min(G.deal.level, level) : level;
+  const list = CATALOG.filter((id) => levelFor(id) <= lv).sort();
   const rng = mulberry32(seedFrom("deals:" + day));
   for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; }
   return list.filter((id) => !owns(G, id)).slice(0, DEAL_COUNT);
@@ -176,6 +184,14 @@ export function equip(G, id, slot) {
 }
 export const cleanName = (s) => (typeof s === "string" ? s.replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, NAME_MAX) : "");
 export function rename(G, s) { const n = cleanName(s); if (!n) return false; G.avatar.name = n; return true; }
+// Équipe un objet à toi, accessoire ou couleur (la couleur change aussi d'animal, s'il est débloqué à ton niveau).
+// Renvoie "ok", "not-owned" ou "level".
+export function wear(G, id, level) {
+  const d = describeOwned(id);
+  if (!d || !owns(G, id)) return "not-owned";
+  if (d.kind === "skin") { if (!speciesOpen(d.sp, level)) return "level"; setSpecies(G, d.sp, level); return setSkin(G, d.sk) ? "ok" : "not-owned"; }
+  return equip(G, id) ? "ok" : "not-owned";
+}
 
 // ---------- Sauvegarde ----------
 const int = (v, min, max, def) => (Number.isInteger(v) && v >= min && v <= max ? v : def);
@@ -188,6 +204,8 @@ export function sanitizeGame(raw) {
   G.owned = [...new Set([...DEFAULT_OWNED, ...(Array.isArray(raw.owned) ? raw.owned.slice(0, 500) : []).filter((id) => typeof id === "string" && isValidOwned(id))])];
   G.chests = (Array.isArray(raw.chests) ? raw.chests : []).filter((t) => Object.hasOwn(CHESTS, t)).slice(-MAX_CHESTS);
   G.pity = int(raw.pity, 0, PITY - 1, 0);
+  const dl = raw.deal && typeof raw.deal === "object" ? raw.deal : {};
+  G.deal = { day: typeof dl.day === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dl.day) ? dl.day : "", level: int(dl.level, 1, 10000, 1) };
   const a = raw.avatar && typeof raw.avatar === "object" ? raw.avatar : {};
   if (SPECIES_BY_ID[a.species]) G.avatar.species = a.species;
   G.avatar.skin = typeof a.skin === "string" && ownsSkin(G.owned, G.avatar.species, a.skin) ? a.skin : SPECIES_BY_ID[G.avatar.species].skins[0].id;

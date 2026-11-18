@@ -7,7 +7,7 @@ import { levelOf } from "../core/progress.js";
 import { RARITY, RARITY_ORDER, describeOwned, avatarSvg, itemPreview } from "../content/avatar.js";
 import { chestSvg, boxSvg } from "../content/chest-art.js";
 import { reducedFx } from "./effects.js";
-import { CHESTS, BOXES, PITY, GOLD_EVERY, openChest, buyBox, equip, setSpecies, setSkin, owns } from "../core/game.js";
+import { CHESTS, BOXES, PITY, PITY_ODDS, GOLD_EVERY, openChest, buyBox, wear } from "../core/game.js";
 
 const SHAKE_MS = 900;
 
@@ -73,6 +73,8 @@ export function mountChests(root, S) {
       <section class="card"><h2>Boîtes à butin</h2>
         <p class="muted small">Achetées avec les pièces du jeu seulement. Garantie : un objet légendaire ou mythique en ${PITY} boîtes au plus
           — encore <b>${PITY - G.pity}</b> boîte${PITY - G.pity > 1 ? "s" : ""} au plus. Un objet déjà à toi est changé en pièces.</p>
+        <p class="small${G.pity === PITY - 1 ? " feedback" : " muted"}">${G.pity === PITY - 1 ? "Ta prochaine boîte est la boîte garantie, quelle qu'elle soit : " : "Boîte garantie (la 10e sans légendaire ni mythique), quelle qu'elle soit : "}
+          ${oddsRows(PITY_ODDS).map(([r, p]) => `${RARITY[r]} ${pct(p)}`).join(" · ")} (à la place des probabilités ci-dessous).</p>
         <div class="box-grid">${Object.entries(BOXES).map(([id, B]) => html`<div class="box-card">
           <span class="chest-mini">${boxSvg(id, busy ? "" : "idle")}</span><b>${B.name}</b>
           <table class="odds"><caption class="small muted">Probabilités</caption>
@@ -85,7 +87,7 @@ export function mountChests(root, S) {
   function reveal(kind, res) {
     ui.msg = ""; ui.stage = { kind, res, phase: "shake" };
     draw();
-    const show = () => { if (ui.stage) { ui.stage.phase = "open"; draw(); } };
+    const show = () => { if (ui.stage) { ui.stage.phase = "open"; draw(); root.querySelector('[data-act="close"]')?.focus({ preventScroll: true }); } };
     if (reducedFx(S)) show(); else timer = setTimeout(show, SHAKE_MS);
     window.scrollTo(0, 0);
   }
@@ -104,11 +106,10 @@ export function mountChests(root, S) {
     }
     if (act === "close") { clearTimeout(timer); ui.stage = null; ui.msg = ""; draw(); }
     if (act === "wear") {
-      const d = describeOwned(id);
-      const ok = d && owns(G, id) && (d.kind === "skin" ? setSpecies(G, d.sp, level()) && setSkin(G, d.sk) : equip(G, id));
-      if (ok) save(S);
-      ui.msg = ok ? `${d.name} : équipé ✓` : d && d.kind === "skin" ? "Cet animal se débloque à un niveau plus haut : la couleur t'attend." : "Impossible d'équiper cet objet.";
-      ui.bad = !ok; draw();
+      const r = wear(G, id, level()), d = describeOwned(id);
+      if (r === "ok") save(S);
+      ui.msg = r === "ok" ? `${d.name} : équipé ✓` : r === "level" ? "Cet animal se débloque à un niveau plus haut : la couleur t'attend." : "Impossible d'équiper cet objet.";
+      ui.bad = r !== "ok"; draw();
     }
   });
 

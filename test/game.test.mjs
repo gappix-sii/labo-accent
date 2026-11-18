@@ -216,3 +216,41 @@ test("effets : gains montrés après un enregistrement, réaction du compagnon, 
   S.progress.xp = 8; save(S, { setItem() {} }); off(); save(S, { setItem() {} });
   assert.equal(seen.length, 1); assert.equal(seen[0].coins, 2);
 });
+
+test("relecture phase 6 : sauvegarde trafiquée avec des noms spéciaux, sans perdre la progression", () => {
+  for (const bad of ["constructor", "toString", "__proto__", "hasOwnProperty"]) {
+    const G = sanitizeGame({ v: 1, owned: [bad, `skin.${bad}.a`, `skin.fox.${bad}`], avatar: { species: bad, skin: bad, head: bad } });
+    assert.equal(G.avatar.species, DEFAULT_AVATAR.species, bad); assert.deepEqual(G.owned, ["phones"], bad);
+    assert.equal(G.avatar.head, DEFAULT_AVATAR.head, bad);
+  }
+  const S = sanitize({ version: 1, progress: { ...newProgress(), xp: 500 }, game: { v: 1, avatar: { species: "constructor" } } });
+  assert.equal(S.progress.xp, 500, "la progression reste là");
+  assert.equal(setSpecies(newGame(), "constructor", 99), false);
+  assert.equal(equip(newGame(), "toString"), false);
+});
+
+test("relecture phase 6 : offres fixées pour la journée même après un niveau gagné, prix vérifié, équiper", async () => {
+  const { noteDealDay, sameDay, wear } = await import("../js/core/game.js");
+  const G = newGame();
+  assert.equal(noteDealDay(G, 3, day), true); assert.equal(noteDealDay(G, 8, day + 3600e3), false, "une fois par jour");
+  const d = deals(G, 3, day);
+  assert.deepEqual(deals(G, 8, day + 3600e3), d, "niveau gagné dans la journée : mêmes offres");
+  assert.equal(sanitizeGame(JSON.parse(JSON.stringify(G))).deal.level, 3, "gardé dans la sauvegarde");
+  assert.equal(sanitizeGame({ v: 1, deal: { day: "<x>", level: -1 } }).deal.day, "");
+  assert.equal(sameDay(day, day + 3600e3), true); assert.equal(sameDay(day, day + 86400e3), false);
+  const H = newGame(), owl = SPECIES.find((s) => s.id === "owl"), k = skinKey("owl", owl.skins[1].id);
+  assert.equal(wear(H, "cap", 1), "not-owned");
+  H.owned.push("cap", k);
+  assert.equal(wear(H, "cap", 1), "ok"); assert.equal(H.avatar.head, "cap");
+  assert.equal(wear(H, k, owl.lvl - 1), "level"); assert.equal(H.avatar.species, DEFAULT_AVATAR.species, "rien changé");
+  assert.equal(wear(H, k, owl.lvl), "ok"); assert.equal(H.avatar.species, "owl"); assert.equal(H.avatar.skin, owl.skins[1].id);
+});
+
+test("relecture phase 6 : la sauvegarde est écrite avant les effets, même si un effet plante", async () => {
+  const { onSaved } = await import("../js/core/store.js");
+  const S = defaults(), mem = { v: null, setItem(k, v) { this.v = v; } };
+  const off = onSaved(() => { assert.ok(mem.v, "déjà écrit quand l'effet est prévenu"); throw new Error("effet cassé"); });
+  const err = console.error; console.error = () => {};
+  try { S.progress.xp = 12; assert.equal(save(S, mem), true); } finally { console.error = err; off(); }
+  assert.equal(JSON.parse(mem.v).progress.xp, 12);
+});
