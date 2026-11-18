@@ -25,7 +25,7 @@ export function vocabToday(R, now = Date.now()) {
   return { review: q.length - fresh, fresh };
 }
 
-function vocabLabel({ review, fresh }) {
+export function vocabLabel({ review, fresh }) {
   if (!review && !fresh) return "rien à revoir aujourd'hui ✓";
   const parts = [];
   if (review) parts.push(`${review} mot${review > 1 ? "s" : ""} à revoir`);
@@ -66,17 +66,6 @@ export function mountHome(root, S) {
         <button class="btn${S.game.chests.length ? "" : " soft"}" data-act="chests" type="button">🎁 Coffres${S.game.chests.length ? ` · ${S.game.chests.length} à ouvrir` : ""}</button></p>
       ${next >= 0 ? html`<button class="btn big" data-act="open" data-id="${LESSONS[next].id}" type="button">▶ Continuer : ${LESSONS[next].title}</button>` : ""}
       <section class="card">
-        <h2>Entraînements</h2>
-        <div class="choices">
-          <button class="btn choice" data-act="vocab" type="button"><b>📚 Vocabulaire</b><span class="small">${vocabLabel(vocabToday(S.srs, now))}</span></button>
-          <button class="btn choice" data-act="listen" type="button"><b>👂 Écoute</b><span class="small">ship ou sheep ? ${QUESTIONS} questions</span></button>
-          <button class="btn choice" data-act="grammar" type="button"><b>📘 Grammaire</b><span class="small">${n.grammar} / ${GRAMMAR.length} règles finies</span></button>
-          <button class="btn choice" data-act="mistakes" type="button"><b>✏️ Fautes typiques</b><span class="small">${n.mistakes ? `${n.mistakes} à retravailler` : `${MISTAKE_SESSION} phrases à corriger`}</span></button>
-          <button class="btn choice" data-act="roles" type="button"><b>🎭 Jeux de rôle</b><span class="small">${n.roles} / ${DIALOGUES.length} dialogues finis</span></button>
-          <button class="btn choice" data-act="chat" type="button"><b>💬 Discussion libre</b><span class="small">parle de tout avec Gemini, il te corrige</span></button>
-        </div>
-      </section>
-      <section class="card">
         <h2>Parcours</h2>
         <ol class="path">${LESSONS.map((l, i) => {
           const st = lessonState(P, i), icon = l.kind === "sound" ? "🔊" : "💬";
@@ -85,9 +74,6 @@ export function mountHome(root, S) {
             <span>${icon} ${l.title}</span><span class="muted small">${status}</span></button></li>`;
         })}</ol>
       </section>
-      <p class="row start muted small"><button class="btn ghost" data-act="settings" type="button">⚙️ Réglages</button>
-        <button class="btn ghost" data-act="bench" type="button">Banc de test du moteur</button>
-        <button class="btn ghost" data-act="style" type="button">🎨 Style</button></p>
     `);
   }
 

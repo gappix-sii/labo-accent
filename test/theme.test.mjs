@@ -40,3 +40,21 @@ test("page d'exemple : adresse #style", async () => {
   const { route } = await import("../js/main.js");
   assert.deepEqual(route("#style"), { screen: "style" });
 });
+
+test("barre du haut et onglets : onglet allumé, onglets cachés pendant un exercice, chiffres", async () => {
+  const { route } = await import("../js/main.js");
+  const { TABS, tabFor, inExercise, hudData } = await import("../js/screens/shell.js");
+  const { defaults } = await import("../js/core/store.js");
+  assert.deepEqual(route("#entrainement"), { screen: "training" });
+  assert.deepEqual(route("#profil"), { screen: "profile" });
+  assert.deepEqual(TABS.map((t) => t[1]), ["#accueil", "#entrainement", "#compagnon", "#boutique", "#profil"]);
+  for (const h of TABS.map((t) => t[1])) assert.notEqual(route(h).screen, undefined);
+  const cases = { "#accueil": "path", "#lecon/s-h": "path", "#vocab": "training", "#ecoute": "training", "#grammaire": "training", "#grammaire/be": "training", "#fautes": "training", "#role": "training",
+    "#discussion": "training", "#compagnon": "companion", "#boutique": "shop", "#coffres": "shop", "#profil": "profile", "#reglages": "profile", "#transfert": "profile", "#banc": "profile", "#style": "profile", "#entrainement": "training" };
+  for (const [h, tab] of Object.entries(cases)) assert.equal(tabFor(route(h).screen), tab, h);
+  for (const h of ["#lecon/s-h", "#vocab", "#ecoute", "#grammaire/be", "#fautes", "#role/cafe", "#discussion", "#banc"]) assert.equal(inExercise(route(h).screen), true, h);
+  for (const h of ["#accueil", "#entrainement", "#grammaire", "#role", "#compagnon", "#boutique", "#coffres", "#profil", "#reglages"]) assert.equal(inExercise(route(h).screen), false, h);
+  const S = defaults(); S.progress.xp = 150; S.game.coins = 12; S.game.chests = ["silver"];
+  const d = hudData(S);
+  assert.equal(d.level, 2); assert.ok(d.pct >= 0 && d.pct <= 100); assert.equal(d.coins, 12); assert.equal(d.chests, 1);
+});

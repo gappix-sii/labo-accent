@@ -47,8 +47,27 @@ h1.sentence { font-size: clamp(1.7rem, 6vw, 2.3rem); }
 h2 { font-size: 1.45rem; margin: 4px 0 10px; color: var(--gold); }
 a { color: var(--accent); }
 :focus-visible { outline: 3px solid var(--gold-fill); outline-offset: 3px; }
-.top { font-family: var(--font-display); font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 1.35rem; letter-spacing: .02em; border-bottom: 2px solid var(--line); background: color-mix(in srgb, var(--bg) 85%, transparent); }
-.top b { color: var(--gold); }
+.brand { font-family: var(--font-display); font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 1.35rem; letter-spacing: .02em; border-bottom: 2px solid var(--line); background: color-mix(in srgb, var(--bg) 85%, transparent); }
+.brand b { color: var(--gold); }
+.hud { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(8px); border-bottom: 2px solid var(--frame); box-shadow: 0 4px 16px var(--shadow); }
+/* Anneau de niveau autour du compagnon : se remplit avec les XP du niveau */
+.me { background: conic-gradient(var(--gold-fill) var(--p), color-mix(in srgb, var(--line) 80%, transparent) 0); box-shadow: 0 0 12px var(--frame-glow); transition: transform .1s; }
+.me:active { transform: scale(.92); }
+.me-av { background: var(--card2); }
+.me-lv { background: linear-gradient(180deg, var(--gold-hi), var(--gold-fill)); color: var(--on-gold); font-family: var(--font-display); font-style: italic; font-weight: 900; box-shadow: 0 2px 0 var(--gold-d); }
+.hud-stat { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--text); background: color-mix(in srgb, var(--card2) 80%, transparent); border: 2px solid var(--line); }
+.hud-stat.coins { border-color: color-mix(in srgb, var(--gold-fill) 55%, var(--line)); }
+.hud-stat.flame.off { filter: grayscale(1); opacity: .65; }
+.hud-stat.flame:not(.off) { animation: flick 1.2s ease-in-out infinite alternate; }
+.hud-stat.chest { border-color: var(--gold-fill); animation: wiggle 1.4s ease-in-out infinite; }
+@keyframes flick { to { transform: scale(1.06); } }
+@keyframes wiggle { 0%, 70%, 100% { transform: none; } 78% { transform: rotate(-8deg) translateY(-2px); } 86% { transform: rotate(8deg) translateY(-2px); } 94% { transform: rotate(-4deg); } }
+.tabs { background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); border-top: 2px solid var(--frame); }
+.tab { color: var(--muted); }
+.tab.on { color: var(--gold); background: color-mix(in srgb, var(--gold-fill) 12%, transparent); border-color: color-mix(in srgb, var(--gold-fill) 45%, transparent); }
+.tab.on .tab-ico { animation: tabPop .4s cubic-bezier(.2, 1.6, .4, 1); }
+.tab:active { transform: scale(.92); }
+@keyframes tabPop { from { transform: scale(.6) rotate(-10deg); } }
 
 /* Fond animé : halos qui dérivent lentement et poussière d'étoiles (élément .bgfx de index.html) */
 .bgfx { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }

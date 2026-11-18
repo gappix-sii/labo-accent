@@ -1,5 +1,5 @@
 // Point d'entrée de l'appli : choisit l'écran selon l'adresse.
-//   #accueil (par défaut) · #lecon/<id> · #vocab · #ecoute · #grammaire[/<id>] · #fautes · #role[/<id>] · #compagnon · #boutique · #coffres · #transfert[/<code>] · #style (page d'exemple du thème) · #banc (banc de test du moteur)
+//   #accueil (par défaut, onglet Parcours) · #entrainement · #profil · #lecon/<id> · #vocab · #ecoute · #grammaire[/<id>] · #fautes · #role[/<id>] · #compagnon · #boutique · #coffres · #transfert[/<code>] · #style (page d'exemple du thème) · #banc (banc de test du moteur)
 import { $ } from "./core/dom.js";
 import { load, onSaveError, onStoreNotice, takeNotices, markStale, STORE_KEY, DAMAGED_KEY } from "./core/store.js";
 import { mountHome } from "./screens/home.js";
@@ -18,6 +18,9 @@ import { mountChests } from "./screens/chests.js";
 import { watchGains } from "./screens/effects.js";
 import { mountTransfer } from "./screens/transfer.js";
 import { mountStyle } from "./screens/styleguide.js";
+import { mountShell } from "./screens/shell.js";
+import { mountTraining } from "./screens/training.js";
+import { mountProfile } from "./screens/profile.js";
 
 // Écran à afficher pour une adresse donnée. Exportée pour les tests.
 export function route(hash) {
@@ -41,6 +44,8 @@ export function route(hash) {
   if (h === "coffres") return { screen: "chests" };
   if (h === "transfert") return { screen: "transfer", code: null };
   if (h === "style") return { screen: "style" };
+  if (h === "entrainement") return { screen: "training" };
+  if (h === "profil") return { screen: "profile" };
   const tr = /^transfert\/(\d{1,3}\.[A-Za-z0-9_-]{8,12000})$/.exec(h);
   if (tr) return { screen: "transfer", code: tr[1] };
   if (h === "vocab") return { screen: "vocab" };
@@ -69,6 +74,7 @@ function start() {
   const showNotice = (kind) => { const n = NOTICES[kind]; if (n) banner(...n); };
   onStoreNotice(showNotice);
   watchGains(S); // effets de jeu sur tous les écrans
+  const shell = mountShell(S, $("#hud"), $("#tabs")); // barre du haut et onglets
   let cleanup = () => {};
   const show = () => {
     cleanup();
@@ -78,8 +84,9 @@ function start() {
     const screens = { lesson: () => mountLesson(root, S, r.id), bench: () => mountSay(root, S), vocab: () => mountVocab(root, S), listening: () => mountListening(root, S),
       grammarList: () => mountGrammarList(root, S), grammar: () => mountGrammar(root, S, r.id),
       mistakes: () => mountMistakes(root, S),
-      roleList: () => mountRoleList(root, S), role: () => mountRole(root, S, r.id), settings: () => mountSettings(root, S), chat: () => mountChat(root, S), roleFree: () => mountRoleFree(root, S, r.id), companion: () => mountCompanion(root, S), shop: () => mountShop(root, S), chests: () => mountChests(root, S), transfer: () => mountTransfer(root, S, r.code), style: () => mountStyle(root), home: () => mountHome(root, S) };
+      roleList: () => mountRoleList(root, S), role: () => mountRole(root, S, r.id), settings: () => mountSettings(root, S), chat: () => mountChat(root, S), roleFree: () => mountRoleFree(root, S, r.id), companion: () => mountCompanion(root, S), shop: () => mountShop(root, S), chests: () => mountChests(root, S), transfer: () => mountTransfer(root, S, r.code), style: () => mountStyle(root), training: () => mountTraining(root, S), profile: () => mountProfile(root, S), home: () => mountHome(root, S) };
     cleanup = screens[r.screen]();
+    shell.show(r.screen);
     window.scrollTo(0, 0);
   };
   window.addEventListener("hashchange", show);
