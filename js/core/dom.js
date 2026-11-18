@@ -90,7 +90,8 @@ export const join = (list, sep = html``) => {
 };
 
 // ---- Trusted Types ----
-const appRoot = () => new URL("./", document.baseURI);
+// Racine de l'appli, déduite de l'emplacement de ce fichier (js/core/dom.js) : juste aussi pour une page de tools/.
+const appRoot = () => new URL("../../", import.meta.url);
 const tt = globalThis.trustedTypes;
 const policy = tt && tt.createPolicy ? tt.createPolicy("labo", {
   createHTML: s => s, // n'est appelée que par toTrusted(), qui n'accepte que la sortie de html``

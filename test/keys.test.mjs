@@ -52,10 +52,10 @@ function fakeFetch(reply) {
 const json = (status, body) => ({ ok: status >= 200 && status < 300, status, json: async () => body });
 
 test("tester la clé : clé dans l'en-tête, jamais dans l'adresse, sans cookie ni redirection", async () => {
-  const f = fakeFetch(json(200, { name: `models/${MODELS.chat}`, displayName: "Gemini <b>Flash</b>" }));
+  const f = fakeFetch(json(200, { name: `models/${MODELS.live}`, displayName: "Gemini <b>Flash</b>" }));
   const r = await checkKey(FAKE, { fetchFn: f });
   assert.deepEqual(r, { ok: true, name: "Gemini bFlash/b" });
-  assert.equal(f.url, `${HOST}/v1beta/models/${MODELS.chat}`);
+  assert.equal(f.url, `${HOST}/v1beta/models/${MODELS.live}`);
   assert.ok(!f.url.includes(FAKE) && !f.url.includes("key="), "pas de clé dans l'adresse");
   assert.equal(f.opts.headers["x-goog-api-key"], FAKE);
   assert.equal(f.opts.credentials, "omit");
@@ -84,7 +84,7 @@ test("tester la clé : chaque erreur donne un message clair", async () => {
 test("CSP : seule l'adresse de Gemini est autorisée en plus de l'appli", () => {
   const page = readFileSync(new URL("../index.html", import.meta.url), "utf8");
   const csp = /Content-Security-Policy" content="([^"]+)"/.exec(page)[1];
-  assert.match(csp, /connect-src 'self' https:\/\/generativelanguage\.googleapis\.com;/);
+  assert.match(csp, /connect-src 'self' https:\/\/generativelanguage\.googleapis\.com wss:\/\/generativelanguage\.googleapis\.com;/);
   assert.ok(!/connect-src[^;]*\*/.test(csp), "pas de joker");
   assert.equal(HOST, "https://generativelanguage.googleapis.com");
 });

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com wss://generativelanguage.googleapis.com; media-src 'self' blob:; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; worker-src 'self'; connect-src 'self' https://generativelanguage.googleapis.com wss://generativelanguage.googleapis.com; media-src 'self' blob:; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="referrer" content="no-referrer">
   <title>Essai du direct (Gemini Live)</title>
   <link rel="stylesheet" href="../css/app.css">
@@ -14,11 +14,12 @@
   <main>
     <section class="card">
       <p class="small muted">Page d'essai (phase 5) : conversation vocale avec Gemini Live, voix de Gemini, corrections à côté.
-        Elle utilise la clé enregistrée dans les Réglages de l'appli. La clé ne part que dans un en-tête ; la connexion
+        Elle utilise le vrai code de l'appli (js/engine/live.js) et la clé enregistrée dans les Réglages. La clé ne part que dans un en-tête ; la connexion
         en direct utilise un jeton à usage unique valable 1 minute.</p>
       <div class="row start">
         <button class="btn" id="connect" type="button">Se connecter</button>
         <button class="btn soft" id="talk" type="button" disabled>🎤 Parler</button>
+        <button class="btn ghost" id="retry" type="button" disabled>Réessaie</button>
         <button class="btn ghost" id="hangup" type="button" disabled>Raccrocher</button>
       </div>
       <p id="status" class="feedback" role="status">Pas connecté.</p>

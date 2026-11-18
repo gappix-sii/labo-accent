@@ -1,12 +1,12 @@
 // Appels à Gemini (Google) avec la clé de l'utilisateur (js/core/keys.js), pour la conversation libre (phase 5).
 // La clé part seulement dans l'en-tête « x-goog-api-key », jamais dans l'adresse. La CSP (index.html) n'autorise
-// que l'adresse HOST en plus de l'appli. Tâche 1 : vérification de la clé ; la conversation arrive en tâche 2.
+// que cette adresse (https et wss) en plus de l'appli. Ici : appels simples et vérification de la clé ; le direct est dans live.js.
 export const HOST = "https://generativelanguage.googleapis.com";
 
-// Modèles, vérifiés le 2026-11-18 dans la doc de Google (aistudio.google.com/docs/models et /docs/pricing) :
-// gratuits avec une clé ; « chat » comprend l'audio et sait répondre en JSON ; « voice » lit un texte à voix haute.
-// Seul endroit à changer quand Google en retire un.
-export const MODELS = { chat: "gemini-3.8-flash", voice: "gemini-3.8-flash-tts" };
+// Modèle du direct, vérifié le 2026-11-18 dans la doc de Google (aistudio.google.com/docs/models/gemini-3.8-live) :
+// stable, gratuit et illimité par jour avec une clé (relevé sur aistudio.google.com/rate-limit), répond avec sa voix
+// et sait appeler une fonction (la correction). Seul endroit à changer quand Google le retire.
+export const MODELS = { live: "gemini-3.8-live" };
 const MODEL_RE = /^[a-z0-9][a-z0-9.-]{1,60}$/;
 export const TIMEOUT_MS = 20000;
 
@@ -21,6 +21,10 @@ export function errorText(code) {
     case "timeout": return "Google met trop de temps à répondre. Réessaie.";
     case "offline": return "Pas de connexion à Internet.";
     case "network": return "Impossible de joindre Google (connexion coupée, ou appel bloqué par le navigateur).";
+    case "no_reply": return "Gemini ne répond pas. Réessaie (ta phrase sera renvoyée).";
+    case "setup": return "Google a refusé d'ouvrir la conversation. Réessaie ; si ça recommence, l'appli doit être mise à jour.";
+    case "closed": return "La conversation a été coupée par Google.";
+    case "mic": return "Micro indisponible : autorise-le dans le navigateur, ou tape ta phrase.";
     default: return "Réponse inattendue de Google.";
   }
 }
@@ -59,7 +63,7 @@ export async function request(path, key, { method = "GET", body, fetchFn = globa
 // Vérifie la clé en demandant à Google la fiche du modèle de conversation (ne génère rien).
 // Renvoie { ok: true, name } (nom affichable du modèle) ou { ok: false, error: code }.
 export async function checkKey(key, opts = {}) {
-  const model = opts.model || MODELS.chat;
+  const model = opts.model || MODELS.live;
   if (!MODEL_RE.test(model)) return { ok: false, error: "model" };
   const r = await request(`models/${model}`, key, opts);
   if (!r.ok) return r;

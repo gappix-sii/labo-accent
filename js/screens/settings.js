@@ -41,7 +41,7 @@ export function mountSettings(root) {
           aux sites <code>https://gappix-sii.github.io/*</code> et <code>http://localhost:8000/*</code>. Si « Tester la clé » échoue ensuite, retire cette limite.</p>
         <p class="muted small">Ton quota gratuit (nombre de demandes par minute et par jour) :
           <a href="https://aistudio.google.com/rate-limit" target="_blank" rel="noopener noreferrer">aistudio.google.com/rate-limit</a>.
-          Modèles utilisés : <code>${MODELS.chat}</code> (conversation) et <code>${MODELS.voice}</code> (voix).</p>
+          Modèle utilisé : <code>${MODELS.live}</code> (conversation en direct, avec sa voix).</p>
       </section>
 
       <section class="card">
