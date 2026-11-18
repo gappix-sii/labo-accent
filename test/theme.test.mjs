@@ -58,3 +58,21 @@ test("barre du haut et onglets : onglet allumé, onglets cachés pendant un exer
   const d = hudData(S);
   assert.equal(d.level, 2); assert.ok(d.pct >= 0 && d.pct <= 100); assert.equal(d.coins, 12); assert.equal(d.chests, 1);
 });
+
+test("carte du parcours : régions, étapes et quête du jour", async () => {
+  const { REGIONS, PER_REGION, dailyQuest, nodeState, lessonState } = await import("../js/screens/home.js");
+  const { LESSONS } = await import("../js/content/lessons.js");
+  const { newProgress, recordItem, dayKey } = await import("../js/core/progress.js");
+  assert.ok(REGIONS.length * PER_REGION >= LESSONS.length, "chaque leçon a sa région");
+  const P = newProgress(), now = new Date(2026, 10, 18, 12).getTime();
+  const next = (P) => LESSONS.findIndex((_, i) => { const st = lessonState(P, i); return st.open && st.done === 0; });
+  assert.equal(nodeState(P, 0, next(P)), "current");
+  assert.equal(nodeState(P, LESSONS.length - 1, next(P)), "locked");
+  for (let k = 0; k < LESSONS[0].items.length; k++) recordItem(P, LESSONS[0].id, k, LESSONS[0].items.length, 95, now);
+  assert.equal(nodeState(P, 0, next(P)), "done"); assert.equal(nodeState(P, 1, next(P)), "current");
+  const q = dailyQuest(P, now);
+  assert.ok(q.today > 0 && q.pct >= 0 && q.pct <= 100 && q.goal === P.goal);
+  const Q = newProgress(); Q.days[dayKey(now)] = Q.goal + 5;
+  assert.equal(dailyQuest(Q, now).done, true); assert.equal(dailyQuest(Q, now).pct, 100);
+  assert.equal(dailyQuest(newProgress(), now).next, 1, "récompense : la série démarre");
+});

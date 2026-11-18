@@ -332,3 +332,30 @@ body:not(.in-exercise) main { padding-bottom: 96px; }
 .profile-stats p { margin: 0; display: grid; gap: 2px; padding: 10px; border-radius: 12px; border: 2px solid var(--line); text-align: center; }
 .profile-stats b { font-size: 1.3rem; }
 .profile-hero .quest-title { grid-column: 1 / -1; justify-self: start; margin-bottom: 0; }
+
+/* Parcours en carte de quête (phase 8, tâche 3) */
+.daily.done { border-color: var(--good); box-shadow: inset 0 0 0 1px var(--frame-glow), 0 0 22px color-mix(in srgb, var(--good) 35%, transparent), 0 6px 0 var(--shadow); }
+.daily .row { margin: 8px 0; align-items: center; }
+.region-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.region.locked { opacity: .6; }
+.map { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; position: relative; }
+.map::before { content: ""; position: absolute; top: 20px; bottom: 20px; left: 50%; width: 0; border-left: 4px dotted var(--frame); transform: translateX(-2px); }
+.node-wrap { position: relative; display: grid; justify-items: center; gap: 2px; transform: translateX(var(--zx, 0)); }
+.node-wrap.z1 { --zx: 18%; } .node-wrap.z2 { --zx: 32%; } .node-wrap.zm1 { --zx: -18%; } .node-wrap.zm2 { --zx: -32%; }
+.node { position: relative; width: 66px; height: 66px; border-radius: 50%; font-size: 1.6rem; cursor: pointer; display: grid; place-items: center; border: 3px solid var(--line); background: var(--card2); color: var(--text); box-shadow: 0 6px 0 var(--btn-d); transition: transform .1s; }
+.node:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 2px 0 var(--btn-d); }
+.node.done { background: radial-gradient(circle at 35% 30%, var(--gold-hi), var(--gold-fill)); border-color: var(--gold-d); color: var(--on-gold); box-shadow: 0 6px 0 var(--gold-d); }
+.node.current { width: 78px; height: 78px; background: radial-gradient(circle at 35% 30%, #a98bff, var(--violet)); border-color: var(--violet-d); color: #fff; box-shadow: 0 6px 0 var(--violet-d), 0 0 0 6px color-mix(in srgb, var(--violet) 30%, transparent); animation: nodePulse 1.6s ease-in-out infinite; }
+.node.locked { opacity: .55; cursor: not-allowed; filter: grayscale(.6); }
+.node-n { position: absolute; right: -6px; bottom: -4px; font-size: .75rem; padding: 0 6px; border-radius: 999px; background: var(--card); color: var(--gold); border: 2px solid var(--gold-d); }
+.node-me { position: absolute; top: -6px; left: calc(50% + 44px); width: 54px; height: 54px; animation: bob 1.6s ease-in-out infinite; }
+.node-label { display: grid; justify-items: center; text-align: center; font-weight: 800; font-size: .9rem; line-height: 1.2; max-width: 11rem; }
+@keyframes nodePulse { 50% { box-shadow: 0 6px 0 var(--violet-d), 0 0 0 12px color-mix(in srgb, var(--violet) 12%, transparent); transform: scale(1.04); } }
+@keyframes bob { 50% { transform: translateY(-6px); } }
+@media (max-width: 420px) { .node-wrap.z2 { --zx: 24%; } .node-wrap.zm2 { --zx: -24%; } .node-me { left: calc(50% + 40px); width: 46px; height: 46px; } }
+.node-label { position: relative; z-index: 1; background: var(--card); padding: 2px 10px; border-radius: 10px; }
+/* Les étapes sont étroites (et non toute la largeur) : décalées à gauche ou à droite, elles ne débordent pas de l écran. */
+.node-wrap { width: max-content; max-width: 100%; justify-self: center; }
+.map { overflow-x: clip; padding: 0 4px; }
+.node-wrap.z1 { --zx: 1.8rem; } .node-wrap.z2 { --zx: 3.4rem; } .node-wrap.zm1 { --zx: -1.8rem; } .node-wrap.zm2 { --zx: -3.4rem; }
+@media (max-width: 420px) { .node-wrap.z2 { --zx: 2.8rem; } .node-wrap.zm2 { --zx: -2.8rem; } }

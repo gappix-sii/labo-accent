@@ -55,6 +55,9 @@ export function route(hash) {
 
 function start() {
   const view = $("#view");
+  // L'appli gère elle-même le défilement (haut de page à chaque écran, étape en cours sur la carte) :
+  // sinon le navigateur remet l'ancienne position après un rechargement.
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
   const S = load();
   // Un autre onglet a enregistré : cette copie en mémoire est périmée (relecture complète, n° 1).
   window.addEventListener("storage", (e) => { if (e.key === STORE_KEY || e.key === null) markStale(S); });
