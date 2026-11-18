@@ -7,6 +7,7 @@ import { sayOnce } from "../engine/live.js";
 import { Player } from "../engine/live-audio.js";
 import { loadKey, saveKey, clearKey, maskKey } from "../core/keys.js";
 import { checkKey, errorText, MODELS } from "../engine/gemini.js";
+import { FX_MODES, fxModeOk, applyFx } from "./effects.js";
 
 export function mountSettings(root, S) {
   const ui = { msg: "", bad: false, busy: false, hearing: null, voiceMsg: "" };
@@ -20,6 +21,12 @@ export function mountSettings(root, S) {
       <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button></p>
       <section class="card"><h1 class="sentence">⚙️ Réglages</h1>
         <p class="muted small">La conversation libre utilise Gemini, l'IA de Google, avec ta propre clé (gratuite).</p></section>
+
+      <section class="card">
+        <h2>✨ Effets de jeu</h2>
+        <p class="muted small">« NIVEAU n ! » avec confettis, « +XP » qui s'envole, coffres qui tremblent. « Effets réduits » les remplace par de simples messages, sans mouvement.</p>
+        <p class="kind shop-cats">${FX_MODES.map(([id, label]) => html`<button class="chip${S.fx === id ? " on" : ""}" data-act="fx" data-v="${id}" type="button" aria-pressed="${S.fx === id ? "true" : "false"}">${label}</button>`)}</p>
+      </section>
 
       <section class="card">
         <h2>🔑 Clé Gemini</h2>
@@ -107,6 +114,7 @@ export function mountSettings(root, S) {
     const act = el.dataset.act;
     if (act === "voice" && liveVoiceOk(el.dataset.v)) { S.liveVoice = el.dataset.v; save(S); draw(); }
     if (act === "hear" && liveVoiceOk(el.dataset.v) && !ui.hearing && loadKey()) hear(el.dataset.v);
+    if (act === "fx" && fxModeOk(el.dataset.v)) { S.fx = el.dataset.v; applyFx(S); save(S); draw(); }
     if (act === "home") location.hash = "#accueil";
     if (act === "save") saveInput();
     if (act === "test") test();

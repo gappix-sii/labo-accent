@@ -7,6 +7,7 @@ import { Recorder } from "../engine/recorder.js";
 import { prepare, score, onEngine, MODEL_MB } from "../engine/engine.js";
 import { FR_HINT } from "../engine/phonemes.js";
 import { stopVoice } from "../engine/clips.js";
+import { avatarSvg } from "../content/avatar.js";
 
 const LEVEL_FR = { good: "bien", ok: "presque", bad: "à revoir", skip: "non noté" };
 const STATUS_FR = { good: "bien", ok: "presque", bad: "à revoir" };
@@ -125,10 +126,19 @@ export function practice({ S, persist, draw, root, target, onScored, speakLabel 
   };
 }
 
-// Résultat son par son (dernière analyse).
-export function resultBlock(r) {
+// Réaction du compagnon à une note : content à 85, triste sous 55.
+export function mood(score) {
+  if (score >= 85) return { cls: "happy", text: "Bravo, c'était super !" };
+  if (score >= 55) return { cls: "", text: "Pas mal ! Encore un essai ?" };
+  return { cls: "sad", text: "Pas grave, on réessaie ensemble ?" };
+}
+
+// Résultat son par son (dernière analyse), avec la réaction de ton compagnon s'il est donné.
+export function resultBlock(r, avatar = null) {
+  const m = mood(r.score);
   return html`
-    <p class="score score-${r.score >= 85 ? "good" : r.score >= 55 ? "ok" : "bad"}">${r.score} <span>/ 100</span></p>
+    <div class="score-row"><p class="score score-${r.score >= 85 ? "good" : r.score >= 55 ? "ok" : "bad"}">${r.score} <span>/ 100</span></p>
+      ${avatar ? html`<span class="mood"><span class="mood-av">${avatarSvg(avatar, { cls: m.cls, label: `${avatar.name} : ${m.text}` })}</span><span class="small">${m.text}</span></span>` : ""}</div>
     <div class="words" lang="en">${r.words.map((w) => html`
       <div class="word lv-${w.level}">
         <b>${w.display}</b>

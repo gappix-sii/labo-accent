@@ -15,6 +15,7 @@ import { mountChat, mountRoleFree } from "./screens/chat.js";
 import { mountCompanion } from "./screens/companion.js";
 import { mountShop } from "./screens/shop.js";
 import { mountChests } from "./screens/chests.js";
+import { watchGains } from "./screens/effects.js";
 
 // Écran à afficher pour une adresse donnée. Exportée pour les tests.
 export function route(hash) {
@@ -44,6 +45,7 @@ export function route(hash) {
 function start() {
   const view = $("#view");
   const S = load();
+  watchGains(S); // effets de jeu sur tous les écrans
   let cleanup = () => {};
   const show = () => {
     cleanup();

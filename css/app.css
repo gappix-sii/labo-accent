@@ -291,3 +291,26 @@ code { font-size: .9em; overflow-wrap: anywhere; }
 .loot-item { color: inherit; }
 .loot-prev { width: 7.5rem; height: 7.5rem; display: block; } .loot-prev .item-ico { width: 100%; height: 100%; }
 @media (prefers-reduced-motion: reduce) { .chest, .chest *, .lbox, .lbox *, .rv-rays, .loot-coins, .loot-item { animation: none !important; transition: none !important; } }
+
+/* Effets de jeu et réaction du compagnon (phase 6, tâche 6) */
+.score-row { display: flex; align-items: center; justify-content: space-between; gap: .8rem; flex-wrap: wrap; }
+.mood { display: flex; align-items: center; gap: .5rem; max-width: 14rem; }
+.mood-av { width: 4.5rem; height: 4.5rem; flex: none; }
+.fx-layer { position: fixed; left: 0; right: 0; bottom: 1.5rem; display: grid; justify-items: center; gap: .4rem; pointer-events: none; z-index: 50; }
+.fx-toast { background: var(--card); color: var(--text); border: 2px solid var(--accent); border-radius: 999px; padding: .4rem 1rem; display: grid; grid-template-columns: auto auto; gap: .1rem .4rem; justify-items: center; box-shadow: 0 6px 24px rgba(0,0,0,.25); animation: fxUp 1.8s ease-out forwards; }
+.fx-xp { color: var(--accent); font-size: 1.2rem; }
+.fx-coins { align-self: center; }
+.fx-bar { grid-column: 1 / -1; width: 9rem; height: .4rem; border-radius: 999px; background: var(--line); overflow: hidden; }
+.fx-fill { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(var(--to)); animation: fxFill .9s ease-out .2s both; }
+@keyframes fxFill { from { transform: scaleX(var(--from)); } to { transform: scaleX(var(--to)); } }
+@keyframes fxUp { 0% { transform: translateY(20px) scale(.8); opacity: 0; } 15% { transform: translateY(0) scale(1.08); opacity: 1; } 70% { transform: translateY(-10px); opacity: 1; } 100% { transform: translateY(-60px); opacity: 0; } }
+.fx-level { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(10, 8, 25, .72); overflow: hidden; }
+.fx-level-box { position: relative; z-index: 1; background: var(--card); color: var(--text); border: 3px solid #ffd23f; border-radius: 1.2rem; padding: 1.4rem 1.6rem; margin: 0 16px; text-align: center; display: grid; gap: .6rem; justify-items: center; box-shadow: 0 0 40px rgba(255, 210, 63, .45); animation: fxPop .6s cubic-bezier(.2, 1.6, .4, 1) both; }
+.fx-level-title { margin: 0; font-size: 2.4rem; font-weight: 900; font-style: italic; color: #ffb020; letter-spacing: .03em; }
+.fx-level-sub { margin: 0; }
+@keyframes fxPop { from { transform: scale(.3); opacity: 0; } }
+.fx-confetti { position: absolute; top: -2rem; left: var(--x); width: .55rem; height: .9rem; background: var(--c); border-radius: 2px; animation: fxFall var(--d) linear var(--w) forwards; }
+@keyframes fxFall { to { transform: translateY(110vh) rotate(720deg); } }
+.fx-toast.still, .fx-level.still .fx-level-box, .fx-toast.still .fx-fill { animation: none; }
+.fx-reduced *, .fx-reduced *::before, .fx-reduced *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) { .fx-toast, .fx-fill, .fx-level-box, .fx-confetti { animation: none !important; } }

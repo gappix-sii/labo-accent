@@ -64,7 +64,7 @@ export function mountLesson(root, S, id) {
       ${mic.errorBlock()}
       ${ui.last ? html`<section class="card" aria-live="polite">
           ${ui.feedback ? html`<p class="feedback">${ui.feedback}</p>` : ""}
-          ${resultBlock(ui.last)}
+          ${resultBlock(ui.last, S.game.avatar)}
           <div class="row">
             <button class="btn ghost" data-act="speak" type="button">↻ Réessayer</button>
             <button class="btn" data-act="next" type="button">Suivant →</button>

@@ -27,7 +27,7 @@ export function mountSay(root, S) {
       </section>
       <section class="card">${mic.block(kindBlock(S, false))}</section>
       ${mic.errorBlock()}
-      <section class="card" aria-live="polite">${last ? resultBlock(last) : html`<p class="muted">Pas encore de résultat pour cette phrase.</p>`}</section>
+      <section class="card" aria-live="polite">${last ? resultBlock(last, S.game.avatar) : html`<p class="muted">Pas encore de résultat pour cette phrase.</p>`}</section>
       <section class="card">${benchBlock(S)}${ui.copied ? html`<p class="small" role="status">${ui.copied}</p>` : ""}</section>
     `);
   };

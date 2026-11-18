@@ -6,6 +6,7 @@ import { save } from "../core/store.js";
 import { levelOf } from "../core/progress.js";
 import { RARITY, RARITY_ORDER, describeOwned, avatarSvg, itemPreview } from "../content/avatar.js";
 import { chestSvg, boxSvg } from "../content/chest-art.js";
+import { reducedFx } from "./effects.js";
 import { CHESTS, BOXES, PITY, GOLD_EVERY, openChest, buyBox, equip, setSpecies, setSkin, owns } from "../core/game.js";
 
 const SHAKE_MS = 900;
@@ -17,7 +18,6 @@ export const oddsRows = (odds) => RARITY_ORDER.filter((r) => Object.hasOwn(odds,
 // Niveau où tombera le prochain coffre d'or.
 export const nextGold = (level) => Math.ceil((level + 1) / GOLD_EVERY) * GOLD_EVERY;
 
-const reduced = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 export function mountChests(root, S) {
   const G = S.game, ui = { stage: null, msg: "", bad: false };
@@ -86,7 +86,7 @@ export function mountChests(root, S) {
     ui.msg = ""; ui.stage = { kind, res, phase: "shake" };
     draw();
     const show = () => { if (ui.stage) { ui.stage.phase = "open"; draw(); } };
-    if (reduced()) show(); else timer = setTimeout(show, SHAKE_MS);
+    if (reducedFx(S)) show(); else timer = setTimeout(show, SHAKE_MS);
     window.scrollTo(0, 0);
   }
 

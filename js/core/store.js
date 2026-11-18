@@ -17,12 +17,13 @@ const LEVELS = new Set(["good", "ok", "bad", "skip"]);
 const STATUSES = new Set(["good", "ok", "bad"]);
 const VOICE_IDS = new Set(["af_heart", "am_michael"]);
 const KINDS = new Set(["soigné", "fautes"]);
+const FX = new Set(["auto", "full", "reduced"]); // effets de jeu (js/screens/effects.js)
 const LOG_MAX = 100;
 
 export function defaults() {
   // progress : XP, niveau, série, leçons (js/core/progress.js) ; srs : révision du vocabulaire (js/core/srs.js) ;
   // listening : paires d'écoute ratées (js/core/listening.js) ; mistakes : fautes typiques ratées (js/core/tracks.js). Chacun a son propre numéro de version « v ».
-  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", liveVoice: DEFAULT_LIVE_VOICE, last: null, kind: "soigné", log: [],
+  return { version: VERSION, sentence: 0, engine: false, voice: false, voiceId: "af_heart", liveVoice: DEFAULT_LIVE_VOICE, fx: "auto", last: null, kind: "soigné", log: [],
     progress: newProgress(), srs: newSrs(), listening: newListening(), mistakes: newMistakes(), game: newGame() };
 }
 
@@ -75,6 +76,7 @@ export function sanitize(raw) {
   S.voice = raw.voice === true; // la voix aussi
   S.voiceId = VOICE_IDS.has(raw.voiceId) ? raw.voiceId : "af_heart";
   S.liveVoice = liveVoiceOk(raw.liveVoice) ? raw.liveVoice : DEFAULT_LIVE_VOICE; // voix du direct (phase 5)
+  S.fx = FX.has(raw.fx) ? raw.fx : "auto";
   S.last = cleanResult(raw.last);
   S.kind = KINDS.has(raw.kind) ? raw.kind : "soigné";
   S.log = list(raw.log, LOG_MAX).filter((e) => e && typeof e === "object" && KINDS.has(e.kind)).map((e) => ({
@@ -113,11 +115,17 @@ export const onSaveError = (fn) => { saveErrorListeners.add(fn); return () => sa
 const gameListeners = new Set();
 export const onGameGain = (fn) => { gameListeners.add(fn); return () => gameListeners.delete(fn); };
 
+// Après chaque enregistrement (effets de jeu : « +XP », niveau gagné), avec les gains du jeu de cet enregistrement.
+const savedListeners = new Set();
+export const onSaved = (fn) => { savedListeners.add(fn); return () => savedListeners.delete(fn); };
+
 export function save(S, storage = globalThis.localStorage) {
+  let g = { coins: 0, chests: [], levels: [] };
   if (S.game && S.progress) {
-    const g = syncGame(S.game, S.progress);
+    g = syncGame(S.game, S.progress);
     if (g.coins || g.chests.length) gameListeners.forEach((fn) => fn(g));
   }
+  savedListeners.forEach((fn) => fn(g));
   try { storage.setItem(STORE_KEY, JSON.stringify(S)); return true; }
   catch (e) { saveErrorListeners.forEach((fn) => fn(e)); return false; }
 }

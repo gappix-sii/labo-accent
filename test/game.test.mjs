@@ -193,3 +193,26 @@ test("écran Coffres : adresse, probabilités affichées telles que tirées, des
   for (const t of Object.keys(CHESTS)) assert.ok(isSafe(chestSvg(t, "idle")));
   for (const b of Object.keys(BOXES)) assert.ok(isSafe(boxSvg(b, "idle")));
 });
+
+test("effets : gains montrés après un enregistrement, réaction du compagnon, réglage « Effets réduits »", async () => {
+  const { gainOf, reducedFx, fxModeOk } = await import("../js/screens/effects.js");
+  const { mood } = await import("../js/screens/practice.js");
+  const { onSaved } = await import("../js/core/store.js");
+  assert.equal(gainOf(30, 30), null, "rien gagné : rien à montrer");
+  assert.equal(gainOf(30, 20), null);
+  const g = gainOf(30, 40, { coins: 2, chests: [] });
+  assert.equal(g.xp, 10); assert.equal(g.coins, 2); assert.equal(g.up, false);
+  assert.ok(g.from < g.to && g.to <= 1, "la barre se remplit");
+  const up = gainOf(xpForLevel(2) - 5, xpForLevel(2) + 5, { coins: 2, chests: ["silver"] });
+  assert.equal(up.up, true); assert.equal(up.level, 2); assert.equal(up.chests, 1); assert.equal(up.from, 0);
+  assert.deepEqual([mood(90).cls, mood(85).cls, mood(70).cls, mood(54).cls], ["happy", "happy", "", "sad"]);
+  assert.equal(reducedFx({ fx: "reduced" }), true); assert.equal(reducedFx({ fx: "full" }), false);
+  assert.ok(fxModeOk("auto") && !fxModeOk("toString"));
+  assert.equal(sanitize({ version: 1, fx: "reduced" }).fx, "reduced");
+  assert.equal(sanitize({ version: 1, fx: "<x>" }).fx, "auto");
+  assert.equal(defaults().fx, "auto");
+  // chaque enregistrement prévient les effets, avec les gains du jeu
+  const S = defaults(), seen = []; const off = onSaved((x) => seen.push(x));
+  S.progress.xp = 8; save(S, { setItem() {} }); off(); save(S, { setItem() {} });
+  assert.equal(seen.length, 1); assert.equal(seen[0].coins, 2);
+});

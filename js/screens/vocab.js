@@ -54,7 +54,7 @@ export function mountVocab(root, S) {
       ${mic.errorBlock()}
       ${ui.reveal ? html`<section class="card" aria-live="polite">
         <p class="feedback">${ui.ok ? `Réussi ! +${XP_WORD} XP` : ui.last ? `Pas encore (il faut ${PASS}) : écoute-le, il reviendra.` : "Écoute-le bien : il reviendra."}</p>
-        ${ui.last ? resultBlock(ui.last) : ""}
+        ${ui.last ? resultBlock(ui.last, S.game.avatar) : ""}
         <div class="row"><span></span><button class="btn" data-act="next" type="button">Suivant →</button></div>
       </section>` : ""}
       ${ui.i === 0 && !ui.reveal ? settings() : ""}`);

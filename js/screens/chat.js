@@ -143,7 +143,7 @@ export function mountFreeChat(root, S, scene, back = "#accueil") {
       ${c.ok ? html`<p>✓ <b lang="en">${c.corrected}</b></p>` : html`<p>✗ Corrigé : <b lang="en">${c.corrected}</b></p>`}
       ${c.explanation_fr ? html`<p class="small">💡 ${c.explanation_fr}</p>` : ""}
       ${c.natural && c.natural !== c.corrected ? html`<p class="small">🗣 Un natif dirait : <span lang="en">${c.natural}</span></p>` : ""}
-      ${open ? html`${mic2.block()}${mic2.errorBlock()}${it.feedback ? html`<p class="feedback">${it.feedback}</p>` : ""}${it.last ? resultBlock(it.last) : ""}
+      ${open ? html`${mic2.block()}${mic2.errorBlock()}${it.feedback ? html`<p class="feedback">${it.feedback}</p>` : ""}${it.last ? resultBlock(it.last, S.game.avatar) : ""}
           <p><button class="btn ghost small-btn" data-act="redo-close" type="button">Fermer</button></p>`
         : html`<button class="btn soft small-btn" data-act="redo" data-i="${i}" type="button" ${ui.talking ? "disabled" : ""}>${c.rewarded ? "✓ Redite" : "🎤 Redis-la"}</button>`}
     </div>`;

@@ -78,7 +78,7 @@ export function mountRole(root, S, id) {
         ${passed ? "" : html`<p><button class="btn ghost" data-act="unchoose" type="button">↺ Choisir une autre réponse</button></p>`}</section>
       ${passed ? "" : html`<section class="card">${mic.block()}
         <p><button class="btn ghost" data-act="skip" type="button">Passer ce tour →</button></p></section>`}${mic.errorBlock()}
-      ${ui.last ? html`<section class="card" aria-live="polite"><p class="feedback">${ui.feedback}</p>${resultBlock(ui.last)}
+      ${ui.last ? html`<section class="card" aria-live="polite"><p class="feedback">${ui.feedback}</p>${resultBlock(ui.last, S.game.avatar)}
         ${passed ? html`<div class="row"><span></span><button class="btn" data-act="continue" type="button">Continuer →</button></div>` : ""}</section>` : ""}`;
   }
 
