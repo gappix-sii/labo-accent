@@ -11,7 +11,7 @@ import { say, stopVoice } from "../engine/clips.js";
 import { practice, resultBlock } from "./practice.js";
 import { listenControls } from "./listen.js";
 import { optionsOf, exerciseBlock, exerciseClick } from "./exercises.js";
-import { firstToDo } from "./lesson.js";
+import { firstToDo, nextToDo, dotsBlock } from "./lesson.js";
 
 // Liste des règles, regroupées par niveau, avec leur avancement.
 export function mountGrammarList(root, S) {
@@ -49,11 +49,7 @@ export function mountGrammar(root, S, id) {
     ui.ex = { options: optionsOf(ex()), placed: [], answer: null, right: false };
   }
 
-  function dots() {
-    const run = trackState(P, key).run;
-    return html`<ol class="dots" aria-label="Exercices de la règle">${rule.ex.map((_, i) => html`<li>
-      <button class="dot${run.includes(i) ? " ok" : ""}${i === ui.i ? " cur" : ""}" data-act="go" data-i="${i}" type="button" aria-label="${`Exercice ${i + 1}${run.includes(i) ? ", réussi" : ""}`}">${run.includes(i) ? "✓" : i + 1}</button></li>`)}</ol>`;
-  }
+  const dots = () => dotsBlock(trackState(P, key).run, ui.i, size, "Exercices de la règle", "Exercice");
 
   function learnView() {
     return html`
@@ -123,16 +119,11 @@ export function mountGrammar(root, S, id) {
     if (act === "start") { stopVoice(); ui.view = "ex"; goTo(firstToDo(trackState(P, key), size)); }
     if (act === "to-say") { ui.say = true; draw(); voice.warm(); }
     if (act === "go") goTo(Number(el.dataset.i) || 0);
-    if (act === "next") {
-      const run = trackState(P, key).run;
-      let n = ui.i;
-      for (let k = 1; k <= size; k++) { const j = (ui.i + k) % size; if (!run.includes(j)) { n = j; break; } }
-      goTo(n === ui.i ? ui.i + 1 : n);
-    }
+    if (act === "next") goTo(nextToDo(trackState(P, key).run, ui.i, size));
   });
   root.addEventListener("change", (e) => voice.change(e));
 
   newExercise(0);
   draw();
-  return () => { alive = false; voice.stop(); mic.dispose(); };
+  return () => { alive = false; voice.dispose(); mic.dispose(); };
 }

@@ -1,8 +1,8 @@
 // Tests des XP et du suivi de la phase 4 : grammaire, jeux de rôle, fautes typiques (tâche 2).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { recordGrammar, recordRole, trackState, grammarKey, roleKey, myTurns, newMistakes, pickMistakes,
-  recordMistake, sanitizeMistakes, MISTAKE_SESSION } from "../js/core/tracks.js";
+import { recordGrammar, recordRole, trackState, grammarKey, roleKey, myTurns, myIndex, scoreTurn, newMistakes, pickMistakes,
+  recordMistake, sanitizeMistakes, newMistakeSession, answerMistake, MISTAKE_SESSION } from "../js/core/tracks.js";
 import { PASS, newProgress, recordWord, finishSession, sanitizeProgress, unlocked, todayXp, XP_ITEM, XP_LESSON, XP_WORD, XP_SESSION } from "../js/core/progress.js";
 import { GRAMMAR } from "../js/content/grammar.js";
 import { DIALOGUES } from "../js/content/dialogues.js";
@@ -88,7 +88,6 @@ test("adresse de l'écran des fautes", () => {
 });
 
 test("jeux de rôle : rang des tours où l'on parle, adresses", async () => {
-  const { myIndex } = await import("../js/screens/roleplay.js");
   const cafe = DIALOGUES.find((d) => d.id === "cafe"), way = DIALOGUES.find((d) => d.id === "way");
   assert.deepEqual(cafe.turns.map((_, i) => myIndex(cafe, i)), [-1, 0, -1, 1, -1, 2, -1, 3, -1]);
   assert.equal(myIndex(way, 0), 0, "« way » commence par toi");
@@ -96,4 +95,37 @@ test("jeux de rôle : rang des tours où l'on parle, adresses", async () => {
   assert.deepEqual(route("#role"), { screen: "roleList" });
   assert.deepEqual(route("#role/cafe"), { screen: "role", id: "cafe" });
   assert.deepEqual(route("#role/../x"), { screen: "home" });
+});
+
+test("jeu de rôle : un tour réussi coche son objectif, un tour raté ou du personnage non", () => {
+  const P = newProgress(), cafe = DIALOGUES.find((d) => d.id === "cafe");
+  assert.deepEqual(scoreTurn(P, cafe, 1, PASS - 1, day), { passed: false, xp: 0, lessonDone: false, task: null });
+  const ok = scoreTurn(P, cafe, 1, PASS, day);
+  assert.equal(ok.xp, XP_ITEM);
+  assert.equal(ok.task, cafe.turns[1].task);
+  assert.deepEqual(scoreTurn(P, cafe, 0, 100, day), { passed: false, xp: 0, lessonDone: false, task: null }, "tour du personnage");
+});
+
+test("séance de fautes : ratée une fois, la phrase revient une fois ; la 2e chance réussie garde l'erreur", () => {
+  const M = newMistakes(), q = newMistakeSession(M, ALL_MISTAKES, seeded(3));
+  assert.equal(q.length, MISTAKE_SESSION);
+  assert.ok(q.every((x) => x.again === false));
+  const id = q[0].m.id;
+  answerMistake(M, q, 0, false);
+  assert.equal(q.length, MISTAKE_SESSION + 1);
+  assert.deepEqual(q.at(-1), { m: q[0].m, again: true });
+  assert.equal(M.miss[id], 1);
+  answerMistake(M, q, q.length - 1, true);
+  assert.equal(M.miss[id], 1, "la 2e chance réussie ne retire pas l'erreur");
+  answerMistake(M, q, 1, false); const n = q.length;
+  answerMistake(M, q, n - 1, false);
+  assert.equal(q.length, n, "une 2e chance ratée ne revient pas une 3e fois : la séance se termine");
+  answerMistake(M, q, 2, true);
+  assert.equal(q.length, n);
+});
+
+test("sauvegarde des fautes : les phrases qui n'existent plus sont oubliées", () => {
+  const id = ALL_MISTAKES[0].id, gone = "gram:This sentence was corrected.";
+  assert.deepEqual(sanitize({ version: 1, mistakes: { v: 1, miss: { [id]: 2, [gone]: 3 } } }).mistakes.miss, { [id]: 2 });
+  assert.deepEqual(sanitizeMistakes({ v: 1, miss: { [id]: 1, [gone]: 1 } }, (x) => x === id).miss, { [id]: 1 });
 });

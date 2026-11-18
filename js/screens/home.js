@@ -57,7 +57,7 @@ export function mountHome(root, S) {
           <span class="muted small">Atteins l'objectif du jour pour faire avancer la série.</span></div>
         <div class="stat"><b>Objectif du jour ${today >= P.goal ? "✓" : ""}</b><progress max="${P.goal}" value="${Math.min(today, P.goal)}"></progress>
           <span class="muted small">${today} / ${P.goal} XP aujourd'hui</span>
-          <span class="kind">${GOALS.map((g) => html`<button class="chip${g === P.goal ? " on" : ""}" data-act="goal" data-goal="${g}" type="button" aria-pressed="${g === P.goal}">${g} XP</button>`)}</span></div>
+          <span class="kind">${GOALS.map((g) => html`<button class="chip${g === P.goal ? " on" : ""}" data-act="goal" data-goal="${g}" type="button" aria-pressed="${g === P.goal ? "true" : "false"}">${g} XP</button>`)}</span></div>
       </section>
       ${next >= 0 ? html`<button class="btn big" data-act="open" data-id="${LESSONS[next].id}" type="button">▶ Continuer : ${LESSONS[next].title}</button>` : ""}
       <section class="card">

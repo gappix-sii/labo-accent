@@ -13,12 +13,16 @@ export function shuffle(list, rnd = Math.random) {
   return a;
 }
 
-// Mots d'une phrase à remettre dans l'ordre : sans la ponctuation finale, et sans la majuscule
-// du premier mot (sauf « I »), pour ne pas donner la réponse.
+// Mots d'une phrase à remettre dans l'ordre, sans rien qui donne la réponse : ni ponctuation (points,
+// virgules…, l'apostrophe reste), ni majuscule en début de phrase (sauf « I »), même au milieu (« nice. However, »).
 export function wordsOf(sentence) {
-  const w = sentence.replace(/[.!?]+$/, "").split(/\s+/).filter(Boolean);
-  if (w.length && !/^I(?:'|$)/.test(w[0])) w[0] = w[0][0].toLowerCase() + w[0].slice(1);
-  return w;
+  const raw = sentence.split(/\s+/).filter(Boolean);
+  return raw.map((w, i) => {
+    let x = w.replace(/[.,;:!?]+$/, "");
+    const start = i === 0 || /[.!?]$/.test(raw[i - 1]);
+    if (x && start && !/^I(?:'|$)/.test(x)) x = x[0].toLowerCase() + x.slice(1);
+    return x;
+  }).filter(Boolean);
 }
 
 // Propositions d'un exercice, dans un ordre mélangé (jamais l'ordre de la phrase pour « o »).

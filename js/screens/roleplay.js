@@ -1,22 +1,17 @@
 // Écran « Jeux de rôle » (phase 4) : #role = liste des dialogues ; #role/<id> = un dialogue.
 // Le personnage parle (son + texte, français à la demande). À ton tour, les réponses possibles
 // s'affichent en français : tu en touches une, tu la dis en anglais au micro ; réussie à 65, on passe
-// au tour suivant et l'objectif du tour est coché. Après un essai raté, on peut passer le tour (sans XP).
+// au tour suivant et l'objectif du tour est coché. Une réponse choisie, on peut passer le tour (sans XP ni
+// objectif), même sans essai noté : sinon, sans micro, le dialogue serait bloqué.
 // XP : 10 par réplique réussie, + 20 quand toutes le sont (js/core/tracks.js).
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
 import { PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";
-import { recordRole, trackState, roleKey } from "../core/tracks.js";
+import { scoreTurn, trackState, roleKey } from "../core/tracks.js";
 import { DIALOGUES, dialogueById } from "../content/dialogues.js";
 import { say, stopVoice } from "../engine/clips.js";
 import { practice, resultBlock } from "./practice.js";
 import { listenControls } from "./listen.js";
-
-// Rang d'un tour parmi ceux où l'on parle (0 = le premier), ou -1 si c'est le personnage.
-export function myIndex(d, pos) {
-  if (!d.turns[pos] || !d.turns[pos].me) return -1;
-  return d.turns.slice(0, pos).filter((t) => t.me).length;
-}
 
 export function mountRoleList(root, S) {
   const P = S.progress;
@@ -48,7 +43,7 @@ export function mountRole(root, S, id) {
   let alive = true;
 
   function reset() {
-    Object.assign(ui, { started: false, pos: 0, log: [], tasks: new Set(), choice: null, last: null, ok: false, tries: 0,
+    Object.assign(ui, { started: false, pos: 0, log: [], tasks: new Set(), choice: null, last: null, ok: false,
       feedback: "", gained: 0, bonus: false, fr: ui.fr || false });
   }
 
@@ -81,10 +76,10 @@ export function mountRole(root, S, id) {
     return html`<section class="card"><p class="muted small">À toi : dis-le en anglais.</p>
         <h1 class="sentence" lang="en">${chosen()[0]}</h1><p class="muted">${chosen()[1]}</p>${voice.block()}
         ${passed ? "" : html`<p><button class="btn ghost" data-act="unchoose" type="button">↺ Choisir une autre réponse</button></p>`}</section>
-      ${passed ? "" : html`<section class="card">${mic.block()}</section>`}${mic.errorBlock()}
+      ${passed ? "" : html`<section class="card">${mic.block()}
+        <p><button class="btn ghost" data-act="skip" type="button">Passer ce tour →</button></p></section>`}${mic.errorBlock()}
       ${ui.last ? html`<section class="card" aria-live="polite"><p class="feedback">${ui.feedback}</p>${resultBlock(ui.last)}
-        <div class="row">${passed ? html`<span></span>` : html`<button class="btn ghost" data-act="skip" type="button">Passer ce tour →</button>`}
-          ${passed ? html`<button class="btn" data-act="continue" type="button">Continuer →</button>` : ""}</div></section>` : ""}`;
+        ${passed ? html`<div class="row"><span></span><button class="btn" data-act="continue" type="button">Continuer →</button></div>` : ""}</section>` : ""}`;
   }
 
   function draw() {
@@ -95,7 +90,7 @@ export function mountRole(root, S, id) {
         <span class="muted small">${ui.gained ? `+${ui.gained} XP dans ce dialogue` : ""}</span></p>
       <section class="card"><p class="muted small">${d.level} · ${d.role}</p><h1 class="sentence">${d.title}</h1>
         <p>🎯 ${d.goal}</p>${tasksBlock()}
-        <p><button class="chip${ui.fr ? " on" : ""}" data-act="fr" type="button" aria-pressed="${ui.fr}">Traduction en français</button></p></section>
+        <p><button class="chip${ui.fr ? " on" : ""}" data-act="fr" type="button" aria-pressed="${ui.fr ? "true" : "false"}">Traduction en français</button></p></section>
       ${!ui.started ? html`<button class="btn big" data-act="start" type="button">▶ Commencer</button>` : ui.log.length ? html`<section class="card">${bubbles()}</section>` : ""}
       ${end ? html`<section class="card done-card" role="status"><h2>🎉 Dialogue fini !</h2>
           <p>${ui.tasks.size} objectif${ui.tasks.size > 1 ? "s" : ""} sur ${d.tasks.length} · +${ui.gained} XP${ui.bonus ? ` (dont ${XP_LESSON} de bonus)` : ""}.</p>
@@ -109,14 +104,14 @@ export function mountRole(root, S, id) {
     S, persist, draw, root, speakLabel: "🎤 Dire ma réponse",
     target: () => ({ text: chosen()[0], focus: [] }),
     onScored: (last) => {
-      const got = recordRole(P, d, myIndex(d, ui.pos), last.score);
+      const got = scoreTurn(P, d, ui.pos, last.score);
       persist();
-      ui.last = last; ui.ok = got.passed; ui.tries++; ui.gained += got.xp;
+      ui.last = last; ui.ok = got.passed; ui.gained += got.xp;
       if (got.lessonDone) ui.bonus = true;
-      if (got.passed) ui.tasks.add(turn().task);
+      if (got.task !== null) ui.tasks.add(got.task);
       ui.feedback = got.passed
         ? (got.xp ? `Réussi ! +${XP_ITEM} XP` : "Réussi ! (déjà compté pour ce passage)")
-        : `Pas encore : il faut ${PASS}. Écoute le modèle, puis réessaie.`;
+        : `Pas encore : il faut ${PASS}. Écoute le modèle, puis réessaie (ou passe ce tour).`;
     }
   });
 
@@ -124,7 +119,7 @@ export function mountRole(root, S, id) {
   function endMyTurn() {
     voice.stop(); mic.clearError();
     ui.log.push({ who: "me", en: chosen()[0], fr: chosen()[1] });
-    Object.assign(ui, { choice: null, last: null, ok: false, tries: 0, feedback: "" });
+    Object.assign(ui, { choice: null, last: null, ok: false, feedback: "" });
     ui.pos++;
     advance();
   }
@@ -143,11 +138,11 @@ export function mountRole(root, S, id) {
     if (act === "choose" && turn() && turn().me && turn().me[Number(el.dataset.i)]) { stopVoice(); ui.choice = Number(el.dataset.i); draw(); voice.warm(); }
     if (act === "unchoose") { voice.stop(); Object.assign(ui, { choice: null, last: null, ok: false, feedback: "" }); mic.clearError(); draw(); }
     if (act === "continue" && ui.ok) endMyTurn();
-    if (act === "skip" && ui.tries > 0) endMyTurn();
+    if (act === "skip" && ui.choice !== null && !ui.ok) endMyTurn();
   });
   root.addEventListener("change", (e) => voice.change(e));
 
   reset();
   draw();
-  return () => { alive = false; voice.stop(); mic.dispose(); };
+  return () => { alive = false; voice.dispose(); mic.dispose(); };
 }

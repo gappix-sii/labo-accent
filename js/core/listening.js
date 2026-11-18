@@ -6,7 +6,7 @@ const MISS_MAX = 5, WEIGHT_PER_MISS = 2;
 
 export function newListening() { return { v: 1, miss: {} }; }
 
-// Tirage pondéré sans remise, partagé avec les fautes typiques (js/core/mistakes.js) :
+// Tirage pondéré sans remise, partagé avec les fautes typiques (js/core/tracks.js) :
 // un élément pèse 1 + 2 par erreur retenue dans `miss`. rnd() renvoie un nombre dans [0, 1).
 export function weightedPick(miss, items, idOf, rnd = Math.random, n = QUESTIONS) {
   const pool = items.map((x) => ({ x, w: 1 + WEIGHT_PER_MISS * (Object.hasOwn(miss, idOf(x)) ? miss[idOf(x)] : 0) }));
@@ -27,10 +27,11 @@ export function bumpMiss(miss, id, ok) {
 }
 
 // Relecture des erreurs retenues : identifiants conformes à `idRe`, poids entier de 1 à MISS_MAX.
-export function cleanMiss(raw, idRe, max = 200) {
+// known(id) : l'élément existe-t-il encore ? (sinon il est oublié et n'occupe pas la limite)
+export function cleanMiss(raw, idRe, max = 200, known = () => true) {
   const out = {};
   if (!raw || typeof raw !== "object") return out;
-  for (const id of Object.keys(raw).filter((k) => idRe.test(k)).slice(0, max)) {
+  for (const id of Object.keys(raw).filter((k) => idRe.test(k) && known(k)).slice(0, max)) {
     const n = raw[id];
     if (Number.isInteger(n) && n >= 1 && n <= MISS_MAX) out[id] = n;
   }

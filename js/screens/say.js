@@ -65,5 +65,5 @@ export function mountSay(root, S) {
 
   draw();
   voice.warm();
-  return () => { voice.stop(); mic.dispose(); };
+  return () => { voice.dispose(); mic.dispose(); };
 }

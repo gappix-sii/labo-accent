@@ -20,6 +20,12 @@ test("mots à remettre dans l'ordre : sans ponctuation finale ni majuscule rév�
   assert.deepEqual(wordsOf("They are in the kitchen."), ["they", "are", "in", "the", "kitchen"]);
   assert.deepEqual(wordsOf("I'm cold!"), ["I'm", "cold"]);
   assert.deepEqual(wordsOf("I live in Lyon."), ["I", "live", "in", "Lyon"]);
+  // relecture phase 4, point 4 : ponctuation et majuscule au milieu ne donnent plus la réponse
+  assert.deepEqual(wordsOf("The hotel was nice. However, it was too noisy."),
+    ["the", "hotel", "was", "nice", "however", "it", "was", "too", "noisy"]);
+  assert.deepEqual(wordsOf("If you need help, call me."), ["if", "you", "need", "help", "call", "me"]);
+  for (const g of GRAMMAR) for (const e of g.ex) if (e[0] === "o")
+    for (const w of wordsOf(e[1])) assert.ok(!/[.,;:!?]/.test(w), `${g.id} : « ${w} » garde sa ponctuation`);
 });
 
 test("chaque exercice : propositions complètes, la bonne réponse est juste, une autre est fausse", () => {

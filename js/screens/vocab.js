@@ -24,8 +24,8 @@ export function mountVocab(root, S) {
 
   function settings() {
     return html`<details class="small"><summary>Réglages : niveau ${R.level}, ${R.perDay} nouveaux mots par jour</summary>
-      <p class="kind">${LEVELS.map((l) => html`<button class="chip${l.id === R.level ? " on" : ""}" data-act="level" data-v="${l.id}" type="button" aria-pressed="${l.id === R.level}" title="${l.sub}">${l.id}</button>`)}</p>
-      <p class="kind">${PER_DAY.map((n) => html`<button class="chip${n === R.perDay ? " on" : ""}" data-act="per-day" data-v="${n}" type="button" aria-pressed="${n === R.perDay}">${n} par jour</button>`)}</p>
+      <p class="kind">${LEVELS.map((l) => html`<button class="chip${l.id === R.level ? " on" : ""}" data-act="level" data-v="${l.id}" type="button" aria-pressed="${l.id === R.level ? "true" : "false"}" title="${l.sub}">${l.id}</button>`)}</p>
+      <p class="kind">${PER_DAY.map((n) => html`<button class="chip${n === R.perDay ? " on" : ""}" data-act="per-day" data-v="${n}" type="button" aria-pressed="${n === R.perDay ? "true" : "false"}">${n} par jour</button>`)}</p>
       <p class="muted">Mots par boîte (1 = à revoir vite, 5 = bien sus) : ${boxes(R).join(" · ")}</p>
     </details>`;
   }
@@ -107,5 +107,5 @@ export function mountVocab(root, S) {
   root.addEventListener("change", (e) => voice.change(e));
 
   draw();
-  return () => { voice.stop(); mic.dispose(); };
+  return () => { voice.dispose(); mic.dispose(); };
 }

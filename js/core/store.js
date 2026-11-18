@@ -7,6 +7,7 @@ import { newProgress, sanitizeProgress } from "./progress.js";
 import { newSrs, sanitizeSrs } from "./srs.js";
 import { newListening, sanitizeListening } from "./listening.js";
 import { newMistakes, sanitizeMistakes } from "./tracks.js";
+import { mistakeById } from "../content/mistakes.js";
 
 export const STORE_KEY = "labo.v2";
 export const VERSION = 1;
@@ -80,7 +81,7 @@ export function sanitize(raw) {
   S.progress = sanitizeProgress(raw.progress);
   S.srs = sanitizeSrs(raw.srs);
   S.listening = sanitizeListening(raw.listening);
-  S.mistakes = sanitizeMistakes(raw.mistakes);
+  S.mistakes = sanitizeMistakes(raw.mistakes, (id) => !!mistakeById(id));
   return S;
 }
 

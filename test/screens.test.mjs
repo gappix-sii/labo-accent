@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { route } from "../js/main.js";
 import { lessonState, vocabToday, practiceCounts } from "../js/screens/home.js";
-import { firstToDo } from "../js/screens/lesson.js";
+import { firstToDo, nextToDo } from "../js/screens/lesson.js";
 import { newProgress, recordItem } from "../js/core/progress.js";
 import { LESSONS } from "../js/content/lessons.js";
 import { buildQueue } from "../js/screens/vocab.js";
@@ -69,4 +69,11 @@ test("accueil : avancement de la grammaire, des fautes et des jeux de rôle", as
   myTurns(DIALOGUES[2]).forEach((_, i) => recordRole(S.progress, DIALOGUES[2], i, 90));
   recordMistake(S.mistakes, ALL_MISTAKES[0].id, false); recordMistake(S.mistakes, ALL_MISTAKES[5].id, false);
   assert.deepEqual(practiceCounts(S), { grammar: 1, roles: 1, mistakes: 2 });
+});
+
+test("exercice suivant : le prochain pas encore réussi, en faisant le tour, sinon le suivant", () => {
+  assert.equal(nextToDo([], 0, 5), 1);
+  assert.equal(nextToDo([1, 2], 0, 5), 3);
+  assert.equal(nextToDo([0, 1, 2, 4], 3, 5), 4, "seul reste l'élément affiché : on passe au suivant");
+  assert.equal(nextToDo([1, 2, 3, 4], 4, 5), 0, "repart du début");
 });

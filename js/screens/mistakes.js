@@ -4,7 +4,7 @@
 // séances suivantes (js/core/tracks.js). XP comme le vocabulaire (js/core/progress.js).
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
-import { pickMistakes, recordMistake } from "../core/tracks.js";
+import { newMistakeSession, answerMistake } from "../core/tracks.js";
 import { recordWord, finishSession, PASS, XP_WORD } from "../core/progress.js";
 import { ALL_MISTAKES, MISTAKE_CATS } from "../content/mistakes.js";
 import { practice, resultBlock } from "./practice.js";
@@ -17,13 +17,15 @@ export function mountMistakes(root, S) {
   const persist = () => save(S);
   const ui = {};
   const cur = () => ui.queue[ui.i];
+  let alive = true;
 
   function newSession() {
-    Object.assign(ui, { queue: pickMistakes(M, ALL_MISTAKES).map((m) => ({ m, again: false })), i: 0, reveal: false,
+    Object.assign(ui, { queue: newMistakeSession(M, ALL_MISTAKES), i: 0, reveal: false,
       last: null, ok: null, answered: 0, spoken: 0, good: 0, xp: 0, done: false, bonus: 0 });
   }
 
   function draw() {
+    if (!alive) return;
     const head = html`<p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button>
       <span class="muted small">${ui.xp ? `+${ui.xp} XP dans cette séance` : ""}</span></p>`;
     if (ui.done) {
@@ -53,12 +55,9 @@ export function mountMistakes(root, S) {
 
   // Réponse à la phrase affichée : ok = bonne version réussie au micro.
   function respond(ok, last) {
-    const q = cur();
-    // La 2e chance de fin de séance ne retire pas l'erreur : la phrase ratée doit revenir plus souvent.
-    if (!(q.again && ok)) recordMistake(M, q.m.id, ok);
+    answerMistake(M, ui.queue, ui.i, ok); // ratée : revient une fois en fin de séance (js/core/tracks.js)
     ui.answered++;
     if (ok) ui.good++;
-    else if (!q.again) ui.queue.push({ m: q.m, again: true }); // revient une fois en fin de séance
     persist();
     ui.ok = ok; ui.last = last; ui.reveal = true;
   }
@@ -96,5 +95,5 @@ export function mountMistakes(root, S) {
 
   newSession();
   draw();
-  return () => { voice.stop(); mic.dispose(); };
+  return () => { alive = false; voice.dispose(); mic.dispose(); };
 }

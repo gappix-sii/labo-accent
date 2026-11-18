@@ -8,18 +8,20 @@ export const SLOW = 0.7;
 // text() : la phrase affichée en ce moment.
 export function listenControls({ S, persist, draw, text }) {
   const ui = { playing: false, info: "", error: "" };
+  let alive = true;
+  const redraw = () => { if (alive) draw(); }; // l'écran a pu être quitté pendant la lecture
 
   // Lancé directement par le clic : le navigateur n'autorise le son qu'après un geste.
   async function listen(speed) {
     if (ui.playing === speed) { stopVoice(); return; } // même bouton pendant la lecture : stop
     ui.error = "";
     const playing = say(text(), { voice: S.voiceId, speed });
-    ui.playing = speed; draw();
+    ui.playing = speed; redraw();
     try { await playing; } catch (e) { ui.error = `La lecture a échoué (${e.message}).`; }
     if (ui.playing !== speed) return; // une autre lecture a pris le relais
     const st = lastStats();
     if (st && st.firstMs !== null) ui.info = `Son lancé ${st.firstMs} ms après le clic`;
-    ui.playing = false; draw();
+    ui.playing = false; redraw();
   }
 
   // Charge à l'avance le son de la phrase affichée (quelques Ko).
@@ -54,5 +56,8 @@ export function listenControls({ S, persist, draw, text }) {
     return true;
   }
 
-  return { block, handle, change, warm, stop: stopVoice };
+  // À appeler quand on quitte l'écran : coupe la voix et n'autorise plus aucun redessin.
+  function dispose() { alive = false; stopVoice(); }
+
+  return { block, handle, change, warm, stop: stopVoice, dispose };
 }

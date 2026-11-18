@@ -14,6 +14,18 @@ export function firstToDo(L, size) {
   return 0;
 }
 
+// Élément suivant pas encore réussi dans ce passage (en repartant du début si besoin), sinon simplement le suivant.
+export function nextToDo(run, i, size) {
+  for (let k = 1; k <= size; k++) { const j = (i + k) % size; if (!run.includes(j)) return j === i ? i + 1 : j; }
+  return i + 1;
+}
+
+// Pastilles d'avancement, une par élément, cliquables (data-act="go"). word : « Élément », « Exercice »…
+export function dotsBlock(run, cur, size, label, word) {
+  return html`<ol class="dots" aria-label="${label}">${Array.from({ length: size }, (_, i) => html`<li>
+    <button class="dot${run.includes(i) ? " ok" : ""}${i === cur ? " cur" : ""}" data-act="go" data-i="${i}" type="button" aria-label="${`${word} ${i + 1}${run.includes(i) ? ", réussi" : ""}`}">${run.includes(i) ? "✓" : i + 1}</button></li>`)}</ol>`;
+}
+
 export function mountLesson(root, S, id) {
   const lesson = lessonById(id), P = S.progress;
   // Leçon inconnue ou encore verrouillée (adresse tapée à la main) : retour au parcours.
@@ -24,11 +36,7 @@ export function mountLesson(root, S, id) {
   const item = () => lesson.items[ui.item];
   const persist = () => save(S);
 
-  function dots() {
-    const run = state() ? state().run : [];
-    return html`<ol class="dots" aria-label="Éléments de la leçon">${lesson.items.map((it, i) => html`<li>
-      <button class="dot${run.includes(i) ? " ok" : ""}${i === ui.item ? " cur" : ""}" data-act="go" data-i="${i}" type="button" aria-label="${`Élément ${i + 1}${run.includes(i) ? ", réussi" : ""}`}">${run.includes(i) ? "✓" : i + 1}</button></li>`)}</ol>`;
-  }
+  const dots = () => dotsBlock(state() ? state().run : [], ui.item, size, "Éléments de la leçon", "Élément");
 
   function draw() {
     const it = item(), idx = LESSONS.indexOf(lesson), next = LESSONS[idx + 1];
@@ -96,17 +104,11 @@ export function mountLesson(root, S, id) {
     if (act === "home") location.hash = "#accueil";
     if (act === "next-lesson") { const n = LESSONS[LESSONS.indexOf(lesson) + 1]; if (n) location.hash = "#lecon/" + n.id; }
     if (act === "go") goTo(Number(el.dataset.i) || 0);
-    if (act === "next") {
-      // élément suivant pas encore réussi dans ce passage, sinon simplement le suivant
-      const run = state() ? state().run : [];
-      let n = ui.item;
-      for (let k = 1; k <= size; k++) { const j = (ui.item + k) % size; if (!run.includes(j)) { n = j; break; } }
-      goTo(n === ui.item ? ui.item + 1 : n);
-    }
+    if (act === "next") goTo(nextToDo(state() ? state().run : [], ui.item, size));
   });
   root.addEventListener("change", (e) => voice.change(e));
 
   draw();
   voice.warm();
-  return () => { voice.stop(); mic.dispose(); };
+  return () => { voice.dispose(); mic.dispose(); };
 }
