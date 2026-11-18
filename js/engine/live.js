@@ -136,7 +136,9 @@ export class LiveChat {
   text(t) { const s = cleanText(t, 500); if (!s) return false; this.lastTurn = { text: s }; return this.send(textMessage(s), true); }
 
   // Ta phrase au micro : beginTurn, puis audio() à chaque morceau de 100 ms, puis endTurn().
-  beginTurn() { this.clearWait(); this.turn = []; return this.send({ realtimeInput: { activityStart: {} } }); }
+  beginTurn() { if (this.replaying) return false; this.clearWait(); this.turn = []; return this.send({ realtimeInput: { activityStart: {} } }); }
+  // Phrase abandonnée (micro refusé…) : on referme sans attendre de réponse, la phrase précédente reste à renvoyer.
+  cancelTurn() { this.turn = []; return this.send({ realtimeInput: { activityEnd: {} } }); }
   audio(f32) { const m = audioMessage(f32); this.turn.push(m); return this.send(m); }
   endTurn() { this.lastTurn = { audio: this.turn }; this.turn = []; return this.send({ realtimeInput: { activityEnd: {} } }, true); }
 
@@ -145,9 +147,13 @@ export class LiveChat {
     const last = this.lastTurn;
     if (!last || !this.ready) return false;
     if (last.text) return this.send(textMessage(last.text), true);
-    this.send({ realtimeInput: { activityStart: {} } });
-    for (const m of last.audio) { if (!this.send(m)) return false; await new Promise((r) => this.d.setTimeout(r, 100)); }
-    return this.send({ realtimeInput: { activityEnd: {} } }, true);
+    if (this.replaying) return false;
+    this.replaying = true;
+    try {
+      this.send({ realtimeInput: { activityStart: {} } });
+      for (const m of last.audio) { if (!this.send(m)) return false; await new Promise((r) => this.d.setTimeout(r, 100)); }
+      return this.send({ realtimeInput: { activityEnd: {} } }, true);
+    } finally { this.replaying = false; }
   }
 
   // Google coupe une conversation au bout de 15 min (il prévient par goAway) : on se reconnecte en reprenant le fil.
@@ -156,12 +162,11 @@ export class LiveChat {
     this.reconnects++;
     const old = this.ws; this.ws = null; this.ready = false;
     try { if (old) old.close(1000, "reconnexion"); } catch { /* rien */ }
-    this.on("status", "Reconnexion…");
-    if (!this.token || this.d.now() > this.token.expires - 60e3) {
-      const t = await createToken(this.key, { fetchFn: this.d.fetchFn, now: this.d.now() });
-      if (!t.ok) { this.fail(t.error); return false; }
-      this.token = t;
-    }
+    this.on("reconnecting");
+    // Toujours un jeton neuf : le premier ne sert qu'une fois, et seulement pendant 1 minute pour ouvrir.
+    const t = await createToken(this.key, { fetchFn: this.d.fetchFn, now: this.d.now() });
+    if (!t.ok) { this.fail(t.error); return false; }
+    this.token = t;
     if (this.closed) return false;
     this.open();
     return true;
@@ -186,8 +191,10 @@ export class LiveChat {
 
 // Écoute d'une voix (réglages) : courte conversation en direct où la voix dit `text`, puis on raccroche.
 // play(b64) joue le son reçu. Renvoie une promesse : { ok: true } ou { ok: false, error }.
+// La promesse a une méthode cancel() (écran quitté) : on raccroche sans attendre.
 export function sayOnce({ key, voice, text, play, deps }) {
-  return new Promise((resolve) => {
+  let cancel = () => {};
+  const p = new Promise((resolve) => {
     let done = false;
     const end = (r) => { if (done) return; done = true; chat.close(); resolve(r); };
     const chat = new LiveChat({
@@ -200,6 +207,9 @@ export function sayOnce({ key, voice, text, play, deps }) {
         else if (type === "error") end({ ok: false, error: data });
       }
     });
+    cancel = () => end({ ok: false, error: "closed" });
     chat.start();
   });
+  p.cancel = () => cancel();
+  return p;
 }

@@ -58,7 +58,7 @@ export function mountFreeChat(root, S, scene, back = "#accueil") {
   const ui = { log: [], status: "", error: "", talking: false, waiting: false, ready: false, redo: -1, gained: 0, draft: "", ended: false };
   const player = new Player();
   let chat = null, mic = null, aiItem = null, meItem = null, alive = true, raf = 0;
-  const key = loadKey();
+  const key = loadKey(), rewarded = new Set(); // phrases déjà récompensées dans cette conversation
 
   // Les morceaux de réponse arrivent très souvent : un seul redessin par image.
   const soon = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; draw(); }); };
@@ -67,19 +67,27 @@ export function mountFreeChat(root, S, scene, back = "#accueil") {
     if (!alive) return;
     if (type === "status") ui.status = data;
     else if (type === "ready") { ui.ready = true; ui.status = data.resumed ? "Reconnecté." : ""; ui.waiting = !data.resumed; }
-    else if (type === "audio") player.play(data);
+    // Pas de voix pendant que tu parles ou que tu redis une phrase : le micro l'enregistrerait avec toi.
+    else if (type === "audio") { if (!ui.talking && ui.redo < 0 && !mic2.busy()) player.play(data); }
+    else if (type === "reconnecting") { ui.ready = false; ui.status = "Reconnexion à Gemini…"; }
     else if (type === "heard") { if (!meItem) { meItem = { who: "me", text: "" }; ui.log.push(meItem); } meItem.text += data; }
     else if (type === "reply") { if (!aiItem) { aiItem = { who: "ai", text: "" }; ui.log.push(aiItem); } aiItem.text += data; ui.status = ""; }
     else if (type === "correction") ui.log.push({ who: "corr", c: data, last: null, feedback: "" });
     else if (type === "interrupted") player.stop();
     else if (type === "turnDone") { aiItem = meItem = null; ui.waiting = false; ui.status = ""; }
     else if (type === "slow") ui.status = "Google prend son temps…";
-    else if (type === "error") { ui.waiting = false; ui.error = errorText(data); ui.canRetry = data === "no_reply"; }
+    else if (type === "error") {
+      ui.waiting = false; ui.error = errorText(data); ui.canRetry = data === "no_reply";
+      if (data !== "no_reply") { ui.ready = false; ui.dead = true; if (mic) { mic.stop(); mic = null; ui.talking = false; } } // conversation coupée : bouton « Relancer »
+    }
     soon();
   }
 
   function start() {
     if (!key) return;
+    if (chat) chat.close();
+    Object.assign(ui, { ready: false, dead: false, error: "", canRetry: false, waiting: false });
+    aiItem = meItem = null;
     player.unlock();
     chat = new LiveChat({ key, on, voice: S.liveVoice, instructions: instructions(scene), opening: scene.opening });
     ui.status = "Connexion…"; draw();
@@ -93,15 +101,17 @@ export function mountFreeChat(root, S, scene, back = "#accueil") {
     player.stop(); ui.error = ""; ui.canRetry = false;
     if (!chat.beginTurn()) return;
     aiItem = meItem = null;
-    mic = new MicStream({ onChunk: (c) => chat.audio(c), onLevel: (v) => { const m = $("#live-level", root); if (m) m.value = v; }, onEnd: () => finishTalk() });
-    ui.talking = true; draw();
-    try { await mic.start(); } catch { mic = null; ui.talking = false; ui.error = errorText("mic"); chat.endTurn(); draw(); }
+    const m = new MicStream({ onChunk: (c) => chat.audio(c), onLevel: (v) => { const el = $("#live-level", root); if (el) el.value = v; }, onEnd: () => finishTalk() });
+    mic = m; ui.talking = true; draw();
+    try { await m.start(); } // false : arrêté pendant l'ouverture, déjà coupé
+    catch { if (mic === m) { mic = null; ui.talking = false; } ui.error = errorText("mic"); chat.cancelTurn(); if (alive) draw(); }
   }
   function finishTalk() {
     const m = mic; mic = null;
     if (!m) return;
     m.stop(); ui.talking = false;
-    chat.endTurn(); ui.waiting = true; ui.status = m.heard ? "" : "Je n'ai presque rien entendu… on verra ce que Gemini a compris.";
+    if (!chat.endTurn()) { ui.error = "La conversation se reconnecte : redis ta phrase dans un instant."; draw(); return; }
+    ui.waiting = true; ui.status = m.heard ? "" : "Je n'ai presque rien entendu… on verra ce que Gemini a compris.";
     draw();
   }
   function sendText() {
@@ -120,9 +130,9 @@ export function mountFreeChat(root, S, scene, back = "#accueil") {
       const it = ui.log[ui.redo];
       it.last = last;
       const passed = last.score >= PASS;
-      const xp = passed && rewardOnce(it.c) ? recordFree(P, last.score) : 0;
+      const xp = passed && rewardOnce(it.c, rewarded) ? recordFree(P, last.score) : 0;
       if (xp) { ui.gained += xp; persist(); }
-      it.feedback = passed ? (xp ? `Réussi ! +${XP_ITEM} XP` : "Réussi ! (déjà compté)") : `Pas encore : il faut ${PASS}. Réessaie.`;
+      it.feedback = passed ? (xp ? `Réussi ! +${XP_ITEM} XP` : "Réussi ! (phrase déjà comptée dans cette conversation)") : `Pas encore : il faut ${PASS}. Réessaie.`;
     }
   });
 
@@ -159,7 +169,9 @@ export function mountFreeChat(root, S, scene, back = "#accueil") {
         ${ui.status || ui.waiting ? html`<p class="muted small">${ui.status || "Gemini réfléchit…"}</p>` : ""}
         ${ui.talking ? html`<p>Je t'écoute… parle, puis tais-toi une seconde.</p><meter id="live-level" min="0" max="1" value="0"></meter>
             <button class="btn red" data-act="talk" type="button">⏹ J'ai fini</button>`
-          : html`<div class="row start"><button class="btn big" data-act="talk" type="button" ${ui.ready && ui.redo < 0 ? "" : "disabled"}>🎤 Parler</button>
+          : ui.dead ? html`<button class="btn big" data-act="start" type="button">↻ Relancer la conversation</button>
+            <p class="muted small">Gemini ne se souviendra pas du début ; ce qui est affiché reste là.</p>`
+          : html`<div class="row start"><button class="btn big" data-act="talk" type="button" ${ui.ready && ui.redo < 0 && !ui.waiting ? "" : "disabled"}>🎤 Parler</button>
             ${ui.canRetry ? html`<button class="btn soft" data-act="retry" type="button">Réessaie</button>` : ""}</div>
             <div class="row start send"><input id="chat-input" type="text" maxlength="500" autocomplete="off" placeholder="Ou tape ta phrase en anglais" value="${ui.draft}" lang="en" ${ui.ready ? "" : "disabled"}>
               <button class="btn soft" data-act="send" type="button" ${ui.ready && !ui.waiting ? "" : "disabled"}>Envoyer</button></div>`}

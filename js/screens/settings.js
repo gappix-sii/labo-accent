@@ -65,6 +65,7 @@ export function mountSettings(root, S) {
           <li>Avec une clé gratuite, Google indique que ces échanges servent à <b>améliorer ses produits</b> (ils peuvent être lus par des personnes). Ne donne pas d'informations personnelles (nom complet, adresse, santé, travail…).</li>
           <li>Tout le reste (leçons, notes, progression) ne quitte jamais ton appareil.</li>
           <li>La clé reste dans ce navigateur, à part de ta progression. Quelqu'un qui utilise ce navigateur peut s'en servir : efface-la sur un appareil partagé.</li>
+          <li>En ligne, l'appli est sur <code>gappix-sii.github.io</code> : toute autre page publiée à cette même adresse (un autre de tes dépôts GitHub Pages) pourrait lire la clé. N'y publie que des pages de confiance, et garde la clé limitée à Gemini.</li>
         </ul>
       </section>`);
   }
@@ -89,10 +90,12 @@ export function mountSettings(root, S) {
     draw();
   }
 
+  let sample = null;
   async function hear(v) {
     ui.hearing = v; ui.voiceMsg = ""; draw();
     player.unlock(); // le son doit être autorisé par le clic
-    const r = await sayOnce({ key: loadKey(), voice: v, text: SAMPLE_TEXT, play: (b64) => player.play(b64) });
+    sample = sayOnce({ key: loadKey(), voice: v, text: SAMPLE_TEXT, play: (b64) => player.play(b64) });
+    const r = await sample; sample = null;
     if (!alive) return;
     ui.hearing = null; ui.voiceMsg = r.ok ? "" : errorText(r.error);
     draw();
@@ -112,5 +115,5 @@ export function mountSettings(root, S) {
   root.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.id === "key-input" && !ui.busy) saveInput(); });
 
   draw();
-  return () => { alive = false; player.close(); };
+  return () => { alive = false; if (sample) sample.cancel(); player.close(); };
 }

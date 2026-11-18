@@ -247,3 +247,54 @@ test("jeu de rôle en conversation libre : scène du personnage, adresses", asyn
   assert.deepEqual(route("#role/cafe"), { screen: "role", id: "cafe" });
   assert.deepEqual(route("#role/../libre"), { screen: "home" });
 });
+
+test("relecture phase 5 : micro arrêté pendant son ouverture, lecteur fermé, jeton neuf, renvoi verrouillé", async () => {
+  const { MicStream, Player } = await import("../js/engine/live-audio.js");
+  // 1. micro : stop() pendant la fenêtre « Autoriser le micro ? » → le micro est coupé dès qu'il s'ouvre
+  let stoppedTracks = 0, release;
+  const nav = globalThis.navigator;
+  Object.defineProperty(globalThis, "navigator", { configurable: true, value: { mediaDevices: { getUserMedia: () => new Promise((r) => { release = () => r({ getTracks: () => [{ stop: () => stoppedTracks++ }] }); }) } } });
+  try {
+    const m = new MicStream({ onChunk() {} });
+    const p = m.start();
+    m.stop();
+    release();
+    assert.equal(await p, false);
+    assert.equal(stoppedTracks, 1, "micro coupé");
+    assert.equal(m.active, false);
+  } finally { Object.defineProperty(globalThis, "navigator", { configurable: true, value: nav }); }
+  // 3. lecteur fermé : les morceaux en retard ne recréent pas de moteur son
+  const pl = new Player(); pl.close();
+  assert.doesNotThrow(() => pl.play("AAAA"));
+  assert.equal(pl.ctx, null);
+  // 2. reconnexion : toujours un nouveau jeton
+  const { chat, ws, fetchFn, events } = await connected();
+  let tokens = 0; const f0 = chat.d.fetchFn; chat.d.fetchFn = async (...a) => { tokens++; return f0(...a); };
+  await ws.srv({ sessionResumptionUpdate: { newHandle: "h", resumable: true } });
+  await ws.srv({ goAway: {} }); await tick();
+  assert.equal(tokens, 1, "jeton neuf pour la reprise");
+  assert.ok(events.some((e) => e[0] === "reconnecting"));
+  void fetchFn;
+  // 4 et 8 : renvoi verrouillé, phrase abandonnée sans attente
+  const b = await connected();
+  b.chat.beginTurn(); b.chat.audio(new Float32Array(1600)); b.chat.endTurn();
+  const r = b.chat.retry();
+  assert.equal(b.chat.beginTurn(), false, "pas de nouvelle phrase pendant le renvoi");
+  for (let i = 0; i < 3; i++) { await tick(); b.c.advance(100); }
+  await r;
+  assert.equal(b.chat.beginTurn(), true);
+  const n = b.events.length;
+  assert.equal(b.chat.cancelTurn(), true);
+  assert.deepEqual(b.ws.sent.at(-1), { realtimeInput: { activityEnd: {} } });
+  b.c.advance(NO_REPLY_MS + 1);
+  assert.ok(!b.events.slice(n).some((e) => e[0] === "error"), "pas de faux « ne répond pas »");
+});
+
+test("relecture phase 5 : pas d'XP deux fois pour la même phrase dans une conversation", async () => {
+  const { rewardOnce, sentenceKey } = await import("../js/core/chat.js");
+  const seen = new Set();
+  assert.equal(rewardOnce({ corrected: "Hi." }, seen), true);
+  assert.equal(rewardOnce({ corrected: "hi" }, seen), false, "même phrase, autre correction");
+  assert.equal(rewardOnce({ corrected: "I'd like a tea." }, seen), true);
+  assert.equal(sentenceKey("  I'd LIKE, a tea!! "), "i'd like a tea");
+});

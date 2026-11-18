@@ -60,14 +60,18 @@ export class SilenceDetector {
 
 // Micro en direct : onChunk(Float32Array de 100 ms à 16 kHz), onLevel(0..1), onEnd() à la fin de phrase détectée.
 export class MicStream {
-  constructor({ onChunk, onLevel = () => {}, onEnd = () => {} }) { Object.assign(this, { onChunk, onLevel, onEnd }); this.active = false; }
+  constructor({ onChunk, onLevel = () => {}, onEnd = () => {} }) { Object.assign(this, { onChunk, onLevel, onEnd }); this.active = false; this.stopped = false; }
 
+  // Renvoie false si stop() a été appelé pendant l'ouverture (micro alors coupé tout de suite).
   async start() {
-    this.stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    this.stream = stream;
+    if (this.stopped) { this.stop(); return false; } // arrêté pendant la fenêtre « Autoriser le micro ? »
     try {
       this.ctx = new AudioContext();
       if (this.ctx.state === "suspended") await this.ctx.resume();
       await this.ctx.audioWorklet.addModule(scriptURL(new URL("./mic-worklet.js", import.meta.url)));
+      if (this.stopped) { this.stop(); return false; }
       const src = this.ctx.createMediaStreamSource(this.stream);
       this.node = new AudioWorkletNode(this.ctx, "labo-mic");
       const rs = new Resampler(this.ctx.sampleRate), det = new SilenceDetector();
@@ -88,12 +92,13 @@ export class MicStream {
       src.connect(this.node);
       this.det = det;
     } catch (e) { this.stop(); throw e; }
+    return true;
   }
 
   // Coupe le micro tout de suite (le voyant du navigateur s'éteint).
   stop() {
     if (this.det) this.heard = this.det.heard;
-    this.active = false;
+    this.active = false; this.stopped = true;
     if (this.node) { this.node.port.onmessage = null; try { this.node.disconnect(); } catch { /* rien */ } }
     if (this.stream) this.stream.getTracks().forEach((t) => t.stop());
     if (this.ctx) this.ctx.close().catch(() => {});
@@ -103,9 +108,10 @@ export class MicStream {
 
 // Lecture de la réponse : morceaux enchaînés sans trou ; stop() coupe net (quand tu reprends la parole).
 export class Player {
-  constructor() { this.ctx = null; this.at = 0; this.sources = new Set(); }
-  unlock() { if (!this.ctx) this.ctx = new AudioContext({ sampleRate: OUT_RATE }); if (this.ctx.state === "suspended") this.ctx.resume().catch(() => {}); }
+  constructor() { this.ctx = null; this.at = 0; this.sources = new Set(); this.closed = false; }
+  unlock() { if (this.closed) return; if (!this.ctx) this.ctx = new AudioContext({ sampleRate: OUT_RATE }); if (this.ctx.state === "suspended") this.ctx.resume().catch(() => {}); }
   play(b64) {
+    if (this.closed) return; // lecteur fermé (écran quitté) : les morceaux en retard ne sont plus joués
     this.unlock();
     const x = pcm64ToF32(b64);
     if (!x.length) return;
@@ -119,5 +125,5 @@ export class Player {
   }
   get playing() { return !!this.ctx && this.at > this.ctx.currentTime; }
   stop() { for (const s of this.sources) { try { s.stop(); } catch { /* déjà fini */ } } this.sources.clear(); this.at = 0; }
-  close() { this.stop(); if (this.ctx) this.ctx.close().catch(() => {}); this.ctx = null; }
+  close() { this.closed = true; this.stop(); if (this.ctx) this.ctx.close().catch(() => {}); this.ctx = null; }
 }

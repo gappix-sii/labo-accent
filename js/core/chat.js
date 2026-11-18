@@ -123,8 +123,16 @@ export function coachScene(topic, level) {
   };
 }
 
-// Une correction rapporte des XP une seule fois : marque-la, et dis si c'est la première fois.
-export function rewardOnce(c) { if (!c || c.rewarded) return false; c.rewarded = true; return true; }
+// Une correction rapporte des XP une seule fois, et une même phrase une seule fois par conversation
+// (seen : phrases déjà récompensées, sans majuscules ni ponctuation). Renvoie true la première fois.
+export const sentenceKey = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9' ]+/g, " ").replace(/\s+/g, " ").trim();
+export function rewardOnce(c, seen = new Set()) {
+  if (!c || c.rewarded) return false;
+  const k = sentenceKey(c.corrected);
+  if (seen.has(k)) return false;
+  c.rewarded = true; seen.add(k);
+  return true;
+}
 
 // Scène d'un jeu de rôle (js/content/dialogues.js) jouée en conversation libre : Gemini joue le personnage,
 // connaît le décor, l'objectif et ses étapes, et parle au niveau du dialogue.
