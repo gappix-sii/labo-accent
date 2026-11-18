@@ -10,6 +10,7 @@ import { mountListening } from "./screens/listening.js";
 import { mountGrammarList, mountGrammar } from "./screens/grammar.js";
 import { mountMistakes } from "./screens/mistakes.js";
 import { mountRoleList, mountRole } from "./screens/roleplay.js";
+import { mountSettings } from "./screens/settings.js";
 
 // Écran à afficher pour une adresse donnée. Exportée pour les tests.
 export function route(hash) {
@@ -24,6 +25,7 @@ export function route(hash) {
   if (rp) return { screen: "role", id: rp[1] };
   if (h === "role") return { screen: "roleList" };
   if (h === "banc") return { screen: "bench" };
+  if (h === "reglages") return { screen: "settings" };
   if (h === "vocab") return { screen: "vocab" };
   if (h === "ecoute") return { screen: "listening" };
   return { screen: "home" };
@@ -41,7 +43,7 @@ function start() {
     const screens = { lesson: () => mountLesson(root, S, r.id), bench: () => mountSay(root, S), vocab: () => mountVocab(root, S), listening: () => mountListening(root, S),
       grammarList: () => mountGrammarList(root, S), grammar: () => mountGrammar(root, S, r.id),
       mistakes: () => mountMistakes(root, S),
-      roleList: () => mountRoleList(root, S), role: () => mountRole(root, S, r.id), home: () => mountHome(root, S) };
+      roleList: () => mountRoleList(root, S), role: () => mountRole(root, S, r.id), settings: () => mountSettings(root), home: () => mountHome(root, S) };
     cleanup = screens[r.screen]();
     window.scrollTo(0, 0);
   };

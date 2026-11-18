@@ -108,3 +108,9 @@ details summary { cursor: pointer; }
 .bubble.me { background: color-mix(in srgb, var(--good) 15%, transparent); justify-self: end; }
 .tasks { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 4px; }
 .tasks li.ok { color: var(--good); font-weight: 600; }
+
+/* Réglages (phase 5) */
+.field { display: grid; gap: .3rem; margin: .6rem 0; }
+.field input { font: inherit; padding: .6rem .7rem; border: 1px solid var(--line, #ccc); border-radius: .6rem; background: var(--card, #fff); color: inherit; width: 100%; box-sizing: border-box; }
+.steps { padding-left: 1.2rem; display: grid; gap: .35rem; }
+code { font-size: .9em; overflow-wrap: anywhere; }

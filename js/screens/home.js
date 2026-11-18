@@ -79,7 +79,8 @@ export function mountHome(root, S) {
             <span>${icon} ${l.title}</span><span class="muted small">${status}</span></button></li>`;
         })}</ol>
       </section>
-      <p class="muted small"><button class="btn ghost" data-act="bench" type="button">Banc de test du moteur</button></p>
+      <p class="row start muted small"><button class="btn ghost" data-act="settings" type="button">⚙️ Réglages</button>
+        <button class="btn ghost" data-act="bench" type="button">Banc de test du moteur</button></p>
     `);
   }
 
@@ -90,6 +91,7 @@ export function mountHome(root, S) {
     if (act === "goal") { if (setGoal(P, Number(el.dataset.goal))) { persist(); draw(); } }
     if (act === "open" && IDS.includes(el.dataset.id) && lessonState(P, IDS.indexOf(el.dataset.id)).open) location.hash = "#lecon/" + el.dataset.id;
     if (act === "bench") location.hash = "#banc";
+    if (act === "settings") location.hash = "#reglages";
     if (act === "vocab") location.hash = "#vocab";
     if (act === "listen") location.hash = "#ecoute";
     if (act === "grammar") location.hash = "#grammaire";
