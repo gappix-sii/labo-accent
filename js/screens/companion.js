@@ -13,7 +13,8 @@ export function mountCompanion(root, S) {
   function draw() {
     const av = G.avatar, lv = level(), sp = SPECIES_BY_ID[av.species] || SPECIES[0];
     render(root, html`
-      <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button></p>
+      <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button>
+        <button class="btn ghost" data-act="shop" type="button">🛒 Boutique</button></p>
       <section class="card comp-hero">
         <div class="comp-big">${avatarSvg(av)}</div>
         <div><h1 class="sentence">${av.name}</h1>
@@ -63,6 +64,7 @@ export function mountCompanion(root, S) {
     if (!el) return;
     const { act, id, slot } = el.dataset;
     if (act === "home") location.hash = "#accueil";
+    if (act === "shop") location.hash = "#boutique";
     if (act === "species") done(id !== G.avatar.species && setSpecies(G, id, level()));
     if (act === "skin") done(setSkin(G, id));
     if (act === "equip") done(equip(G, id, slot));

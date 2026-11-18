@@ -130,12 +130,13 @@ export function buyBox(G, boxId, rng = cryptoRng()) {
 // ---------- Boutique ----------
 export const dealPrice = (base) => Math.max(5, Math.round((base * (1 - DEAL_OFF)) / 5) * 5);
 // Offres du jour : 3 objets pas encore à toi et achetables à ton niveau, les mêmes toute la journée.
+// Le tirage ne dépend pas de ce que tu as : acheter une offre la remplace sans changer les deux autres.
 export function deals(G, level, now = Date.now()) {
   const day = dayKey(now);
-  const list = CATALOG.filter((id) => !owns(G, id) && levelFor(id) <= level).sort();
+  const list = CATALOG.filter((id) => levelFor(id) <= level).sort();
   const rng = mulberry32(seedFrom("deals:" + day));
   for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [list[i], list[j]] = [list[j], list[i]]; }
-  return list.slice(0, DEAL_COUNT);
+  return list.filter((id) => !owns(G, id)).slice(0, DEAL_COUNT);
 }
 // Prix à payer aujourd'hui (offre du jour comprise), ou null si l'objet ne s'achète pas.
 export function priceOf(G, id, level, now = Date.now()) {

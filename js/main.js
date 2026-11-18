@@ -1,5 +1,5 @@
 // Point d'entrée de l'appli : choisit l'écran selon l'adresse.
-//   #accueil (par défaut) · #lecon/<id> · #vocab · #ecoute · #grammaire[/<id>] · #fautes · #role[/<id>] · #compagnon · #banc (banc de test du moteur)
+//   #accueil (par défaut) · #lecon/<id> · #vocab · #ecoute · #grammaire[/<id>] · #fautes · #role[/<id>] · #compagnon · #boutique · #banc (banc de test du moteur)
 import { $ } from "./core/dom.js";
 import { load, onSaveError } from "./core/store.js";
 import { mountHome } from "./screens/home.js";
@@ -13,6 +13,7 @@ import { mountRoleList, mountRole } from "./screens/roleplay.js";
 import { mountSettings } from "./screens/settings.js";
 import { mountChat, mountRoleFree } from "./screens/chat.js";
 import { mountCompanion } from "./screens/companion.js";
+import { mountShop } from "./screens/shop.js";
 
 // Écran à afficher pour une adresse donnée. Exportée pour les tests.
 export function route(hash) {
@@ -32,6 +33,7 @@ export function route(hash) {
   if (h === "reglages") return { screen: "settings" };
   if (h === "discussion") return { screen: "chat" };
   if (h === "compagnon") return { screen: "companion" };
+  if (h === "boutique") return { screen: "shop" };
   if (h === "vocab") return { screen: "vocab" };
   if (h === "ecoute") return { screen: "listening" };
   return { screen: "home" };
@@ -49,7 +51,7 @@ function start() {
     const screens = { lesson: () => mountLesson(root, S, r.id), bench: () => mountSay(root, S), vocab: () => mountVocab(root, S), listening: () => mountListening(root, S),
       grammarList: () => mountGrammarList(root, S), grammar: () => mountGrammar(root, S, r.id),
       mistakes: () => mountMistakes(root, S),
-      roleList: () => mountRoleList(root, S), role: () => mountRole(root, S, r.id), settings: () => mountSettings(root, S), chat: () => mountChat(root, S), roleFree: () => mountRoleFree(root, S, r.id), companion: () => mountCompanion(root, S), home: () => mountHome(root, S) };
+      roleList: () => mountRoleList(root, S), role: () => mountRole(root, S, r.id), settings: () => mountSettings(root, S), chat: () => mountChat(root, S), roleFree: () => mountRoleFree(root, S, r.id), companion: () => mountCompanion(root, S), shop: () => mountShop(root, S), home: () => mountHome(root, S) };
     cleanup = screens[r.screen]();
     window.scrollTo(0, 0);
   };

@@ -62,6 +62,7 @@ export function mountHome(root, S) {
       </section>
       <button class="btn choice comp-home" data-act="companion" type="button"><span class="comp-mini">${avatarSvg(S.game.avatar)}</span>
         <span><b>${S.game.avatar.name}</b><span class="small"> · ton compagnon : change-le, habille-le</span></span></button>
+      <button class="btn soft comp-home" data-act="shop" type="button">🛒 Boutique · <b>${S.game.coins} 🪙</b></button>
       ${next >= 0 ? html`<button class="btn big" data-act="open" data-id="${LESSONS[next].id}" type="button">▶ Continuer : ${LESSONS[next].title}</button>` : ""}
       <section class="card">
         <h2>Entraînements</h2>
@@ -103,6 +104,7 @@ export function mountHome(root, S) {
     if (act === "roles") location.hash = "#role";
     if (act === "chat") location.hash = "#discussion";
     if (act === "companion") location.hash = "#compagnon";
+    if (act === "shop") location.hash = "#boutique";
   });
 
   draw();

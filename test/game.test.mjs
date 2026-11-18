@@ -79,6 +79,9 @@ test("boutique : prix, niveau requis, 3 offres du jour à −30 % stables dans l
   assert.deepEqual(deals(G, lv, day + 3 * 3600e3), d, "mêmes offres dans la journée");
   assert.notDeepEqual(deals(G, lv, day + 86400e3 * 3), d, "autres offres un autre jour");
   assert.ok(d.every((id) => levelFor(id) <= lv && !G.owned.includes(id)));
+  const H = newGame(); H.coins = 1e4; buy(H, d[0], lv, day);
+  assert.deepEqual(deals(H, lv, day).slice(0, 2), d.slice(1), "acheter une offre ne change pas les deux autres");
+  assert.ok(!deals(H, lv, day).includes(d[0]));
   assert.equal(priceOf(G, d[0], lv, day), dealPrice(basePrice(d[0])));
   assert.ok(dealPrice(100) === 70 && dealPrice(60) === 40);
   const id = CATALOG.find((x) => levelFor(x) === 1 && !deals(G, 1, day).includes(x));
@@ -158,4 +161,18 @@ test("écran Compagnon : adresse #compagnon", async () => {
   const { route } = await import("../js/main.js");
   assert.deepEqual(route("#compagnon"), { screen: "companion" });
   assert.deepEqual(route("#compagnon/x"), { screen: "home" });
+});
+
+test("écran Boutique : adresse, catégories et essayage", async () => {
+  const { route } = await import("../js/main.js");
+  const { CATEGORIES, categoryOf, tryOn } = await import("../js/screens/shop.js");
+  assert.deepEqual(route("#boutique"), { screen: "shop" });
+  const cats = new Set(CATEGORIES.map(([c]) => c));
+  assert.ok(CATALOG.every((id) => cats.has(categoryOf(id))), "chaque objet en vente a sa catégorie");
+  const av = { ...DEFAULT_AVATAR };
+  assert.equal(tryOn(av, "cap").head, "cap");
+  const fox = SPECIES.find((s) => s.id === "fox"), t = tryOn(av, skinKey("fox", fox.skins[1].id));
+  assert.equal(t.species, "fox"); assert.equal(t.skin, fox.skins[1].id);
+  assert.equal(tryOn(av, "inconnu"), av);
+  assert.deepEqual(av, DEFAULT_AVATAR, "l'essayage ne touche pas au compagnon");
 });
