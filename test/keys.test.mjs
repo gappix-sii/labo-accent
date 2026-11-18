@@ -89,7 +89,7 @@ test("CSP : seule l'adresse de Gemini est autorisée en plus de l'appli", () => 
   assert.equal(HOST, "https://generativelanguage.googleapis.com");
 });
 
-test("aucune vraie clé Google dans les fichiers du dépôt", () => {
+test("aucune vraie clé Google (« AIza… » ou « AQ.… ») dans les fichiers du dépôt", () => {
   const root = new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
   const skip = new Set(["node_modules", ".git", "data", "ancien", "models"]);
   const found = [];
@@ -98,7 +98,7 @@ test("aucune vraie clé Google dans les fichiers du dépôt", () => {
       if (skip.has(name)) continue;
       const p = join(dir, name), st = statSync(p);
       if (st.isDirectory()) walk(p);
-      else if (/\.(js|mjs|html|css|json|md|txt)$/.test(name) && st.size < 2e6 && /AIza[0-9A-Za-z_-]{35}/.test(readFileSync(p, "utf8"))) found.push(p);
+      else if (/\.(js|mjs|html|css|json|md|txt)$/.test(name) && st.size < 2e6 && /AIza[0-9A-Za-z_-]{35}|AQ\.[0-9A-Za-z_-]{30,}/.test(readFileSync(p, "utf8"))) found.push(p);
     }
   })(root);
   assert.deepEqual(found, []);
