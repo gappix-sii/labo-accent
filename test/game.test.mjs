@@ -153,3 +153,9 @@ test("simulation d'un mois de pratique (à relire avec l'utilisateur)", () => {
   assert.ok(a.chestItems >= 3, `objets des coffres : ${a.chestItems}`);
   assert.ok(a.affordable >= 10, "à 50 XP/jour, une dizaine d'objets achetables à la fin du mois");
 });
+
+test("écran Compagnon : adresse #compagnon", async () => {
+  const { route } = await import("../js/main.js");
+  assert.deepEqual(route("#compagnon"), { screen: "companion" });
+  assert.deepEqual(route("#compagnon/x"), { screen: "home" });
+});

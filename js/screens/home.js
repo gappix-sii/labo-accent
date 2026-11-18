@@ -8,6 +8,7 @@ import { QUESTIONS } from "../core/listening.js";
 import { trackState, grammarKey, roleKey, MISTAKE_SESSION } from "../core/tracks.js";
 import { GRAMMAR } from "../content/grammar.js";
 import { DIALOGUES } from "../content/dialogues.js";
+import { avatarSvg } from "../content/avatar.js";
 
 const IDS = LESSONS.map((l) => l.id);
 
@@ -59,6 +60,8 @@ export function mountHome(root, S) {
           <span class="muted small">${today} / ${P.goal} XP aujourd'hui</span>
           <span class="kind">${GOALS.map((g) => html`<button class="chip${g === P.goal ? " on" : ""}" data-act="goal" data-goal="${g}" type="button" aria-pressed="${g === P.goal ? "true" : "false"}">${g} XP</button>`)}</span></div>
       </section>
+      <button class="btn choice comp-home" data-act="companion" type="button"><span class="comp-mini">${avatarSvg(S.game.avatar)}</span>
+        <span><b>${S.game.avatar.name}</b><span class="small"> · ton compagnon : change-le, habille-le</span></span></button>
       ${next >= 0 ? html`<button class="btn big" data-act="open" data-id="${LESSONS[next].id}" type="button">▶ Continuer : ${LESSONS[next].title}</button>` : ""}
       <section class="card">
         <h2>Entraînements</h2>
@@ -99,6 +102,7 @@ export function mountHome(root, S) {
     if (act === "mistakes") location.hash = "#fautes";
     if (act === "roles") location.hash = "#role";
     if (act === "chat") location.hash = "#discussion";
+    if (act === "companion") location.hash = "#compagnon";
   });
 
   draw();
