@@ -137,17 +137,46 @@ export function focusKey(node) {
   if (!d.act) return null;
   return KEY_ATTRS.filter((k) => d[k] !== undefined).map((k) => `[data-${k}="${cssq(d[k])}"]`).join("");
 }
-let lastAnnounce = "";
+// Animations d'entrée (relecture de la phase 8, n° 1 et 2) : un redessin recrée tous les éléments, et leur animation
+// d'entrée repartirait de zéro (bulles transparentes pendant la réponse de Gemini, blocs qui clignotent au téléchargement).
+// Un élément qui était déjà là au dessin précédent (même place, mêmes classes) est marqué data-seen : il ne se rejoue pas
+// (css/theme.css). Seul ce qui apparaît vraiment s'anime. ENTRY reprend les sélecteurs des animations d'entrée du thème.
+export const ENTRY = [".screen > *", ".score-row .mood", ".banner", ".tab.on .tab-ico", ".bar > i", ".btn.choice.wrong", ".score", ".word", ".bubble", ".correction-card"];
+const ENTRY_SEL = ENTRY.join(", ");
+// Place d'un élément sous `top` : balise, classes et rang de chaque niveau (fonction pure, testée).
+export function placeKey(n, top) {
+  let k = "";
+  for (let x = n; x && x !== top; x = x.parentElement) {
+    let i = 0;
+    for (let s = x.previousElementSibling; s; s = s.previousElementSibling) i++;
+    k = `${x.tagName}.${typeof x.className === "string" ? x.className : ""}:${i}/${k}`;
+  }
+  return k;
+}
+const seenAt = new WeakMap();
+function markSeen(el) {
+  if (!el.querySelectorAll) return;
+  const before = seenAt.get(el), now = new Set();
+  for (const n of el.querySelectorAll(ENTRY_SEL)) { const k = placeKey(n, el); now.add(k); if (before && before.has(k)) n.setAttribute("data-seen", ""); }
+  seenAt.set(el, now);
+}
+// Annonces (relecture de la phase 8, n° 3) : le dernier message lu est gardé pour CHAQUE zone redessinée ; la barre du haut,
+// qui n'a pas de message, ne fait donc plus relire celui de l'écran. Renvoie vrai s'il faut lire `msg` (fonction testée).
+const lastAnnounce = new WeakMap();
+export function shouldAnnounce(el, msg) {
+  const prev = lastAnnounce.has(el) ? lastAnnounce.get(el) : "";
+  lastAnnounce.set(el, msg);
+  return !!msg && msg !== prev;
+}
 export function render(el, tpl) {
   const doc = el.ownerDocument, active = doc && doc.activeElement;
   const key = active && active !== el && el.contains(active) ? focusKey(active) : null;
-  el.innerHTML = toTrusted(tpl); hydrate(el);
+  el.innerHTML = toTrusted(tpl); hydrate(el); markSeen(el);
   if (key) { let t = null; try { t = el.querySelector(key); } catch { /* sélecteur refusé */ } if (t && t.focus) t.focus({ preventScroll: true }); }
   const live = doc && doc.getElementById("annonce");
   if (live) {
     const msg = [...el.querySelectorAll('[role="status"], [role="alert"]')].map((n) => n.textContent.trim()).filter(Boolean).join(" ");
-    if (msg && msg !== lastAnnounce) live.textContent = msg;
-    lastAnnounce = msg;
+    if (shouldAnnounce(el, msg)) live.textContent = msg;
   }
   return el;
 }

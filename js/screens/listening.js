@@ -57,7 +57,7 @@ export function mountListening(root, S) {
     const ok = ui.picked === q().side, w = played();
     render(root, html`${head}
       <section class="card">
-        ${progressBar(ui.i + 1, ui.qs.length, "Avancement de la séance")}<p class="muted small ex-count">Question ${ui.i + 1} / ${ui.qs.length} · sons : ${q().pair.sounds.replace("|", " ou ").replace("-", "rien")}</p>
+        ${progressBar(ui.i, ui.qs.length, "Avancement de la séance")}<p class="muted small ex-count">Question ${ui.i + 1} / ${ui.qs.length} · sons : ${q().pair.sounds.replace("|", " ou ").replace("-", "rien")}</p>
         <h1 class="sentence">Quel mot entends-tu ?</h1>
         ${ui.started
           ? html`<button class="btn soft" data-act="replay" type="button">🔊 Réécouter</button>`

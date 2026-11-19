@@ -1,17 +1,40 @@
-// Onglet « Entraînement » (#entrainement, phase 8, tâche 2) : tous les entraînements à part le parcours de leçons.
+// Onglet « Défis » (#entrainement, phase 8, tâche 2) : tous les entraînements à part le parcours de leçons.
 import { html, render } from "../core/dom.js";
-import { vocabToday, vocabLabel, practiceCounts } from "./home.js";
+import { buildQueue } from "./vocab.js";
 import { QUESTIONS } from "../core/listening.js";
-import { MISTAKE_SESSION } from "../core/tracks.js";
+import { trackState, grammarKey, roleKey, MISTAKE_SESSION } from "../core/tracks.js";
 import { GRAMMAR } from "../content/grammar.js";
 import { DIALOGUES } from "../content/dialogues.js";
+
+// Vocabulaire du jour : mots à revoir et nouveaux mots encore disponibles aujourd'hui.
+export function vocabToday(R, now = Date.now()) {
+  const q = buildQueue(R, now), fresh = q.filter((x) => x.fresh).length;
+  return { review: q.length - fresh, fresh };
+}
+
+export function vocabLabel({ review, fresh }) {
+  if (!review && !fresh) return "rien à revoir aujourd'hui ✓";
+  const parts = [];
+  if (review) parts.push(`${review} mot${review > 1 ? "s" : ""} à revoir`);
+  if (fresh) parts.push(`${fresh} nouveau${fresh > 1 ? "x" : ""}`);
+  return parts.join(" · ");
+}
+
+// Avancement des entraînements (grammaire, jeux de rôle, fautes), pour les boutons de l'onglet Défis.
+export function practiceCounts(S) {
+  return {
+    grammar: GRAMMAR.filter((g) => trackState(S.progress, grammarKey(g.id)).done > 0).length,
+    roles: DIALOGUES.filter((d) => trackState(S.progress, roleKey(d.id)).done > 0).length,
+    mistakes: Object.keys(S.mistakes.miss).length
+  };
+}
 
 const GO = { vocab: "#vocab", listen: "#ecoute", grammar: "#grammaire", mistakes: "#fautes", roles: "#role", chat: "#discussion" };
 
 export function mountTraining(root, S) {
   const now = Date.now(), n = practiceCounts(S);
   render(root, html`
-    <section class="card quest"><span class="quest-title">Entraînement</span>
+    <section class="card quest"><span class="quest-title">Défis</span>
       <h1 class="sentence">Choisis ton défi</h1>
       <p class="muted">Chaque entraînement rapporte des XP, et donc des pièces.</p></section>
     <div class="choices">

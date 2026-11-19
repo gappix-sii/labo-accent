@@ -18,9 +18,9 @@ export const CHESTS = {
 export const DUP_COINS = { common: 25, rare: 60, epic: 120, legendary: 250, mythic: 500 };
 // Les probabilités affichées dans l'appli sont exactement celles-ci.
 export const BOXES = {
-  classic: { name: "Boîte classique", price: 100, odds: { common: 0.62, rare: 0.27, epic: 0.09, legendary: 0.018, mythic: 0.002 } },
-  epic: { name: "Boîte épique", price: 260, odds: { rare: 0.5, epic: 0.36, legendary: 0.12, mythic: 0.02 } },
-  mythic: { name: "Boîte mythique", price: 600, odds: { epic: 0.45, legendary: 0.43, mythic: 0.12 } }
+  classic: { name: "Boîte classique", glow: "rare", price: 100, odds: { common: 0.62, rare: 0.27, epic: 0.09, legendary: 0.018, mythic: 0.002 } },
+  epic: { name: "Boîte épique", glow: "epic", price: 260, odds: { rare: 0.5, epic: 0.36, legendary: 0.12, mythic: 0.02 } },
+  mythic: { name: "Boîte mythique", glow: "mythic", price: 600, odds: { epic: 0.45, legendary: 0.43, mythic: 0.12 } }
 };
 export const BOX_DUP = { common: 20, rare: 50, epic: 110, legendary: 250, mythic: 500 };
 export const PITY = 10; // au plus 10 boîtes pour un objet légendaire ou mythique

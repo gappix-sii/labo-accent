@@ -88,7 +88,7 @@ export function mountTransfer(root, S, code = null) {
     if (!alive) return;
     const inc = ui.incoming, backup = !!get(BACKUP_KEY), ua = ui.undoAsk;
     render(root, html`
-      <p class="row"><button class="btn ghost" data-act="settings" type="button">← Réglages</button></p>
+      <p class="row"><button class="btn ghost" data-act="home" type="button">← Profil</button></p>
       <section class="card quest"><span class="quest-title">Profil</span><h1 class="sentence">📲 Transfert</h1>
         <p class="muted small">Pour retrouver ta progression sur un autre appareil (du PC au téléphone, ou l'inverse). Rien ne passe par un serveur ; ta clé Gemini ne part jamais.</p></section>
 
@@ -134,7 +134,7 @@ export function mountTransfer(root, S, code = null) {
     const el = e.target.closest("[data-act]");
     if (!el) return;
     const act = el.dataset.act;
-    if (act === "settings") location.hash = "#reglages";
+    if (act === "home") location.hash = "#profil";
     if (act === "read") read(root.querySelector("#tr-input")?.value || "");
     if (act === "cancel") { ui.incoming = null; ui.msg = "Rien n'a changé."; ui.bad = false; draw(); }
     if (act === "import" && ui.incoming) doImport();

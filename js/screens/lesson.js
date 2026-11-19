@@ -55,7 +55,7 @@ export function mountLesson(root, S, id) {
             <button class="btn ghost" data-act="home" type="button">Retour au parcours</button>
           </div></section>` : ""}
       <section class="card">
-        <p class="muted small ex-count">Élément ${ui.item + 1} / ${size}</p>${progressBar(ui.item + 1, size, "Avancement de la leçon")}
+        <p class="muted small ex-count">Élément ${ui.item + 1} / ${size}</p>${progressBar(ui.item, size, "Avancement de la leçon")}
         <h1 class="sentence" lang="en">${it.en}</h1>
         ${it.fr ? html`<p class="muted">${it.fr}</p>` : ""}
         ${voice.block()}

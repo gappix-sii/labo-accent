@@ -1,13 +1,9 @@
-// Écran d'accueil (#accueil) : niveau, série de jours, objectif du jour et parcours de leçons.
+// Onglet « Parcours » (#accueil) : la quête du jour (objectif du jour) et la carte des leçons.
+// Niveau, série et pièces sont dans la barre du haut (js/screens/shell.js).
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
-import { levelOf, streakNow, todayXp, setGoal, unlocked, GOALS } from "../core/progress.js";
+import { streakNow, todayXp, setGoal, unlocked, GOALS } from "../core/progress.js";
 import { LESSONS } from "../content/lessons.js";
-import { buildQueue } from "./vocab.js";
-import { QUESTIONS } from "../core/listening.js";
-import { trackState, grammarKey, roleKey, MISTAKE_SESSION } from "../core/tracks.js";
-import { GRAMMAR } from "../content/grammar.js";
-import { DIALOGUES } from "../content/dialogues.js";
 import { avatarSvg } from "../content/avatar.js";
 
 const IDS = LESSONS.map((l) => l.id);
@@ -17,29 +13,6 @@ export function lessonState(P, index) {
   const l = LESSONS[index], L = Object.hasOwn(P.lessons, l.id) ? P.lessons[l.id] : null;
   if (!unlocked(P, IDS, index)) return { open: false, done: 0, run: 0 };
   return { open: true, done: L ? L.done : 0, run: L ? L.run.length : 0 };
-}
-
-// Vocabulaire du jour : mots à revoir et nouveaux mots encore disponibles aujourd'hui.
-export function vocabToday(R, now = Date.now()) {
-  const q = buildQueue(R, now), fresh = q.filter((x) => x.fresh).length;
-  return { review: q.length - fresh, fresh };
-}
-
-export function vocabLabel({ review, fresh }) {
-  if (!review && !fresh) return "rien à revoir aujourd'hui ✓";
-  const parts = [];
-  if (review) parts.push(`${review} mot${review > 1 ? "s" : ""} à revoir`);
-  if (fresh) parts.push(`${fresh} nouveau${fresh > 1 ? "x" : ""}`);
-  return parts.join(" · ");
-}
-
-// Avancement des entraînements de la phase 4, pour les boutons de l'accueil.
-export function practiceCounts(S) {
-  return {
-    grammar: GRAMMAR.filter((g) => trackState(S.progress, grammarKey(g.id)).done > 0).length,
-    roles: DIALOGUES.filter((d) => trackState(S.progress, roleKey(d.id)).done > 0).length,
-    mistakes: Object.keys(S.mistakes.miss).length
-  };
 }
 
 // Régions de la carte (phase 8, tâche 3) : les leçons du parcours, 6 par région, comme les étapes d'un voyage.
@@ -68,6 +41,7 @@ export function mountHome(root, S) {
     const next = LESSONS.findIndex((_, i) => { const st = lessonState(P, i); return st.open && st.done === 0; });
     const regions = REGIONS.map((r, k) => ({ icon: r[0], name: r[1], from: k * PER_REGION, lessons: LESSONS.slice(k * PER_REGION, (k + 1) * PER_REGION) })).filter((r) => r.lessons.length);
     render(root, html`
+      <h1 class="sr">Parcours</h1>
       <section class="card quest daily${q.done ? " done" : ""}"><span class="quest-title">Quête du jour</span>
         <h2>${q.done ? "Quête accomplie !" : `Gagne ${q.goal} XP aujourd'hui`}</h2>
         <div class="bar${q.done ? " good" : ""}" data-css="${`--p:${q.pct}%`}"><i></i></div>

@@ -2,7 +2,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { route } from "../js/main.js";
-import { lessonState, vocabToday, practiceCounts } from "../js/screens/home.js";
+import { lessonState } from "../js/screens/home.js";
+import { vocabToday, practiceCounts } from "../js/screens/training.js";
 import { firstToDo, nextToDo } from "../js/screens/lesson.js";
 import { newProgress, recordItem } from "../js/core/progress.js";
 import { LESSONS } from "../js/content/lessons.js";

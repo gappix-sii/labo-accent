@@ -1,6 +1,7 @@
 // Barre du haut et onglets du bas (phase 8, tâche 2) : autour de tous les écrans.
 // En haut : ton compagnon dans l'anneau de son niveau, ta série, tes pièces, tes coffres (qui s'agitent s'il y en a à ouvrir).
-// En bas : 5 onglets — Parcours, Entraînement, Compagnon, Boutique, Profil — cachés pendant un exercice.
+// En bas : 5 onglets — Parcours, Défis, Compagnon, Boutique, Profil — cachés pendant un exercice ;
+// pendant un exercice, la barre du haut n'a plus de liens non plus (on sort par le bouton « ← » de l'écran).
 // Redessinée à chaque changement d'écran et après chaque enregistrement (pièces, XP gagnés…).
 import { html, render } from "../core/dom.js";
 import { onSaved } from "../core/store.js";
@@ -36,14 +37,18 @@ export function mountShell(S, hud, tabs) {
   let screen = "home";
   function draw() {
     const d = hudData(S), tab = tabFor(screen), hide = inExercise(screen);
+    const meLabel = `${d.avatar.name}, niveau ${d.level} (${d.pct} % vers le niveau suivant)`;
+    const meIn = html`<span class="me-av">${avatarSvg(d.avatar, { label: "" })}</span><b class="me-lv" aria-hidden="true">${d.level}</b>`;
     render(hud, html`<div class="hud-in">
-      <a class="me" href="#compagnon" data-css="${`--p:${d.pct}%`}" aria-label="${`${d.avatar.name}, niveau ${d.level} (${d.pct} % vers le niveau suivant) : voir mon compagnon`}">
-        <span class="me-av">${avatarSvg(d.avatar, { label: "" })}</span><b class="me-lv" aria-hidden="true">${d.level}</b></a>
+      ${hide ? html`<span class="me" role="img" data-css="${`--p:${d.pct}%`}" aria-label="${meLabel}">${meIn}</span>`
+        : html`<a class="me" href="#compagnon" data-css="${`--p:${d.pct}%`}" aria-label="${`${meLabel} : voir mon compagnon`}">${meIn}</a>`}
       <span class="brand" aria-hidden="true"><b>Labo</b> d'accent</span>
       <span class="hud-stats">
         <span class="hud-stat flame${d.streak ? "" : " off"}" title="Série de jours">🔥 <b>${d.streak}</b><span class="sr"> jour${d.streak > 1 ? "s" : ""} de série</span></span>
-        <a class="hud-stat coins" href="#boutique" title="Pièces">🪙 <b>${d.coins}</b><span class="sr"> pièces : boutique</span></a>
-        ${d.chests ? html`<a class="hud-stat chest" href="#coffres" title="Coffres à ouvrir">🎁 <b>${d.chests}</b><span class="sr"> coffre${d.chests > 1 ? "s" : ""} à ouvrir</span></a>` : ""}
+        ${hide ? html`<span class="hud-stat coins" title="Pièces">🪙 <b>${d.coins}</b><span class="sr"> pièces</span></span>`
+          : html`<a class="hud-stat coins" href="#boutique" title="Pièces">🪙 <b>${d.coins}</b><span class="sr"> pièces : boutique</span></a>`}
+        ${!d.chests ? "" : hide ? html`<span class="hud-stat chest" title="Coffres à ouvrir">🎁 <b>${d.chests}</b><span class="sr"> coffre${d.chests > 1 ? "s" : ""} à ouvrir</span></span>`
+          : html`<a class="hud-stat chest" href="#coffres" title="Coffres à ouvrir">🎁 <b>${d.chests}</b><span class="sr"> coffre${d.chests > 1 ? "s" : ""} à ouvrir</span></a>`}
       </span></div>`);
     // Boutons (pas de liens) : le modèle html`` refuse une adresse interpolée dans href, par sécurité.
     render(tabs, html`${TABS.map(([id, , icon, label]) => html`<button class="tab${id === tab ? " on" : ""}" data-act="tab" data-v="${id}" type="button" aria-current="${id === tab ? "page" : "false"}"><span class="tab-ico" aria-hidden="true">${icon}</span><span>${label}</span></button>`)}`);

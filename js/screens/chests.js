@@ -54,8 +54,7 @@ export function mountChests(root, S) {
     if (!alive) return;
     const lv = level(), n = G.chests.length, busy = !!ui.stage;
     render(root, html`
-      <p class="row"><button class="btn ghost" data-act="home" type="button">← Boutique</button>
-        <button class="btn ghost" data-act="shop" type="button">🛒 Boutique</button></p>
+      <p class="row"><button class="btn ghost" data-act="home" type="button">← Boutique</button></p>
       <section class="card"><h1 class="sentence">🎁 Coffres</h1>
         <p><b>${G.coins} 🪙</b> <span class="muted small">· niveau ${lv}</span></p></section>
       ${ui.stage ? stageView(ui.stage) : ""}
@@ -75,7 +74,7 @@ export function mountChests(root, S) {
           — encore <b>${PITY - G.pity}</b> boîte${PITY - G.pity > 1 ? "s" : ""} au plus. Un objet déjà à toi est changé en pièces.</p>
         <p class="small${G.pity === PITY - 1 ? " feedback" : " muted"}">${G.pity === PITY - 1 ? "Ta prochaine boîte est la boîte garantie, quelle qu'elle soit : " : "Boîte garantie (la 10e sans légendaire ni mythique), quelle qu'elle soit : "}
           ${oddsRows(PITY_ODDS).map(([r, p]) => `${RARITY[r]} ${pct(p)}`).join(" · ")} (à la place des probabilités ci-dessous).</p>
-        <div class="box-grid">${Object.entries(BOXES).map(([id, B]) => html`<div class="${`box-card glow-${{ classic: "rare", epic: "epic", mythic: "mythic" }[id] || "common"}`}">
+        <div class="box-grid">${Object.entries(BOXES).map(([id, B]) => html`<div class="${`box-card glow-${B.glow}`}">
           <span class="chest-mini">${boxSvg(id, busy ? "" : "idle")}</span><b>${B.name}</b>
           <table class="odds"><caption class="small muted">Probabilités</caption>
             ${oddsRows(B.odds).map(([r, p]) => html`<tr><th class="small rar-${r}" scope="row">${RARITY[r]}</th><td class="small">${pct(p)}</td></tr>`)}</table>
@@ -97,7 +96,6 @@ export function mountChests(root, S) {
     if (!el) return;
     const { act, id } = el.dataset;
     if (act === "home") return void (location.hash = "#boutique");
-    if (act === "shop") return void (location.hash = "#boutique");
     if (act === "chest" && !ui.stage) { const r = openChest(G); if (r) { save(S); reveal("chest", r); } return; }
     if (act === "box" && !ui.stage) {
       const r = buyBox(G, id);

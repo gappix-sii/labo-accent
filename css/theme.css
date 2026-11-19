@@ -19,7 +19,7 @@
   --gold: #8a5a00; --gold-fill: #e8a92a; --gold-hi: #ffd977; --gold-d: #9c6a12; --on-gold: #2a1a00;
   --btn: #ece0c6; --btn-d: #c9b48c; --btn-ink: #2b1d0e;
   --violet: #6d4ee0; --violet-d: #4a2fb0; --red: #c62f3f; --red-d: #8e1c2a;
-  --rar-common: #6b5a43; --rar-rare: #08739a; --rar-epic: #7a3fd6; --rar-legendary: #8a5a00; --rar-mythic: #c2187a;
+  --rar-common: #6b5a43; --rar-rare: #06617f; --rar-epic: #6a33c4; --rar-legendary: #7a4f00; --rar-mythic: #a3126a; --focus: #8a5a00;
   --glow-common: #9aa3b5; --glow-rare: #4cc9f0; --glow-epic: #b388ff; --glow-legendary: #ffd23f; --glow-mythic: #ff4fd0;
   --halo1: rgba(232, 169, 42, .22); --halo2: rgba(109, 78, 224, .14); --halo3: rgba(194, 24, 122, .10); --spark: rgba(138, 90, 0, .35);
   --shadow: rgba(60, 40, 10, .18);
@@ -33,7 +33,7 @@
     --accent: #b49bff; --good: #4ade80; --ok: #f2b134; --bad: #ff7a7a;
     --gold: #f2c14e; --gold-fill: #f2b632; --gold-hi: #ffe08a; --gold-d: #a8741a; --on-gold: #2a1a00;
     --btn: #2e2459; --btn-d: #160f33; --btn-ink: #f5efe0;
-    --rar-common: #c9c2dd; --rar-rare: #4cc9f0; --rar-epic: #b388ff; --rar-legendary: #ffb020; --rar-mythic: #ff6fae;
+    --rar-common: #c9c2dd; --rar-rare: #4cc9f0; --rar-epic: #c8a8ff; --rar-legendary: #ffb020; --rar-mythic: #ff7fb7; --focus: #f2b632;
     --halo1: rgba(109, 78, 224, .40); --halo2: rgba(196, 61, 156, .22); --halo3: rgba(242, 182, 50, .16); --spark: rgba(255, 224, 138, .55);
     --shadow: rgba(0, 0, 0, .45);
     color-scheme: dark;
@@ -46,7 +46,8 @@ h1, h2, h3, .disp { font-family: var(--font-display); font-style: italic; font-w
 h1.sentence { font-size: clamp(1.7rem, 6vw, 2.3rem); }
 h2 { font-size: 1.45rem; margin: 4px 0 10px; color: var(--gold); }
 a { color: var(--accent); }
-:focus-visible { outline: 3px solid var(--gold-fill); outline-offset: 3px; }
+/* Contour du clavier : au moins 3 : 1 sur le fond dans les deux thèmes (or foncé en clair) */
+:focus-visible, .btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 .brand { font-family: var(--font-display); font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 1.35rem; letter-spacing: .02em; border-bottom: 2px solid var(--line); background: color-mix(in srgb, var(--bg) 85%, transparent); }
 .brand b { color: var(--gold); }
 .hud { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(8px); border-bottom: 2px solid var(--frame); box-shadow: 0 4px 16px var(--shadow); }
@@ -90,8 +91,8 @@ a { color: var(--accent); }
   box-shadow: inset 0 0 0 1px var(--frame-glow), inset 0 1px 0 rgba(255, 255, 255, .06), 0 6px 0 var(--shadow); }
 .card.error { border-color: var(--bad); }
 /* Cadre orné (coins en losange) pour les cartes importantes */
-.quest::before, .quest::after { content: ""; position: absolute; top: -7px; width: 12px; height: 12px; background: var(--gold-fill); border: 2px solid var(--bg); transform: rotate(45deg); border-radius: 2px; }
-.quest::before { left: 16px; } .quest::after { right: 16px; }
+.quest::before, .quest::after, .in-exercise .screen > section.card:first-of-type::before, .in-exercise .screen > section.card:first-of-type::after { content: ""; position: absolute; top: -7px; width: 12px; height: 12px; background: var(--gold-fill); border: 2px solid var(--bg); transform: rotate(45deg); border-radius: 2px; }
+.quest::before, .in-exercise .screen > section.card:first-of-type::before { left: 16px; } .quest::after, .in-exercise .screen > section.card:first-of-type::after { right: 16px; }
 .quest-title { display: inline-block; margin: -30px 0 10px; padding: 2px 14px; background: linear-gradient(180deg, var(--gold-hi), var(--gold-fill)); color: var(--on-gold); border-radius: 8px; box-shadow: 0 3px 0 var(--gold-d); font-family: var(--font-display); font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 1.05rem; }
 
 /* ---------- Boutons qui s'enfoncent ---------- */
@@ -126,9 +127,8 @@ a { color: var(--accent); }
 /* ---------- Barres : XP (or) et progression ---------- */
 progress, meter { appearance: none; -webkit-appearance: none; height: 14px; border: 2px solid var(--frame); border-radius: 999px; background: color-mix(in srgb, var(--bg) 70%, #000 10%); overflow: hidden; }
 progress::-webkit-progress-bar { background: transparent; }
-progress::-webkit-progress-value { border-radius: 999px; background: linear-gradient(90deg, var(--gold-fill), var(--gold-hi), var(--gold-fill)); background-size: 200% 100%; animation: flow 2.4s linear infinite; }
+progress::-webkit-progress-value { border-radius: 999px; background: linear-gradient(90deg, var(--gold-fill), var(--gold-hi), var(--gold-fill)); }
 progress::-moz-progress-bar { border-radius: 999px; background: linear-gradient(90deg, var(--gold-fill), var(--gold-hi)); }
-@keyframes flow { to { background-position: -200% 0; } }
 /* Barre maison (largeur par data-css="--p:42%") : se remplit à l'apparition */
 .bar { position: relative; height: 16px; border: 2px solid var(--frame); border-radius: 999px; background: color-mix(in srgb, var(--bg) 70%, #000 10%); overflow: hidden; }
 .bar > i { position: absolute; inset: 0 auto 0 0; width: var(--p, 0%); border-radius: 999px; background: linear-gradient(90deg, var(--gold-fill), var(--gold-hi)); transform-origin: left; animation: fill .9s cubic-bezier(.2, .8, .2, 1) both; }
@@ -142,15 +142,16 @@ progress::-moz-progress-bar { border-radius: 999px; background: linear-gradient(
 .slot.rar-rare { --rc: var(--glow-rare); } .slot.rar-epic { --rc: var(--glow-epic); } .slot.rar-legendary { --rc: var(--glow-legendary); } .slot.rar-mythic { --rc: var(--glow-mythic); }
 .slot.rar-legendary, .slot.rar-mythic { box-shadow: inset 0 0 14px color-mix(in srgb, var(--rc) 45%, transparent), 0 0 16px color-mix(in srgb, var(--rc) 45%, transparent), 0 4px 0 var(--shadow); }
 .slot.rar-legendary::after, .slot.rar-mythic::after { content: ""; position: absolute; inset: -50%; background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, .35) 50%, transparent 60%); animation: sweep 3s ease-in-out infinite; pointer-events: none; }
-.slot.rar-mythic { animation: pulse 2s ease-in-out infinite; }
+.slot.rar-mythic::before { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 18px color-mix(in srgb, var(--rc) 70%, transparent); opacity: 0; animation: glowPulse 2s ease-in-out infinite; pointer-events: none; }
 @keyframes sweep { 0%, 50% { transform: translateX(-60%); } 100% { transform: translateX(60%); } }
-@keyframes pulse { 50% { box-shadow: inset 0 0 18px color-mix(in srgb, var(--rc) 60%, transparent), 0 0 26px color-mix(in srgb, var(--rc) 60%, transparent), 0 4px 0 var(--shadow); } }
+@keyframes glowPulse { 50% { opacity: 1; } }
 
 /* ---------- Messages, champs, notes ---------- */
 .feedback { font-weight: 800; }
 .feedback.error, p.error { color: var(--bad); }
 .field input, .send input, select { border: 2px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--card) 80%, var(--bg)); color: var(--text); }
-.field input:focus, .send input:focus { border-color: var(--gold-fill); outline: none; box-shadow: 0 0 0 3px var(--frame-glow); }
+.field input:focus, .send input:focus { border-color: var(--gold-fill); box-shadow: 0 0 0 3px var(--frame-glow); }
+.field input:focus-visible, .send input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .score { font-family: var(--font-display); font-style: italic; font-weight: 900; font-size: 3.2rem; line-height: 1; animation: pop .5s cubic-bezier(.2, 1.6, .4, 1) both; }
 @keyframes pop { from { transform: scale(.3); opacity: 0; } }
 .word { border-radius: 12px; background: var(--card2); }
@@ -180,14 +181,14 @@ progress::-moz-progress-bar { border-radius: 999px; background: linear-gradient(
 .fx-reduced .screen > * { animation: none; }
 
 /* Exercices (phase 8, tâche 4) : en-tête de quête, barre d'avancement, gros micro, sons en tuiles */
-.in-exercise .screen > section.card:first-of-type::before, .in-exercise .screen > section.card:first-of-type::after { content: ""; position: absolute; top: -7px; width: 12px; height: 12px; background: var(--gold-fill); border: 2px solid var(--bg); transform: rotate(45deg); border-radius: 2px; }
-.in-exercise .screen > section.card:first-of-type::before { left: 16px; } .in-exercise .screen > section.card:first-of-type::after { right: 16px; }
 .ex-bar { margin: 6px 0 4px; height: 12px; }
 .ex-count { font-weight: 800; letter-spacing: .01em; }
 .mic-zone { display: grid; justify-items: center; padding: 10px 0 4px; }
 .btn.mic { border-radius: 999px; min-width: min(100%, 17rem); }
-.btn.mic.rec { animation: micPulse 1.1s ease-in-out infinite; }
-@keyframes micPulse { 0%, 100% { box-shadow: 0 5px 0 var(--red-d), 0 0 0 0 color-mix(in srgb, var(--red) 55%, transparent); } 50% { box-shadow: 0 5px 0 var(--red-d), 0 0 0 14px color-mix(in srgb, var(--red) 0%, transparent); } }
+/* Pendant l'enregistrement : un anneau rouge s'élargit et s'efface (transform et opacity seulement) */
+.btn.mic.rec { overflow: visible; }
+.btn.mic.rec::after { content: ""; position: absolute; inset: -2px; width: auto; border-radius: inherit; background: none; box-shadow: 0 0 0 8px color-mix(in srgb, var(--red) 45%, transparent); transform: none; opacity: 0; animation: micRing 1.1s ease-out infinite; pointer-events: none; }
+@keyframes micRing { from { transform: scale(.94); opacity: .9; } to { transform: scale(1.12); opacity: 0; } }
 meter#level { width: 100%; height: 14px; margin-top: 10px; }
 .analyzing { font-weight: 800; display: flex; gap: 8px; align-items: center; justify-content: center; padding: 14px 0; }
 .spin { display: inline-block; color: var(--gold); animation: spin 1s linear infinite; }
@@ -223,7 +224,7 @@ meter#level { width: 100%; height: 14px; margin-top: 10px; }
 .glow-rare { --rc: var(--glow-rare); } .glow-epic { --rc: var(--glow-epic); } .glow-legendary { --rc: var(--glow-legendary); } .glow-mythic { --rc: var(--glow-mythic); }
 .comp-pick:hover:not(:disabled), .shop-item:hover, .box-card:hover { transform: translateY(-3px); }
 .comp-pick:active:not(:disabled) { transform: translateY(1px); }
-.comp-pick.on, .shop-item.on { border-color: var(--gold-fill); background: radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--gold-fill) 26%, var(--card2)), var(--card)); box-shadow: 0 0 0 3px var(--frame-glow), 0 0 18px color-mix(in srgb, var(--gold-fill) 35%, transparent), 0 4px 0 var(--shadow); }
+.comp-pick.on, .shop-item.on { border-color: var(--gold-fill); background: radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--gold-fill) 16%, var(--card2)), var(--card)); box-shadow: 0 0 0 3px var(--frame-glow), 0 0 18px color-mix(in srgb, var(--gold-fill) 35%, transparent), 0 4px 0 var(--shadow); }
 .comp-pick:disabled { filter: grayscale(.7); opacity: .5; }
 .glow-legendary, .glow-mythic { box-shadow: inset 0 0 14px color-mix(in srgb, var(--rc) 40%, transparent), 0 0 14px color-mix(in srgb, var(--rc) 35%, transparent), 0 4px 0 var(--shadow); }
 .comp-pick.glow-legendary::after, .comp-pick.glow-mythic::after, .shop-item.glow-legendary::after, .shop-item.glow-mythic::after, .box-card.glow-mythic::after {
@@ -248,3 +249,6 @@ table.bench, table.compare, table.odds { border-collapse: separate; border-spaci
 .banner { border-width: 3px; animation: rise .4s both; }
 .profile-av { filter: drop-shadow(0 0 16px var(--frame-glow)); animation: bob 3s ease-in-out infinite; }
 .profile-stats p { background: radial-gradient(circle at 50% 20%, color-mix(in srgb, var(--gold-fill) 12%, var(--card2)), var(--card)); border-color: var(--frame); box-shadow: 0 4px 0 var(--shadow); }
+
+/* Relecture de la phase 8 (n° 1 et 2) : un élément déjà affiché au dessin précédent ne rejoue pas son entrée (js/core/dom.js) */
+[data-seen] { animation: none !important; }

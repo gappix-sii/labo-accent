@@ -45,7 +45,7 @@ export function mountVocab(root, S) {
     const w = word(), q = cur();
     render(root, html`${head}
       <section class="card">
-        ${progressBar(ui.i + 1, ui.queue.length, "Avancement de la séance")}<p class="muted small ex-count">Mot ${ui.i + 1} / ${ui.queue.length} · ${q.fresh ? "nouveau" : q.again ? "encore une fois" : "à revoir"} · ${w.level}</p>
+        ${progressBar(ui.i, ui.queue.length, "Avancement de la séance")}<p class="muted small ex-count">Mot ${ui.i + 1} / ${ui.queue.length} · ${q.fresh ? "nouveau" : q.again ? "encore une fois" : "à revoir"} · ${w.level}</p>
         <h1 class="sentence">${w.fr}</h1>
         ${ui.reveal ? html`<p class="answer" lang="en"><b>${sayText(w)}</b></p>${voice.block()}` : html`<p class="muted small">Dis-le en anglais.</p>`}
       </section>

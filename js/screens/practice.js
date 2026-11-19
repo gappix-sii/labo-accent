@@ -126,7 +126,8 @@ export function practice({ S, persist, draw, root, target, onScored, speakLabel 
   };
 }
 
-// Barre d'avancement d'un exercice (phase 8, tâche 4) : « n / total » en barre dorée qui se remplit.
+// Barre d'avancement d'un exercice (phase 8, tâche 4) : `done` éléments finis sur `total`, en barre dorée qui se remplit
+// (vide au 1er élément, pleine une fois le dernier fini). Le banc de test, lui, montre la phrase en cours.
 export function progressBar(done, total, label = "Avancement") {
   const t = Math.max(1, total), d = Math.max(0, Math.min(done, t)), pct = Math.round((d / t) * 100);
   return html`<div class="bar ex-bar" data-css="${`--p:${pct}%`}" role="progressbar" aria-label="${label}" aria-valuemin="0" aria-valuemax="${t}" aria-valuenow="${d}"><i></i></div>`;

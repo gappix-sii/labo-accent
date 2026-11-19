@@ -7,7 +7,7 @@ const COLORS = ["--bg", "--card", "--text", "--muted", "--gold", "--gold-fill", 
 const ICONS = { common: "🧢", rare: "🕶️", epic: "🪄", legendary: "👑", mythic: "🐉" };
 
 export function mountStyle(root) {
-  const ui = { picked: null, pct: 42 };
+  const ui = { picked: null, pct: 42, text: "" };
   function draw() {
     render(root, html`
       <p class="row"><button class="btn ghost" data-act="home" type="button">← Profil</button></p>
@@ -51,8 +51,9 @@ export function mountStyle(root) {
         <p class="score score-good">92 <span>/ 100</span></p>
         <p class="feedback">Bravo ! +10 XP</p>
         <p class="feedback error" role="status">Je n'ai rien entendu : rapproche-toi du micro.</p>
-        <label class="field">Champ de saisie<input id="style-input" type="text" autocomplete="off" placeholder="Écris ici"></label></section>`);
+        <label class="field">Champ de saisie<input id="style-input" type="text" autocomplete="off" placeholder="Écris ici" value="${ui.text}"></label></section>`);
   }
+  root.addEventListener("input", (e) => { if (e.target.id === "style-input") ui.text = e.target.value; });
   root.addEventListener("click", (e) => {
     const el = e.target.closest("[data-act]");
     if (!el) return;

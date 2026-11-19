@@ -38,7 +38,7 @@ export function mountMistakes(root, S) {
     const { m, again } = cur();
     render(root, html`${head}
       <section class="card">
-        ${progressBar(ui.i + 1, ui.queue.length, "Avancement de la séance")}<p class="muted small ex-count">Phrase ${ui.i + 1} / ${ui.queue.length} · ${CAT_TITLE[m.cat] || ""}${again ? " · encore une fois" : ""}</p>
+        ${progressBar(ui.i, ui.queue.length, "Avancement de la séance")}<p class="muted small ex-count">Phrase ${ui.i + 1} / ${ui.queue.length} · ${CAT_TITLE[m.cat] || ""}${again ? " · encore une fois" : ""}</p>
         <p class="wrong-line" lang="en"><span aria-hidden="true">✗ </span><s>${m.wrong}</s></p>
         <p class="muted small">Cette phrase est fausse. Dis la bonne version en anglais.</p>
         ${ui.reveal ? html`<h1 class="sentence answer" lang="en">✓ ${m.right}</h1><p class="small">${m.why}</p>${voice.block()}` : ""}
