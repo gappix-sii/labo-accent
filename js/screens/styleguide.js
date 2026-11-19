@@ -2,12 +2,13 @@
 // (largeur de téléphone, thème clair ou sombre, effets réduits). Aucune donnée n'est lue ni enregistrée.
 import { html, render } from "../core/dom.js";
 import { RARITY, RARITY_ORDER } from "../content/avatar.js";
+import { BOSSES, STATES, bossSvg } from "../content/bosses.js";
 
 const COLORS = ["--bg", "--card", "--text", "--muted", "--gold", "--gold-fill", "--accent", "--violet", "--good", "--ok", "--bad", "--frame"];
 const ICONS = { common: "🧢", rare: "🕶️", epic: "🪄", legendary: "👑", mythic: "🐉" };
 
 export function mountStyle(root) {
-  const ui = { picked: null, pct: 42, text: "" };
+  const ui = { picked: null, pct: 42, text: "", boss: "idle" };
   function draw() {
     render(root, html`
       <p class="row"><button class="btn ghost" data-act="home" type="button">← Profil</button></p>
@@ -47,6 +48,10 @@ export function mountStyle(root) {
       <section class="card"><h2>Inventaire</h2>
         <div class="slots-demo">${RARITY_ORDER.map((r) => html`<figure><span class="slot rar-${r}" aria-hidden="true">${ICONS[r]}</span><figcaption class="rar-${r}">${RARITY[r]}</figcaption></figure>`)}</div></section>
 
+      <section class="card"><h2>Boss du parcours</h2>
+        <p class="kind">${STATES.map((s) => html`<button class="chip${ui.boss === s ? " on" : ""}" data-act="boss" data-v="${s}" type="button" aria-pressed="${ui.boss === s ? "true" : "false"}">${{ idle: "Au repos", hit: "Touché", ko: "K.O." }[s]}</button>`)}</p>
+        <div class="boss-gallery">${Object.entries(BOSSES).map(([id, b]) => html`<figure><span class="boss-pic">${bossSvg(id, ui.boss)}</span><figcaption>${b.name}</figcaption></figure>`)}</div></section>
+
       <section class="card"><h2>Note et messages</h2>
         <p class="score score-good">92 <span>/ 100</span></p>
         <p class="feedback">Bravo ! +10 XP</p>
@@ -60,6 +65,7 @@ export function mountStyle(root) {
     const act = el.dataset.act;
     if (act === "home") location.hash = "#profil";
     if (act === "pick") { ui.picked = Number(el.dataset.i); draw(); }
+    if (act === "boss" && STATES.includes(el.dataset.v)) { ui.boss = el.dataset.v; draw(); }
     if (act === "more") { ui.pct = Math.min(100, ui.pct + 10); draw(); }
     if (act === "less") { ui.pct = Math.max(0, ui.pct - 10); draw(); }
   });
