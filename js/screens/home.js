@@ -3,7 +3,7 @@
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
 import { streakNow, todayXp, setGoal, GOALS, starsOf } from "../core/progress.js";
-import { wonSet, wins } from "../core/boss.js";
+import { wonSet, wins, canFight } from "../core/boss.js";
 import { LESSONS } from "../content/lessons.js";
 import { REGIONS, lessonOpen, regionCleared, regionStars } from "../content/regions.js";
 import { bossOf, bossSvg } from "../content/bosses.js";
@@ -27,7 +27,12 @@ export function dailyQuest(P, now = Date.now()) {
 }
 // Prochaine étape du parcours (fonction pure, testée) : la 1re leçon ouverte pas encore finie, ou le boss d'une région
 // finie qui n'est pas encore vaincu (il garde le passage) ; null quand tout est fini.
+// Une leçon déjà commencée et pas finie passe d'abord (ancienne sauvegarde : on reprend où on en était, relecture n° 5).
 export function nextStep(P, won) {
+  for (let i = 0; i < LESSONS.length; i++) {
+    const L = Object.hasOwn(P.lessons, LESSONS[i].id) ? P.lessons[LESSONS[i].id] : null;
+    if (L && L.done === 0 && L.best.length > 0 && lessonState(P, i, won).open) return { kind: "lesson", index: i };
+  }
   for (const r of REGIONS) {
     for (let j = 0; j < r.lessons.length; j++) { const st = lessonState(P, r.from + j, won); if (st.open && st.done === 0) return { kind: "lesson", index: r.from + j }; }
     if (regionCleared(P, r) && !won.has(r.id)) return { kind: "boss", region: r.id };
@@ -43,7 +48,7 @@ export function nodeState(P, i, next, won = null) {
 // État de la case du boss d'une région : "won" (vaincu), "current" (à affronter maintenant), "open", "locked".
 export function bossState(P, region, won, step) {
   if (won.has(region.id)) return "won";
-  if (!regionCleared(P, region)) return "locked";
+  if (!canFight(P, region.id, won)) return "locked";
   return step && step.kind === "boss" && step.region === region.id ? "current" : "open";
 }
 const starText = (n) => "★".repeat(n) + "☆".repeat(3 - n);
@@ -69,10 +74,10 @@ export function mountHome(root, S) {
         : nextBoss ? html`<button class="btn big red" data-act="boss" data-id="${step.region}" type="button">⚔️ Affronter ${nextBoss.name}</button>`
           : html`<p class="card quest"><span class="quest-title">Bravo</span> Tout le parcours est fini, tous les boss sont vaincus ! Refais tes leçons préférées pour décrocher les ★★★.</p>`}
       ${REGIONS.map((r) => {
-        const open = lessonState(P, r.from, won).open, crown = won.has(r.id), st = regionStars(P, r), bs = bossState(P, r, won, step), b = bossOf(r.id);
+        const open = r.lessons.some((_, j) => lessonState(P, r.from + j, won).open), crown = won.has(r.id), st = regionStars(P, r), bs = bossState(P, r, won, step), b = bossOf(r.id);
         return html`<section class="${`card region${open ? "" : " locked"}${crown ? " crowned" : ""}`}">
           <h2 class="region-title"><span aria-hidden="true">${r.icon}</span> ${r.name} <span class="muted small">${crown ? "👑" : open ? "" : "🔒"}</span>
-            <span class="region-stars" aria-label="${`${st.got} étoiles sur ${st.max}`}">★ ${st.got}/${st.max}</span></h2>
+            <span class="region-stars"><span aria-hidden="true">★ ${st.got}/${st.max}</span><span class="sr">${`, ${st.got} étoiles sur ${st.max}`}</span></span></h2>
           <p class="muted small region-theme">${r.theme}</p>
           <ol class="map">${r.lessons.map((l, j) => {
             const i = r.from + j, st = lessonState(P, i, won), state = nodeState(P, i, next, won), icon = l.kind === "sound" ? "🔊" : "💬";
@@ -87,7 +92,7 @@ export function mountHome(root, S) {
           })}
             <li class="node-wrap boss-wrap">
               <button class="${`boss-node ${bs}`}" data-act="boss" data-id="${r.id}" type="button" ${bs === "locked" ? "disabled" : ""}
-                aria-label="${`Boss : ${b.name}, ${bs === "won" ? `vaincu ${wins(S.bosses, r.id)} fois` : bs === "locked" ? `finis les ${r.lessons.length} leçons de la région pour l'affronter` : "à affronter"}`}">
+                aria-label="${`Boss : ${b.name}, ${bs === "won" ? `vaincu ${wins(S.bosses, r.id)} fois` : bs === "locked" ? `finis les ${r.lessons.length} leçons de la région et bats les boss d'avant pour l'affronter` : "à affronter"}`}">
                 ${bossSvg(r.id, "idle", { label: "" })}${bs === "won" ? html`<span class="boss-crown" aria-hidden="true">👑</span>` : bs === "locked" ? html`<span class="boss-lock" aria-hidden="true">🔒</span>` : ""}</button>
               <span class="node-label boss-label" aria-hidden="true">${b.name}<span class="small muted">${bs === "won" ? "vaincu !" : bs === "locked" ? "boss de la région" : "⚔️ à affronter !"}</span></span></li>
           </ol></section>`;
@@ -104,7 +109,7 @@ export function mountHome(root, S) {
     const act = el.dataset.act;
     if (act === "goal") { if (setGoal(P, Number(el.dataset.goal))) { persist(); draw(); } }
     if (act === "open" && IDS.includes(el.dataset.id) && lessonState(P, IDS.indexOf(el.dataset.id), wonSet(S.bosses)).open) location.hash = "#lecon/" + el.dataset.id;
-    if (act === "boss") { const r = REGIONS.find((x) => x.id === el.dataset.id); if (r && regionCleared(P, r)) location.hash = "#boss/" + r.id; }
+    if (act === "boss" && canFight(P, el.dataset.id, wonSet(S.bosses))) location.hash = "#boss/" + el.dataset.id;
   });
 
   draw();

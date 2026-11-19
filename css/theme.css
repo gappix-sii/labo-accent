@@ -285,7 +285,7 @@ table.bench, table.compare, table.odds { border-collapse: separate; border-spaci
 .boss-panel .row { justify-content: space-between; align-items: center; }
 .hearts { font-size: 1.3rem; letter-spacing: 2px; }
 .boss-line { margin: 6px 0 0; font-weight: 800; font-style: italic; }
-.dmg-pop { position: absolute; top: 18%; left: 50%; font-family: var(--font-display); font-style: italic; font-weight: 900; font-size: 2rem; color: var(--red); -webkit-text-stroke: 1px var(--bg); text-shadow: 0 3px 0 var(--shadow); animation: dmgPop 1s ease-out both; pointer-events: none; white-space: nowrap; }
+.dmg-pop { position: absolute; top: 18%; left: 50%; transform: translateX(-50%); max-width: 100%; font-family: var(--font-display); font-style: italic; font-weight: 900; font-size: 2rem; color: var(--bad); -webkit-text-stroke: 1px var(--bg); text-shadow: 0 3px 0 var(--shadow); animation: dmgPop 1s ease-out both; pointer-events: none; white-space: nowrap; }
 .dmg-pop.crit { color: var(--gold); font-size: 2.3rem; }
 @keyframes dmgPop { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.6); } 20% { opacity: 1; transform: translate(-50%, 0) scale(1.15); } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1); } }
 .fx-reduced .dmg-pop { opacity: 1; transform: translate(-50%, 0); }
@@ -311,5 +311,7 @@ table.bench, table.compare, table.odds { border-collapse: separate; border-spaci
 .boss-crown, .boss-lock { position: absolute; font-size: 1.6rem; line-height: 1; }
 .boss-crown { top: -16px; left: 50%; transform: translateX(-50%) rotate(-10deg); filter: drop-shadow(0 2px 0 var(--shadow)); }
 .boss-lock { right: -2px; bottom: -2px; font-size: 1.3rem; }
-.boss-label { color: var(--red); }
+.boss-label { color: var(--bad); } /* --bad : 4,5 : 1 sur la carte dans les deux thèmes (relecture n° 4) */
 .btn.big.red { --c: var(--red); --d: var(--red-d); --ink: #ffffff; }
+.boss-attack p.sentence { font-size: clamp(1.7rem, 6vw, 2.3rem); line-height: 1.3; margin: 4px 0; }
+.boss-wins { margin: 0; }

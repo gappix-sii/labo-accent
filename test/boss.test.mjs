@@ -137,3 +137,40 @@ test("carte : la prochaine étape passe par le boss de chaque région ; cases de
   for (const r of REGIONS) { finishRegion(r); S.bosses.regions[r.id] = { wins: 1, tries: 1 }; }
   assert.equal(nextStep(P, wonSet(S.bosses)), null, "tout fini, tous les boss vaincus");
 });
+
+test("relecture de la phase 9 : 60 de moyenne gagne même avec les écoutes ratées ou des notes irrégulières", () => {
+  for (const r of REGIONS) for (let seed = 1; seed <= 10; seed++) {
+    assert.equal(play(newFight(r.id, mulberry32(seed)), () => 60, () => false), "won", `${r.id} : 60 partout, deux écoutes ratées`);
+    assert.equal(play(newFight(r.id, mulberry32(seed)), (i) => (i % 2 ? 80 : 40)), "won", `${r.id} : 40 et 80 en alternance`);
+    assert.equal(play(newFight(r.id, mulberry32(seed)), (i) => (i % 2 ? 80 : 40), () => false), "won", `${r.id} : 40 et 80, deux écoutes ratées`);
+  }
+});
+
+test("relecture de la phase 9 : boss dans l'ordre, ancienne sauvegarde avancée reprise à la leçon en cours", async () => {
+  const { nextStep } = await import("../js/screens/home.js");
+  const { canFight: can } = await import("../js/core/boss.js");
+  const S = defaults(), P = S.progress, [first, second, third] = REGIONS;
+  const finish = (l) => { for (let k = 0; k < l.items.length; k++) recordItem(P, l.id, k, l.items.length, 90, now); };
+  // ancienne sauvegarde (d'avant les boss) : les 2 premières régions et la 1re leçon de la 3e finies, la 2e commencée
+  for (const l of [...first.lessons, ...second.lessons, third.lessons[0]]) finish(l);
+  recordItem(P, third.lessons[1].id, 0, third.lessons[1].items.length, 80, now);
+  const won = wonSet(S.bosses);
+  assert.deepEqual(nextStep(P, won), { kind: "lesson", index: third.from + 1 }, "on reprend la leçon commencée");
+  assert.equal(can(P, "travel", won), false, "pas le Douanier avant Cupidon");
+  assert.equal(can(P, "couple", won), true);
+  assert.equal(can(P, "travel", null), true, "sans `won` : seules les leçons comptent");
+  finish(third.lessons[1]);
+  assert.deepEqual(nextStep(P, won), { kind: "boss", region: "couple" }, "puis le 1er boss pas vaincu");
+});
+
+test("relecture de la phase 9 : placeKey lit la classe d'un dessin SVG ; le transfert compte les boss", async () => {
+  const { placeKey } = await import("../js/core/dom.js");
+  const { isOlder } = await import("../js/screens/transfer.js");
+  const top = { tagName: "DIV", className: "screen", parentElement: null, previousElementSibling: null };
+  const svg = (cls) => ({ tagName: "svg", className: { baseVal: cls }, getAttribute: (n) => (n === "class" ? cls : null), parentElement: top, previousElementSibling: null });
+  assert.equal(placeKey(svg("boss hit"), top), "svg.boss hit:0/");
+  assert.notEqual(placeKey(svg("boss hit"), top), placeKey(svg("boss idle"), top), "touché ≠ au repos : l'animation se joue");
+  const base = { xp: 100, words: 5, lessons: 3, bosses: 1 };
+  assert.equal(isOlder({ ...base, bosses: 0 }, base), true, "moins de boss vaincus : progression plus ancienne");
+  assert.equal(isOlder(base, base), false);
+});

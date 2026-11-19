@@ -3,8 +3,8 @@
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
 import { recordItem, PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";
-import { lessonOpen, regionOfLesson, regionCleared } from "../content/regions.js";
-import { wonSet } from "../core/boss.js";
+import { lessonOpen, regionOfLesson } from "../content/regions.js";
+import { wonSet, canFight } from "../core/boss.js";
 import { bossOf } from "../content/bosses.js";
 import { LESSONS, lessonById } from "../content/lessons.js";
 import { practice, resultBlock, progressBar } from "./practice.js";
@@ -42,9 +42,9 @@ export function mountLesson(root, S, id) {
   const dots = () => dotsBlock(state() ? state().run : [], ui.item, size, "Éléments de la leçon", "Élément");
 
   function draw() {
-    const it = item(), idx = LESSONS.indexOf(lesson), region = regionOfLesson(idx);
-    const next = LESSONS[idx + 1] && lessonOpen(P, idx + 1, wonSet(S.bosses)) ? LESSONS[idx + 1] : null;
-    const fight = !next && region && regionCleared(P, region) && !wonSet(S.bosses).has(region.id) ? region : null; // région finie : place au boss
+    const it = item(), idx = LESSONS.indexOf(lesson), region = regionOfLesson(idx), won = wonSet(S.bosses);
+    const next = LESSONS[idx + 1] && lessonOpen(P, idx + 1, won) ? LESSONS[idx + 1] : null;
+    const fight = region && !won.has(region.id) && canFight(P, region.id, won) ? region : null; // région finie : place au boss
     render(root, html`
       <p class="row"><button class="btn ghost" data-act="home" type="button">← Parcours</button>
         <span class="muted small">${ui.gained ? `+${ui.gained} XP dans cette leçon` : ""}</span></p>

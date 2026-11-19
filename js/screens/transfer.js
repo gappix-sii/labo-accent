@@ -28,7 +28,7 @@ export function swapForUndo(currentRaw, backupRaw) {
   return { store: JSON.stringify(restored), backup: currentRaw || JSON.stringify(defaults()) };
 }
 // La progression reçue est-elle en retard sur celle de cet appareil ? (relecture complète, n° 10)
-export const isOlder = (from, here) => from.xp < here.xp || from.words < here.words || from.lessons < here.lessons;
+export const isOlder = (from, here) => from.xp < here.xp || from.words < here.words || from.lessons < here.lessons || (from.bosses || 0) < (here.bosses || 0);
 const parseSave = (raw) => { try { return sanitize(JSON.parse(raw)); } catch { return null; } };
 
 const ROWS = [["level", "Niveau"], ["xp", "XP"], ["lessons", "Leçons finies"], ["words", "Mots de vocabulaire vus"], ["bosses", "Boss vaincus"], ["coins", "Pièces"], ["items", "Objets du compagnon"], ["name", "Compagnon"]];

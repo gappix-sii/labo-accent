@@ -4,16 +4,17 @@
 // - phrase notée (0-100) : sous HIT_MIN, raté → tu perds un cœur ; sinon dégâts = la note (× CRIT_MULT dès CRIT) ;
 // - écoute : bonne réponse → LISTEN_DMG dégâts ; mauvaise → tu perds un cœur ;
 // - victoire quand ses PV tombent à 0 ; défaite quand tes cœurs tombent à 0 ou que les attaques sont épuisées.
-// Difficulté (demande de l'utilisateur du 2026-11-19) : une moyenne de 60 suffit pour gagner, avec de la marge
-// (10 attaques à 60 font 600 dégâts pour 500 PV). Tous les réglages sont ici, à un seul endroit.
+// Difficulté (demande de l'utilisateur du 2026-11-19) : une moyenne de 60 suffit pour gagner, même avec les deux écoutes
+// ratées (8 phrases à 60 = 480 dégâts pour 460 PV) ou des notes irrégulières (40 et 80) ; une moyenne de 40 perd
+// (relecture de la phase 9, n° 2). Tous les réglages sont ici, à un seul endroit.
 import { REGIONS, regionById, regionCleared } from "../content/regions.js";
 import { PAIRS } from "../content/pairs.js";
 import { addBonusXp } from "./progress.js";
 import { MAX_CHESTS, cryptoRng } from "./game.js";
 
 export const HEARTS = 3;
-export const BOSS_HP = 500;
-export const HIT_MIN = 45;
+export const BOSS_HP = 460;
+export const HIT_MIN = 35;
 export const CRIT = 85;
 export const CRIT_MULT = 1.5;
 export const LISTEN_DMG = 60;
@@ -93,8 +94,14 @@ export function sanitizeBosses(raw) {
 }
 export const wins = (B, id) => (Object.hasOwn(B.regions, id) ? B.regions[id].wins : 0);
 export const wonSet = (B) => new Set(Object.keys(B.regions).filter((id) => B.regions[id].wins > 0));
-// Le boss d'une région peut être affronté quand toutes ses leçons sont finies.
-export const canFight = (P, regionId) => { const r = regionById(regionId); return !!r && regionCleared(P, r); };
+// Le boss d'une région peut être affronté quand toutes ses leçons sont finies et, si `won` est donné (ensemble des
+// régions dont le boss est vaincu), quand le boss de la région d'avant est vaincu : les boss se battent dans l'ordre
+// (relecture de la phase 9, n° 6 ; une ancienne sauvegarde avancée ne permet donc pas de sauter un boss).
+export function canFight(P, regionId, won = null) {
+  const k = REGIONS.findIndex((r) => r.id === regionId);
+  if (k < 0 || !regionCleared(P, REGIONS[k])) return false;
+  return !won || k === 0 || won.has(REGIONS[k - 1].id);
+}
 
 // Fin d'un combat : compte l'essai, et pour une victoire donne XP (et, la première fois, un coffre d'or).
 // S : la sauvegarde ({ bosses, progress, game }). Renvoie { won, first, xp, chest }. La récompense de première

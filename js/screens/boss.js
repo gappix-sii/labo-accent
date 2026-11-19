@@ -3,7 +3,7 @@
 // Une seule tentative par attaque (« Je n'ai rien entendu » ne compte pas). Règles : js/core/boss.js.
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
-import { newFight, currentAttack, attack, finishFight, canFight, wins, HEARTS, BOSS_HP, HIT_MIN, CRIT, ATTACKS, XP_FIRST_WIN } from "../core/boss.js";
+import { newFight, currentAttack, attack, finishFight, canFight, wins, wonSet, HEARTS, BOSS_HP, HIT_MIN, CRIT, ATTACKS, XP_FIRST_WIN } from "../core/boss.js";
 import { REGIONS, regionById } from "../content/regions.js";
 import { bossOf, bossSvg } from "../content/bosses.js";
 import { PAIRS } from "../content/pairs.js";
@@ -19,17 +19,29 @@ export function mountBoss(root, S, regionId) {
   const persist = () => save(S);
   // phase : "intro" (présentation), "fight" (attaque en cours), "end" (victoire ou défaite)
   const ui = { phase: "intro", F: null, a: null, out: null, last: null, picked: null, line: boss.line, reward: null, error: "" };
-  let alive = true;
+  let alive = true, panelKey = "";
+  const open = () => canFight(S.progress, region.id, wonSet(S.bosses)); // région finie et boss d'avant vaincu
 
   const hearts = (n) => html`<span class="hearts" role="img" aria-label="${`${n} cœur${n > 1 ? "s" : ""} sur ${HEARTS}`}">${Array.from({ length: HEARTS }, (_, i) => (i < n ? "❤️" : "🖤")).join("")}</span>`;
-  function bossPanel(state) {
-    const hp = ui.F ? ui.F.hp : BOSS_HP, pct = Math.round((hp / BOSS_HP) * 100);
+  // Le panneau du boss est dessiné à part, et seulement quand il change (relecture de la phase 9, n° 1 et 3) :
+  // sinon chaque redessin (préparation du moteur, micro) relancerait ses animations depuis le début.
+  function drawPanel() {
+    const state = ui.phase === "end" ? (ui.F.over === "won" ? "ko" : "idle") : ui.out && ui.out.dmg ? "hit" : "idle";
+    const hp = ui.F ? ui.F.hp : BOSS_HP, n = ui.F ? ui.F.hearts : HEARTS, w = wins(S.bosses, region.id);
+    const key = JSON.stringify([state, hp, n, ui.line, ui.out && ui.out.dmg, ui.out && ui.out.crit, ui.phase, w, ui.F && ui.F.i]);
+    if (key === panelKey) return;
+    panelKey = key;
+    render(top, bossPanel(state, hp, n, w));
+  }
+  function bossPanel(state, hp, n, w) {
+    const pct = Math.round((hp / BOSS_HP) * 100);
     return html`<section class="${`card quest boss-panel${ui.phase === "fight" ? " fighting" : ""}`}"><span class="quest-title">${`${region.icon} ${region.name}`}</span>
-      <div class="boss-stage"><span class="boss-big">${bossSvg(region.id, state)}</span>
+      ${w ? html`<p class="muted small boss-wins">👑 vaincu ${w} fois</p>` : ""}
+      <div class="boss-stage"><span class="boss-big">${bossSvg(region.id, state, { label: "" })}</span>
         ${ui.out && ui.out.dmg ? html`<b class="${`dmg-pop${ui.out.crit ? " crit" : ""}`}" aria-hidden="true">${ui.out.crit ? "CRITIQUE ! " : ""}−${ui.out.dmg}</b>` : ""}</div>
       <h1 class="boss-name">${boss.name}</h1>
       <div class="bar boss-hp" data-css="${`--p:${pct}%`}" role="progressbar" aria-label="Points de vie du boss" aria-valuemin="0" aria-valuemax="${BOSS_HP}" aria-valuenow="${hp}"><i></i></div>
-      <p class="row"><span class="small"><b>${hp}</b> / ${BOSS_HP} PV</span>${hearts(ui.F ? ui.F.hearts : HEARTS)}</p>
+      <p class="row"><span class="small"><b>${hp}</b> / ${BOSS_HP} PV</span>${hearts(n)}</p>
       <p class="boss-line">« ${ui.line} »</p></section>`;
   }
 
@@ -47,9 +59,9 @@ export function mountBoss(root, S, regionId) {
         <div class="choices">${choice("a")}${choice("b")}</div></section>`;
     }
     const shown = a.kind === "say" || ui.out;
-    return html`<section class="card">${head}
+    return html`<section class="card boss-attack">${head}
       ${a.kind === "translate" ? html`<p class="sentence-fr">${a.fr}</p>` : ""}
-      ${shown ? html`<h1 class="sentence" lang="en">${a.en}</h1>${voice.block()}` : html`<p class="muted small">Dis la phrase en anglais au micro. La bonne réponse s'affiche après ton attaque.</p>`}</section>
+      ${shown ? html`<p class="sentence" lang="en">${a.en}</p>${voice.block()}` : html`<p class="muted small">Dis la phrase en anglais au micro. La bonne réponse s'affiche après ton attaque.</p>`}</section>
       ${ui.out ? "" : html`<section class="card">${mic.block()}</section>${mic.errorBlock()}`}`;
   }
 
@@ -78,18 +90,15 @@ export function mountBoss(root, S, regionId) {
 
   function draw() {
     if (!alive) return;
-    const open = canFight(S.progress, region.id), w = wins(S.bosses, region.id);
-    const state = ui.phase === "end" ? (ui.F.over === "won" ? "ko" : "idle") : ui.out && ui.out.dmg ? "hit" : "idle";
-    render(root, html`
-      <p class="row"><button class="btn ghost" data-act="home" type="button">← Parcours</button>
-        <span class="muted small">${w ? `👑 vaincu ${w} fois` : ""}</span></p>
-      ${bossPanel(state)}
+    const w = wins(S.bosses, region.id);
+    drawPanel();
+    render(main, html`
       ${ui.phase === "intro" ? html`<section class="card">
-          ${open ? html`<h2>Combat de boss</h2>
+          ${open() ? html`<h2>Combat de boss</h2>
               <p>${ATTACKS} attaques : des phrases de la région à dire, des mots à reconnaître à l'oreille, et des phrases à dire en anglais depuis le français.</p>
-              <p class="muted small">Ta note fait les dégâts (coup critique dès ${CRIT}). Sous ${HIT_MIN}, ou une mauvaise écoute, le boss te prend un cœur. Une moyenne de 60 suffit pour gagner.${w ? "" : ` Première victoire : la couronne, +${XP_FIRST_WIN} XP et un coffre d'or.`}</p>
+              <p class="muted small">Ta note fait les dégâts (coup critique dès ${CRIT}). Sous ${HIT_MIN}, ou une mauvaise écoute, le boss te prend un cœur. Une moyenne de 60 suffit pour gagner, si tu évites les notes sous ${HIT_MIN}.${w ? "" : ` Première victoire : la couronne, +${XP_FIRST_WIN} XP et un coffre d'or.`}</p>
               ${mic.ready() ? html`<div class="mic-zone"><button class="btn big" data-act="start" type="button">⚔️ Combattre !</button></div>` : mic.block()}`
-            : html`<h2>🔒 Pas encore</h2><p>Finis d'abord les ${region.lessons.length} leçons de <b>${region.name}</b> pour affronter ${boss.name}.</p>`}
+            : html`<h2>🔒 Pas encore</h2><p>Pour affronter ${boss.name}, finis d'abord les ${region.lessons.length} leçons de <b>${region.name}</b> et bats les boss des régions d'avant.</p>`}
         </section>${mic.errorBlock()}` : ""}
       ${ui.phase === "fight" ? html`${attackCard()}${ui.out ? outcome() : ""}` : ""}
       ${ui.phase === "end" ? endCard() : ""}
@@ -111,11 +120,12 @@ export function mountBoss(root, S, regionId) {
     ui.a = currentAttack(ui.F); draw(); warm();
     if (ui.a.kind === "listen") play(ui.a.en);
   }
-  function hitWith(value) {
+  // redraw : false quand la note vient du micro (practice redessine une seule fois juste après, relecture n° 1)
+  function hitWith(value, redraw = true) {
     ui.out = attack(ui.F, value);
-    ui.line = ui.out.lost ? boss.taunt : ui.out.crit || ui.out.dmg >= 80 ? boss.hurt : ui.line;
+    ui.line = ui.out.lost ? boss.taunt : ui.out.crit || ui.out.dmg >= 80 ? boss.hurt : "Grr… Tu ne m'auras pas si facilement !";
     if (ui.F.over) { ui.reward = finishFight(S, ui.F); persist(); }
-    draw();
+    if (redraw) draw();
   }
   function next() {
     voice.stop(); stopVoice();
@@ -128,7 +138,7 @@ export function mountBoss(root, S, regionId) {
   const mic = practice({
     S, persist, draw, root, speakLabel: "⚔️ Attaquer",
     target: () => ({ text: ui.a.en, focus: [] }),
-    onScored: (last) => { if (ui.phase !== "fight" || ui.out) return; ui.last = last; hitWith(last.score); }
+    onScored: (last) => { if (ui.phase !== "fight" || ui.out) return; ui.last = last; hitWith(last.score, false); }
   });
 
   root.addEventListener("click", (e) => {
@@ -139,13 +149,15 @@ export function mountBoss(root, S, regionId) {
     if (mic.handle(act) || voice.handle(act)) return;
     if (act === "home") location.hash = "#accueil";
     if (act === "chests") location.hash = "#coffres";
-    if (act === "start" && canFight(S.progress, region.id)) start();
+    if (act === "start" && open()) start();
     if (act === "hear" && ui.a) play(ui.a.en);
     if (act === "pick" && ui.a && ui.a.kind === "listen" && !ui.out && (el.dataset.side === "a" || el.dataset.side === "b")) { ui.picked = el.dataset.side; hitWith(ui.picked === ui.a.answer); }
     if (act === "next" && ui.out) next();
   });
   root.addEventListener("change", (e) => voice.change(e));
 
+  render(root, html`<p class="row"><button class="btn ghost" data-act="home" type="button">← Parcours</button></p><div class="boss-top"></div><div class="boss-main"></div>`);
+  const top = root.querySelector(".boss-top"), main = root.querySelector(".boss-main");
   draw();
   return () => { alive = false; voice.dispose(); mic.dispose(); stopVoice(); };
 }
