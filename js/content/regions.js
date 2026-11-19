@@ -28,7 +28,7 @@ const IDS = LESSONS.map((l) => l.id);
 // - la première, toujours ; une leçon déjà commencée ou finie reste ouverte (une ancienne sauvegarde ne perd rien) ;
 // - sinon, il faut avoir fini la précédente (règle de la phase 2) ;
 // - et pour la 1re leçon d'une région, avoir vaincu le boss d'avant. `won` : ensemble des régions dont le boss
-//   est vaincu ; null tant que les boss ne sont pas branchés (tâche 5) : seule la règle de la phase 2 compte alors.
+//   est vaincu (wonSet, js/core/boss.js) ; null : seule la règle de la phase 2 compte (tests, anciens appels).
 export function lessonOpen(P, index, won = null) {
   if (index < 0 || index >= LESSONS.length) return false;
   if (index === 0) return true;

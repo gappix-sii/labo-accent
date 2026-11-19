@@ -3,7 +3,9 @@
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
 import { recordItem, PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";
-import { lessonOpen } from "../content/regions.js";
+import { lessonOpen, regionOfLesson, regionCleared } from "../content/regions.js";
+import { wonSet } from "../core/boss.js";
+import { bossOf } from "../content/bosses.js";
 import { LESSONS, lessonById } from "../content/lessons.js";
 import { practice, resultBlock, progressBar } from "./practice.js";
 import { listenControls } from "./listen.js";
@@ -30,7 +32,7 @@ export function dotsBlock(run, cur, size, label, word) {
 export function mountLesson(root, S, id) {
   const lesson = lessonById(id), P = S.progress;
   // Leçon inconnue ou encore verrouillée (adresse tapée à la main) : retour au parcours.
-  if (!lesson || !lessonOpen(P, LESSONS.indexOf(lesson))) { location.hash = "#accueil"; return () => {}; }
+  if (!lesson || !lessonOpen(P, LESSONS.indexOf(lesson), wonSet(S.bosses))) { location.hash = "#accueil"; return () => {}; }
   const size = lesson.items.length;
   const state = () => (Object.hasOwn(P.lessons, id) ? P.lessons[id] : null);
   const ui = { item: firstToDo(state(), size), last: null, gained: 0, feedback: "", finished: false };
@@ -40,7 +42,9 @@ export function mountLesson(root, S, id) {
   const dots = () => dotsBlock(state() ? state().run : [], ui.item, size, "Éléments de la leçon", "Élément");
 
   function draw() {
-    const it = item(), idx = LESSONS.indexOf(lesson), next = LESSONS[idx + 1];
+    const it = item(), idx = LESSONS.indexOf(lesson), region = regionOfLesson(idx);
+    const next = LESSONS[idx + 1] && lessonOpen(P, idx + 1, wonSet(S.bosses)) ? LESSONS[idx + 1] : null;
+    const fight = !next && region && regionCleared(P, region) && !wonSet(S.bosses).has(region.id) ? region : null; // région finie : place au boss
     render(root, html`
       <p class="row"><button class="btn ghost" data-act="home" type="button">← Parcours</button>
         <span class="muted small">${ui.gained ? `+${ui.gained} XP dans cette leçon` : ""}</span></p>
@@ -53,6 +57,7 @@ export function mountLesson(root, S, id) {
           <h2>🎉 Leçon finie !</h2><p>+${XP_LESSON} XP de bonus. Tu as gagné ${ui.gained} XP dans cette leçon.</p>
           <div class="row start">
             ${next ? html`<button class="btn" data-act="next-lesson" type="button">Leçon suivante : ${next.title}</button>` : ""}
+            ${fight ? html`<button class="btn red" data-act="boss" type="button">⚔️ Affronter ${bossOf(fight.id).name}</button>` : ""}
             <button class="btn ghost" data-act="home" type="button">Retour au parcours</button>
           </div></section>` : ""}
       <section class="card">
@@ -104,6 +109,7 @@ export function mountLesson(root, S, id) {
     if (mic.handle(act) || voice.handle(act)) return;
     if (act === "home") location.hash = "#accueil";
     if (act === "next-lesson") { const n = LESSONS[LESSONS.indexOf(lesson) + 1]; if (n) location.hash = "#lecon/" + n.id; }
+    if (act === "boss") { const r = regionOfLesson(LESSONS.indexOf(lesson)); if (r) location.hash = "#boss/" + r.id; }
     if (act === "go") goTo(Number(el.dataset.i) || 0);
     if (act === "next") goTo(nextToDo(state() ? state().run : [], ui.item, size));
   });

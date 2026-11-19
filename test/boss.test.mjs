@@ -118,3 +118,22 @@ test("écran de combat : adresse #boss/<région>, onglet Parcours, onglets cach�
   const { ENTRY } = await import("../js/core/dom.js");
   for (const sel of [".boss.hit .boss-body", ".boss.ko .boss-body", ".dmg-pop"]) assert.ok(ENTRY.includes(sel), `${sel} : ne se rejoue pas à chaque redessin`);
 });
+
+test("carte : la prochaine étape passe par le boss de chaque région ; cases de boss verrouillée, à affronter, vaincue", async () => {
+  const { nextStep, bossState, nodeState } = await import("../js/screens/home.js");
+  const S = defaults(), P = S.progress, [first, second] = REGIONS;
+  const finishRegion = (r) => { for (const l of r.lessons) for (let k = 0; k < l.items.length; k++) recordItem(P, l.id, k, l.items.length, 90, now); };
+  let won = wonSet(S.bosses);
+  assert.deepEqual(nextStep(P, won), { kind: "lesson", index: 0 });
+  assert.equal(bossState(P, first, won, nextStep(P, won)), "locked");
+  finishRegion(first);
+  assert.deepEqual(nextStep(P, won), { kind: "boss", region: "couple" }, "région finie : place au boss");
+  assert.equal(bossState(P, first, won, nextStep(P, won)), "current");
+  assert.equal(nodeState(P, second.from, -1, won), "locked", "la région suivante attend le boss");
+  const F = newFight("couple", mulberry32(9)); play(F, () => 90); finishFight(S, F, now);
+  won = wonSet(S.bosses);
+  assert.equal(bossState(P, first, won, nextStep(P, won)), "won");
+  assert.deepEqual(nextStep(P, won), { kind: "lesson", index: second.from });
+  for (const r of REGIONS) { finishRegion(r); S.bosses.regions[r.id] = { wins: 1, tries: 1 }; }
+  assert.equal(nextStep(P, wonSet(S.bosses)), null, "tout fini, tous les boss vaincus");
+});
