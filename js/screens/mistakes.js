@@ -26,7 +26,7 @@ export function mountMistakes(root, S) {
 
   function draw() {
     if (!alive) return;
-    const head = html`<p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button>
+    const head = html`<p class="row"><button class="btn ghost" data-act="home" type="button">← Défis</button>
       <span class="muted small">${ui.xp ? `+${ui.xp} XP dans cette séance` : ""}</span></p>`;
     if (ui.done) {
       render(root, html`${head}<section class="card" role="status"><h2>🎉 Séance finie !</h2>
@@ -86,7 +86,7 @@ export function mountMistakes(root, S) {
     const act = el.dataset.act;
     if (mic.busy() && act !== "stop") return;
     if (mic.handle(act) || voice.handle(act)) return;
-    if (act === "home") location.hash = "#accueil";
+    if (act === "home") location.hash = "#entrainement";
     if (act === "dunno" && !ui.reveal) { respond(false, null); draw(); voice.handle("listen"); }
     if (act === "next") next();
     if (act === "again") { newSession(); draw(); }

@@ -51,7 +51,7 @@ export function mountShop(root, S) {
       .sort((a, b) => levelFor(a) - levelFor(b) || basePrice(a) - basePrice(b));
     const shown = ui.trying ? tryOn(G.avatar, ui.trying) : G.avatar;
     render(root, html`
-      <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button>
+      <p class="row"><button class="btn ghost" data-act="home" type="button">← Parcours</button>
         <button class="btn ghost" data-act="companion" type="button">🐾 Mon compagnon</button>
         <button class="btn ghost" data-act="chests" type="button">🎁 Coffres</button></p>
       <section class="card comp-hero">

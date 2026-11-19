@@ -45,7 +45,7 @@ export function mountListening(root, S) {
   }
 
   function draw() {
-    const head = html`<p class="row"><button class="btn ghost" data-act="home" type="button">← Parcours</button>
+    const head = html`<p class="row"><button class="btn ghost" data-act="home" type="button">← Défis</button>
       <span class="muted small">${ui.xp ? `+${ui.xp} XP dans cette séance` : ""}</span></p>`;
     if (ui.done) {
       render(root, html`${head}<section class="card" role="status">
@@ -95,7 +95,7 @@ export function mountListening(root, S) {
     const el = e.target.closest("[data-act]");
     if (!el) return;
     const act = el.dataset.act;
-    if (act === "home") location.hash = "#accueil";
+    if (act === "home") location.hash = "#entrainement";
     if (act === "start") { ui.started = true; draw(); play(played().en); }
     if (act === "replay") play(played().en);
     if (act === "compare") compare();

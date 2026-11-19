@@ -13,7 +13,7 @@ export function mountCompanion(root, S) {
   function draw() {
     const av = G.avatar, lv = level(), sp = SPECIES_BY_ID[av.species] || SPECIES[0];
     render(root, html`
-      <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button>
+      <p class="row"><button class="btn ghost" data-act="home" type="button">← Parcours</button>
         <button class="btn ghost" data-act="shop" type="button">🛒 Boutique</button></p>
       <section class="card comp-hero">
         <div class="comp-big">${avatarSvg(av)}</div>

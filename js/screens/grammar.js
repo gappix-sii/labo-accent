@@ -17,7 +17,7 @@ import { firstToDo, nextToDo, dotsBlock } from "./lesson.js";
 export function mountGrammarList(root, S) {
   const P = S.progress;
   render(root, html`
-    <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button></p>
+    <p class="row"><button class="btn ghost" data-act="home" type="button">← Défis</button></p>
     <section class="card"><h1 class="sentence">📘 Grammaire</h1>
       <p class="muted small">Une règle à la fois : l'explication, des exemples à écouter, le piège des Français, puis des exercices à dire à voix haute.</p></section>
     ${GLEVELS.map((lv) => html`<section class="card"><h2>Niveau ${lv}</h2><ol class="path">${GRAMMAR.filter((g) => g.level === lv).map((g) => {
@@ -29,7 +29,7 @@ export function mountGrammarList(root, S) {
   root.addEventListener("click", (e) => {
     const el = e.target.closest("[data-act]");
     if (!el) return;
-    if (el.dataset.act === "home") location.hash = "#accueil";
+    if (el.dataset.act === "home") location.hash = "#entrainement";
     if (el.dataset.act === "open" && grammarById(el.dataset.id)) location.hash = "#grammaire/" + el.dataset.id;
   });
   return () => {};

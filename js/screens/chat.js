@@ -17,7 +17,7 @@ export function mountChat(root, S) {
   const ui = { topic: "", level: "A2" };
   function draw() {
     render(root, html`
-      <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button></p>
+      <p class="row"><button class="btn ghost" data-act="home" type="button">← Défis</button></p>
       <section class="card"><h1 class="sentence">💬 Discussion libre</h1>
         <p class="muted small">Parle de ce que tu veux avec Alex, ton coach. Après chaque phrase, tu vois la correction et tu la redis.</p></section>
       <section class="card"><h2>Sujet</h2>
@@ -33,12 +33,12 @@ export function mountChat(root, S) {
     const el = e.target.closest("[data-act]");
     if (!el || child) return;
     const act = el.dataset.act;
-    if (act === "home") location.hash = "#accueil";
+    if (act === "home") location.hash = "#entrainement";
     if (act === "topic") { ui.topic = el.dataset.v; draw(); }
     if (act === "level" && LEVELS.includes(el.dataset.v)) { ui.level = el.dataset.v; draw(); }
     if (act === "start") {
       const box = document.createElement("div"); root.replaceChildren(box); // nouvel élément : les écouteurs ci-dessus ne l'atteignent plus
-      child = mountFreeChat(box, S, coachScene(ui.topic, ui.level), "#accueil");
+      child = mountFreeChat(box, S, coachScene(ui.topic, ui.level), "#entrainement");
     }
   });
   draw();
@@ -53,7 +53,7 @@ export function mountRoleFree(root, S, id) {
 }
 
 // scene : { title, level, persona, situation, goal, opening, goalFr?, tasks? } ; back : adresse du bouton retour.
-export function mountFreeChat(root, S, scene, back = "#accueil") {
+export function mountFreeChat(root, S, scene, back = "#entrainement") {
   const P = S.progress, persist = () => save(S);
   const ui = { log: [], status: "", error: "", talking: false, waiting: false, ready: false, redo: -1, gained: 0, draft: "", ended: false };
   const player = new Player();

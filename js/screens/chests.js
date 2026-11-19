@@ -54,7 +54,7 @@ export function mountChests(root, S) {
     if (!alive) return;
     const lv = level(), n = G.chests.length, busy = !!ui.stage;
     render(root, html`
-      <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button>
+      <p class="row"><button class="btn ghost" data-act="home" type="button">← Boutique</button>
         <button class="btn ghost" data-act="shop" type="button">🛒 Boutique</button></p>
       <section class="card"><h1 class="sentence">🎁 Coffres</h1>
         <p><b>${G.coins} 🪙</b> <span class="muted small">· niveau ${lv}</span></p></section>
@@ -96,7 +96,7 @@ export function mountChests(root, S) {
     const el = e.target.closest("[data-act]");
     if (!el) return;
     const { act, id } = el.dataset;
-    if (act === "home") return void (location.hash = "#accueil");
+    if (act === "home") return void (location.hash = "#boutique");
     if (act === "shop") return void (location.hash = "#boutique");
     if (act === "chest" && !ui.stage) { const r = openChest(G); if (r) { save(S); reveal("chest", r); } return; }
     if (act === "box" && !ui.stage) {

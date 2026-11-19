@@ -16,7 +16,7 @@ import { listenControls } from "./listen.js";
 export function mountRoleList(root, S) {
   const P = S.progress;
   render(root, html`
-    <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button></p>
+    <p class="row"><button class="btn ghost" data-act="home" type="button">← Défis</button></p>
     <section class="card"><h1 class="sentence">🎭 Jeux de rôle</h1>
       <p class="muted small">Une petite scène de la vie courante : le personnage te parle, tu choisis ta réponse et tu la dis en anglais.</p></section>
     <section class="card"><ol class="path">${DIALOGUES.map((d) => {
@@ -27,7 +27,7 @@ export function mountRoleList(root, S) {
   root.addEventListener("click", (e) => {
     const el = e.target.closest("[data-act]");
     if (!el) return;
-    if (el.dataset.act === "home") location.hash = "#accueil";
+    if (el.dataset.act === "home") location.hash = "#entrainement";
     if (el.dataset.act === "open" && dialogueById(el.dataset.id)) location.hash = "#role/" + el.dataset.id;
   });
   return () => {};

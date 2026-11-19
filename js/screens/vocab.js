@@ -31,7 +31,7 @@ export function mountVocab(root, S) {
   }
 
   function draw() {
-    const head = html`<p class="row"><button class="btn ghost" data-act="home" type="button">← Parcours</button>
+    const head = html`<p class="row"><button class="btn ghost" data-act="home" type="button">← Défis</button>
       <span class="muted small">${ui.xp ? `+${ui.xp} XP dans cette séance` : ""}</span></p>`;
     if (ui.done || !ui.queue.length) {
       render(root, html`${head}<section class="card" role="status">
@@ -98,7 +98,7 @@ export function mountVocab(root, S) {
     const act = el.dataset.act;
     if (mic.busy() && act !== "stop") return;
     if (mic.handle(act) || voice.handle(act)) return;
-    if (act === "home") location.hash = "#accueil";
+    if (act === "home") location.hash = "#entrainement";
     if (act === "dunno" && !ui.reveal) { respond(false, null); draw(); voice.handle("listen"); }
     if (act === "next") next();
     if (act === "level" && setLevel(R, el.dataset.v)) { persist(); restart(); }

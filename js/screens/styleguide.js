@@ -10,7 +10,7 @@ export function mountStyle(root) {
   const ui = { picked: null, pct: 42 };
   function draw() {
     render(root, html`
-      <p class="row"><button class="btn ghost" data-act="home" type="button">← Accueil</button></p>
+      <p class="row"><button class="btn ghost" data-act="home" type="button">← Profil</button></p>
       <section class="card quest"><span class="quest-title">Page d'exemple</span>
         <h1 class="sentence">Le style <span class="disp">aventure</span></h1>
         <p class="muted">Tous les éléments du nouveau thème, au même endroit. Rien n'est enregistré ici.</p></section>
@@ -57,7 +57,7 @@ export function mountStyle(root) {
     const el = e.target.closest("[data-act]");
     if (!el) return;
     const act = el.dataset.act;
-    if (act === "home") location.hash = "#accueil";
+    if (act === "home") location.hash = "#profil";
     if (act === "pick") { ui.picked = Number(el.dataset.i); draw(); }
     if (act === "more") { ui.pct = Math.min(100, ui.pct + 10); draw(); }
     if (act === "less") { ui.pct = Math.max(0, ui.pct - 10); draw(); }
