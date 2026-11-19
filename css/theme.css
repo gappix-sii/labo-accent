@@ -253,20 +253,25 @@ table.bench, table.compare, table.odds { border-collapse: separate; border-spaci
 /* Relecture de la phase 8 (n° 1 et 2) : un élément déjà affiché au dessin précédent ne rejoue pas son entrée (js/core/dom.js) */
 [data-seen] { animation: none !important; }
 
-/* Boss du parcours (phase 9, tâche 2) : il respire au repos, recule et clignote quand il est touché, s'affaisse vaincu */
+/* Boss du parcours (phase 9, tâche 2 ; style mignon) : il rebondit et cligne des yeux au repos, recule et clignote
+   quand il est touché, s'affaisse vaincu ; son décor (cœurs, étoiles…) flotte autour de lui */
 .boss { width: 100%; height: 100%; overflow: visible; display: block; }
-.boss .boss-body { transform-origin: 100px 184px; animation: bossIdle 2.2s ease-in-out infinite; }
+.boss .boss-body { transform-origin: 100px 182px; animation: bossIdle 1.8s ease-in-out infinite; }
+.boss .boss-eyes { transform-box: fill-box; transform-origin: center; animation: bossBlink 4s infinite; }
+.boss .boss-aura { animation: bossFloat 3s ease-in-out infinite; }
 .boss .boss-flash { opacity: 0; pointer-events: none; }
 .boss.hit .boss-body { animation: bossHit .45s ease-out; }
 .boss.hit .boss-flash { animation: bossFlash .45s ease-out; }
 .boss.ko { filter: grayscale(.7) brightness(.85); }
 .boss.ko .boss-body { animation: bossKo .7s cubic-bezier(.3, 1.4, .5, 1) both; }
 .fx-reduced .boss.ko .boss-body { transform: rotate(-12deg) translateY(10px) scale(.92); }
-@keyframes bossIdle { 50% { transform: scaleY(.95) scaleX(1.03); } }
+@keyframes bossIdle { 0%, 100% { transform: none; } 45% { transform: scale(1.05, .94); } 60% { transform: scale(.97, 1.04) translateY(-4px); } }
+@keyframes bossBlink { 0%, 92%, 100% { transform: none; } 95% { transform: scaleY(.1); } }
+@keyframes bossFloat { 50% { transform: translateY(-6px); } }
 @keyframes bossHit { 20% { transform: translateX(-12px) rotate(-6deg); } 45% { transform: translateX(9px) rotate(4deg); } 70% { transform: translateX(-4px); } }
 @keyframes bossFlash { 15% { opacity: .75; } }
 @keyframes bossKo { to { transform: rotate(-12deg) translateY(10px) scale(.92); } }
 .boss-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); gap: 10px; }
 .boss-gallery figure { margin: 0; display: grid; justify-items: center; gap: 4px; text-align: center; }
-.boss-gallery .boss-pic { width: 6rem; height: 6rem; }
+.boss-gallery .boss-pic { width: 7rem; height: 7rem; }
 .boss-gallery figcaption { font-weight: 800; font-size: .8rem; line-height: 1.2; }
