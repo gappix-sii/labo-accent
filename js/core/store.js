@@ -9,6 +9,7 @@ import { newListening, sanitizeListening } from "./listening.js";
 import { newMistakes, sanitizeMistakes } from "./tracks.js";
 import { DEFAULT_LIVE_VOICE, liveVoiceOk } from "./chat.js";
 import { newGame, sanitizeGame, syncGame } from "./game.js";
+import { newBosses, sanitizeBosses } from "./boss.js";
 import { mistakeById } from "../content/mistakes.js";
 
 export const STORE_KEY = "labo.v2";
@@ -25,7 +26,7 @@ export function defaults() {
   // listening : paires d'écoute ratées (js/core/listening.js) ; mistakes : fautes typiques ratées (js/core/tracks.js). Chacun a son propre numéro de version « v ».
   // rev : numéro de révision, augmenté à chaque enregistrement (deux onglets ne s'écrasent pas, voir save).
   return { version: VERSION, rev: 0, sentence: 0, engine: false, voice: false, voiceId: "af_heart", liveVoice: DEFAULT_LIVE_VOICE, fx: "auto", last: null, kind: "soigné", log: [],
-    progress: newProgress(), srs: newSrs(), listening: newListening(), mistakes: newMistakes(), game: newGame() };
+    progress: newProgress(), srs: newSrs(), listening: newListening(), mistakes: newMistakes(), game: newGame(), bosses: newBosses() };
 }
 
 const text = (v, max) => (typeof v === "string" ? v.slice(0, max) : "");
@@ -90,6 +91,7 @@ export function sanitize(raw) {
   S.listening = sanitizeListening(raw.listening);
   S.mistakes = sanitizeMistakes(raw.mistakes, (id) => !!mistakeById(id));
   S.game = sanitizeGame(raw.game); // le jeu (phase 6) : pièces, coffres, compagnon
+  S.bosses = sanitizeBosses(raw.bosses); // boss du parcours (phase 9) : victoires et essais par région
   return S;
 }
 

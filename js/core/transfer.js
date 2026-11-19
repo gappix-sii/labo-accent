@@ -1,7 +1,7 @@
 // Transfert de la progression d'un appareil à l'autre (phase 7) : la sauvegarde devient un court code texte,
 // mis dans un lien « …#transfert/<code> » (la partie après # n'est jamais envoyée au serveur) que le QR code contient.
 // Module pur (sans DOM), testé dans test/transfer.test.mjs.
-// Ce qui part : progression, vocabulaire, écoute, fautes, jeu, voix et effets choisis.
+// Ce qui part : progression, vocabulaire, écoute, fautes, jeu, boss vaincus, voix et effets choisis.
 // Ce qui ne part jamais : la clé Gemini (gardée à part, js/core/keys.js), le journal et le dernier résultat du banc de test,
 // « moteur / voix déjà téléchargés » (chaque appareil télécharge les siens).
 import { sanitize, VERSION } from "./store.js";
@@ -12,7 +12,7 @@ import { ITEMS, SPECIES, skinKey } from "../content/avatar.js";
 export const FORMAT = "1"; // numéro du format du code, en tête : « 1.<données> »
 export const CODE_MAX = 12000; // caractères au plus dans un code reçu
 export const JSON_MAX = 2_000_000; // octets au plus une fois décompressé (refuse un code qui gonfle énormément)
-export const SENT = ["sentence", "voiceId", "liveVoice", "fx", "kind", "progress", "srs", "listening", "mistakes", "game"];
+export const SENT = ["sentence", "voiceId", "liveVoice", "fx", "kind", "progress", "srs", "listening", "mistakes", "game", "bosses"];
 const DEVICE = ["engine", "voice", "last", "log", "rev"]; // propres à l'appareil : gardés tels quels à l'import
 
 // ---------- Forme compacte (mesuré le 2026-11-18 : les 501 mots révisés font 30 Ko en clair, 790 octets ainsi) ----------

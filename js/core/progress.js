@@ -57,6 +57,9 @@ function addXp(P, n, now) {
   checkGoal(P, now);
 }
 
+// XP d'un bonus (victoire contre un boss, phase 9) : compte pour le jour, l'objectif et la série comme les autres.
+export function addBonusXp(P, n, now = Date.now()) { addXp(P, Math.max(0, Math.round(Number(n) || 0)), now); }
+
 // Objectif atteint aujourd'hui : la série avance (une seule fois par jour).
 function checkGoal(P, now) {
   const today = dayKey(now);
