@@ -1,11 +1,10 @@
-// Carte du parcours (phase 9, tâche 1) : 9 régions, une par thème, de 4 leçons chacune (2 de sons, 2 de thème),
-// dans l'ordre des leçons (ORDER de lessons.js) : aucune leçon ne change de place, la progression reste valable.
+// Carte du parcours (phase 9, tâche 1) : 9 régions, une par thème : 2 leçons de sons, 2 de thème, puis 0 à 2 leçons
+// des bases (phase 10), dans l'ordre des leçons (lessons.js) : aucune leçon ne change de place, la progression reste valable.
 // Chaque région est gardée par un boss en rapport avec son thème (dessins : js/content/bosses.js, tâche 2) :
 // la 1re leçon d'une région s'ouvre quand le boss de la région d'avant est vaincu.
 import { LESSONS } from "./lessons.js";
 import { unlocked, starsOf } from "../core/progress.js";
 
-export const PER_REGION = 4;
 const RAW = [
   ["couple", "💞", "Le Jardin des Cœurs", "En couple"],
   ["travel", "⚓", "Le Port des Voyageurs", "Voyage"],
@@ -18,9 +17,10 @@ const RAW = [
   ["phone", "🗼", "La Tour des Messages", "Au téléphone"]
 ];
 // from : rang de la 1re leçon de la région dans LESSONS ; lessons : ses leçons, dans l'ordre.
-export const REGIONS = RAW.map(([id, icon, name, theme], k) => ({ id, icon, name, theme, from: k * PER_REGION, lessons: LESSONS.slice(k * PER_REGION, (k + 1) * PER_REGION) }));
+export const REGIONS = RAW.map(([id, icon, name, theme]) => ({ id, icon, name, theme, from: LESSONS.findIndex((l) => l.region === id), lessons: LESSONS.filter((l) => l.region === id) }));
+const START = new Map(REGIONS.map((r, k) => [r.from, k])); // rang de la 1re leçon d'une région → rang de la région
 export const regionById = (id) => REGIONS.find((r) => r.id === id) || null;
-export const regionOfLesson = (index) => REGIONS[Math.floor(index / PER_REGION)] || null;
+export const regionOfLesson = (index) => REGIONS.find((r) => index >= r.from && index < r.from + r.lessons.length) || null;
 
 const IDS = LESSONS.map((l) => l.id);
 
@@ -35,7 +35,7 @@ export function lessonOpen(P, index, won = null) {
   const L = Object.hasOwn(P.lessons, IDS[index]) ? P.lessons[IDS[index]] : null;
   if (L && (L.done > 0 || L.best.length > 0)) return true;
   if (!unlocked(P, IDS, index)) return false;
-  if (won && index % PER_REGION === 0) return won.has(REGIONS[index / PER_REGION - 1].id);
+  if (won && START.get(index) > 0) return won.has(REGIONS[START.get(index) - 1].id);
   return true;
 }
 

@@ -197,6 +197,90 @@
     "ms": 2075,
     "bytes": 7458
    },
+   "what": {
+    "file": "af_heart-e5f398355ef878ac.ogg",
+    "ipa": "wˈʌt",
+    "ms": 1150,
+    "bytes": 3583
+   },
+   "who": {
+    "file": "af_heart-28f5f292cac57987.ogg",
+    "ipa": "hˈuː",
+    "ms": 1325,
+    "bytes": 4083
+   },
+   "where": {
+    "file": "af_heart-f4ac6f16153f9662.ogg",
+    "ipa": "wˈɛɹ",
+    "ms": 1275,
+    "bytes": 3929
+   },
+   "when": {
+    "file": "af_heart-ca311cad2c8d253c.ogg",
+    "ipa": "wˈɛn",
+    "ms": 1325,
+    "bytes": 4105
+   },
+   "why": {
+    "file": "af_heart-e19f31e85376d2df.ogg",
+    "ipa": "wˈaɪ",
+    "ms": 1325,
+    "bytes": 4070
+   },
+   "how": {
+    "file": "af_heart-032633022d3608f3.ogg",
+    "ipa": "hˈaʊ",
+    "ms": 1275,
+    "bytes": 3912
+   },
+   "which": {
+    "file": "af_heart-1170b9bcee865e13.ogg",
+    "ipa": "wˈɪtʃ",
+    "ms": 1250,
+    "bytes": 3897
+   },
+   "whose": {
+    "file": "af_heart-d21b7a2ef3b01ddd.ogg",
+    "ipa": "hˈuːz",
+    "ms": 1325,
+    "bytes": 4131
+   },
+   "how much": {
+    "file": "af_heart-b266a0c3383ec5cf.ogg",
+    "ipa": "hˈaʊ mˈʌtʃ",
+    "ms": 1375,
+    "bytes": 4483
+   },
+   "how many": {
+    "file": "af_heart-e7539e39e0c09b82.ogg",
+    "ipa": "hˈaʊ mˈɛni",
+    "ms": 1450,
+    "bytes": 4679
+   },
+   "how old": {
+    "file": "af_heart-cf5f422f0acf64da.ogg",
+    "ipa": "hˈaʊ ˈoʊld",
+    "ms": 1475,
+    "bytes": 4854
+   },
+   "how long": {
+    "file": "af_heart-6d83a1982aa83291.ogg",
+    "ipa": "hˈaʊ lˈɔːŋ",
+    "ms": 1500,
+    "bytes": 4874
+   },
+   "how often": {
+    "file": "af_heart-b872eeb544d4b843.ogg",
+    "ipa": "hˈaʊ ˈɔːfən",
+    "ms": 1575,
+    "bytes": 5235
+   },
+   "how far": {
+    "file": "af_heart-2321de1de6fa8ae2.ogg",
+    "ipa": "hˈaʊ fˈɑːɹ",
+    "ms": 1475,
+    "bytes": 4762
+   },
    "day": {
     "file": "af_heart-a1d9c78f2567bd8d.ogg",
     "ipa": "dˈeɪ",
@@ -328,6 +412,78 @@
     "ipa": "kæn aɪ pˈeɪ baɪ kˈɑːɹd?",
     "ms": 1950,
     "bytes": 6739
+   },
+   "January": {
+    "file": "af_heart-1a3c9d9dcdae54f0.ogg",
+    "ipa": "dʒˈænjuˌɛɹi",
+    "ms": 1475,
+    "bytes": 4871
+   },
+   "February": {
+    "file": "af_heart-4f2fb27a4a659e83.ogg",
+    "ipa": "fˈɛbjəwˌɛɹi",
+    "ms": 1525,
+    "bytes": 5027
+   },
+   "March": {
+    "file": "af_heart-0a58aca4210aa8ab.ogg",
+    "ipa": "mˈɑːɹtʃ",
+    "ms": 1325,
+    "bytes": 4223
+   },
+   "April": {
+    "file": "af_heart-abfee186a839d890.ogg",
+    "ipa": "ˈeɪpɹəl",
+    "ms": 1400,
+    "bytes": 4486
+   },
+   "May": {
+    "file": "af_heart-641237e593fe61bc.ogg",
+    "ipa": "mˈeɪ",
+    "ms": 1300,
+    "bytes": 4872
+   },
+   "June": {
+    "file": "af_heart-9301faa09b0fe646.ogg",
+    "ipa": "dʒˈuːn",
+    "ms": 1375,
+    "bytes": 4294
+   },
+   "July": {
+    "file": "af_heart-1d1b994638b3dd0b.ogg",
+    "ipa": "dʒˌuːlˈaɪ",
+    "ms": 1425,
+    "bytes": 4531
+   },
+   "August": {
+    "file": "af_heart-d4df7ef0357677e1.ogg",
+    "ipa": "ˈɑːɡəst",
+    "ms": 1400,
+    "bytes": 4440
+   },
+   "September": {
+    "file": "af_heart-0ccaa0ee0b5bcdd6.ogg",
+    "ipa": "sɛptˈɛmbɚ",
+    "ms": 1525,
+    "bytes": 4799
+   },
+   "October": {
+    "file": "af_heart-eed7644c960f42ea.ogg",
+    "ipa": "ɑːktˈoʊbɚ",
+    "ms": 1600,
+    "bytes": 5130
+   },
+   "November": {
+    "file": "af_heart-4b204b6f2795fb35.ogg",
+    "ipa": "noʊvˈɛmbɚ",
+    "ms": 1525,
+    "bytes": 4923
+   },
+   "December": {
+    "file": "af_heart-2f4e237f7919fdbb.ogg",
+    "ipa": "dɪsˈɛmbɚ",
+    "ms": 1500,
+    "bytes": 4770
    },
    "go": {
     "file": "af_heart-1769b0f57174129d.ogg",
@@ -461,6 +617,84 @@
     "ms": 1650,
     "bytes": 5622
    },
+   "Monday": {
+    "file": "af_heart-747d82164bf67c59.ogg",
+    "ipa": "mˈʌndi",
+    "ms": 1450,
+    "bytes": 4507
+   },
+   "Tuesday": {
+    "file": "af_heart-757ad5e447fba6b7.ogg",
+    "ipa": "tˈuːzdi",
+    "ms": 1500,
+    "bytes": 4652
+   },
+   "Wednesday": {
+    "file": "af_heart-0950525a5a011bce.ogg",
+    "ipa": "wˈɛnzdi",
+    "ms": 1525,
+    "bytes": 4835
+   },
+   "Thursday": {
+    "file": "af_heart-58a7abf0860b89f9.ogg",
+    "ipa": "θˈɜːzdˌeɪ",
+    "ms": 1475,
+    "bytes": 4797
+   },
+   "Friday": {
+    "file": "af_heart-b5ce125024c8610e.ogg",
+    "ipa": "fɹˈaɪdi",
+    "ms": 1450,
+    "bytes": 4554
+   },
+   "Saturday": {
+    "file": "af_heart-bb867fa7cbb92e51.ogg",
+    "ipa": "sˈæɾɚdi",
+    "ms": 1450,
+    "bytes": 4533
+   },
+   "Sunday": {
+    "file": "af_heart-e9813ec68e88fc3d.ogg",
+    "ipa": "sˈʌndˌeɪ",
+    "ms": 1425,
+    "bytes": 4550
+   },
+   "today": {
+    "file": "af_heart-df0cb7e7c716dab6.ogg",
+    "ipa": "tədˈeɪ",
+    "ms": 1400,
+    "bytes": 4378
+   },
+   "tomorrow": {
+    "file": "af_heart-35d4d2d16a389e3a.ogg",
+    "ipa": "təmˈɑːɹˌoʊ",
+    "ms": 1400,
+    "bytes": 4549
+   },
+   "yesterday": {
+    "file": "af_heart-229925551d93c8a3.ogg",
+    "ipa": "jˈɛstɚdˌeɪ",
+    "ms": 1550,
+    "bytes": 5088
+   },
+   "week": {
+    "file": "af_heart-a2012552c3f811bf.ogg",
+    "ipa": "wˈiːk",
+    "ms": 1225,
+    "bytes": 3830
+   },
+   "weekend": {
+    "file": "af_heart-dea6a4cf5e9b4460.ogg",
+    "ipa": "wˈiːkˌɛnd",
+    "ms": 1475,
+    "bytes": 4761
+   },
+   "every day": {
+    "file": "af_heart-276d17035c263d5c.ogg",
+    "ipa": "ˈɛvɚɹi dˈeɪ",
+    "ms": 1550,
+    "bytes": 5085
+   },
    "red": {
     "file": "af_heart-7e84fdb502bde21a.ogg",
     "ipa": "ɹˈɛd",
@@ -574,6 +808,102 @@
     "ipa": "wiː plˈeɪd tˈɛnəs ɑːn sˈʌndˌeɪ.",
     "ms": 2300,
     "bytes": 8188
+   },
+   "first": {
+    "file": "af_heart-91b19b3d8c778da9.ogg",
+    "ipa": "fˈɜːst",
+    "ms": 1325,
+    "bytes": 4109
+   },
+   "second": {
+    "file": "af_heart-5bd7a504452d99a1.ogg",
+    "ipa": "sˈɛkənd",
+    "ms": 1375,
+    "bytes": 4349
+   },
+   "third": {
+    "file": "af_heart-6b4325c05226751d.ogg",
+    "ipa": "θˈɜːd",
+    "ms": 1375,
+    "bytes": 4197
+   },
+   "fourth": {
+    "file": "af_heart-4dbcd9cab423a32e.ogg",
+    "ipa": "fˈɔːɹθ",
+    "ms": 1350,
+    "bytes": 4226
+   },
+   "fifth": {
+    "file": "af_heart-99b209a53c905cd5.ogg",
+    "ipa": "fˈɪfθ",
+    "ms": 1325,
+    "bytes": 4111
+   },
+   "eighth": {
+    "file": "af_heart-e1e0a9d088cd9c31.ogg",
+    "ipa": "ˈeɪtθ",
+    "ms": 1325,
+    "bytes": 4133
+   },
+   "ninth": {
+    "file": "af_heart-e11b25860cfa50c9.ogg",
+    "ipa": "nˈaɪnθ",
+    "ms": 1400,
+    "bytes": 4420
+   },
+   "twelfth": {
+    "file": "af_heart-0c78379698f1615c.ogg",
+    "ipa": "twˈɛlfθ",
+    "ms": 1325,
+    "bytes": 4250
+   },
+   "twentieth": {
+    "file": "af_heart-d943986b9ded67b1.ogg",
+    "ipa": "twˈɛntiəθ",
+    "ms": 1400,
+    "bytes": 4515
+   },
+   "twenty-first": {
+    "file": "af_heart-ddc9dcf7e63c9f62.ogg",
+    "ipa": "twˈɛnti fˈɜːst",
+    "ms": 1550,
+    "bytes": 5132
+   },
+   "thirty-first": {
+    "file": "af_heart-be32a15613efe83a.ogg",
+    "ipa": "θˈɜːdi fˈɜːst",
+    "ms": 1575,
+    "bytes": 5248
+   },
+   "the first of May": {
+    "file": "af_heart-0c72ca4f35c4882b.ogg",
+    "ipa": "ðə fˈɜːst ʌv mˈeɪ",
+    "ms": 1650,
+    "bytes": 5639
+   },
+   "May first": {
+    "file": "af_heart-9ab0f34b989ad6eb.ogg",
+    "ipa": "mˈeɪ fˈɜːst",
+    "ms": 1575,
+    "bytes": 5152
+   },
+   "twenty twenty-six": {
+    "file": "af_heart-e69edee9b79ac5ac.ogg",
+    "ipa": "twˈɛnti twˈɛnti sˈɪks",
+    "ms": 1800,
+    "bytes": 6228
+   },
+   "nineteen ninety-five": {
+    "file": "af_heart-a2095183a95d7769.ogg",
+    "ipa": "nˈaɪntˈiːn nˈaɪnti fˈaɪv",
+    "ms": 1950,
+    "bytes": 6882
+   },
+   "two thousand and five": {
+    "file": "af_heart-ae24961615546c4b.ogg",
+    "ipa": "tˈuː θˈaʊzənd ænd fˈaɪv",
+    "ms": 1900,
+    "bytes": 6636
    },
    "this": {
     "file": "af_heart-f214e51d30231f47.ogg",
@@ -707,6 +1037,126 @@
     "ms": 2175,
     "bytes": 7709
    },
+   "zero": {
+    "file": "af_heart-a5cb70d5e49ebd6d.ogg",
+    "ipa": "zˈɪɹoʊ",
+    "ms": 1400,
+    "bytes": 4412
+   },
+   "one": {
+    "file": "af_heart-dff249e607a30317.ogg",
+    "ipa": "wˈʌn",
+    "ms": 1275,
+    "bytes": 3970
+   },
+   "two": {
+    "file": "af_heart-9d464e92d082e729.ogg",
+    "ipa": "tˈuː",
+    "ms": 1375,
+    "bytes": 4228
+   },
+   "three": {
+    "file": "af_heart-6916ba1404db2edc.ogg",
+    "ipa": "θɹˈiː",
+    "ms": 1350,
+    "bytes": 4243
+   },
+   "four": {
+    "file": "af_heart-24f45c4aa0a9002a.ogg",
+    "ipa": "fˈɔːɹ",
+    "ms": 1350,
+    "bytes": 4162
+   },
+   "five": {
+    "file": "af_heart-33faf59aa785c93f.ogg",
+    "ipa": "fˈaɪv",
+    "ms": 1375,
+    "bytes": 4259
+   },
+   "six": {
+    "file": "af_heart-38120d92ca679f5a.ogg",
+    "ipa": "sˈɪks",
+    "ms": 1300,
+    "bytes": 4063
+   },
+   "seven": {
+    "file": "af_heart-4fb8865a2a0290a0.ogg",
+    "ipa": "sˈɛvən",
+    "ms": 1425,
+    "bytes": 4415
+   },
+   "eight": {
+    "file": "af_heart-eca3b5ac22d58e57.ogg",
+    "ipa": "ˈeɪt",
+    "ms": 1250,
+    "bytes": 3858
+   },
+   "nine": {
+    "file": "af_heart-321014c8199cf036.ogg",
+    "ipa": "nˈaɪn",
+    "ms": 1350,
+    "bytes": 4237
+   },
+   "ten": {
+    "file": "af_heart-1fce61bc72183d57.ogg",
+    "ipa": "tˈɛn",
+    "ms": 1375,
+    "bytes": 4187
+   },
+   "eleven": {
+    "file": "af_heart-860ee180506cfbec.ogg",
+    "ipa": "ɪlˈɛvən",
+    "ms": 1450,
+    "bytes": 4603
+   },
+   "twelve": {
+    "file": "af_heart-55930ee97ca56287.ogg",
+    "ipa": "twˈɛlv",
+    "ms": 1300,
+    "bytes": 4076
+   },
+   "thirteen": {
+    "file": "af_heart-688211d30964e6ed.ogg",
+    "ipa": "θˈɜːtˈiːn",
+    "ms": 1550,
+    "bytes": 4975
+   },
+   "fourteen": {
+    "file": "af_heart-9aeb1568fd3a1a93.ogg",
+    "ipa": "fˈɔːɹtˈiːn",
+    "ms": 1525,
+    "bytes": 4983
+   },
+   "fifteen": {
+    "file": "af_heart-bfa52f34808dd5b3.ogg",
+    "ipa": "fɪftˈiːn",
+    "ms": 1525,
+    "bytes": 4860
+   },
+   "sixteen": {
+    "file": "af_heart-02e4a44d27ce2914.ogg",
+    "ipa": "sɪkstˈiːn",
+    "ms": 1575,
+    "bytes": 5073
+   },
+   "seventeen": {
+    "file": "af_heart-d84280a7f26832e0.ogg",
+    "ipa": "sˈɛvəntˈiːn",
+    "ms": 1650,
+    "bytes": 5403
+   },
+   "eighteen": {
+    "file": "af_heart-9787437e660b5ebf.ogg",
+    "ipa": "eɪtˈiːn",
+    "ms": 1525,
+    "bytes": 4822
+   },
+   "nineteen": {
+    "file": "af_heart-14cdc04d06f5ccbc.ogg",
+    "ipa": "nˈaɪntˈiːn",
+    "ms": 1600,
+    "bytes": 5223
+   },
    "banana": {
     "file": "af_heart-8905b2af0bd89ff5.ogg",
     "ipa": "bənˈænə",
@@ -718,12 +1168,6 @@
     "ipa": "əbˈaʊt",
     "ms": 1250,
     "bytes": 4017
-   },
-   "today": {
-    "file": "af_heart-df0cb7e7c716dab6.ogg",
-    "ipa": "tədˈeɪ",
-    "ms": 1400,
-    "bytes": 4378
    },
    "problem": {
     "file": "af_heart-94303bf9b3a42686.ogg",
@@ -779,12 +1223,6 @@
     "ms": 1275,
     "bytes": 3944
    },
-   "three": {
-    "file": "af_heart-6916ba1404db2edc.ogg",
-    "ipa": "θɹˈiː",
-    "ms": 1350,
-    "bytes": 4243
-   },
    "thank you": {
     "file": "af_heart-b0108443622dabe2.ogg",
     "ipa": "θˈæŋk juː",
@@ -838,6 +1276,102 @@
     "ipa": "ðˈæt wʌz dɪlˈɪʃəs, θˈæŋk juː!",
     "ms": 2225,
     "bytes": 7872
+   },
+   "twenty": {
+    "file": "af_heart-1b93fea98211a7eb.ogg",
+    "ipa": "twˈɛnti",
+    "ms": 1550,
+    "bytes": 4821
+   },
+   "thirty": {
+    "file": "af_heart-9e8899ea28b85fea.ogg",
+    "ipa": "θˈɜːdi",
+    "ms": 1425,
+    "bytes": 4449
+   },
+   "forty": {
+    "file": "af_heart-790c8caffa2d15bf.ogg",
+    "ipa": "fˈɔːɹɾi",
+    "ms": 1425,
+    "bytes": 4493
+   },
+   "fifty": {
+    "file": "af_heart-dfd999d24a0580f2.ogg",
+    "ipa": "fˈɪfti",
+    "ms": 1500,
+    "bytes": 4681
+   },
+   "sixty": {
+    "file": "af_heart-5f7ac14790600aab.ogg",
+    "ipa": "sˈɪksti",
+    "ms": 1525,
+    "bytes": 4759
+   },
+   "seventy": {
+    "file": "af_heart-27e2c4de2893f06c.ogg",
+    "ipa": "sˈɛvənti",
+    "ms": 1550,
+    "bytes": 4890
+   },
+   "eighty": {
+    "file": "af_heart-a7cdcb2a961efad4.ogg",
+    "ipa": "ˈeɪɾi",
+    "ms": 1400,
+    "bytes": 4288
+   },
+   "ninety": {
+    "file": "af_heart-006d7d46ef8cc7cf.ogg",
+    "ipa": "nˈaɪnti",
+    "ms": 1525,
+    "bytes": 4805
+   },
+   "twenty-one": {
+    "file": "af_heart-a04fe7fd3d2f6561.ogg",
+    "ipa": "twˈɛnti wˈʌn",
+    "ms": 1500,
+    "bytes": 4967
+   },
+   "forty-five": {
+    "file": "af_heart-b28f61cc1865d168.ogg",
+    "ipa": "fˈɔːɹɾi fˈaɪv",
+    "ms": 1500,
+    "bytes": 5031
+   },
+   "ninety-nine": {
+    "file": "af_heart-3f1bcd2a57ce5f0f.ogg",
+    "ipa": "nˈaɪnti nˈaɪn",
+    "ms": 1575,
+    "bytes": 5270
+   },
+   "one hundred": {
+    "file": "af_heart-e138da5e5532ad60.ogg",
+    "ipa": "wˈʌn hˈʌndɹəd",
+    "ms": 1550,
+    "bytes": 5130
+   },
+   "one hundred and five": {
+    "file": "af_heart-d21afde3a92d6eaf.ogg",
+    "ipa": "wˈʌn hˈʌndɹəd ænd fˈaɪv",
+    "ms": 1975,
+    "bytes": 6953
+   },
+   "two hundred and fifty": {
+    "file": "af_heart-38e873c61d97f59d.ogg",
+    "ipa": "tˈuː hˈʌndɹəd ænd fˈɪfti",
+    "ms": 1900,
+    "bytes": 6587
+   },
+   "one thousand": {
+    "file": "af_heart-bc453cd1ee9e7deb.ogg",
+    "ipa": "wˈʌn θˈaʊzənd",
+    "ms": 1650,
+    "bytes": 5540
+   },
+   "one million": {
+    "file": "af_heart-e336e99d1b82645a.ogg",
+    "ipa": "wˈʌn mˈɪljən",
+    "ms": 1575,
+    "bytes": 5276
    },
    "job": {
     "file": "af_heart-8ca9a31071b6a779.ogg",
@@ -971,6 +1505,36 @@
     "ms": 2300,
     "bytes": 8150
    },
+   "What time is it?": {
+    "file": "af_heart-99b1bfb5a3576dff.ogg",
+    "ipa": "wˈʌt tˈaɪm ɪz ɪt?",
+    "ms": 1725,
+    "bytes": 5838
+   },
+   "Where are you from?": {
+    "file": "af_heart-4cdd50425f6a847d.ogg",
+    "ipa": "wˈɛɹ ɑːɹ juː fɹʌm?",
+    "ms": 1600,
+    "bytes": 5424
+   },
+   "What do you do?": {
+    "file": "af_heart-bb686a985f25c4fc.ogg",
+    "ipa": "wˈʌt duː juː duː?",
+    "ms": 1700,
+    "bytes": 5781
+   },
+   "What does it mean?": {
+    "file": "af_heart-6633efb18351ee37.ogg",
+    "ipa": "wˈʌt dʌz ɪt mˈiːn?",
+    "ms": 1725,
+    "bytes": 5862
+   },
+   "Can you repeat, please?": {
+    "file": "af_heart-e985b5580a94f1e0.ogg",
+    "ipa": "kæn juː ɹɪpˈiːt, plˈiːz?",
+    "ms": 1925,
+    "bytes": 6678
+   },
    "ship": {
     "file": "af_heart-98753ea1a474781f.ogg",
     "ipa": "ʃˈɪp",
@@ -1055,12 +1619,6 @@
     "ms": 1225,
     "bytes": 3701
    },
-   "first": {
-    "file": "af_heart-91b19b3d8c778da9.ogg",
-    "ipa": "fˈɜːst",
-    "ms": 1325,
-    "bytes": 4109
-   },
    "Her first word was bird.": {
     "file": "af_heart-1a97687aae7fdea6.ogg",
     "ipa": "hɜː fˈɜːst wˈɜːd wʌz bˈɜːd.",
@@ -1102,6 +1660,42 @@
     "ipa": "wˈʌt ɑːɹ juː dˈuːɪŋ ðˈɪs wˈiːkˌɛnd?",
     "ms": 2150,
     "bytes": 7702
+   },
+   "spring": {
+    "file": "af_heart-2bdd301e5dd055ee.ogg",
+    "ipa": "spɹˈɪŋ",
+    "ms": 1450,
+    "bytes": 4511
+   },
+   "summer": {
+    "file": "af_heart-402ef22c01f04a8d.ogg",
+    "ipa": "sˈʌmɚ",
+    "ms": 1400,
+    "bytes": 4291
+   },
+   "autumn": {
+    "file": "af_heart-9422835f704f28ce.ogg",
+    "ipa": "ˈɔːɾəm",
+    "ms": 1400,
+    "bytes": 4413
+   },
+   "winter": {
+    "file": "af_heart-1295e46fb6acc473.ogg",
+    "ipa": "wˈɪntɚ",
+    "ms": 1550,
+    "bytes": 4776
+   },
+   "month": {
+    "file": "af_heart-2610c12a28df228c.ogg",
+    "ipa": "mˈʌnθ",
+    "ms": 1350,
+    "bytes": 4164
+   },
+   "year": {
+    "file": "af_heart-36950541e26e2fdc.ogg",
+    "ipa": "jˈɪɹ",
+    "ms": 1275,
+    "bytes": 3894
    },
    "I": {
     "file": "af_heart-83854d0e846f1234.ogg",
@@ -1499,71 +2093,11 @@
     "ms": 1325,
     "bytes": 4181
    },
-   "week": {
-    "file": "af_heart-a2012552c3f811bf.ogg",
-    "ipa": "wˈiːk",
-    "ms": 1225,
-    "bytes": 3830
-   },
-   "year": {
-    "file": "af_heart-36950541e26e2fdc.ogg",
-    "ipa": "jˈɪɹ",
-    "ms": 1275,
-    "bytes": 3894
-   },
-   "tomorrow": {
-    "file": "af_heart-35d4d2d16a389e3a.ogg",
-    "ipa": "təmˈɑːɹˌoʊ",
-    "ms": 1400,
-    "bytes": 4549
-   },
-   "yesterday": {
-    "file": "af_heart-229925551d93c8a3.ogg",
-    "ipa": "jˈɛstɚdˌeɪ",
-    "ms": 1550,
-    "bytes": 5088
-   },
    "evening": {
     "file": "af_heart-cf14417c8622c684.ogg",
     "ipa": "ˈiːvnɪŋ",
     "ms": 1400,
     "bytes": 4425
-   },
-   "Monday": {
-    "file": "af_heart-747d82164bf67c59.ogg",
-    "ipa": "mˈʌndi",
-    "ms": 1450,
-    "bytes": 4507
-   },
-   "Friday": {
-    "file": "af_heart-b5ce125024c8610e.ogg",
-    "ipa": "fɹˈaɪdi",
-    "ms": 1450,
-    "bytes": 4554
-   },
-   "weekend": {
-    "file": "af_heart-dea6a4cf5e9b4460.ogg",
-    "ipa": "wˈiːkˌɛnd",
-    "ms": 1475,
-    "bytes": 4761
-   },
-   "one": {
-    "file": "af_heart-dff249e607a30317.ogg",
-    "ipa": "wˈʌn",
-    "ms": 1275,
-    "bytes": 3970
-   },
-   "two": {
-    "file": "af_heart-9d464e92d082e729.ogg",
-    "ipa": "tˈuː",
-    "ms": 1375,
-    "bytes": 4228
-   },
-   "ten": {
-    "file": "af_heart-1fce61bc72183d57.ogg",
-    "ipa": "tˈɛn",
-    "ms": 1375,
-    "bytes": 4187
    },
    "hundred": {
     "file": "af_heart-ea531d59e4666d87.ogg",
@@ -1756,24 +2290,6 @@
     "ipa": "ðˈɛɹ",
     "ms": 1225,
     "bytes": 3766
-   },
-   "where": {
-    "file": "af_heart-f4ac6f16153f9662.ogg",
-    "ipa": "wˈɛɹ",
-    "ms": 1275,
-    "bytes": 3929
-   },
-   "when": {
-    "file": "af_heart-ca311cad2c8d253c.ogg",
-    "ipa": "wˈɛn",
-    "ms": 1325,
-    "bytes": 4105
-   },
-   "why": {
-    "file": "af_heart-e19f31e85376d2df.ogg",
-    "ipa": "wˈaɪ",
-    "ms": 1325,
-    "bytes": 4070
    },
    "airport": {
     "file": "af_heart-7f387244527cfa60.ogg",
@@ -6697,6 +7213,90 @@
     "ms": 2325,
     "bytes": 8370
    },
+   "what": {
+    "file": "am_michael-13c76ff38ae2c53a.ogg",
+    "ipa": "wˈʌt",
+    "ms": 1075,
+    "bytes": 3559
+   },
+   "who": {
+    "file": "am_michael-141e75955de1a4cb.ogg",
+    "ipa": "hˈuː",
+    "ms": 1200,
+    "bytes": 3946
+   },
+   "where": {
+    "file": "am_michael-d8b28a31fbd91e33.ogg",
+    "ipa": "wˈɛɹ",
+    "ms": 1275,
+    "bytes": 4205
+   },
+   "when": {
+    "file": "am_michael-621e4ddd9e1898bb.ogg",
+    "ipa": "wˈɛn",
+    "ms": 1350,
+    "bytes": 4477
+   },
+   "why": {
+    "file": "am_michael-db4aac55aa58fb08.ogg",
+    "ipa": "wˈaɪ",
+    "ms": 1325,
+    "bytes": 4348
+   },
+   "how": {
+    "file": "am_michael-403411fff3bc61ff.ogg",
+    "ipa": "hˈaʊ",
+    "ms": 1175,
+    "bytes": 3862
+   },
+   "which": {
+    "file": "am_michael-3e358b5ab29f4e54.ogg",
+    "ipa": "wˈɪtʃ",
+    "ms": 1150,
+    "bytes": 3782
+   },
+   "whose": {
+    "file": "am_michael-ed22eb228b2df7e4.ogg",
+    "ipa": "hˈuːz",
+    "ms": 1325,
+    "bytes": 4393
+   },
+   "how much": {
+    "file": "am_michael-4dec99ed0c9984c8.ogg",
+    "ipa": "hˈaʊ mˈʌtʃ",
+    "ms": 1475,
+    "bytes": 5047
+   },
+   "how many": {
+    "file": "am_michael-f8af11d76b3ff368.ogg",
+    "ipa": "hˈaʊ mˈɛni",
+    "ms": 1550,
+    "bytes": 5203
+   },
+   "how old": {
+    "file": "am_michael-7142e5f9748224df.ogg",
+    "ipa": "hˈaʊ ˈoʊld",
+    "ms": 1650,
+    "bytes": 5638
+   },
+   "how long": {
+    "file": "am_michael-932761b274221912.ogg",
+    "ipa": "hˈaʊ lˈɔːŋ",
+    "ms": 1600,
+    "bytes": 5447
+   },
+   "how often": {
+    "file": "am_michael-3c0a88c6c29f04f4.ogg",
+    "ipa": "hˈaʊ ˈɔːfən",
+    "ms": 1725,
+    "bytes": 5992
+   },
+   "how far": {
+    "file": "am_michael-5e9e7f233f4046f2.ogg",
+    "ipa": "hˈaʊ fˈɑːɹ",
+    "ms": 1600,
+    "bytes": 5444
+   },
    "day": {
     "file": "am_michael-777ac3ab67f1b5ac.ogg",
     "ipa": "dˈeɪ",
@@ -6828,6 +7428,78 @@
     "ipa": "kæn aɪ pˈeɪ baɪ kˈɑːɹd?",
     "ms": 2250,
     "bytes": 8982
+   },
+   "January": {
+    "file": "am_michael-a36a0c572ab3516f.ogg",
+    "ipa": "dʒˈænjuˌɛɹi",
+    "ms": 1500,
+    "bytes": 5090
+   },
+   "February": {
+    "file": "am_michael-18ae62f9f7ae52bb.ogg",
+    "ipa": "fˈɛbjəwˌɛɹi",
+    "ms": 1600,
+    "bytes": 5496
+   },
+   "March": {
+    "file": "am_michael-48d5f95ee4bd7171.ogg",
+    "ipa": "mˈɑːɹtʃ",
+    "ms": 1275,
+    "bytes": 4304
+   },
+   "April": {
+    "file": "am_michael-4fcb7f6df678b2ef.ogg",
+    "ipa": "ˈeɪpɹəl",
+    "ms": 1350,
+    "bytes": 4506
+   },
+   "May": {
+    "file": "am_michael-68f660bd4952c5f8.ogg",
+    "ipa": "mˈeɪ",
+    "ms": 1250,
+    "bytes": 4122
+   },
+   "June": {
+    "file": "am_michael-e9e2b6dddb78e47a.ogg",
+    "ipa": "dʒˈuːn",
+    "ms": 1350,
+    "bytes": 4463
+   },
+   "July": {
+    "file": "am_michael-4f54fbf4bfa2a5f0.ogg",
+    "ipa": "dʒˌuːlˈaɪ",
+    "ms": 1525,
+    "bytes": 5145
+   },
+   "August": {
+    "file": "am_michael-94b79ab606e88e43.ogg",
+    "ipa": "ˈɑːɡəst",
+    "ms": 1375,
+    "bytes": 4628
+   },
+   "September": {
+    "file": "am_michael-6c5d1b76e2ad8565.ogg",
+    "ipa": "sɛptˈɛmbɚ",
+    "ms": 1575,
+    "bytes": 5363
+   },
+   "October": {
+    "file": "am_michael-e2f1aed4193fc24d.ogg",
+    "ipa": "ɑːktˈoʊbɚ",
+    "ms": 1600,
+    "bytes": 5429
+   },
+   "November": {
+    "file": "am_michael-2f2b7ef8b59985ca.ogg",
+    "ipa": "noʊvˈɛmbɚ",
+    "ms": 1575,
+    "bytes": 5377
+   },
+   "December": {
+    "file": "am_michael-97e543e8fd653a90.ogg",
+    "ipa": "dɪsˈɛmbɚ",
+    "ms": 1600,
+    "bytes": 5396
    },
    "go": {
     "file": "am_michael-a2072e0c04b34aa6.ogg",
@@ -6961,6 +7633,84 @@
     "ms": 2000,
     "bytes": 7125
    },
+   "Monday": {
+    "file": "am_michael-e382efaa925fb3a7.ogg",
+    "ipa": "mˈʌndi",
+    "ms": 1450,
+    "bytes": 4832
+   },
+   "Tuesday": {
+    "file": "am_michael-51c126b6efd9c4d7.ogg",
+    "ipa": "tˈuːzdi",
+    "ms": 1500,
+    "bytes": 4974
+   },
+   "Wednesday": {
+    "file": "am_michael-773d460605bd30be.ogg",
+    "ipa": "wˈɛnzdi",
+    "ms": 1525,
+    "bytes": 5093
+   },
+   "Thursday": {
+    "file": "am_michael-22357dccfd925ce0.ogg",
+    "ipa": "θˈɜːzdˌeɪ",
+    "ms": 1550,
+    "bytes": 5281
+   },
+   "Friday": {
+    "file": "am_michael-3cfec825cf100d28.ogg",
+    "ipa": "fɹˈaɪdi",
+    "ms": 1450,
+    "bytes": 4867
+   },
+   "Saturday": {
+    "file": "am_michael-3b57712b85ca1a65.ogg",
+    "ipa": "sˈæɾɚdi",
+    "ms": 1375,
+    "bytes": 4627
+   },
+   "Sunday": {
+    "file": "am_michael-5b97f30d4aff43de.ogg",
+    "ipa": "sˈʌndˌeɪ",
+    "ms": 1400,
+    "bytes": 4680
+   },
+   "today": {
+    "file": "am_michael-c555acbae38e97e3.ogg",
+    "ipa": "tədˈeɪ",
+    "ms": 1400,
+    "bytes": 4603
+   },
+   "tomorrow": {
+    "file": "am_michael-38f2d6f9de7514c5.ogg",
+    "ipa": "təmˈɑːɹˌoʊ",
+    "ms": 1525,
+    "bytes": 5181
+   },
+   "yesterday": {
+    "file": "am_michael-5808c782848559e5.ogg",
+    "ipa": "jˈɛstɚdˌeɪ",
+    "ms": 1600,
+    "bytes": 5484
+   },
+   "week": {
+    "file": "am_michael-cb451be8bd9414f4.ogg",
+    "ipa": "wˈiːk",
+    "ms": 1200,
+    "bytes": 3952
+   },
+   "weekend": {
+    "file": "am_michael-99843e5fdfc27ce1.ogg",
+    "ipa": "wˈiːkˌɛnd",
+    "ms": 1525,
+    "bytes": 5157
+   },
+   "every day": {
+    "file": "am_michael-af3be17c4c517f6a.ogg",
+    "ipa": "ˈɛvɚɹi dˈeɪ",
+    "ms": 1675,
+    "bytes": 5731
+   },
    "red": {
     "file": "am_michael-584f128b9f4ee875.ogg",
     "ipa": "ɹˈɛd",
@@ -7074,6 +7824,102 @@
     "ipa": "wiː plˈeɪd tˈɛnəs ɑːn sˈʌndˌeɪ.",
     "ms": 2700,
     "bytes": 9865
+   },
+   "first": {
+    "file": "am_michael-b80c5e017d6f6384.ogg",
+    "ipa": "fˈɜːst",
+    "ms": 1275,
+    "bytes": 4250
+   },
+   "second": {
+    "file": "am_michael-e130109246c4d237.ogg",
+    "ipa": "sˈɛkənd",
+    "ms": 1425,
+    "bytes": 4775
+   },
+   "third": {
+    "file": "am_michael-9d03b39d0ca823cb.ogg",
+    "ipa": "θˈɜːd",
+    "ms": 1350,
+    "bytes": 4456
+   },
+   "fourth": {
+    "file": "am_michael-c45eb08cc0a0d091.ogg",
+    "ipa": "fˈɔːɹθ",
+    "ms": 1375,
+    "bytes": 4565
+   },
+   "fifth": {
+    "file": "am_michael-5f84bd6674e8cb6e.ogg",
+    "ipa": "fˈɪfθ",
+    "ms": 1200,
+    "bytes": 3957
+   },
+   "eighth": {
+    "file": "am_michael-88405a7966f56afc.ogg",
+    "ipa": "ˈeɪtθ",
+    "ms": 1075,
+    "bytes": 3602
+   },
+   "ninth": {
+    "file": "am_michael-ab8320485f011f4c.ogg",
+    "ipa": "nˈaɪnθ",
+    "ms": 1325,
+    "bytes": 4376
+   },
+   "twelfth": {
+    "file": "am_michael-b530ff1340e0701b.ogg",
+    "ipa": "twˈɛlfθ",
+    "ms": 1250,
+    "bytes": 4154
+   },
+   "twentieth": {
+    "file": "am_michael-1d329dc504732197.ogg",
+    "ipa": "twˈɛntiəθ",
+    "ms": 1450,
+    "bytes": 4880
+   },
+   "twenty-first": {
+    "file": "am_michael-cb5912ef24df1c36.ogg",
+    "ipa": "twˈɛnti fˈɜːst",
+    "ms": 1625,
+    "bytes": 5565
+   },
+   "thirty-first": {
+    "file": "am_michael-b9e2f664a94511eb.ogg",
+    "ipa": "θˈɜːdi fˈɜːst",
+    "ms": 1725,
+    "bytes": 5938
+   },
+   "the first of May": {
+    "file": "am_michael-f7fa4a33964344ea.ogg",
+    "ipa": "ðə fˈɜːst ʌv mˈeɪ",
+    "ms": 1875,
+    "bytes": 6596
+   },
+   "May first": {
+    "file": "am_michael-c5d2f6259d8223c3.ogg",
+    "ipa": "mˈeɪ fˈɜːst",
+    "ms": 1575,
+    "bytes": 5421
+   },
+   "twenty twenty-six": {
+    "file": "am_michael-fdc227156833a0f7.ogg",
+    "ipa": "twˈɛnti twˈɛnti sˈɪks",
+    "ms": 1925,
+    "bytes": 6778
+   },
+   "nineteen ninety-five": {
+    "file": "am_michael-0e148b64aaf1a17e.ogg",
+    "ipa": "nˈaɪntˈiːn nˈaɪnti fˈaɪv",
+    "ms": 2275,
+    "bytes": 8195
+   },
+   "two thousand and five": {
+    "file": "am_michael-c1aba71ca9568e25.ogg",
+    "ipa": "tˈuː θˈaʊzənd ænd fˈaɪv",
+    "ms": 2200,
+    "bytes": 7822
    },
    "this": {
     "file": "am_michael-4e6a47d42badc11d.ogg",
@@ -7207,6 +8053,126 @@
     "ms": 2575,
     "bytes": 9353
    },
+   "zero": {
+    "file": "am_michael-4de7360c7d3f525e.ogg",
+    "ipa": "zˈɪɹoʊ",
+    "ms": 1325,
+    "bytes": 4408
+   },
+   "one": {
+    "file": "am_michael-72e4d76b2ac9bd45.ogg",
+    "ipa": "wˈʌn",
+    "ms": 1225,
+    "bytes": 4044
+   },
+   "two": {
+    "file": "am_michael-43bdf6b41a09be24.ogg",
+    "ipa": "tˈuː",
+    "ms": 1225,
+    "bytes": 4055
+   },
+   "three": {
+    "file": "am_michael-138dec050e07b426.ogg",
+    "ipa": "θɹˈiː",
+    "ms": 1300,
+    "bytes": 4334
+   },
+   "four": {
+    "file": "am_michael-45362f9fa55e8c0a.ogg",
+    "ipa": "fˈɔːɹ",
+    "ms": 1250,
+    "bytes": 4102
+   },
+   "five": {
+    "file": "am_michael-999c4ec2676fa05d.ogg",
+    "ipa": "fˈaɪv",
+    "ms": 1300,
+    "bytes": 4303
+   },
+   "six": {
+    "file": "am_michael-d61b5baef9f8fbd6.ogg",
+    "ipa": "sˈɪks",
+    "ms": 1150,
+    "bytes": 3809
+   },
+   "seven": {
+    "file": "am_michael-7ea60e7ee46d4412.ogg",
+    "ipa": "sˈɛvən",
+    "ms": 1375,
+    "bytes": 4580
+   },
+   "eight": {
+    "file": "am_michael-0149a30caae47239.ogg",
+    "ipa": "ˈeɪt",
+    "ms": 1025,
+    "bytes": 3384
+   },
+   "nine": {
+    "file": "am_michael-8ee930f8ccb781ba.ogg",
+    "ipa": "nˈaɪn",
+    "ms": 1325,
+    "bytes": 4404
+   },
+   "ten": {
+    "file": "am_michael-faa4b4f9a3d0d3b4.ogg",
+    "ipa": "tˈɛn",
+    "ms": 1325,
+    "bytes": 4317
+   },
+   "eleven": {
+    "file": "am_michael-569099c626304cb3.ogg",
+    "ipa": "ɪlˈɛvən",
+    "ms": 1500,
+    "bytes": 4938
+   },
+   "twelve": {
+    "file": "am_michael-e8237fcee428b707.ogg",
+    "ipa": "twˈɛlv",
+    "ms": 1325,
+    "bytes": 4365
+   },
+   "thirteen": {
+    "file": "am_michael-d1ee061be7b362f1.ogg",
+    "ipa": "θˈɜːtˈiːn",
+    "ms": 1600,
+    "bytes": 5435
+   },
+   "fourteen": {
+    "file": "am_michael-320767e2671e1be6.ogg",
+    "ipa": "fˈɔːɹtˈiːn",
+    "ms": 1600,
+    "bytes": 5445
+   },
+   "fifteen": {
+    "file": "am_michael-5e266d8fbadc4de4.ogg",
+    "ipa": "fɪftˈiːn",
+    "ms": 1600,
+    "bytes": 5372
+   },
+   "sixteen": {
+    "file": "am_michael-ec84102cefe4c85e.ogg",
+    "ipa": "sɪkstˈiːn",
+    "ms": 1575,
+    "bytes": 5358
+   },
+   "seventeen": {
+    "file": "am_michael-34a983bf059ce130.ogg",
+    "ipa": "sˈɛvəntˈiːn",
+    "ms": 1725,
+    "bytes": 5890
+   },
+   "eighteen": {
+    "file": "am_michael-c6adcf148e7bceac.ogg",
+    "ipa": "eɪtˈiːn",
+    "ms": 1575,
+    "bytes": 5236
+   },
+   "nineteen": {
+    "file": "am_michael-ff26736883003fa6.ogg",
+    "ipa": "nˈaɪntˈiːn",
+    "ms": 1625,
+    "bytes": 5581
+   },
    "banana": {
     "file": "am_michael-6448e8e859233af3.ogg",
     "ipa": "bənˈænə",
@@ -7218,12 +8184,6 @@
     "ipa": "əbˈaʊt",
     "ms": 1275,
     "bytes": 4283
-   },
-   "today": {
-    "file": "am_michael-c555acbae38e97e3.ogg",
-    "ipa": "tədˈeɪ",
-    "ms": 1400,
-    "bytes": 4603
    },
    "problem": {
     "file": "am_michael-8b81f6e71c37800a.ogg",
@@ -7279,12 +8239,6 @@
     "ms": 1250,
     "bytes": 4141
    },
-   "three": {
-    "file": "am_michael-138dec050e07b426.ogg",
-    "ipa": "θɹˈiː",
-    "ms": 1300,
-    "bytes": 4334
-   },
    "thank you": {
     "file": "am_michael-9293f8c99ea72a6f.ogg",
     "ipa": "θˈæŋk juː",
@@ -7338,6 +8292,102 @@
     "ipa": "ðˈæt wʌz dɪlˈɪʃəs, θˈæŋk juː!",
     "ms": 2550,
     "bytes": 9225
+   },
+   "twenty": {
+    "file": "am_michael-19b56f0df84208a0.ogg",
+    "ipa": "twˈɛnti",
+    "ms": 1400,
+    "bytes": 4646
+   },
+   "thirty": {
+    "file": "am_michael-b05c5bab08759997.ogg",
+    "ipa": "θˈɜːdi",
+    "ms": 1400,
+    "bytes": 4666
+   },
+   "forty": {
+    "file": "am_michael-e8589e84c27ece4f.ogg",
+    "ipa": "fˈɔːɹɾi",
+    "ms": 1450,
+    "bytes": 4850
+   },
+   "fifty": {
+    "file": "am_michael-94f2c75e636479cd.ogg",
+    "ipa": "fˈɪfti",
+    "ms": 1425,
+    "bytes": 4756
+   },
+   "sixty": {
+    "file": "am_michael-e0465faa21c06260.ogg",
+    "ipa": "sˈɪksti",
+    "ms": 1525,
+    "bytes": 5144
+   },
+   "seventy": {
+    "file": "am_michael-c8b7590a847a09f9.ogg",
+    "ipa": "sˈɛvənti",
+    "ms": 1550,
+    "bytes": 5230
+   },
+   "eighty": {
+    "file": "am_michael-4b6fb2eaf6fcadbe.ogg",
+    "ipa": "ˈeɪɾi",
+    "ms": 1350,
+    "bytes": 4443
+   },
+   "ninety": {
+    "file": "am_michael-3d0aa02bcc046f91.ogg",
+    "ipa": "nˈaɪnti",
+    "ms": 1500,
+    "bytes": 5051
+   },
+   "twenty-one": {
+    "file": "am_michael-ff81ede2303bdafc.ogg",
+    "ipa": "twˈɛnti wˈʌn",
+    "ms": 1625,
+    "bytes": 5553
+   },
+   "forty-five": {
+    "file": "am_michael-4c16cd58dbea0638.ogg",
+    "ipa": "fˈɔːɹɾi fˈaɪv",
+    "ms": 1750,
+    "bytes": 5951
+   },
+   "ninety-nine": {
+    "file": "am_michael-17b9d23f0e1794b9.ogg",
+    "ipa": "nˈaɪnti nˈaɪn",
+    "ms": 1675,
+    "bytes": 5775
+   },
+   "one hundred": {
+    "file": "am_michael-af75970e974a8793.ogg",
+    "ipa": "wˈʌn hˈʌndɹəd",
+    "ms": 1700,
+    "bytes": 5843
+   },
+   "one hundred and five": {
+    "file": "am_michael-beb6c756aea62554.ogg",
+    "ipa": "wˈʌn hˈʌndɹəd ænd fˈaɪv",
+    "ms": 2275,
+    "bytes": 8149
+   },
+   "two hundred and fifty": {
+    "file": "am_michael-edfc2fb05d80fc8b.ogg",
+    "ipa": "tˈuː hˈʌndɹəd ænd fˈɪfti",
+    "ms": 2150,
+    "bytes": 7650
+   },
+   "one thousand": {
+    "file": "am_michael-4158cce8d953314d.ogg",
+    "ipa": "wˈʌn θˈaʊzənd",
+    "ms": 1850,
+    "bytes": 6378
+   },
+   "one million": {
+    "file": "am_michael-1d8cb64130799212.ogg",
+    "ipa": "wˈʌn mˈɪljən",
+    "ms": 1700,
+    "bytes": 5880
    },
    "job": {
     "file": "am_michael-891237486bb2a23b.ogg",
@@ -7471,6 +8521,36 @@
     "ms": 2550,
     "bytes": 9256
    },
+   "What time is it?": {
+    "file": "am_michael-7af3d2fe11bbb52f.ogg",
+    "ipa": "wˈʌt tˈaɪm ɪz ɪt?",
+    "ms": 1975,
+    "bytes": 6933
+   },
+   "Where are you from?": {
+    "file": "am_michael-ea647d7114cf4ff7.ogg",
+    "ipa": "wˈɛɹ ɑːɹ juː fɹʌm?",
+    "ms": 1950,
+    "bytes": 6830
+   },
+   "What do you do?": {
+    "file": "am_michael-af1e83a28bd2288c.ogg",
+    "ipa": "wˈʌt duː juː duː?",
+    "ms": 2025,
+    "bytes": 7968
+   },
+   "What does it mean?": {
+    "file": "am_michael-a8d899051ee7be49.ogg",
+    "ipa": "wˈʌt dʌz ɪt mˈiːn?",
+    "ms": 2000,
+    "bytes": 7104
+   },
+   "Can you repeat, please?": {
+    "file": "am_michael-98f91b326536ea4c.ogg",
+    "ipa": "kæn juː ɹɪpˈiːt, plˈiːz?",
+    "ms": 2175,
+    "bytes": 7827
+   },
    "ship": {
     "file": "am_michael-19f1d279987abb53.ogg",
     "ipa": "ʃˈɪp",
@@ -7555,12 +8635,6 @@
     "ms": 1100,
     "bytes": 3560
    },
-   "first": {
-    "file": "am_michael-b80c5e017d6f6384.ogg",
-    "ipa": "fˈɜːst",
-    "ms": 1275,
-    "bytes": 4250
-   },
    "Her first word was bird.": {
     "file": "am_michael-096801ab98d5d993.ogg",
     "ipa": "hɜː fˈɜːst wˈɜːd wʌz bˈɜːd.",
@@ -7602,6 +8676,42 @@
     "ipa": "wˈʌt ɑːɹ juː dˈuːɪŋ ðˈɪs wˈiːkˌɛnd?",
     "ms": 2625,
     "bytes": 9571
+   },
+   "spring": {
+    "file": "am_michael-b05132ec50960b1e.ogg",
+    "ipa": "spɹˈɪŋ",
+    "ms": 1450,
+    "bytes": 4774
+   },
+   "summer": {
+    "file": "am_michael-efb03488ff8b556f.ogg",
+    "ipa": "sˈʌmɚ",
+    "ms": 1350,
+    "bytes": 4432
+   },
+   "autumn": {
+    "file": "am_michael-b65b5e76bfcb3f2a.ogg",
+    "ipa": "ˈɔːɾəm",
+    "ms": 1350,
+    "bytes": 4507
+   },
+   "winter": {
+    "file": "am_michael-1954afd869d344cd.ogg",
+    "ipa": "wˈɪntɚ",
+    "ms": 1475,
+    "bytes": 4943
+   },
+   "month": {
+    "file": "am_michael-d7ea75c34de0920f.ogg",
+    "ipa": "mˈʌnθ",
+    "ms": 1250,
+    "bytes": 4152
+   },
+   "year": {
+    "file": "am_michael-12eac946a1b7ca4f.ogg",
+    "ipa": "jˈɪɹ",
+    "ms": 1275,
+    "bytes": 4185
    },
    "I": {
     "file": "am_michael-a9dac217c452002f.ogg",
@@ -7999,71 +9109,11 @@
     "ms": 1225,
     "bytes": 4053
    },
-   "week": {
-    "file": "am_michael-cb451be8bd9414f4.ogg",
-    "ipa": "wˈiːk",
-    "ms": 1200,
-    "bytes": 3952
-   },
-   "year": {
-    "file": "am_michael-12eac946a1b7ca4f.ogg",
-    "ipa": "jˈɪɹ",
-    "ms": 1275,
-    "bytes": 4185
-   },
-   "tomorrow": {
-    "file": "am_michael-38f2d6f9de7514c5.ogg",
-    "ipa": "təmˈɑːɹˌoʊ",
-    "ms": 1525,
-    "bytes": 5181
-   },
-   "yesterday": {
-    "file": "am_michael-5808c782848559e5.ogg",
-    "ipa": "jˈɛstɚdˌeɪ",
-    "ms": 1600,
-    "bytes": 5484
-   },
    "evening": {
     "file": "am_michael-933efe1afbf76204.ogg",
     "ipa": "ˈiːvnɪŋ",
     "ms": 1450,
     "bytes": 4768
-   },
-   "Monday": {
-    "file": "am_michael-e382efaa925fb3a7.ogg",
-    "ipa": "mˈʌndi",
-    "ms": 1450,
-    "bytes": 4832
-   },
-   "Friday": {
-    "file": "am_michael-3cfec825cf100d28.ogg",
-    "ipa": "fɹˈaɪdi",
-    "ms": 1450,
-    "bytes": 4867
-   },
-   "weekend": {
-    "file": "am_michael-99843e5fdfc27ce1.ogg",
-    "ipa": "wˈiːkˌɛnd",
-    "ms": 1525,
-    "bytes": 5157
-   },
-   "one": {
-    "file": "am_michael-72e4d76b2ac9bd45.ogg",
-    "ipa": "wˈʌn",
-    "ms": 1225,
-    "bytes": 4044
-   },
-   "two": {
-    "file": "am_michael-43bdf6b41a09be24.ogg",
-    "ipa": "tˈuː",
-    "ms": 1225,
-    "bytes": 4055
-   },
-   "ten": {
-    "file": "am_michael-faa4b4f9a3d0d3b4.ogg",
-    "ipa": "tˈɛn",
-    "ms": 1325,
-    "bytes": 4317
    },
    "hundred": {
     "file": "am_michael-aabf30d340186019.ogg",
@@ -8256,24 +9306,6 @@
     "ipa": "ðˈɛɹ",
     "ms": 1275,
     "bytes": 4188
-   },
-   "where": {
-    "file": "am_michael-d8b28a31fbd91e33.ogg",
-    "ipa": "wˈɛɹ",
-    "ms": 1275,
-    "bytes": 4205
-   },
-   "when": {
-    "file": "am_michael-621e4ddd9e1898bb.ogg",
-    "ipa": "wˈɛn",
-    "ms": 1350,
-    "bytes": 4477
-   },
-   "why": {
-    "file": "am_michael-db4aac55aa58fb08.ogg",
-    "ipa": "wˈaɪ",
-    "ms": 1325,
-    "bytes": 4348
    },
    "airport": {
     "file": "am_michael-73db6ad0ba901a14.ogg",

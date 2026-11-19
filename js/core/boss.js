@@ -29,13 +29,13 @@ const shuffle = (arr, rng) => { const a = [...arr]; for (let i = a.length - 1; i
 
 // Attaques d'un combat (fonction pure : même rng → même combat).
 export function buildAttacks(region, rng = cryptoRng()) {
-  const sound = region.lessons.filter((l) => l.kind === "sound"), theme = region.lessons.filter((l) => l.kind === "theme");
+  const sound = region.lessons.filter((l) => l.kind === "sound"), theme = region.lessons.filter((l) => l.kind !== "sound"); // thèmes et bases (phase 10)
   const soundItems = shuffle(sound.flatMap((l) => l.items.map((it) => it.en)), rng);
   const themeItems = shuffle(theme.flatMap((l) => l.items), rng);
   const sounds = sound.map((l) => l.p);
   const pairs = shuffle(PAIRS.filter((p) => p.sounds.split("|").some((s) => sounds.includes(s))), rng);
   const say = [], translate = [], nSay = PATTERN.filter((x) => x === "say").length, themeEn = themeItems.map((x) => x.en);
-  // phrases à dire : une sur deux tirée des leçons de sons, l'autre des leçons de thème ;
+  // phrases à dire : une sur deux tirée des leçons de sons, l'autre des leçons de thème et des bases ;
   // « dis-le en anglais » : d'autres phrases de thème (celles qui ont une traduction)
   for (let k = 0; say.length < nSay && k < nSay * 4; k++) {
     const en = (k % 2 === 0 ? soundItems : themeEn).find((x) => !say.includes(x));

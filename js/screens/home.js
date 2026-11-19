@@ -80,7 +80,7 @@ export function mountHome(root, S) {
             <span class="region-stars"><span aria-hidden="true">★ ${st.got}/${st.max}</span><span class="sr">${`, ${st.got} étoiles sur ${st.max}`}</span></span></h2>
           <p class="muted small region-theme">${r.theme}</p>
           <ol class="map">${r.lessons.map((l, j) => {
-            const i = r.from + j, st = lessonState(P, i, won), state = nodeState(P, i, next, won), icon = l.kind === "sound" ? "🔊" : "💬";
+            const i = r.from + j, st = lessonState(P, i, won), state = nodeState(P, i, next, won), icon = l.icon || (l.kind === "sound" ? "🔊" : "💬");
             const stars = starsOf(P, l.id, l.items.length);
             const status = state === "locked" ? "verrouillée" : st.done ? `finie${st.done > 1 ? ` ${st.done} fois` : ""}, ${stars} étoile${stars > 1 ? "s" : ""} sur 3` : st.run ? `${st.run} / ${l.items.length}` : state === "current" ? "à toi de jouer !" : "à faire";
             const z = ZIGZAG[i % ZIGZAG.length];

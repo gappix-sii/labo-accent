@@ -49,8 +49,8 @@ export function mountLesson(root, S, id) {
       <p class="row"><button class="btn ghost" data-act="home" type="button">← Parcours</button>
         <span class="muted small">${ui.gained ? `+${ui.gained} XP dans cette leçon` : ""}</span></p>
       <section class="card">
-        <p class="muted small">${lesson.kind === "sound" ? "🔊 Leçon de son" : "💬 Phrases"} · ${lesson.title}</p>
-        ${lesson.kind === "sound" ? html`<p class="small">${lesson.sub}</p>` : html`<p class="muted small">${lesson.sub} · son travaillé : <b>${lesson.p}</b></p>`}
+        <p class="muted small">${lesson.kind === "sound" ? "🔊 Leçon de son" : lesson.kind === "basics" ? `${lesson.icon} Les bases` : "💬 Phrases"} · ${lesson.title}</p>
+        ${lesson.kind === "theme" ? html`<p class="muted small">${lesson.sub} · son travaillé : <b>${lesson.p}</b></p>` : html`<p class="small">${lesson.sub}</p>`}
         ${dots()}
       </section>
       ${ui.finished ? html`<section class="card done-card" role="status">
@@ -64,6 +64,9 @@ export function mountLesson(root, S, id) {
         <p class="muted small ex-count">Élément ${ui.item + 1} / ${size}</p>${progressBar(ui.item, size, "Avancement de la leçon")}
         <h1 class="sentence" lang="en">${it.en}</h1>
         ${it.fr ? html`<p class="muted">${it.fr}</p>` : ""}
+        ${it.pron ? html`<p class="pron"><span aria-hidden="true">🗣️</span> Ça se dit : <b>${it.pron}</b></p>` : ""}
+        ${it.note ? html`<p class="small tip"><span aria-hidden="true">💡</span> ${it.note}</p>` : ""}
+        ${it.ex ? html`<p class="small muted ex">Exemple : <span lang="en">${it.ex[0]}</span> — ${it.ex[1]}</p>` : ""}
         ${voice.block()}
       </section>
       <section class="card">${mic.block()}</section>

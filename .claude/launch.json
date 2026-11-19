@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["start"],
       "port": 8000
+    },
+    {
+      "name": "labo-fabrique",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "fabrique"],
+      "port": 8000
     }
   ]
 }

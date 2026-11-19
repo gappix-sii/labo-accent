@@ -1,20 +1,22 @@
 // Tests de la phase 9, tâche 1 : 9 régions, étoiles des leçons, verrous des régions gardées par un boss.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { REGIONS, PER_REGION, lessonOpen, regionCleared, regionStars, regionOfLesson, regionById } from "../js/content/regions.js";
+import { REGIONS, lessonOpen, regionCleared, regionStars, regionOfLesson, regionById } from "../js/content/regions.js";
 import { LESSONS, THEMES } from "../js/content/lessons.js";
 import { newProgress, recordItem, sanitizeProgress, starsOf, STAR_2, STAR_3 } from "../js/core/progress.js";
 
 const now = new Date(2026, 10, 19, 12).getTime();
 const finish = (P, l, score = 95) => { for (let k = 0; k < l.items.length; k++) recordItem(P, l.id, k, l.items.length, score, now); };
 
-test("9 régions de 4 leçons, une par thème, dans l'ordre du parcours", () => {
+test("9 régions, une par thème : 2 leçons de sons, 2 de thème, puis les bases, dans l'ordre du parcours", () => {
   assert.equal(REGIONS.length, 9);
-  assert.equal(REGIONS.length * PER_REGION, LESSONS.length, "chaque leçon a une région, une seule");
+  assert.equal(REGIONS.reduce((n, r) => n + r.lessons.length, 0), LESSONS.length, "chaque leçon a une région, une seule");
   assert.deepEqual(REGIONS.flatMap((r) => r.lessons.map((l) => l.id)), LESSONS.map((l) => l.id), "aucune leçon ne change de place");
   assert.deepEqual(REGIONS.map((r) => r.id), THEMES.map((t) => t.id).filter((id) => REGIONS.some((r) => r.id === id)));
   for (const r of REGIONS) {
-    assert.deepEqual(r.lessons.map((l) => l.kind), ["sound", "theme", "sound", "theme"], r.id);
+    assert.deepEqual(r.lessons.slice(0, 4).map((l) => l.kind), ["sound", "theme", "sound", "theme"], r.id);
+    assert.ok(r.lessons.slice(4).every((l) => l.kind === "basics") && r.lessons.length <= 6, `${r.id} : puis 0 à 2 leçons des bases`);
+    assert.equal(LESSONS[r.from], r.lessons[0], `${r.id} : début de région`);
     assert.ok(r.lessons.filter((l) => l.kind === "theme").every((l) => l.id.startsWith(`${r.id}-`)), `${r.id} : ses leçons de thème sont les siennes`);
     assert.ok(r.name && r.icon && r.theme, r.id);
     assert.equal(regionById(r.id), r);
@@ -35,7 +37,7 @@ test("étoiles : 0 tant que la leçon n'est pas finie, puis 1 à 3 selon la moye
   finish(P, l, STAR_3);
   assert.equal(starsOf(P, l.id, l.items.length), 3);
   const R = REGIONS[0];
-  assert.deepEqual(regionStars(P, R), { got: 3, max: 12 });
+  assert.deepEqual(regionStars(P, R), { got: 3, max: 3 * R.lessons.length });
   // une leçon commencée mais pas finie : aucune étoile
   const Q = newProgress(); recordItem(Q, l.id, 0, l.items.length, 100, now);
   assert.equal(starsOf(Q, l.id, l.items.length), 0);

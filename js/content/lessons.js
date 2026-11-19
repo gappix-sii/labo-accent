@@ -4,6 +4,8 @@
 // Un élément est réussi à 65 ou plus (voir js/core/progress.js) ; chaque élément a son son fabriqué à l'avance.
 
 // Leçons par son : p = le son travaillé (IPA du dictionnaire), tip = comment le faire.
+import { BASIC_LESSONS } from "./basics.js";
+
 export const SOUNDS = [
   { id: "s-th", p: "θ", title: "Le « th » sourd", tip: "Bout de la langue entre les dents, et souffle. Ni « s », ni « f », ni « t ».",
     items: ["think", "three", "thank you", "birthday", "I think it's Thursday.", "Thank you for the three things."] },
@@ -176,12 +178,21 @@ export const ORDER = [
 const SOUND_BY_ID = Object.fromEntries(SOUNDS.map((s) => [s.id, s]));
 const THEME_BY_ID = Object.fromEntries(THEMES.flatMap(halves).map((t) => [t.id, t]));
 
-export const LESSONS = ORDER.flatMap(([s, t]) => {
+// Les 36 leçons de sons et de thèmes, dans l'ordre (4 par région : 2 de sons, 2 de thème).
+export const CORE_LESSONS = ORDER.flatMap(([s, t]) => {
   const snd = SOUND_BY_ID[s];
   return [
     { id: snd.id, kind: "sound", title: snd.title, sub: snd.tip, p: snd.p, items: snd.items.map((en) => ({ en, fr: "" })) },
     { ...THEME_BY_ID[t], p: snd.p } // p : le son travaillé, mis en avant dans la note (tâche 5)
   ];
+});
+
+// Parcours complet (phase 10) : chaque région (thème des leçons 3 et 4 de son groupe de 4) reçoit, avant son boss,
+// ses leçons des bases (js/content/basics.js). « region » est posé sur chaque leçon : js/content/regions.js s'en sert.
+export const LESSONS = CORE_LESSONS.flatMap((l, i) => {
+  const region = CORE_LESSONS[i - (i % 4) + 3].id.replace(/-\d$/, "");
+  const here = { ...l, region };
+  return i % 4 === 3 ? [here, ...BASIC_LESSONS.filter((b) => b.region === region)] : [here];
 });
 
 export const ALL_THEME_LESSONS = Object.values(THEME_BY_ID);
