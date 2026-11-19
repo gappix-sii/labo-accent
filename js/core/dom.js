@@ -141,7 +141,8 @@ export function focusKey(node) {
 // d'entrée repartirait de zéro (bulles transparentes pendant la réponse de Gemini, blocs qui clignotent au téléchargement).
 // Un élément qui était déjà là au dessin précédent (même place, mêmes classes) est marqué data-seen : il ne se rejoue pas
 // (css/theme.css). Seul ce qui apparaît vraiment s'anime. ENTRY reprend les sélecteurs des animations d'entrée du thème.
-export const ENTRY = [".screen > *", ".score-row .mood", ".banner", ".tab.on .tab-ico", ".bar > i", ".btn.choice.wrong", ".score", ".word", ".bubble", ".correction-card"];
+export const ENTRY = [".screen > *", ".score-row .mood", ".banner", ".tab.on .tab-ico", ".bar > i", ".btn.choice.wrong", ".score", ".word", ".bubble", ".correction-card",
+  ".boss.hit .boss-body", ".boss.hit .boss-flash", ".boss.ko .boss-body", ".dmg-pop"];
 const ENTRY_SEL = ENTRY.join(", ");
 // Place d'un élément sous `top` : balise, classes et rang de chaque niveau (fonction pure, testée).
 export function placeKey(n, top) {
@@ -149,7 +150,8 @@ export function placeKey(n, top) {
   for (let x = n; x && x !== top; x = x.parentElement) {
     let i = 0;
     for (let s = x.previousElementSibling; s; s = s.previousElementSibling) i++;
-    k = `${x.tagName}.${typeof x.className === "string" ? x.className : ""}:${i}/${k}`;
+    const cls = typeof x.className === "string" ? x.className : (x.getAttribute && x.getAttribute("class")) || ""; // SVG : className n'est pas du texte
+    k = `${x.tagName}.${cls}:${i}/${k}`;
   }
   return k;
 }

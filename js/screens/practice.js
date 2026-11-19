@@ -121,6 +121,7 @@ export function practice({ S, persist, draw, root, target, onScored, speakLabel 
   return {
     block, errorBlock, handle,
     busy: () => !!ui.busy || starting,
+    ready: () => ui.engine === "ready",
     clearError: () => { ui.error = ""; },
     dispose: () => { alive = false; off(); if (rec) { rec.stop(); rec = null; } }
   };

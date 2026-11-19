@@ -4,6 +4,7 @@ import { $ } from "./core/dom.js";
 import { load, onSaveError, onStoreNotice, takeNotices, markStale, STORE_KEY, DAMAGED_KEY } from "./core/store.js";
 import { mountHome } from "./screens/home.js";
 import { mountLesson } from "./screens/lesson.js";
+import { mountBoss } from "./screens/boss.js";
 import { mountSay } from "./screens/say.js";
 import { mountVocab } from "./screens/vocab.js";
 import { mountListening } from "./screens/listening.js";
@@ -27,6 +28,8 @@ export function route(hash) {
   const h = String(hash || "").replace(/^#/, "");
   const m = /^lecon\/([a-z0-9-]{1,24})$/.exec(h);
   if (m) return { screen: "lesson", id: m[1] };
+  const bo = /^boss\/([a-z]{1,12})$/.exec(h);
+  if (bo) return { screen: "boss", id: bo[1] };
   const g = /^grammaire\/([a-z0-9-]{1,24})$/.exec(h);
   if (g) return { screen: "grammar", id: g[1] };
   if (h === "grammaire") return { screen: "grammarList" };
@@ -87,7 +90,7 @@ function start() {
     const screens = { lesson: () => mountLesson(root, S, r.id), bench: () => mountSay(root, S), vocab: () => mountVocab(root, S), listening: () => mountListening(root, S),
       grammarList: () => mountGrammarList(root, S), grammar: () => mountGrammar(root, S, r.id),
       mistakes: () => mountMistakes(root, S),
-      roleList: () => mountRoleList(root, S), role: () => mountRole(root, S, r.id), settings: () => mountSettings(root, S), chat: () => mountChat(root, S), roleFree: () => mountRoleFree(root, S, r.id), companion: () => mountCompanion(root, S), shop: () => mountShop(root, S), chests: () => mountChests(root, S), transfer: () => mountTransfer(root, S, r.code), style: () => mountStyle(root), training: () => mountTraining(root, S), profile: () => mountProfile(root, S), home: () => mountHome(root, S) };
+      roleList: () => mountRoleList(root, S), role: () => mountRole(root, S, r.id), settings: () => mountSettings(root, S), chat: () => mountChat(root, S), roleFree: () => mountRoleFree(root, S, r.id), companion: () => mountCompanion(root, S), shop: () => mountShop(root, S), chests: () => mountChests(root, S), transfer: () => mountTransfer(root, S, r.code), style: () => mountStyle(root), training: () => mountTraining(root, S), profile: () => mountProfile(root, S), home: () => mountHome(root, S), boss: () => mountBoss(root, S, r.id) };
     cleanup = screens[r.screen]();
     shell.show(r.screen);
     window.scrollTo(0, 0);

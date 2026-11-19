@@ -106,3 +106,15 @@ test("sauvegarde : section bosses nettoyée au chargement, et transférée d'un 
   const { bosses, ...older } = JSON.parse(JSON.stringify(pick(S)));
   assert.deepEqual(receive(defaults(), older).bosses, newBosses(), "code d'avant les boss : rien de cassé");
 });
+
+test("écran de combat : adresse #boss/<région>, onglet Parcours, onglets cachés comme dans un exercice", async () => {
+  const { route } = await import("../js/main.js");
+  const { tabFor, inExercise } = await import("../js/screens/shell.js");
+  assert.deepEqual(route("#boss/couple"), { screen: "boss", id: "couple" });
+  assert.deepEqual(route("#boss/../x"), { screen: "home" });
+  assert.deepEqual(route("#boss/"), { screen: "home" });
+  assert.equal(tabFor("boss"), "path");
+  assert.equal(inExercise("boss"), true);
+  const { ENTRY } = await import("../js/core/dom.js");
+  for (const sel of [".boss.hit .boss-body", ".boss.ko .boss-body", ".dmg-pop"]) assert.ok(ENTRY.includes(sel), `${sel} : ne se rejoue pas à chaque redessin`);
+});

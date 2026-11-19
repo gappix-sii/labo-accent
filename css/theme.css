@@ -263,15 +263,34 @@ table.bench, table.compare, table.odds { border-collapse: separate; border-spaci
 .boss.hit .boss-body { animation: bossHit .45s ease-out; }
 .boss.hit .boss-flash { animation: bossFlash .45s ease-out; }
 .boss.ko { filter: grayscale(.7) brightness(.85); }
-.boss.ko .boss-body { animation: bossKo .7s cubic-bezier(.3, 1.4, .5, 1) both; }
-.fx-reduced .boss.ko .boss-body { transform: rotate(-12deg) translateY(10px) scale(.92); }
+.boss.ko .boss-body { transform: rotate(-12deg) translateY(10px) scale(.92); animation: bossKo .7s cubic-bezier(.3, 1.4, .5, 1); }
 @keyframes bossIdle { 0%, 100% { transform: none; } 45% { transform: scale(1.05, .94); } 60% { transform: scale(.97, 1.04) translateY(-4px); } }
 @keyframes bossBlink { 0%, 92%, 100% { transform: none; } 95% { transform: scaleY(.1); } }
 @keyframes bossFloat { 50% { transform: translateY(-6px); } }
 @keyframes bossHit { 20% { transform: translateX(-12px) rotate(-6deg); } 45% { transform: translateX(9px) rotate(4deg); } 70% { transform: translateX(-4px); } }
 @keyframes bossFlash { 15% { opacity: .75; } }
-@keyframes bossKo { to { transform: rotate(-12deg) translateY(10px) scale(.92); } }
+@keyframes bossKo { from { transform: none; } }
 .boss-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); gap: 10px; }
 .boss-gallery figure { margin: 0; display: grid; justify-items: center; gap: 4px; text-align: center; }
 .boss-gallery .boss-pic { width: 7rem; height: 7rem; }
 .boss-gallery figcaption { font-weight: 800; font-size: .8rem; line-height: 1.2; }
+
+/* Écran de combat (phase 9, tâche 4) */
+.boss-panel { text-align: center; background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--red) 22%, var(--card2)), var(--card)); }
+.boss-stage { position: relative; display: grid; place-items: center; margin: 8px 0 2px; }
+.boss-big { display: block; width: min(13rem, 62vw); height: min(13rem, 62vw); filter: drop-shadow(0 0 22px color-mix(in srgb, var(--red) 40%, transparent)); }
+.boss-name { margin: 0; font-size: 1.7rem; }
+.boss-hp { height: 18px; margin: 8px 0 4px; }
+.boss-hp > i { background: linear-gradient(90deg, var(--red-d), var(--red)); }
+.boss-panel .row { justify-content: space-between; align-items: center; }
+.hearts { font-size: 1.3rem; letter-spacing: 2px; }
+.boss-line { margin: 6px 0 0; font-weight: 800; font-style: italic; }
+.dmg-pop { position: absolute; top: 18%; left: 50%; font-family: var(--font-display); font-style: italic; font-weight: 900; font-size: 2rem; color: var(--red); -webkit-text-stroke: 1px var(--bg); text-shadow: 0 3px 0 var(--shadow); animation: dmgPop 1s ease-out both; pointer-events: none; white-space: nowrap; }
+.dmg-pop.crit { color: var(--gold); font-size: 2.3rem; }
+@keyframes dmgPop { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.6); } 20% { opacity: 1; transform: translate(-50%, 0) scale(1.15); } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1); } }
+.fx-reduced .dmg-pop { opacity: 1; transform: translate(-50%, 0); }
+.sentence-fr { font-size: 1.25rem; font-weight: 800; margin: 4px 0 8px; }
+.victory { border-color: var(--gold-fill); }
+.defeat { border-color: var(--red); }
+.boss-panel.fighting .boss-big { width: min(8.5rem, 42vw); height: min(8.5rem, 42vw); }
+.boss-panel.fighting .boss-name { font-size: 1.3rem; }
