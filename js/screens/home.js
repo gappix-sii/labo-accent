@@ -2,22 +2,20 @@
 // Niveau, série et pièces sont dans la barre du haut (js/screens/shell.js).
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
-import { streakNow, todayXp, setGoal, unlocked, GOALS } from "../core/progress.js";
+import { streakNow, todayXp, setGoal, GOALS } from "../core/progress.js";
 import { LESSONS } from "../content/lessons.js";
+import { REGIONS, lessonOpen } from "../content/regions.js";
 import { avatarSvg } from "../content/avatar.js";
 
 const IDS = LESSONS.map((l) => l.id);
 
-// État d'une leçon du parcours, pour l'affichage.
-export function lessonState(P, index) {
+// État d'une leçon du parcours, pour l'affichage (verrous : lessonOpen, js/content/regions.js).
+export function lessonState(P, index, won = null) {
   const l = LESSONS[index], L = Object.hasOwn(P.lessons, l.id) ? P.lessons[l.id] : null;
-  if (!unlocked(P, IDS, index)) return { open: false, done: 0, run: 0 };
+  if (!lessonOpen(P, index, won)) return { open: false, done: 0, run: 0 };
   return { open: true, done: L ? L.done : 0, run: L ? L.run.length : 0 };
 }
 
-// Régions de la carte (phase 8, tâche 3) : les leçons du parcours, 6 par région, comme les étapes d'un voyage.
-export const REGIONS = [["🏡", "Le Village"], ["🌲", "La Forêt"], ["⛰️", "Les Collines"], ["🌊", "La Rivière"], ["🏔️", "La Montagne"], ["🏰", "Le Château"]];
-export const PER_REGION = 6;
 const ZIGZAG = [0, 1, 2, 1, 0, -1, -2, -1]; // décalage des étapes à gauche et à droite du chemin
 
 // Quête du jour : l'objectif du jour et sa récompense (la série qui avance). Fonction pure, testée.
@@ -39,7 +37,6 @@ export function mountHome(root, S) {
   function draw() {
     const now = Date.now(), q = dailyQuest(P, now);
     const next = LESSONS.findIndex((_, i) => { const st = lessonState(P, i); return st.open && st.done === 0; });
-    const regions = REGIONS.map((r, k) => ({ icon: r[0], name: r[1], from: k * PER_REGION, lessons: LESSONS.slice(k * PER_REGION, (k + 1) * PER_REGION) })).filter((r) => r.lessons.length);
     render(root, html`
       <h1 class="sr">Parcours</h1>
       <section class="card quest daily${q.done ? " done" : ""}"><span class="quest-title">Quête du jour</span>
@@ -50,10 +47,11 @@ export function mountHome(root, S) {
         <p class="kind">${GOALS.map((g) => html`<button class="chip${g === P.goal ? " on" : ""}" data-act="goal" data-goal="${g}" type="button" aria-pressed="${g === P.goal ? "true" : "false"}">${g} XP</button>`)}</p>
       </section>
       ${next >= 0 ? html`<button class="btn big" data-act="open" data-id="${LESSONS[next].id}" type="button">▶ Continuer : ${LESSONS[next].title}</button>` : html`<p class="card quest"><span class="quest-title">Bravo</span> Tout le parcours est fini ! Refais tes leçons préférées pour gagner encore des XP.</p>`}
-      ${regions.map((r) => {
+      ${REGIONS.map((r) => {
         const open = lessonState(P, r.from).open, finished = r.lessons.every((_, j) => lessonState(P, r.from + j).done > 0);
         return html`<section class="card region${open ? "" : " locked"}">
           <h2 class="region-title"><span aria-hidden="true">${r.icon}</span> ${r.name} <span class="muted small">${finished ? "✓ terminée" : open ? "" : "🔒"}</span></h2>
+          <p class="muted small region-theme">${r.theme}</p>
           <ol class="map">${r.lessons.map((l, j) => {
             const i = r.from + j, st = lessonState(P, i), state = nodeState(P, i, next), icon = l.kind === "sound" ? "🔊" : "💬";
             const status = state === "locked" ? "verrouillée" : st.done ? `finie${st.done > 1 ? ` ${st.done} fois` : ""}` : st.run ? `${st.run} / ${l.items.length}` : state === "current" ? "à toi de jouer !" : "à faire";

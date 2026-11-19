@@ -122,7 +122,21 @@ export function finishSession(P, answers, now = Date.now()) {
   return xp;
 }
 
-// Une leçon est ouverte si c'est la première, ou si la précédente a été finie au moins une fois.
+// Étoiles d'une leçon (phase 9, tâche 1), d'après la moyenne des meilleures notes de ses éléments (déjà enregistrées) :
+// 0 tant qu'elle n'est pas finie, 1 ★ finie, 2 ★ dès STAR_2 de moyenne, 3 ★ dès STAR_3. On rejoue pour les décrocher.
+export const STAR_2 = 75;
+export const STAR_3 = 85;
+export function starsOf(P, id, size) {
+  const L = Object.hasOwn(P.lessons, id) ? P.lessons[id] : null;
+  if (!L || L.done === 0 || size <= 0) return 0;
+  let sum = 0;
+  for (let i = 0; i < size; i++) sum += L.best[i] || 0;
+  const avg = sum / size;
+  return avg >= STAR_3 ? 3 : avg >= STAR_2 ? 2 : 1;
+}
+
+// Une leçon est ouverte si c'est la première, ou si la précédente a été finie au moins une fois
+// (règle de base ; la carte y ajoute les boss : lessonOpen dans js/content/regions.js).
 export function unlocked(P, ids, index) {
   if (index <= 0) return true;
   const prev = ids[index - 1];

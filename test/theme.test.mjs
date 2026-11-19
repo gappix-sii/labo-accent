@@ -60,7 +60,8 @@ test("barre du haut et onglets : onglet allumé, onglets cachés pendant un exer
 });
 
 test("carte du parcours : régions, étapes et quête du jour", async () => {
-  const { REGIONS, PER_REGION, dailyQuest, nodeState, lessonState } = await import("../js/screens/home.js");
+  const { dailyQuest, nodeState, lessonState } = await import("../js/screens/home.js");
+  const { REGIONS, PER_REGION } = await import("../js/content/regions.js");
   const { LESSONS } = await import("../js/content/lessons.js");
   const { newProgress, recordItem, dayKey } = await import("../js/core/progress.js");
   assert.ok(REGIONS.length * PER_REGION >= LESSONS.length, "chaque leçon a sa région");

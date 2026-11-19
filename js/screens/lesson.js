@@ -2,7 +2,8 @@
 // Un élément est réussi à 65 ou plus ; la leçon est finie quand tous le sont (règles : js/core/progress.js).
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
-import { recordItem, unlocked, PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";
+import { recordItem, PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";
+import { lessonOpen } from "../content/regions.js";
 import { LESSONS, lessonById } from "../content/lessons.js";
 import { practice, resultBlock, progressBar } from "./practice.js";
 import { listenControls } from "./listen.js";
@@ -29,7 +30,7 @@ export function dotsBlock(run, cur, size, label, word) {
 export function mountLesson(root, S, id) {
   const lesson = lessonById(id), P = S.progress;
   // Leçon inconnue ou encore verrouillée (adresse tapée à la main) : retour au parcours.
-  if (!lesson || !unlocked(P, LESSONS.map((l) => l.id), LESSONS.indexOf(lesson))) { location.hash = "#accueil"; return () => {}; }
+  if (!lesson || !lessonOpen(P, LESSONS.indexOf(lesson))) { location.hash = "#accueil"; return () => {}; }
   const size = lesson.items.length;
   const state = () => (Object.hasOwn(P.lessons, id) ? P.lessons[id] : null);
   const ui = { item: firstToDo(state(), size), last: null, gained: 0, feedback: "", finished: false };

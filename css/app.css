@@ -362,3 +362,4 @@ html:has(body.in-exercise) { scroll-padding-bottom: 16px; }
 .map { overflow-x: clip; padding: 0 4px; }
 .node-wrap.z1 { --zx: 1.8rem; } .node-wrap.z2 { --zx: 3.4rem; } .node-wrap.zm1 { --zx: -1.8rem; } .node-wrap.zm2 { --zx: -3.4rem; }
 @media (max-width: 420px) { .node-wrap.z2 { --zx: 2.8rem; } .node-wrap.zm2 { --zx: -2.8rem; } }
+.region-theme { margin: -6px 0 4px; }
