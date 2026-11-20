@@ -2,12 +2,13 @@
 import { html, render } from "../core/dom.js";
 import { levelOf, streakNow } from "../core/progress.js";
 import { avatarSvg } from "../content/avatar.js";
+import { lessonsDone } from "../content/lessons.js";
 
 const GO = { settings: "#reglages", transfer: "#transfert", bench: "#banc", style: "#style", companion: "#compagnon", chests: "#coffres" };
 
 export function mountProfile(root, S) {
   const P = S.progress, lv = levelOf(P.xp), streak = streakNow(P, Date.now());
-  const lessons = Object.values(P.lessons).filter((l) => l.done > 0).length, words = Object.keys(S.srs.cards).length;
+  const lessons = lessonsDone(P), words = Object.keys(S.srs.cards).length;
   render(root, html`
     <section class="card quest profile-hero"><span class="quest-title">Profil</span>
       <button class="profile-av" data-act="companion" type="button" aria-label="Voir mon compagnon">${avatarSvg(S.game.avatar)}</button>

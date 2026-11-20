@@ -79,6 +79,10 @@ async function encodeOpus(samples) {
   return file;
 }
 
+// { version, revision, clips: { voix: { texte: fichier } } } d'après index.json (même règle que test/clips.test.mjs).
+export const filesOf = (index) => ({ version: 1, revision: index.revision,
+  clips: Object.fromEntries(Object.entries(index.clips).map(([v, list]) => [v, Object.fromEntries(Object.entries(list).map(([t, c]) => [t, c.file]))])) });
+
 async function put(name, body, type) {
   const r = await fetch("../data/audio/" + name, { method: "PUT", body, headers: { "Content-Type": type } });
   if (r.status !== 201) throw new Error(`écriture de ${name} refusée (${r.status} ${await r.text()}). Le serveur est-il lancé avec « npm run fabrique » ?`);
@@ -135,6 +139,8 @@ async function run() {
     }
     const index = { version: 1, model: MODEL_ID, revision: REVISION, rate: RATE, clips };
     await put("index.json", JSON.stringify(index, null, 1), "application/json");
+    // Liste allégée lue par l'appli (js/engine/clips.js) : seulement texte → fichier (146 Ko au lieu de 425 le 2026-11-20).
+    await put("files.json", JSON.stringify(filesOf(index)), "application/json");
     $("bar").value = 100;
     status(`Terminé : ${made} fabriqués, ${kept} gardés · ${jobs.length} sons, ${(bytes / 1024).toFixed(0)} Ko au total.`);
   } catch (e) {

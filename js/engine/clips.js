@@ -12,16 +12,19 @@ let index = null, indexLoading = null, current = null, gen = 0, stats = null;
 const players = new Map(); // nom du fichier → <audio> déjà chargé
 
 // Liste des sons (texte → fichier), lue une fois. Exportée pour les tests.
+// L'appli lit files.json (texte → nom du fichier, écrite par la fabrique) ; index.json, trois fois plus lourde
+// (prononciation, durée, taille de chaque son), ne sert qu'à la fabrique. Les deux formes sont acceptées ici.
 export function fileFor(idx, text, voice) {
   const v = idx && idx.clips && Object.hasOwn(idx.clips, voice) ? idx.clips[voice] : null;
   const c = v && Object.hasOwn(v, text) ? v[text] : null;
-  return c && typeof c.file === "string" && /^(?:af|am)_[a-z]+-[0-9a-f]{16}\.ogg$/.test(c.file) ? c.file : null;
+  const file = typeof c === "string" ? c : c && c.file;
+  return typeof file === "string" && /^(?:af|am)_[a-z]+-[0-9a-f]{16}\.ogg$/.test(file) ? file : null;
 }
 
 export function loadIndex() {
   if (index) return Promise.resolve(index);
   if (!indexLoading) {
-    indexLoading = fetch(new URL("index.json", BASE))
+    indexLoading = fetch(new URL("files.json", BASE))
       .then((r) => { if (!r.ok) throw new Error("liste des sons introuvable"); return r.json(); })
       .then((j) => (index = j))
       .catch((e) => { indexLoading = null; throw e; });

@@ -4,6 +4,7 @@
 import { html, render } from "../core/dom.js";
 import { save, defaults, sanitize, STORE_KEY } from "../core/store.js";
 import { levelOf } from "../core/progress.js";
+import { lessonsDone } from "../content/lessons.js";
 import { pack, unpack, receive, linkFor, codeFrom, transferError } from "../core/transfer.js";
 import { qrSvg } from "../engine/qr.js";
 
@@ -15,7 +16,7 @@ export const backupOf = (raw) => (typeof raw === "string" && raw ? raw : JSON.st
 // Résumé d'une sauvegarde, pour comparer avant d'importer.
 export function summary(S) {
   const lv = levelOf(S.progress.xp);
-  return { level: lv.level, xp: S.progress.xp, lessons: Object.values(S.progress.lessons).filter((l) => l.done > 0).length,
+  return { level: lv.level, xp: S.progress.xp, lessons: lessonsDone(S.progress),
     words: Object.keys(S.srs.cards).length, bosses: [...Object.values(S.bosses.regions), ...Object.values(S.bosses.families || {})].filter((r) => r.wins > 0).length, /* boss et mini-boss */ coins: S.game.coins, items: S.game.owned.length, name: S.game.avatar.name };
 }
 // « Annuler l'import » ÉCHANGE les deux sauvegardes au lieu d'effacer la copie (relecture complète, n° 2) : la progression

@@ -67,6 +67,8 @@ test("mode fabrique : n'écrit que des sons et leur liste, dans data/audio/", as
     assert.equal(await put(name, ogg, "audio/ogg"), 201);
     assert.deepEqual(await readFile(join(root, "data", "audio", "af_heart-0123456789abcdef.ogg")), ogg);
     assert.equal(await put("/data/audio/index.json", '{"version":1}', "application/json"), 201);
+    assert.equal(await put("/data/audio/files.json", '{"version":1}', "application/json"), 201, "liste allégée des sons");
+    assert.equal(await put("/data/audio/other.json", '{"version":1}', "application/json"), 403);
     for (const bad of ["/index.html", "/js/main.js", "/data/audio/../x.ogg", "/data/audio/%2e%2e/x.ogg",
       "/data/audio/x.ogg", "/data/audio/af_heart-0123.ogg", "/data/audio/af_heart-0123456789abcdef.ogg.js", "/data/cmudict.json"]) {
       assert.equal(await put(bad, ogg, "audio/ogg"), 403, bad);
@@ -78,7 +80,7 @@ test("mode fabrique : n'écrit que des sons et leur liste, dans data/audio/", as
     assert.equal(await put(name, Buffer.from("MZ......"), "audio/ogg"), 400, "pas un Ogg");
     assert.equal(await put("/data/audio/index.json", "[1]", "application/json"), 400);
     assert.equal(await put(name, Buffer.concat([Buffer.from("OggS"), Buffer.alloc(300 * 1024)]), "audio/ogg"), 413, "trop gros");
-    assert.deepEqual((await readdir(join(root, "data", "audio"))).sort(), ["af_heart-0123456789abcdef.ogg", "index.json"]);
+    assert.deepEqual((await readdir(join(root, "data", "audio"))).sort(), ["af_heart-0123456789abcdef.ogg", "files.json", "index.json"]);
   } finally {
     srv.close();
     await rm(root, { recursive: true, force: true });

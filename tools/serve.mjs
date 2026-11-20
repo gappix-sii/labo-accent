@@ -62,7 +62,7 @@ export function resolvePath(root, urlPath) {
 }
 
 // Écritures permises en mode fabrique : nom du fichier → [type attendu, taille maximale].
-export const WRITABLE = /^\/data\/audio\/((?:af|am)_[a-z]+-[0-9a-f]{16}\.ogg|index\.json)$/;
+export const WRITABLE = /^\/data\/audio\/((?:af|am)_[a-z]+-[0-9a-f]{16}\.ogg|index\.json|files\.json)$/;
 const LIMITS = { ".ogg": ["audio/ogg", 256 * 1024], ".json": ["application/json", 2 * 1024 * 1024] };
 
 // Vérifie une demande d'écriture ; renvoie [code, message] si elle est refusée, sinon le nom du fichier.

@@ -36,3 +36,14 @@ test("un nom de fichier inattendu dans la liste est ignoré", () => {
   assert.equal(fileFor(idx, "toString", "af_heart"), null);
   assert.equal(fileFor(null, "b", "af_heart"), null);
 });
+
+test("files.json (liste allégée lue par l'appli) donne les mêmes fichiers qu'index.json (relecture du 2026-11-20)", () => {
+  const files = JSON.parse(readFileSync(new URL("files.json", dir), "utf8"));
+  assert.equal(files.revision, index.revision, "files.json périmée : relancer npm run fabrique");
+  for (const v of VOICE_IDS) {
+    assert.deepEqual(Object.keys(files.clips[v]).sort(), Object.keys(index.clips[v]).sort(), v);
+    for (const text of Object.keys(index.clips[v])) assert.equal(fileFor(files, text, v), fileFor(index, text, v), `${v} · ${text}`);
+  }
+  assert.equal(fileFor({ clips: { af_heart: { x: "../../index.html" } } }, "x", "af_heart"), null, "nom de fichier inattendu ignoré");
+  assert.ok(readFileSync(new URL("files.json", dir)).length < readFileSync(new URL("index.json", dir)).length / 2);
+});

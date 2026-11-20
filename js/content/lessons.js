@@ -197,3 +197,6 @@ export const LESSONS = CORE_LESSONS.flatMap((l, i) => {
 
 export const ALL_THEME_LESSONS = Object.values(THEME_BY_ID);
 export const lessonById = (id) => LESSONS.find((l) => l.id === id) || null;
+// Leçons du parcours finies au moins une fois. Les autres pistes de la progression (règles de grammaire « g- »,
+// dialogues « r- », familles de verbes « v- », leçons retirées depuis) ne comptent pas (relecture du 2026-11-20).
+export const lessonsDone = (P) => LESSONS.filter((l) => Object.hasOwn(P.lessons, l.id) && P.lessons[l.id].done > 0).length;
