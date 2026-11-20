@@ -9,11 +9,16 @@ import { buildQueue } from "../js/screens/vocab.js";
 import { syncGame, openChest, mulberry32 } from "../js/core/game.js";
 import { CATALOG } from "../js/content/avatar.js";
 import { LESSONS } from "../js/content/lessons.js";
+import { GRAMMAR } from "../js/content/grammar.js";
+import { DIALOGUES } from "../js/content/dialogues.js";
+import { FAMILIES } from "../js/content/verbs.js";
+import { starsOf } from "../js/core/progress.js";
 
 const DAY = 86400e3, t0 = Date.UTC(2026, 0, 1, 12);
 const b64 = (buf) => toB64url(new Uint8Array(buf));
 
-// Un an d'usage simulé : vocabulaire tous les jours, leçons, jeu bien rempli, journal du banc plein.
+// Un an d'usage simulé : vocabulaire tous les jours, une note pour chaque élément de chaque leçon, règle, dialogue
+// et famille de verbes (ajouté le 2026-11-20 : sans les notes, la taille était sous-estimée), jeu bien rempli, journal plein.
 function yearOfUse() {
   const S = defaults(), rng = mulberry32(5); let now = t0;
   for (let d = 0; d < 365; d++) {
@@ -21,7 +26,11 @@ function yearOfUse() {
     for (const x of buildQueue(S.srs, now)) answer(S.srs, x.id, rng() > 0.3, now);
     S.progress.xp += 60; now += DAY;
   }
-  for (const l of LESSONS) S.progress.lessons[l.id] = { done: 3, run: [] };
+  const notes = (n) => Array.from({ length: n }, () => 60 + Math.floor(rng() * 41));
+  for (const l of LESSONS) S.progress.lessons[l.id] = { done: 3, run: [], best: notes(l.items.length) };
+  for (const g of GRAMMAR) S.progress.lessons["g-" + g.id] = { done: 1, run: [1], best: notes(g.ex.length) };
+  for (const d of DIALOGUES) S.progress.lessons["r-" + d.id] = { done: 1, run: [], best: notes(d.turns.filter((t) => t.me).length) };
+  for (const f of FAMILIES) S.progress.lessons["v-" + f.id] = { done: 1, run: [0, 4], best: notes(f.verbs.length * 3) };
   syncGame(S.game, S.progress); while (S.game.chests.length) openChest(S.game, rng);
   S.game.owned.push(...CATALOG.slice(0, 60));
   S.engine = true; S.voice = true;
@@ -35,7 +44,17 @@ test("aller-retour : ce qui est envoyé revient à l'identique", async () => {
   const r = await unpack(code);
   assert.equal(r.ok, true);
   const local = defaults(), got = receive(local, r.data);
-  for (const k of SENT.filter((k) => k !== "srs" && k !== "game")) assert.deepEqual(got[k], S[k], k);
+  for (const k of SENT.filter((k) => k !== "srs" && k !== "game" && k !== "progress")) assert.deepEqual(got[k], S[k], k);
+  // progression : tout pareil, sauf le détail des notes, lissé ; leur nombre, leur total et donc les étoiles sont identiques
+  const { lessons, ...p } = got.progress, { lessons: l2, ...p2 } = S.progress;
+  assert.deepEqual(p, p2);
+  assert.deepEqual(Object.keys(lessons).sort(), Object.keys(l2).sort());
+  const total = (b) => b.reduce((a, x) => a + x, 0);
+  for (const [id, L] of Object.entries(l2)) {
+    assert.deepEqual([lessons[id].done, lessons[id].run, lessons[id].best.length, total(lessons[id].best)], [L.done, L.run, L.best.length, total(L.best)], id);
+    assert.ok(lessons[id].best.every((x) => Number.isInteger(x) && x >= 0 && x <= 100), id);
+  }
+  for (const l of LESSONS) assert.equal(starsOf(got.progress, l.id, l.items.length), starsOf(S.progress, l.id, l.items.length), l.id);
   // vocabulaire : boîte et date de révision de chaque mot (les compteurs internes, jamais affichés, ne partent pas)
   const bd = (R) => Object.fromEntries(Object.entries(R.cards).map(([id, c]) => [id, [c.box, c.due]]));
   assert.deepEqual(bd(got.srs), bd(S.srs)); assert.equal(got.srs.level, S.srs.level); assert.deepEqual(got.srs.fresh, S.srs.fresh);
@@ -124,4 +143,19 @@ test("import sur un appareil qui n'avait rien enregistré : « Annuler » ramèn
   assert.deepEqual(sanitize(JSON.parse(backupOf(""))), defaults());
   const raw = JSON.stringify(yearOfUse());
   assert.equal(backupOf(raw), raw, "sinon la sauvegarde telle quelle");
+});
+
+test("pistes : code d'avant (notes en clair) toujours lu ; nombre ou total de notes aberrant : piste ignorée", async () => {
+  const data = pick(defaults());
+  data.progress = { ...data.progress, lessons: {
+    "s-h": { best: [90, 70], run: [], done: 1 },          // forme d'avant le 2026-11-20
+    "s-th": [2, [1], 3, 250],                             // forme compacte : 250 réparti en 84, 83, 83
+    "s-r": [1, [], 9999, 10], "s-w": [1, [], 2, 201], "s-v": [1, [], -1, 0] } };
+  const code = "1." + b64(zlib.deflateRawSync(Buffer.from(JSON.stringify(data))));
+  const r = await unpack(code);
+  assert.equal(r.ok, true);
+  const got = receive(defaults(), r.data).progress.lessons;
+  assert.deepEqual(got["s-h"], { best: [90, 70], run: [], done: 1 });
+  assert.deepEqual(got["s-th"], { best: [84, 83, 83], run: [1], done: 2 });
+  assert.deepEqual(Object.keys(got).sort(), ["s-h", "s-th"]);
 });

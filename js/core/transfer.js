@@ -8,6 +8,7 @@ import { sanitize, VERSION } from "./store.js";
 import { seedFrom } from "./game.js";
 import { ALL_WORDS } from "../content/vocab.js";
 import { ITEMS, SPECIES, skinKey } from "../content/avatar.js";
+import { MAX_ITEMS } from "./progress.js";
 
 export const FORMAT = "1"; // numéro du format du code, en tête : « 1.<données> »
 export const CODE_MAX = 12000; // caractères au plus dans un code reçu
@@ -48,6 +49,24 @@ function unpackCards(t, c) {
   }
   return cards;
 }
+// Pistes de la progression (leçons, règles, dialogues, familles de verbes) : [fois finie, réussis du passage en cours,
+// nombre de notes, total des notes] au lieu de la liste des notes (mesuré le 2026-11-20 : un an d'usage avec une note
+// partout donnait un lien de 3 700 caractères, trop pour un QR code ; 2 660 ainsi). À l'arrivée, le total est réparti
+// sur les notes : la moyenne, donc les étoiles (starsOf), est exactement la même ; seul le détail note par note est lissé
+// (il n'est affiché nulle part).
+const packLessons = (lessons) => Object.fromEntries(Object.entries(lessons).map(([id, L]) => [id, [L.done, L.run, L.best.length, L.best.reduce((a, b) => a + b, 0)]]));
+function unpackLessons(lessons) {
+  if (!lessons || typeof lessons !== "object" || Array.isArray(lessons)) return lessons;
+  const out = {};
+  for (const [id, v] of Object.entries(lessons)) {
+    if (!Array.isArray(v)) { out[id] = v; continue; } // code d'avant le 2026-11-20 : notes en clair
+    const [done, run, n, sum] = v;
+    if (!Number.isInteger(n) || n < 0 || n > MAX_ITEMS || !Number.isInteger(sum) || sum < 0 || sum > 100 * n) continue;
+    const q = n ? Math.floor(sum / n) : 0, r = n ? sum % n : 0;
+    out[id] = { done, run, best: Array.from({ length: n }, (_, i) => q + (i < r ? 1 : 0)) };
+  }
+  return out;
+}
 const packOwned = (owned) => { const b = new Uint8Array(Math.ceil(OWNABLE.length / 8)); OWNABLE.forEach((id, i) => { if (owned.includes(id)) b[i >> 3] |= 1 << (i & 7); }); return toB64url(b); };
 function unpackOwned(s) {
   if (typeof s !== "string" || !/^[A-Za-z0-9_-]{0,40}$/.test(s)) return [];
@@ -63,6 +82,7 @@ export function pick(S) {
   out.srs = { ...srs, ...packCards(cards || {}) };
   const { owned, ...game } = S.game;
   out.game = { ...game, o: packOwned(owned || []) };
+  out.progress = { ...S.progress, lessons: packLessons(S.progress.lessons || {}) };
   return out;
 }
 // Forme compacte → forme de la sauvegarde (avant nettoyage).
@@ -70,6 +90,7 @@ function expand(data) {
   const out = { ...data };
   if (data.srs && typeof data.srs === "object") { const { t, c, ...srs } = data.srs; out.srs = { ...srs, cards: unpackCards(t, c) }; }
   if (data.game && typeof data.game === "object") { const { o, ...game } = data.game; out.game = { ...game, owned: unpackOwned(o) }; }
+  if (data.progress && typeof data.progress === "object") out.progress = { ...data.progress, lessons: unpackLessons(data.progress.lessons) };
   return out;
 }
 
