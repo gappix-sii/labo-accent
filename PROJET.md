@@ -77,5 +77,5 @@ _Mises à jour le 2026-11-19_
 
 ### Questions ouvertes
 - ~~Le moteur actuel note-t-il correctement avec le vrai modèle ?~~ **Oui sur PC (2026-11-14)** : avec la voix Kokoro comme élève-témoin, prononciation correcte notée 95 en moyenne et fautes de Français injectées repérées sur le bon son 37 fois sur 40 ; l'essai de l'utilisateur au micro repère 15 fautes volontaires sur 16. Moteur gardé. Limite : voix de synthèse plus « propre » qu'une vraie voix ; quelques signalements peu plausibles sur la voix réelle de l'utilisateur, à surveiller.
-- Un Android de milieu de gamme tient-il ≈ 350 Mo de moteur (la voix sera fabriquée à l'avance, voir Décisions) ? → **reporté** : test Android avant la publication (phase 11), à la demande de l'utilisateur.
+- ~~Un Android de milieu de gamme tient-il ≈ 350 Mo de moteur ?~~ **Oui (2026-11-20, phase 11 tâche 1)** : sur le téléphone Android de l'utilisateur, via GitHub Pages (branche `refonte/v1`), le moteur se charge et la note s'affiche ; transfert par QR code du PC vers le téléphone réussi.
 - Moteur et voix tournent sur 1 cœur : en multi-cœurs, leur initialisation se bloquait parfois sans erreur (2026-11-14).
