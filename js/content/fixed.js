@@ -7,6 +7,7 @@ import { PAIRS } from "./pairs.js";
 import { GRAMMAR, grammarTexts } from "./grammar.js";
 import { ALL_MISTAKES } from "./mistakes.js";
 import { DIALOGUES, dialogueTexts } from "./dialogues.js";
+import { VERBS, verbTexts } from "./verbs.js";
 
 export function fixedTexts() {
   return [...new Set([
@@ -16,6 +17,7 @@ export function fixedTexts() {
     ...PAIRS.flatMap((p) => [p.a.en, p.b.en]),
     ...GRAMMAR.flatMap(grammarTexts),
     ...ALL_MISTAKES.map((m) => m.right),
-    ...DIALOGUES.flatMap(dialogueTexts)
+    ...DIALOGUES.flatMap(dialogueTexts),
+    ...VERBS.flatMap(verbTexts)
   ])];
 }

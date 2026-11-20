@@ -135,3 +135,27 @@ test("ancienne sauvegarde valable ; avancement des verbes gardé au rechargement
   const P = sanitizeProgress({ v: 1, lessons: { [verbKey(familyById("aba"))]: { best: [90], run: [0, 8, 9, 39], done: 0 } } });
   assert.deepEqual(familyState(P, familyById("aba")).run, [0, 8]);
 });
+
+test("écran des verbes (tâche 4) : adresses, onglet, exercice « c » bien formé, avancement affiché", async () => {
+  const { route } = await import("../js/main.js");
+  const { tabFor, inExercise } = await import("../js/screens/shell.js");
+  const { verbExercise, familyStatus } = await import("../js/screens/verbs.js");
+  const { isRight: exRight } = await import("../js/screens/exercises.js");
+  const { answerOf } = await import("../js/content/grammar.js");
+  assert.deepEqual(route("#verbes"), { screen: "verbList" });
+  assert.deepEqual(route("#verbes/stars"), { screen: "verbs", id: "stars" });
+  assert.notEqual(route("#verbes/<b>").screen, "verbs");
+  assert.equal(tabFor("verbs"), "training"); assert.equal(tabFor("verbList"), "training");
+  assert.equal(inExercise("verbs"), true, "onglets cachés pendant les étapes"); assert.equal(inExercise("verbList"), false);
+  for (const v of VERBS) for (const form of ["past", "pp"]) {
+    const e = verbExercise(v, form, seeded(2));
+    assert.equal(e[0], "c"); assert.equal(e[1].split("___").length, 2, e[1]);
+    assert.ok(e[3] >= 0 && exRight(e, e[2][e[3]]));
+    assert.equal(answerOf(e), form === "past" ? v.ps.en : v.pps.en, "la phrase à dire est la phrase d'exemple, qui a son son");
+  }
+  const P = newProgress(), f = familyById("aba");
+  assert.equal(familyStatus(P, f), "");
+  recordVerb(P, f, 0, 90, now); assert.equal(familyStatus(P, f), "1 / 9");
+  for (let i = 1; i < 9; i++) recordVerb(P, f, i, 90, now);
+  assert.equal(familyStatus(P, f), "✓");
+});

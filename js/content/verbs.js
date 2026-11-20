@@ -118,3 +118,7 @@ export const familyById = (id) => FAMILIES.find((f) => f.id === id) || null;
 export const FORM_LABEL = { base: "infinitif", past: "prétérit", pp: "participe passé" };
 // Variantes d'une forme (« was / were » → was, were).
 export const variants = (f) => f.split("/").map((s) => s.trim());
+// Les 3 formes à dire d'une traite : « go, went, gone » ; « be, was, were, been ».
+export const formsText = (verb) => [verb.base, ...variants(verb.past), ...variants(verb.pp)].join(", ");
+// Textes à fabriquer en sons (js/content/fixed.js) : les 3 formes et les 2 phrases de chaque verbe.
+export const verbTexts = (v) => [formsText(v), v.ps.en, v.pps.en];

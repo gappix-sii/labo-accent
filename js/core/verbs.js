@@ -8,7 +8,8 @@
 // - étapes 2 et 3 : on choisit d'abord la bonne forme dans la phrase à trou, puis on dit la phrase entière au micro.
 //   Seule la note au micro rapporte l'XP (comme les exercices de grammaire).
 import { recordItem } from "./progress.js";
-import { variants } from "../content/verbs.js";
+import { variants, formsText } from "../content/verbs.js";
+export { formsText };
 
 export const STEPS = [
   { id: "forms", icon: "🔤", title: "Les 3 formes", sub: "Écoute, puis dis l'infinitif, le prétérit et le participe." },
@@ -22,8 +23,6 @@ export const familySize = (fam) => fam.verbs.length * STEPS.length;
 export const itemOf = (fam, step, k) => step * fam.verbs.length + k;
 export const stepOf = (fam, item) => ({ step: Math.floor(item / fam.verbs.length), k: item % fam.verbs.length });
 
-// Les 3 formes à dire d'une traite : « go, went, gone » ; « be, was, were, been ».
-export const formsText = (verb) => [verb.base, ...variants(verb.past), ...variants(verb.pp)].join(", ");
 // Phrase d'une étape : ps (prétérit) ou pps (present perfect).
 export const sentenceOf = (verb, form) => (form === "past" ? verb.ps : verb.pps);
 // Texte anglais à dire pour un élément.

@@ -64,12 +64,17 @@ test("accueil : avancement de la grammaire, des fautes et des jeux de rôle", as
   const { DIALOGUES } = await import("../js/content/dialogues.js");
   const { ALL_MISTAKES } = await import("../js/content/mistakes.js");
   const S = defaults();
-  assert.deepEqual(practiceCounts(S), { grammar: 0, roles: 0, mistakes: 0 });
+  assert.deepEqual(practiceCounts(S), { grammar: 0, roles: 0, mistakes: 0, verbs: 0 });
   GRAMMAR[0].ex.forEach((_, i) => recordGrammar(S.progress, GRAMMAR[0], i, 90));
   recordGrammar(S.progress, GRAMMAR[1], 0, 90); // règle commencée, pas finie
   myTurns(DIALOGUES[2]).forEach((_, i) => recordRole(S.progress, DIALOGUES[2], i, 90));
   recordMistake(S.mistakes, ALL_MISTAKES[0].id, false); recordMistake(S.mistakes, ALL_MISTAKES[5].id, false);
-  assert.deepEqual(practiceCounts(S), { grammar: 1, roles: 1, mistakes: 2 });
+  const { FAMILIES } = await import("../js/content/verbs.js");
+  const { recordVerb, familySize } = await import("../js/core/verbs.js");
+  const aba = FAMILIES.find((f) => f.id === "aba");
+  for (let i = 0; i < familySize(aba); i++) recordVerb(S.progress, aba, i, 90);
+  recordVerb(S.progress, FAMILIES[0], 0, 90); // famille commencée, pas finie
+  assert.deepEqual(practiceCounts(S), { grammar: 1, roles: 1, mistakes: 2, verbs: 1 });
 });
 
 test("exercice suivant : le prochain pas encore réussi, en faisant le tour, sinon le suivant", () => {

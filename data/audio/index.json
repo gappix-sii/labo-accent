@@ -7018,6 +7018,1206 @@
     "ipa": "ˈɛvɹiθˌɪŋ wˈɜːks pˈɜːfəktli. | jˈʊɹ ə lˈaɪfsˌeɪvɚ!",
     "ms": 3990,
     "bytes": 13506
+   },
+   "be, was, were, been": {
+    "file": "af_heart-08c7509f67c0ed8f.ogg",
+    "ipa": "biː, wʌz, wɜː, bɪn",
+    "ms": 1775,
+    "bytes": 6083
+   },
+   "I was tired yesterday.": {
+    "file": "af_heart-03d856b6f90c8b04.ogg",
+    "ipa": "aɪ wʌz tˈaɪɚd jˈɛstɚdˌeɪ.",
+    "ms": 2025,
+    "bytes": 7089
+   },
+   "Have you ever been to London?": {
+    "file": "af_heart-e6b49f4ed8a326fa.ogg",
+    "ipa": "hæv juː ˈɛvɚ bɪn tə lˈʌndən?",
+    "ms": 2075,
+    "bytes": 7414
+   },
+   "have, had, had": {
+    "file": "af_heart-d00baf59daf296cf.ogg",
+    "ipa": "hæv, hæd, hæd",
+    "ms": 1575,
+    "bytes": 5211
+   },
+   "I had a great weekend.": {
+    "file": "af_heart-181233152beac6f0.ogg",
+    "ipa": "aɪ hæd ə ɡɹˈeɪt wˈiːkˌɛnd.",
+    "ms": 1900,
+    "bytes": 6734
+   },
+   "We have had a lot of rain this week.": {
+    "file": "af_heart-69cb15dfc0ac4c87.ogg",
+    "ipa": "wiː hæv hæd ə lˈɑːt ʌv ɹˈeɪn ðˈɪs wˈiːk.",
+    "ms": 2350,
+    "bytes": 8394
+   },
+   "do, did, done": {
+    "file": "af_heart-8bb2d20e69288e0c.ogg",
+    "ipa": "duː, dˈɪd, dˈʌn",
+    "ms": 1625,
+    "bytes": 5422
+   },
+   "What did you do last night?": {
+    "file": "af_heart-fa29b68336a26246.ogg",
+    "ipa": "wˈʌt dˈɪd juː duː lˈæst nˈaɪt?",
+    "ms": 1925,
+    "bytes": 6810
+   },
+   "I have done my homework.": {
+    "file": "af_heart-1299b5fb6df85799.ogg",
+    "ipa": "aɪ hæv dˈʌn maɪ hˈoʊmwˌɜːk.",
+    "ms": 2025,
+    "bytes": 7192
+   },
+   "go, went, gone": {
+    "file": "af_heart-067a122ca8a643ba.ogg",
+    "ipa": "ɡˈoʊ, wˈɛnt, ɡˈɔːn",
+    "ms": 1325,
+    "bytes": 4697
+   },
+   "We went to the beach on Sunday.": {
+    "file": "af_heart-51a1285424a04946.ogg",
+    "ipa": "wiː wˈɛnt tə ðə bˈiːtʃ ɑːn sˈʌndˌeɪ.",
+    "ms": 2325,
+    "bytes": 8301
+   },
+   "She has gone to work.": {
+    "file": "af_heart-60f9488652e98270.ogg",
+    "ipa": "ʃiː hæz ɡˈɔːn tə wˈɜːk.",
+    "ms": 1725,
+    "bytes": 6037
+   },
+   "get, got, got": {
+    "file": "af_heart-94fa85df313ed558.ogg",
+    "ipa": "ɡˈɛt, ɡˈɑːt, ɡˈɑːt",
+    "ms": 1700,
+    "bytes": 5899
+   },
+   "I got a message from Tom.": {
+    "file": "af_heart-ae2e35fcb1b4126b.ogg",
+    "ipa": "aɪ ɡˈɑːt ə mˈɛsədʒ fɹʌm tˈɑːm.",
+    "ms": 2150,
+    "bytes": 7599
+   },
+   "I have got a new job.": {
+    "file": "af_heart-f468a1f7102b094f.ogg",
+    "ipa": "aɪ hæv ɡˈɑːt ə nˈuː dʒˈɑːb.",
+    "ms": 1825,
+    "bytes": 6355
+   },
+   "make, made, made": {
+    "file": "af_heart-f7628bc5f12cf937.ogg",
+    "ipa": "mˈeɪk, mˈeɪd, mˈeɪd",
+    "ms": 1700,
+    "bytes": 5807
+   },
+   "She made a cake for my birthday.": {
+    "file": "af_heart-d35b74434b99243d.ogg",
+    "ipa": "ʃiː mˈeɪd ə kˈeɪk fɔːɹ maɪ bˈɜːθdˌeɪ.",
+    "ms": 2275,
+    "bytes": 8154
+   },
+   "Have you made your bed?": {
+    "file": "af_heart-e35821de20f4fcf3.ogg",
+    "ipa": "hæv juː mˈeɪd jʊɹ bˈɛd?",
+    "ms": 1700,
+    "bytes": 5913
+   },
+   "say, said, said": {
+    "file": "af_heart-2b823f63d4b1e650.ogg",
+    "ipa": "sˈeɪ, sˈɛd, sˈɛd",
+    "ms": 1300,
+    "bytes": 4547
+   },
+   "He said hello to everyone.": {
+    "file": "af_heart-1cd5d2a53bb06389.ogg",
+    "ipa": "hiː sˈɛd həlˈoʊ tə ˈɛvɹiwˌʌn.",
+    "ms": 2100,
+    "bytes": 7502
+   },
+   "I have said it twice.": {
+    "file": "af_heart-e73226a3da6fe57f.ogg",
+    "ipa": "aɪ hæv sˈɛd ɪt twˈaɪs.",
+    "ms": 1800,
+    "bytes": 6245
+   },
+   "see, saw, seen": {
+    "file": "af_heart-3e389f762e2fc606.ogg",
+    "ipa": "sˈiː, sˈɔː, sˈiːn",
+    "ms": 1575,
+    "bytes": 5312
+   },
+   "I saw a good film yesterday.": {
+    "file": "af_heart-cfb8ba5ef62f6c5b.ogg",
+    "ipa": "aɪ sˈɔː ə ɡˈʊd fˈɪlm jˈɛstɚdˌeɪ.",
+    "ms": 2275,
+    "bytes": 8123
+   },
+   "Have you seen my phone?": {
+    "file": "af_heart-3fe47ac4a9c81939.ogg",
+    "ipa": "hæv juː sˈiːn maɪ fˈoʊn?",
+    "ms": 1875,
+    "bytes": 6537
+   },
+   "take, took, taken": {
+    "file": "af_heart-a2eb3a305d29ed0e.ogg",
+    "ipa": "tˈeɪk, tˈʊk, tˈeɪkən",
+    "ms": 1800,
+    "bytes": 6227
+   },
+   "I took the bus this morning.": {
+    "file": "af_heart-46a8f2ab557f3a6b.ogg",
+    "ipa": "aɪ tˈʊk ðə bˈʌs ðˈɪs mˈɔːɹnɪŋ.",
+    "ms": 2150,
+    "bytes": 7702
+   },
+   "Who has taken my pen?": {
+    "file": "af_heart-94fc6eb9f5242ea5.ogg",
+    "ipa": "hˈuː hæz tˈeɪkən maɪ pˈɛn?",
+    "ms": 2025,
+    "bytes": 7175
+   },
+   "give, gave, given": {
+    "file": "af_heart-952781c35804787e.ogg",
+    "ipa": "ɡˈɪv, ɡˈeɪv, ɡˈɪvən",
+    "ms": 1850,
+    "bytes": 6281
+   },
+   "He gave me a present.": {
+    "file": "af_heart-573470a0618a5c46.ogg",
+    "ipa": "hiː ɡˈeɪv miː ə pɹˈɛzənt.",
+    "ms": 1750,
+    "bytes": 6134
+   },
+   "I have given her my number.": {
+    "file": "af_heart-996e9fea6fed20d0.ogg",
+    "ipa": "aɪ hæv ɡˈɪvən hɜː maɪ nˈʌmbɚ.",
+    "ms": 2050,
+    "bytes": 7236
+   },
+   "eat, ate, eaten": {
+    "file": "af_heart-c6444ee8c4a8eeb1.ogg",
+    "ipa": "ˈiːt, ˈeɪt, ˈiːɾən",
+    "ms": 1775,
+    "bytes": 6021
+   },
+   "We ate pizza last night.": {
+    "file": "af_heart-da5fdf5d43e47682.ogg",
+    "ipa": "wiː ˈeɪt pˈiːtsə lˈæst nˈaɪt.",
+    "ms": 2125,
+    "bytes": 7552
+   },
+   "Have you ever eaten sushi?": {
+    "file": "af_heart-dc132913418b8669.ogg",
+    "ipa": "hæv juː ˈɛvɚ ˈiːɾən sˈuːʃi?",
+    "ms": 2175,
+    "bytes": 7685
+   },
+   "cut, cut, cut": {
+    "file": "af_heart-9ab95b03f06d184e.ogg",
+    "ipa": "kˈʌt, kˈʌt, kˈʌt",
+    "ms": 1625,
+    "bytes": 5541
+   },
+   "I cut my finger yesterday.": {
+    "file": "af_heart-aefdaae616bbd840.ogg",
+    "ipa": "aɪ kˈʌt maɪ fˈɪŋɡɚ jˈɛstɚdˌeɪ.",
+    "ms": 2200,
+    "bytes": 7776
+   },
+   "Have you cut the bread?": {
+    "file": "af_heart-8f4812b201649b46.ogg",
+    "ipa": "hæv juː kˈʌt ðə bɹˈɛd?",
+    "ms": 1725,
+    "bytes": 6001
+   },
+   "put, put, put": {
+    "file": "af_heart-0ed7ec1d0185b8d5.ogg",
+    "ipa": "pˈʊt, pˈʊt, pˈʊt",
+    "ms": 1600,
+    "bytes": 5471
+   },
+   "She put her bag on the table.": {
+    "file": "af_heart-b7ebf2d4fc60cde4.ogg",
+    "ipa": "ʃiː pˈʊt hɜː bˈæɡ ɑːn ðə tˈeɪbəl.",
+    "ms": 2150,
+    "bytes": 7642
+   },
+   "Where have you put my keys?": {
+    "file": "af_heart-a4c4000d05ffcc9e.ogg",
+    "ipa": "wˈɛɹ hæv juː pˈʊt maɪ kˈiːz?",
+    "ms": 1925,
+    "bytes": 6785
+   },
+   "let, let, let": {
+    "file": "af_heart-6ca589d6ec3c2875.ogg",
+    "ipa": "lˈɛt, lˈɛt, lˈɛt",
+    "ms": 1475,
+    "bytes": 5045
+   },
+   "My parents let me go to the party.": {
+    "file": "af_heart-d1b1e3e18285b1e3.ogg",
+    "ipa": "maɪ pˈɛɹənts lˈɛt miː ɡˈoʊ tə ðə pˈɑːɹɾi.",
+    "ms": 2625,
+    "bytes": 9523
+   },
+   "He has let the dog out.": {
+    "file": "af_heart-ad7ac4dba1d5ed3e.ogg",
+    "ipa": "hiː hæz lˈɛt ðə dˈɔːɡ ˈaʊt.",
+    "ms": 1850,
+    "bytes": 6567
+   },
+   "hit, hit, hit": {
+    "file": "af_heart-752c2cafc8222006.ogg",
+    "ipa": "hˈɪt, hˈɪt, hˈɪt",
+    "ms": 1575,
+    "bytes": 5322
+   },
+   "The ball hit the window.": {
+    "file": "af_heart-518c262e4c75ffc7.ogg",
+    "ipa": "ðə bˈɔːl hˈɪt ðə wˈɪndoʊ.",
+    "ms": 1850,
+    "bytes": 6439
+   },
+   "A storm has hit the city.": {
+    "file": "af_heart-6ca2cc321a4dee76.ogg",
+    "ipa": "ə stˈɔːɹm hæz hˈɪt ðə sˈɪɾi.",
+    "ms": 2075,
+    "bytes": 7313
+   },
+   "cost, cost, cost": {
+    "file": "af_heart-bc50e898eb2e898e.ogg",
+    "ipa": "kˈɑːst, kˈɑːst, kˈɑːst",
+    "ms": 1925,
+    "bytes": 6725
+   },
+   "The tickets cost fifty euros.": {
+    "file": "af_heart-b53e21cc860371e0.ogg",
+    "ipa": "ðə tˈɪkəts kˈɑːst fˈɪfti jˈuːɹˌoʊz.",
+    "ms": 2375,
+    "bytes": 8540
+   },
+   "This trip has cost a lot of money.": {
+    "file": "af_heart-771526973e877db4.ogg",
+    "ipa": "ðˈɪs tɹˈɪp hæz kˈɑːst ə lˈɑːt ʌv mˈʌni.",
+    "ms": 2525,
+    "bytes": 9075
+   },
+   "shut, shut, shut": {
+    "file": "af_heart-772939a4452157ef.ogg",
+    "ipa": "ʃˈʌt, ʃˈʌt, ʃˈʌt",
+    "ms": 1575,
+    "bytes": 5351
+   },
+   "He shut the door quietly.": {
+    "file": "af_heart-ec4c93884ab423d7.ogg",
+    "ipa": "hiː ʃˈʌt ðə dˈɔːɹ kwˈaɪətli.",
+    "ms": 2100,
+    "bytes": 7425
+   },
+   "The shop has shut for the day.": {
+    "file": "af_heart-935c5d6c770c3483.ogg",
+    "ipa": "ðə ʃˈɑːp hæz ʃˈʌt fɔːɹ ðə dˈeɪ.",
+    "ms": 2125,
+    "bytes": 7514
+   },
+   "hurt, hurt, hurt": {
+    "file": "af_heart-6223036389f706dd.ogg",
+    "ipa": "hˈɜːt, hˈɜːt, hˈɜːt",
+    "ms": 1575,
+    "bytes": 5429
+   },
+   "I hurt my leg last week.": {
+    "file": "af_heart-c586ee7808dca6c8.ogg",
+    "ipa": "aɪ hˈɜːt maɪ lˈɛɡ lˈæst wˈiːk.",
+    "ms": 2075,
+    "bytes": 7399
+   },
+   "Have you hurt yourself?": {
+    "file": "af_heart-b8f0e585ddb12e1f.ogg",
+    "ipa": "hæv juː hˈɜːt jɚsˈɛlf?",
+    "ms": 1775,
+    "bytes": 6191
+   },
+   "read, read, read": {
+    "file": "af_heart-ff7573176b79888a.ogg",
+    "ipa": "ɹˈiːd, ɹˈiːd, ɹˈiːd",
+    "ms": 1750,
+    "bytes": 6097
+   },
+   "I read a great book last month.": {
+    "file": "af_heart-6745d8f0dd4f6f55.ogg",
+    "ipa": "aɪ ɹˈiːd ə ɡɹˈeɪt bˈʊk lˈæst mˈʌnθ.",
+    "ms": 2300,
+    "bytes": 8335
+   },
+   "Have you read this book?": {
+    "file": "af_heart-e6b69aa0a08a00bb.ogg",
+    "ipa": "hæv juː ɹˈiːd ðˈɪs bˈʊk?",
+    "ms": 1900,
+    "bytes": 6652
+   },
+   "buy, bought, bought": {
+    "file": "af_heart-09ba55b452760803.ogg",
+    "ipa": "bˈaɪ, bˈɑːt, bˈɑːt",
+    "ms": 1700,
+    "bytes": 5883
+   },
+   "I bought new shoes on Saturday.": {
+    "file": "af_heart-fc020cb7293e8214.ogg",
+    "ipa": "aɪ bˈɑːt nˈuː ʃˈuːz ɑːn sˈæɾɚdi.",
+    "ms": 2300,
+    "bytes": 8144
+   },
+   "Have you bought the tickets?": {
+    "file": "af_heart-b52a7a5e0fbfb53f.ogg",
+    "ipa": "hæv juː bˈɑːt ðə tˈɪkəts?",
+    "ms": 1875,
+    "bytes": 6616
+   },
+   "bring, brought, brought": {
+    "file": "af_heart-0e4cf27a8dcae64f.ogg",
+    "ipa": "bɹˈɪŋ, bɹˈɔːt, bɹˈɔːt",
+    "ms": 1850,
+    "bytes": 6459
+   },
+   "She brought a cake to the party.": {
+    "file": "af_heart-98c9365ff2e2e854.ogg",
+    "ipa": "ʃiː bɹˈɔːt ə kˈeɪk tə ðə pˈɑːɹɾi.",
+    "ms": 2175,
+    "bytes": 7763
+   },
+   "I have brought you a coffee.": {
+    "file": "af_heart-608dc50a96defdb6.ogg",
+    "ipa": "aɪ hæv bɹˈɔːt juː ə kˈɑːfi.",
+    "ms": 1950,
+    "bytes": 6834
+   },
+   "think, thought, thought": {
+    "file": "af_heart-e52295ccb5c8001a.ogg",
+    "ipa": "θˈɪŋk, θˈɔːt, θˈɔːt",
+    "ms": 1350,
+    "bytes": 4800
+   },
+   "I thought you were at home.": {
+    "file": "af_heart-1765b63d61c5afd9.ogg",
+    "ipa": "aɪ θˈɔːt juː wɜː æt hˈoʊm.",
+    "ms": 1800,
+    "bytes": 6261
+   },
+   "Have you thought about it?": {
+    "file": "af_heart-6adf9ae23c5cb537.ogg",
+    "ipa": "hæv juː θˈɔːt əbˈaʊt ɪt?",
+    "ms": 1900,
+    "bytes": 6657
+   },
+   "fight, fought, fought": {
+    "file": "af_heart-9fdd243edb138712.ogg",
+    "ipa": "fˈaɪt, fˈɔːt, fˈɔːt",
+    "ms": 1750,
+    "bytes": 6061
+   },
+   "The two cats fought in the garden.": {
+    "file": "af_heart-f437f7e668bd70c8.ogg",
+    "ipa": "ðə tˈuː kˈæts fˈɔːt ɪn ðə ɡˈɑːɹdən.",
+    "ms": 2325,
+    "bytes": 8329
+   },
+   "They have never fought.": {
+    "file": "af_heart-61c2d652c9cac107.ogg",
+    "ipa": "ðeɪ hæv nˈɛvɚ fˈɔːt.",
+    "ms": 1775,
+    "bytes": 6121
+   },
+   "catch, caught, caught": {
+    "file": "af_heart-51ce604729aeab26.ogg",
+    "ipa": "kˈætʃ, kˈɑːt, kˈɑːt",
+    "ms": 1800,
+    "bytes": 6163
+   },
+   "He caught the last train.": {
+    "file": "af_heart-357e8e4378cf28b0.ogg",
+    "ipa": "hiː kˈɑːt ðə lˈæst tɹˈeɪn.",
+    "ms": 1950,
+    "bytes": 6848
+   },
+   "I have caught a cold.": {
+    "file": "af_heart-92b5e6e570df7751.ogg",
+    "ipa": "aɪ hæv kˈɑːt ə kˈoʊld.",
+    "ms": 1750,
+    "bytes": 6073
+   },
+   "teach, taught, taught": {
+    "file": "af_heart-ed54d8df75099453.ogg",
+    "ipa": "tˈiːtʃ, tˈɔːt, tˈɔːt",
+    "ms": 1825,
+    "bytes": 6359
+   },
+   "My mother taught me to swim.": {
+    "file": "af_heart-58d18bfd91c92d8f.ogg",
+    "ipa": "maɪ mˈʌðɚ tˈɔːt miː tə swˈɪm.",
+    "ms": 2050,
+    "bytes": 7272
+   },
+   "She has taught English for ten years.": {
+    "file": "af_heart-0e32549f14e09584.ogg",
+    "ipa": "ʃiː hæz tˈɔːt ˈɪŋɡlɪʃ fɔːɹ tˈɛn jˈɪɹz.",
+    "ms": 2500,
+    "bytes": 9065
+   },
+   "keep, kept, kept": {
+    "file": "af_heart-80a2235f387d029c.ogg",
+    "ipa": "kˈiːp, kˈɛpt, kˈɛpt",
+    "ms": 1675,
+    "bytes": 5807
+   },
+   "He kept the secret.": {
+    "file": "af_heart-d5e2bc4955328444.ogg",
+    "ipa": "hiː kˈɛpt ðə sˈiːkɹət.",
+    "ms": 1775,
+    "bytes": 6215
+   },
+   "I have kept all your letters.": {
+    "file": "af_heart-eaf4c52911e74789.ogg",
+    "ipa": "aɪ hæv kˈɛpt ˈɔːl jʊɹ lˈɛɾɚz.",
+    "ms": 2075,
+    "bytes": 7329
+   },
+   "sleep, slept, slept": {
+    "file": "af_heart-b56f33530425db31.ogg",
+    "ipa": "slˈiːp, slˈɛpt, slˈɛpt",
+    "ms": 1825,
+    "bytes": 6338
+   },
+   "I slept very well last night.": {
+    "file": "af_heart-27f8a2ad77297071.ogg",
+    "ipa": "aɪ slˈɛpt vˈɛɹi wˈɛl lˈæst nˈaɪt.",
+    "ms": 2325,
+    "bytes": 8308
+   },
+   "Have you slept at all?": {
+    "file": "af_heart-0592fea2c5816edf.ogg",
+    "ipa": "hæv juː slˈɛpt æt ˈɔːl?",
+    "ms": 1775,
+    "bytes": 6246
+   },
+   "feel, felt, felt": {
+    "file": "af_heart-1cf7cf69b0a58acc.ogg",
+    "ipa": "fˈiːl, fˈɛlt, fˈɛlt",
+    "ms": 1800,
+    "bytes": 6203
+   },
+   "I felt happy after the run.": {
+    "file": "af_heart-3ae37a6d2e267b74.ogg",
+    "ipa": "aɪ fˈɛlt hˈæpi ˈæftɚ ðə ɹˈʌn.",
+    "ms": 2175,
+    "bytes": 7793
+   },
+   "I have never felt so tired.": {
+    "file": "af_heart-add5fa60e11d7166.ogg",
+    "ipa": "aɪ hæv nˈɛvɚ fˈɛlt sˈoʊ tˈaɪɚd.",
+    "ms": 2300,
+    "bytes": 8232
+   },
+   "leave, left, left": {
+    "file": "af_heart-48ab01f2e1d56af4.ogg",
+    "ipa": "lˈiːv, lˈɛft, lˈɛft",
+    "ms": 1875,
+    "bytes": 6472
+   },
+   "We left the house at eight.": {
+    "file": "af_heart-1671c9be6c987446.ogg",
+    "ipa": "wiː lˈɛft ðə hˈaʊs æt ˈeɪt.",
+    "ms": 1925,
+    "bytes": 6734
+   },
+   "Has the train left?": {
+    "file": "af_heart-889de5e23ed71847.ogg",
+    "ipa": "hæz ðə tɹˈeɪn lˈɛft?",
+    "ms": 1875,
+    "bytes": 6493
+   },
+   "meet, met, met": {
+    "file": "af_heart-e8b7ee47f73fa1f4.ogg",
+    "ipa": "mˈiːt, mˈɛt, mˈɛt",
+    "ms": 1750,
+    "bytes": 6037
+   },
+   "I met my best friend at school.": {
+    "file": "af_heart-6400c749b183b8b4.ogg",
+    "ipa": "aɪ mˈɛt maɪ bˈɛst fɹˈɛnd æt skˈuːl.",
+    "ms": 2200,
+    "bytes": 7879
+   },
+   "Have you met my brother?": {
+    "file": "af_heart-d954646474dac871.ogg",
+    "ipa": "hæv juː mˈɛt maɪ bɹˈʌðɚ?",
+    "ms": 1850,
+    "bytes": 6454
+   },
+   "lose, lost, lost": {
+    "file": "af_heart-5ec3f8eaad0ab655.ogg",
+    "ipa": "lˈuːz, lˈɔːst, lˈɔːst",
+    "ms": 2025,
+    "bytes": 7111
+   },
+   "I have lost my phone again.": {
+    "file": "af_heart-77e796e0a65ed237.ogg",
+    "ipa": "aɪ hæv lˈɔːst maɪ fˈoʊn əɡˈɛn.",
+    "ms": 2200,
+    "bytes": 7828
+   },
+   "send, sent, sent": {
+    "file": "af_heart-fabf7711b8aef901.ogg",
+    "ipa": "sˈɛnd, sˈɛnt, sˈɛnt",
+    "ms": 1775,
+    "bytes": 6080
+   },
+   "She sent me a message.": {
+    "file": "af_heart-a4244e242f50ba6c.ogg",
+    "ipa": "ʃiː sˈɛnt miː ə mˈɛsədʒ.",
+    "ms": 1875,
+    "bytes": 6551
+   },
+   "Have you sent the email?": {
+    "file": "af_heart-974f58fbbe08ebcc.ogg",
+    "ipa": "hæv juː sˈɛnt ði imˈeɪl?",
+    "ms": 1900,
+    "bytes": 6669
+   },
+   "spend, spent, spent": {
+    "file": "af_heart-e7ecc3142b1a5e14.ogg",
+    "ipa": "spˈɛnd, spˈɛnt, spˈɛnt",
+    "ms": 1700,
+    "bytes": 5817
+   },
+   "We spent a week in Spain.": {
+    "file": "af_heart-70ffe79153d27f55.ogg",
+    "ipa": "wiː spˈɛnt ə wˈiːk ɪn spˈeɪn.",
+    "ms": 2000,
+    "bytes": 7101
+   },
+   "I have spent all my money.": {
+    "file": "af_heart-4322b6eff6b5c10d.ogg",
+    "ipa": "aɪ hæv spˈɛnt ˈɔːl maɪ mˈʌni.",
+    "ms": 2075,
+    "bytes": 7317
+   },
+   "build, built, built": {
+    "file": "af_heart-3830fc73e047c81e.ogg",
+    "ipa": "bˈɪld, bˈɪlt, bˈɪlt",
+    "ms": 1825,
+    "bytes": 6341
+   },
+   "They built a new school in my town.": {
+    "file": "af_heart-f681b2bd068584e0.ogg",
+    "ipa": "ðeɪ bˈɪlt ə nˈuː skˈuːl ɪn maɪ tˈaʊn.",
+    "ms": 2450,
+    "bytes": 8820
+   },
+   "My father has built a garden shed.": {
+    "file": "af_heart-a940678403c79d0d.ogg",
+    "ipa": "maɪ fˈɑːðɚ hæz bˈɪlt ə ɡˈɑːɹdən ʃˈɛd.",
+    "ms": 2600,
+    "bytes": 9425
+   },
+   "tell, told, told": {
+    "file": "af_heart-48a15db927beafdf.ogg",
+    "ipa": "tˈɛl, tˈoʊld, tˈoʊld",
+    "ms": 1750,
+    "bytes": 6038
+   },
+   "She told me a funny story.": {
+    "file": "af_heart-aa9e49f8ff418735.ogg",
+    "ipa": "ʃiː tˈoʊld miː ə fˈʌni stˈɔːɹi.",
+    "ms": 2150,
+    "bytes": 7645
+   },
+   "Have you told your parents?": {
+    "file": "af_heart-cc6c38f37b47cbaa.ogg",
+    "ipa": "hæv juː tˈoʊld jʊɹ pˈɛɹənts?",
+    "ms": 1875,
+    "bytes": 6609
+   },
+   "sell, sold, sold": {
+    "file": "af_heart-e45e46125303169a.ogg",
+    "ipa": "sˈɛl, sˈoʊld, sˈoʊld",
+    "ms": 1825,
+    "bytes": 6321
+   },
+   "We sold our old car.": {
+    "file": "af_heart-7264fb3c08b42537.ogg",
+    "ipa": "wiː sˈoʊld aʊɚ ˈoʊld kˈɑːɹ.",
+    "ms": 1975,
+    "bytes": 6924
+   },
+   "They have sold all the tickets.": {
+    "file": "af_heart-bd9cb1788e5d92b9.ogg",
+    "ipa": "ðeɪ hæv sˈoʊld ˈɔːl ðə tˈɪkəts.",
+    "ms": 2250,
+    "bytes": 7978
+   },
+   "find, found, found": {
+    "file": "af_heart-dd16b937dc924287.ogg",
+    "ipa": "fˈaɪnd, fˈaʊnd, fˈaʊnd",
+    "ms": 1850,
+    "bytes": 6446
+   },
+   "I found a wallet in the street.": {
+    "file": "af_heart-99634bf0a3cd2924.ogg",
+    "ipa": "aɪ fˈaʊnd ə wˈɔːlət ɪn ðə stɹˈiːt.",
+    "ms": 2150,
+    "bytes": 7713
+   },
+   "Have you found your keys?": {
+    "file": "af_heart-6a34792e23e7c235.ogg",
+    "ipa": "hæv juː fˈaʊnd jʊɹ kˈiːz?",
+    "ms": 1800,
+    "bytes": 6281
+   },
+   "stand, stood, stood": {
+    "file": "af_heart-de97c514903b7edb.ogg",
+    "ipa": "stˈænd, stˈʊd, stˈʊd",
+    "ms": 1825,
+    "bytes": 6312
+   },
+   "We stood in the rain for an hour.": {
+    "file": "af_heart-2fefe4c730e6bc87.ogg",
+    "ipa": "wiː stˈʊd ɪn ðə ɹˈeɪn fɔːɹ ən ˈaʊɚ.",
+    "ms": 2200,
+    "bytes": 7842
+   },
+   "I have stood here all day.": {
+    "file": "af_heart-11fdd5fcaf4a326d.ogg",
+    "ipa": "aɪ hæv stˈʊd hˈiːɹ ˈɔːl dˈeɪ.",
+    "ms": 2050,
+    "bytes": 7232
+   },
+   "understand, understood, understood": {
+    "file": "af_heart-f91ca7d5ccf36518.ogg",
+    "ipa": "ˌʌndɚstˈænd, ˌʌndɚstˈʊd, ˌʌndɚstˈʊd",
+    "ms": 2800,
+    "bytes": 10007
+   },
+   "I understood everything he said.": {
+    "file": "af_heart-fac09d9e910dc943.ogg",
+    "ipa": "aɪ ˌʌndɚstˈʊd ˈɛvɹiθˌɪŋ hiː sˈɛd.",
+    "ms": 2350,
+    "bytes": 8366
+   },
+   "Have you understood the rule?": {
+    "file": "af_heart-850813f1941339df.ogg",
+    "ipa": "hæv juː ˌʌndɚstˈʊd ðə ɹˈuːl?",
+    "ms": 1925,
+    "bytes": 6780
+   },
+   "hear, heard, heard": {
+    "file": "af_heart-9e633c0c7d983935.ogg",
+    "ipa": "hˈiːɹ, hˈɜːd, hˈɜːd",
+    "ms": 1800,
+    "bytes": 6141
+   },
+   "I heard a strange noise.": {
+    "file": "af_heart-92cd00652ae743d3.ogg",
+    "ipa": "aɪ hˈɜːd ə stɹˈeɪndʒ nˈɔɪz.",
+    "ms": 2100,
+    "bytes": 7424
+   },
+   "Have you heard the news?": {
+    "file": "af_heart-653a1a456b8f122a.ogg",
+    "ipa": "hæv juː hˈɜːd ðə nˈuːz?",
+    "ms": 1750,
+    "bytes": 6067
+   },
+   "sit, sat, sat": {
+    "file": "af_heart-849d0ef34ad86092.ogg",
+    "ipa": "sˈɪt, sˈæt, sˈæt",
+    "ms": 1650,
+    "bytes": 5579
+   },
+   "She sat next to me on the bus.": {
+    "file": "af_heart-6c3c4b2a8f1b54be.ogg",
+    "ipa": "ʃiː sˈæt nˈɛkst tə miː ɑːn ðə bˈʌs.",
+    "ms": 2250,
+    "bytes": 8084
+   },
+   "I have sat here for an hour.": {
+    "file": "af_heart-084ed8d6b928f64e.ogg",
+    "ipa": "aɪ hæv sˈæt hˈiːɹ fɔːɹ ən ˈaʊɚ.",
+    "ms": 2175,
+    "bytes": 7695
+   },
+   "win, won, won": {
+    "file": "af_heart-0f22dad5b1f47d78.ogg",
+    "ipa": "wˈɪn, wˈʌn, wˈʌn",
+    "ms": 1775,
+    "bytes": 6026
+   },
+   "Our team won the match.": {
+    "file": "af_heart-cb87ea63839f3051.ogg",
+    "ipa": "aʊɚ tˈiːm wˈʌn ðə mˈætʃ.",
+    "ms": 1875,
+    "bytes": 6578
+   },
+   "She has won three medals.": {
+    "file": "af_heart-894be107ea7d6acc.ogg",
+    "ipa": "ʃiː hæz wˈʌn θɹˈiː mˈɛdəlz.",
+    "ms": 2000,
+    "bytes": 7095
+   },
+   "pay, paid, paid": {
+    "file": "af_heart-627aee0362c80218.ogg",
+    "ipa": "pˈeɪ, pˈeɪd, pˈeɪd",
+    "ms": 1750,
+    "bytes": 5812
+   },
+   "I paid for dinner.": {
+    "file": "af_heart-27162fe3b04fde8b.ogg",
+    "ipa": "aɪ pˈeɪd fɔːɹ dˈɪnɚ.",
+    "ms": 1750,
+    "bytes": 6019
+   },
+   "Have you paid the bill?": {
+    "file": "af_heart-dd620463d105c37b.ogg",
+    "ipa": "hæv juː pˈeɪd ðə bˈɪl?",
+    "ms": 1750,
+    "bytes": 6085
+   },
+   "hold, held, held": {
+    "file": "af_heart-74c6b2b8c3453194.ogg",
+    "ipa": "hˈoʊld, hˈɛld, hˈɛld",
+    "ms": 1725,
+    "bytes": 5853
+   },
+   "He held my hand.": {
+    "file": "af_heart-0d24eb59aa72fca9.ogg",
+    "ipa": "hiː hˈɛld maɪ hˈænd.",
+    "ms": 1750,
+    "bytes": 6010
+   },
+   "She has held the record for years.": {
+    "file": "af_heart-e964744020e45635.ogg",
+    "ipa": "ʃiː hæz hˈɛld ðə ɹəkˈɔːɹd fɔːɹ jˈɪɹz.",
+    "ms": 2450,
+    "bytes": 8840
+   },
+   "begin, began, begun": {
+    "file": "af_heart-dbcba718b957d861.ogg",
+    "ipa": "bɪɡˈɪn, bɪɡˈæn, bɪɡˈʌn",
+    "ms": 2050,
+    "bytes": 7088
+   },
+   "The film began at nine.": {
+    "file": "af_heart-471bdf9dbbf0290c.ogg",
+    "ipa": "ðə fˈɪlm bɪɡˈæn æt nˈaɪn.",
+    "ms": 2050,
+    "bytes": 7177
+   },
+   "Has the meeting begun?": {
+    "file": "af_heart-81671f55cdf95bd0.ogg",
+    "ipa": "hæz ðə mˈiːɾɪŋ bɪɡˈʌn?",
+    "ms": 1950,
+    "bytes": 6802
+   },
+   "drink, drank, drunk": {
+    "file": "af_heart-d6ce476ebbc73e8f.ogg",
+    "ipa": "dɹˈɪŋk, dɹˈæŋk, dɹˈʌŋk",
+    "ms": 1850,
+    "bytes": 6415
+   },
+   "I drank a lot of water.": {
+    "file": "af_heart-199d1d7823d18f2c.ogg",
+    "ipa": "aɪ dɹˈæŋk ə lˈɑːt ʌv wˈɔːɾɚ.",
+    "ms": 2000,
+    "bytes": 7064
+   },
+   "Have you drunk your tea?": {
+    "file": "af_heart-2eef1978817a455c.ogg",
+    "ipa": "hæv juː dɹˈʌŋk jʊɹ tˈiː?",
+    "ms": 1925,
+    "bytes": 6723
+   },
+   "sing, sang, sung": {
+    "file": "af_heart-2cf23604289ad82c.ogg",
+    "ipa": "sˈɪŋ, sˈæŋ, sˈʌŋ",
+    "ms": 1875,
+    "bytes": 6238
+   },
+   "We sang songs around the fire.": {
+    "file": "af_heart-0711ec3e1d271cfe.ogg",
+    "ipa": "wiː sˈæŋ sˈɔːŋz ɚɹˈaʊnd ðə fˈaɪɚ.",
+    "ms": 2300,
+    "bytes": 8132
+   },
+   "She has sung in a band.": {
+    "file": "af_heart-176bb74b8a6a8831.ogg",
+    "ipa": "ʃiː hæz sˈʌŋ ɪn ə bˈænd.",
+    "ms": 1800,
+    "bytes": 6244
+   },
+   "swim, swam, swum": {
+    "file": "af_heart-43f9ef2efbf47140.ogg",
+    "ipa": "swˈɪm, swˈæm, swˈʌm",
+    "ms": 2025,
+    "bytes": 6973
+   },
+   "We swam in the sea.": {
+    "file": "af_heart-679a2e2096290fa8.ogg",
+    "ipa": "wiː swˈæm ɪn ðə sˈiː.",
+    "ms": 1775,
+    "bytes": 6078
+   },
+   "I have never swum in a lake.": {
+    "file": "af_heart-cf92b9a8199e195e.ogg",
+    "ipa": "aɪ hæv nˈɛvɚ swˈʌm ɪn ə lˈeɪk.",
+    "ms": 2025,
+    "bytes": 7185
+   },
+   "ring, rang, rung": {
+    "file": "af_heart-cb5a72384cd382a3.ogg",
+    "ipa": "ɹˈɪŋ, ɹˈæŋ, ɹˈʌŋ",
+    "ms": 2025,
+    "bytes": 6901
+   },
+   "The phone rang twice.": {
+    "file": "af_heart-78763550deeba15b.ogg",
+    "ipa": "ðə fˈoʊn ɹˈæŋ twˈaɪs.",
+    "ms": 1975,
+    "bytes": 6821
+   },
+   "Has the bell rung?": {
+    "file": "af_heart-54de8e4b85356c31.ogg",
+    "ipa": "hæz ðə bˈɛl ɹˈʌŋ?",
+    "ms": 1725,
+    "bytes": 5905
+   },
+   "come, came, come": {
+    "file": "af_heart-be1487326cd5da8e.ogg",
+    "ipa": "kˈʌm, kˈeɪm, kˈʌm",
+    "ms": 1725,
+    "bytes": 5789
+   },
+   "My sister came to see me.": {
+    "file": "af_heart-7e6c026cc87a8527.ogg",
+    "ipa": "maɪ sˈɪstɚ kˈeɪm tə sˈiː miː.",
+    "ms": 2125,
+    "bytes": 7472
+   },
+   "Spring has come.": {
+    "file": "af_heart-d9ea224a5df74170.ogg",
+    "ipa": "spɹˈɪŋ hæz kˈʌm.",
+    "ms": 1700,
+    "bytes": 5708
+   },
+   "become, became, become": {
+    "file": "af_heart-3fac28ebeb205cc6.ogg",
+    "ipa": "bɪkˈʌm, bɪkˈeɪm, bɪkˈʌm",
+    "ms": 2100,
+    "bytes": 7210
+   },
+   "He became a doctor.": {
+    "file": "af_heart-e8e3d769368dd181.ogg",
+    "ipa": "hiː bɪkˈeɪm ə dˈɑːktɚ.",
+    "ms": 1875,
+    "bytes": 6599
+   },
+   "It has become very cold.": {
+    "file": "af_heart-ea7403314d0d125e.ogg",
+    "ipa": "ɪt hæz bɪkˈʌm vˈɛɹi kˈoʊld.",
+    "ms": 2050,
+    "bytes": 7274
+   },
+   "run, ran, run": {
+    "file": "af_heart-038866b0ad38ddca.ogg",
+    "ipa": "ɹˈʌn, ɹˈæn, ɹˈʌn",
+    "ms": 1600,
+    "bytes": 5579
+   },
+   "I ran to the station.": {
+    "file": "af_heart-854bb3b7f75affed.ogg",
+    "ipa": "aɪ ɹˈæn tə ðə stˈeɪʃən.",
+    "ms": 1925,
+    "bytes": 6695
+   },
+   "Have you ever run a marathon?": {
+    "file": "af_heart-edf4fcc5ff04e3f1.ogg",
+    "ipa": "hæv juː ˈɛvɚ ɹˈʌn ə mˈɛɹəθˌɑːn?",
+    "ms": 2250,
+    "bytes": 8060
+   },
+   "know, knew, known": {
+    "file": "af_heart-aae78e36f56438a9.ogg",
+    "ipa": "nˈoʊ, nˈuː, nˈoʊn",
+    "ms": 1575,
+    "bytes": 5323
+   },
+   "I knew the answer.": {
+    "file": "af_heart-fa16166ce49342ca.ogg",
+    "ipa": "aɪ nˈuː ði ˈænsɚ.",
+    "ms": 1750,
+    "bytes": 5896
+   },
+   "I have known him for ten years.": {
+    "file": "af_heart-d06e9cbce1628b4d.ogg",
+    "ipa": "aɪ hæv nˈoʊn hɪm fɔːɹ tˈɛn jˈɪɹz.",
+    "ms": 2250,
+    "bytes": 8046
+   },
+   "grow, grew, grown": {
+    "file": "af_heart-ae6f077608540b63.ogg",
+    "ipa": "ɡɹˈoʊ, ɡɹˈuː, ɡɹˈoʊn",
+    "ms": 1825,
+    "bytes": 6260
+   },
+   "My little brother grew a lot this year.": {
+    "file": "af_heart-462bce298a57f0c8.ogg",
+    "ipa": "maɪ lˈɪɾəl bɹˈʌðɚ ɡɹˈuː ə lˈɑːt ðˈɪs jˈɪɹ.",
+    "ms": 2550,
+    "bytes": 9270
+   },
+   "The city has grown fast.": {
+    "file": "af_heart-4ad056094c8facf2.ogg",
+    "ipa": "ðə sˈɪɾi hæz ɡɹˈoʊn fˈæst.",
+    "ms": 2075,
+    "bytes": 7297
+   },
+   "throw, threw, thrown": {
+    "file": "af_heart-82f142690c999c35.ogg",
+    "ipa": "θɹˈoʊ, θɹˈuː, θɹˈoʊn",
+    "ms": 1850,
+    "bytes": 6443
+   },
+   "He threw the ball to the dog.": {
+    "file": "af_heart-11bd2ab63b202db0.ogg",
+    "ipa": "hiː θɹˈuː ðə bˈɔːl tə ðə dˈɔːɡ.",
+    "ms": 2100,
+    "bytes": 7536
+   },
+   "Have you thrown the old milk away?": {
+    "file": "af_heart-d82259018b875d87.ogg",
+    "ipa": "hæv juː θɹˈoʊn ði ˈoʊld mˈɪlk əwˈeɪ?",
+    "ms": 2350,
+    "bytes": 8440
+   },
+   "fly, flew, flown": {
+    "file": "af_heart-5f081de0cfebe1fb.ogg",
+    "ipa": "flˈaɪ, flˈuː, flˈoʊn",
+    "ms": 1725,
+    "bytes": 5866
+   },
+   "We flew to Rome last summer.": {
+    "file": "af_heart-3b0a444973797d97.ogg",
+    "ipa": "wiː flˈuː tə ɹˈoʊm lˈæst sˈʌmɚ.",
+    "ms": 2150,
+    "bytes": 7596
+   },
+   "Have you ever flown in a helicopter?": {
+    "file": "af_heart-6c6a82f62f41c198.ogg",
+    "ipa": "hæv juː ˈɛvɚ flˈoʊn ɪn ə hˈɛlɪkˌɑːptɚ?",
+    "ms": 2625,
+    "bytes": 9426
+   },
+   "draw, drew, drawn": {
+    "file": "af_heart-36fe2494fa4d38f0.ogg",
+    "ipa": "dɹˈɔː, dɹˈuː, dɹˈɔːn",
+    "ms": 1525,
+    "bytes": 5328
+   },
+   "My son drew a picture of our cat.": {
+    "file": "af_heart-37ab95357d54b71b.ogg",
+    "ipa": "maɪ sˈʌn dɹˈuː ə pˈɪktʃɚ ʌv aʊɚ kˈæt.",
+    "ms": 2375,
+    "bytes": 8564
+   },
+   "I have drawn a map for you.": {
+    "file": "af_heart-15beee29facde80e.ogg",
+    "ipa": "aɪ hæv dɹˈɔːn ə mˈæp fɔːɹ juː.",
+    "ms": 1950,
+    "bytes": 6887
+   },
+   "blow, blew, blown": {
+    "file": "af_heart-c8c5c1fb70022e62.ogg",
+    "ipa": "blˈoʊ, blˈuː, blˈoʊn",
+    "ms": 1600,
+    "bytes": 5551
+   },
+   "The wind blew all night.": {
+    "file": "af_heart-636de76842ffb366.ogg",
+    "ipa": "ðə wˈɪnd blˈuː ˈɔːl nˈaɪt.",
+    "ms": 1875,
+    "bytes": 6566
+   },
+   "The storm has blown the trees down.": {
+    "file": "af_heart-b6ea865448e780f7.ogg",
+    "ipa": "ðə stˈɔːɹm hæz blˈoʊn ðə tɹˈiːz dˈaʊn.",
+    "ms": 2550,
+    "bytes": 9195
+   },
+   "speak, spoke, spoken": {
+    "file": "af_heart-83c9106d9e6a7c37.ogg",
+    "ipa": "spˈiːk, spˈoʊk, spˈoʊkən",
+    "ms": 2000,
+    "bytes": 6971
+   },
+   "I spoke to the manager.": {
+    "file": "af_heart-b17f079f343f1f60.ogg",
+    "ipa": "aɪ spˈoʊk tə ðə mˈænədʒɚ.",
+    "ms": 2050,
+    "bytes": 7185
+   },
+   "Have you spoken to her?": {
+    "file": "af_heart-2b054b90e0e27e3c.ogg",
+    "ipa": "hæv juː spˈoʊkən tə hɜː?",
+    "ms": 1850,
+    "bytes": 6488
+   },
+   "break, broke, broken": {
+    "file": "af_heart-f11ef276514f25b5.ogg",
+    "ipa": "bɹˈeɪk, bɹˈoʊk, bɹˈoʊkən",
+    "ms": 1975,
+    "bytes": 6845
+   },
+   "I broke my glasses.": {
+    "file": "af_heart-10a284880a4a4a02.ogg",
+    "ipa": "aɪ bɹˈoʊk maɪ ɡlˈæsəz.",
+    "ms": 1925,
+    "bytes": 6739
+   },
+   "Who has broken the window?": {
+    "file": "af_heart-796e7f2983549132.ogg",
+    "ipa": "hˈuː hæz bɹˈoʊkən ðə wˈɪndoʊ?",
+    "ms": 1975,
+    "bytes": 6983
+   },
+   "choose, chose, chosen": {
+    "file": "af_heart-796d5a1c189bde31.ogg",
+    "ipa": "tʃˈuːz, tʃˈoʊz, tʃˈoʊzən",
+    "ms": 1975,
+    "bytes": 6825
+   },
+   "She chose the red dress.": {
+    "file": "af_heart-61342d1870106d4a.ogg",
+    "ipa": "ʃiː tʃˈoʊz ðə ɹˈɛd dɹˈɛs.",
+    "ms": 2025,
+    "bytes": 7114
+   },
+   "Have you chosen a name?": {
+    "file": "af_heart-052549a0c9f06fd5.ogg",
+    "ipa": "hæv juː tʃˈoʊzən ə nˈeɪm?",
+    "ms": 1850,
+    "bytes": 6436
+   },
+   "wake, woke, woken": {
+    "file": "af_heart-6b0cb33ce296a28f.ogg",
+    "ipa": "wˈeɪk, wˈoʊk, wˈoʊkən",
+    "ms": 1900,
+    "bytes": 6610
+   },
+   "I woke up at six.": {
+    "file": "af_heart-f46c5928decc7cd5.ogg",
+    "ipa": "aɪ wˈoʊk ˈʌp æt sˈɪks.",
+    "ms": 1775,
+    "bytes": 6199
+   },
+   "The baby has woken up.": {
+    "file": "af_heart-ac284f70f106c80b.ogg",
+    "ipa": "ðə bˈeɪbi hæz wˈoʊkən ˈʌp.",
+    "ms": 1950,
+    "bytes": 6830
+   },
+   "forget, forgot, forgotten": {
+    "file": "af_heart-ed400441738b8205.ogg",
+    "ipa": "fɚɡˈɛt, fɚɡˈɑːt, fɚɡˈɑːɾən",
+    "ms": 2225,
+    "bytes": 7881
+   },
+   "I forgot my umbrella.": {
+    "file": "af_heart-e5a99e3248d73de0.ogg",
+    "ipa": "aɪ fɚɡˈɑːt maɪ əmbɹˈɛlə.",
+    "ms": 1850,
+    "bytes": 6463
+   },
+   "I have forgotten his name.": {
+    "file": "af_heart-de5ff05a17ada252.ogg",
+    "ipa": "aɪ hæv fɚɡˈɑːɾən hɪz nˈeɪm.",
+    "ms": 2000,
+    "bytes": 7066
+   },
+   "write, wrote, written": {
+    "file": "af_heart-3c814d27d047cecf.ogg",
+    "ipa": "ɹˈaɪt, ɹˈoʊt, ɹˈɪɾən",
+    "ms": 1450,
+    "bytes": 5164
+   },
+   "He wrote me a long letter.": {
+    "file": "af_heart-218fb09b8b6ed0eb.ogg",
+    "ipa": "hiː ɹˈoʊt miː ə lˈɔːŋ lˈɛɾɚ.",
+    "ms": 2000,
+    "bytes": 7056
+   },
+   "Have you written to your grandmother?": {
+    "file": "af_heart-a5b4b99126c11d92.ogg",
+    "ipa": "hæv juː ɹˈɪɾən tə jʊɹ ɡɹˈændmˌʌðɚ?",
+    "ms": 2200,
+    "bytes": 7864
+   },
+   "drive, drove, driven": {
+    "file": "af_heart-88aca70bc26f3b0f.ogg",
+    "ipa": "dɹˈaɪv, dɹˈoʊv, dɹˈɪvən",
+    "ms": 2050,
+    "bytes": 7128
+   },
+   "We drove to the mountains.": {
+    "file": "af_heart-0cb71a62922675d7.ogg",
+    "ipa": "wiː dɹˈoʊv tə ðə mˈaʊntənz.",
+    "ms": 2050,
+    "bytes": 7244
+   },
+   "I have never driven a truck.": {
+    "file": "af_heart-5ebc1e10637ee8f8.ogg",
+    "ipa": "aɪ hæv nˈɛvɚ dɹˈɪvən ə tɹˈʌk.",
+    "ms": 2050,
+    "bytes": 7279
+   },
+   "ride, rode, ridden": {
+    "file": "af_heart-ba7479172cd8265b.ogg",
+    "ipa": "ɹˈaɪd, ɹˈoʊd, ɹˈɪdən",
+    "ms": 1950,
+    "bytes": 6698
+   },
+   "I rode a horse on holiday.": {
+    "file": "af_heart-1aa6f015a8b0e0f9.ogg",
+    "ipa": "aɪ ɹˈoʊd ə hˈɔːɹs ɑːn hˈɑːlədˌeɪ.",
+    "ms": 2350,
+    "bytes": 8292
+   },
+   "Have you ever ridden a camel?": {
+    "file": "af_heart-31ddec0257514430.ogg",
+    "ipa": "hæv juː ˈɛvɚ ɹˈɪdən ə kˈæməl?",
+    "ms": 2100,
+    "bytes": 7446
+   },
+   "fall, fell, fallen": {
+    "file": "af_heart-fd4a49ef05fb6819.ogg",
+    "ipa": "fˈɔːl, fˈɛl, fˈɑːlən",
+    "ms": 1825,
+    "bytes": 6374
+   },
+   "She fell off her bike.": {
+    "file": "af_heart-8e552157bf927700.ogg",
+    "ipa": "ʃiː fˈɛl ˈɔːf hɜː bˈaɪk.",
+    "ms": 1850,
+    "bytes": 6447
+   },
+   "The prices have fallen.": {
+    "file": "af_heart-f6c8f26eeb6102da.ogg",
+    "ipa": "ðə pɹˈaɪsəz hæv fˈɑːlən.",
+    "ms": 1925,
+    "bytes": 6688
    }
   },
   "am_michael": {
@@ -14034,6 +15234,1206 @@
     "ipa": "ˈɛvɹiθˌɪŋ wˈɜːks pˈɜːfəktli. | jˈʊɹ ə lˈaɪfsˌeɪvɚ!",
     "ms": 4515,
     "bytes": 15764
+   },
+   "be, was, were, been": {
+    "file": "am_michael-83ef1d9015671ad5.ogg",
+    "ipa": "biː, wʌz, wɜː, bɪn",
+    "ms": 1900,
+    "bytes": 6687
+   },
+   "I was tired yesterday.": {
+    "file": "am_michael-91bc28615aa5051b.ogg",
+    "ipa": "aɪ wʌz tˈaɪɚd jˈɛstɚdˌeɪ.",
+    "ms": 2300,
+    "bytes": 8284
+   },
+   "Have you ever been to London?": {
+    "file": "am_michael-e85d52d05efedf1f.ogg",
+    "ipa": "hæv juː ˈɛvɚ bɪn tə lˈʌndən?",
+    "ms": 2525,
+    "bytes": 9701
+   },
+   "have, had, had": {
+    "file": "am_michael-44a01256e8daa6a0.ogg",
+    "ipa": "hæv, hæd, hæd",
+    "ms": 1675,
+    "bytes": 5760
+   },
+   "I had a great weekend.": {
+    "file": "am_michael-8d0f31b2192b77a4.ogg",
+    "ipa": "aɪ hæd ə ɡɹˈeɪt wˈiːkˌɛnd.",
+    "ms": 2200,
+    "bytes": 8734
+   },
+   "We have had a lot of rain this week.": {
+    "file": "am_michael-c42186b9e4748a06.ogg",
+    "ipa": "wiː hæv hæd ə lˈɑːt ʌv ɹˈeɪn ðˈɪs wˈiːk.",
+    "ms": 2750,
+    "bytes": 10024
+   },
+   "do, did, done": {
+    "file": "am_michael-9d37543f5f70e12c.ogg",
+    "ipa": "duː, dˈɪd, dˈʌn",
+    "ms": 1825,
+    "bytes": 7257
+   },
+   "What did you do last night?": {
+    "file": "am_michael-edd2a3f0531dfee8.ogg",
+    "ipa": "wˈʌt dˈɪd juː duː lˈæst nˈaɪt?",
+    "ms": 2425,
+    "bytes": 9273
+   },
+   "I have done my homework.": {
+    "file": "am_michael-e91aa30f029eca75.ogg",
+    "ipa": "aɪ hæv dˈʌn maɪ hˈoʊmwˌɜːk.",
+    "ms": 2350,
+    "bytes": 8690
+   },
+   "go, went, gone": {
+    "file": "am_michael-0f2f71acf1d7c7bd.ogg",
+    "ipa": "ɡˈoʊ, wˈɛnt, ɡˈɔːn",
+    "ms": 1575,
+    "bytes": 5615
+   },
+   "We went to the beach on Sunday.": {
+    "file": "am_michael-7194061748413385.ogg",
+    "ipa": "wiː wˈɛnt tə ðə bˈiːtʃ ɑːn sˈʌndˌeɪ.",
+    "ms": 2725,
+    "bytes": 10968
+   },
+   "She has gone to work.": {
+    "file": "am_michael-8a2a0b993422e365.ogg",
+    "ipa": "ʃiː hæz ɡˈɔːn tə wˈɜːk.",
+    "ms": 2075,
+    "bytes": 7356
+   },
+   "get, got, got": {
+    "file": "am_michael-20633cd890b55ebb.ogg",
+    "ipa": "ɡˈɛt, ɡˈɑːt, ɡˈɑːt",
+    "ms": 1900,
+    "bytes": 7629
+   },
+   "I got a message from Tom.": {
+    "file": "am_michael-6fa313cf4bd7dcf3.ogg",
+    "ipa": "aɪ ɡˈɑːt ə mˈɛsədʒ fɹʌm tˈɑːm.",
+    "ms": 2500,
+    "bytes": 9058
+   },
+   "I have got a new job.": {
+    "file": "am_michael-4ecc4927d37cc7f3.ogg",
+    "ipa": "aɪ hæv ɡˈɑːt ə nˈuː dʒˈɑːb.",
+    "ms": 2300,
+    "bytes": 8266
+   },
+   "make, made, made": {
+    "file": "am_michael-3b2a7eff178eb6b4.ogg",
+    "ipa": "mˈeɪk, mˈeɪd, mˈeɪd",
+    "ms": 1975,
+    "bytes": 6978
+   },
+   "She made a cake for my birthday.": {
+    "file": "am_michael-5f5594a5553b07c3.ogg",
+    "ipa": "ʃiː mˈeɪd ə kˈeɪk fɔːɹ maɪ bˈɜːθdˌeɪ.",
+    "ms": 2600,
+    "bytes": 9486
+   },
+   "Have you made your bed?": {
+    "file": "am_michael-0ba41006809e8928.ogg",
+    "ipa": "hæv juː mˈeɪd jʊɹ bˈɛd?",
+    "ms": 2025,
+    "bytes": 7190
+   },
+   "say, said, said": {
+    "file": "am_michael-5e79f81a15ced73b.ogg",
+    "ipa": "sˈeɪ, sˈɛd, sˈɛd",
+    "ms": 1275,
+    "bytes": 4474
+   },
+   "He said hello to everyone.": {
+    "file": "am_michael-d47e67703806a6ca.ogg",
+    "ipa": "hiː sˈɛd həlˈoʊ tə ˈɛvɹiwˌʌn.",
+    "ms": 2450,
+    "bytes": 8914
+   },
+   "I have said it twice.": {
+    "file": "am_michael-3a06d8b61eac85d4.ogg",
+    "ipa": "aɪ hæv sˈɛd ɪt twˈaɪs.",
+    "ms": 2050,
+    "bytes": 7287
+   },
+   "see, saw, seen": {
+    "file": "am_michael-65eb8c7074da312b.ogg",
+    "ipa": "sˈiː, sˈɔː, sˈiːn",
+    "ms": 1825,
+    "bytes": 6287
+   },
+   "I saw a good film yesterday.": {
+    "file": "am_michael-15932854899ec625.ogg",
+    "ipa": "aɪ sˈɔː ə ɡˈʊd fˈɪlm jˈɛstɚdˌeɪ.",
+    "ms": 2750,
+    "bytes": 10039
+   },
+   "Have you seen my phone?": {
+    "file": "am_michael-3d098384bba4f2f2.ogg",
+    "ipa": "hæv juː sˈiːn maɪ fˈoʊn?",
+    "ms": 2200,
+    "bytes": 7865
+   },
+   "take, took, taken": {
+    "file": "am_michael-6cd9e167e01810d8.ogg",
+    "ipa": "tˈeɪk, tˈʊk, tˈeɪkən",
+    "ms": 1900,
+    "bytes": 6724
+   },
+   "I took the bus this morning.": {
+    "file": "am_michael-ae699f7344760390.ogg",
+    "ipa": "aɪ tˈʊk ðə bˈʌs ðˈɪs mˈɔːɹnɪŋ.",
+    "ms": 2450,
+    "bytes": 8963
+   },
+   "Who has taken my pen?": {
+    "file": "am_michael-1f8b2441102bac3e.ogg",
+    "ipa": "hˈuː hæz tˈeɪkən maɪ pˈɛn?",
+    "ms": 2300,
+    "bytes": 8316
+   },
+   "give, gave, given": {
+    "file": "am_michael-5da024f01a5c2221.ogg",
+    "ipa": "ɡˈɪv, ɡˈeɪv, ɡˈɪvən",
+    "ms": 2075,
+    "bytes": 8313
+   },
+   "He gave me a present.": {
+    "file": "am_michael-e9a108f70b24bc8a.ogg",
+    "ipa": "hiː ɡˈeɪv miː ə pɹˈɛzənt.",
+    "ms": 2175,
+    "bytes": 7818
+   },
+   "I have given her my number.": {
+    "file": "am_michael-8e2dbd10e95723b5.ogg",
+    "ipa": "aɪ hæv ɡˈɪvən hɜː maɪ nˈʌmbɚ.",
+    "ms": 2475,
+    "bytes": 8975
+   },
+   "eat, ate, eaten": {
+    "file": "am_michael-5a054e77ec2b8f5b.ogg",
+    "ipa": "ˈiːt, ˈeɪt, ˈiːɾən",
+    "ms": 2025,
+    "bytes": 7145
+   },
+   "We ate pizza last night.": {
+    "file": "am_michael-ea83cf292c8fd0d7.ogg",
+    "ipa": "wiː ˈeɪt pˈiːtsə lˈæst nˈaɪt.",
+    "ms": 2475,
+    "bytes": 9000
+   },
+   "Have you ever eaten sushi?": {
+    "file": "am_michael-25a9f5619652341e.ogg",
+    "ipa": "hæv juː ˈɛvɚ ˈiːɾən sˈuːʃi?",
+    "ms": 2525,
+    "bytes": 9126
+   },
+   "cut, cut, cut": {
+    "file": "am_michael-266964c6b3bd3dd3.ogg",
+    "ipa": "kˈʌt, kˈʌt, kˈʌt",
+    "ms": 1700,
+    "bytes": 5940
+   },
+   "I cut my finger yesterday.": {
+    "file": "am_michael-06fb0a7362bbf23d.ogg",
+    "ipa": "aɪ kˈʌt maɪ fˈɪŋɡɚ jˈɛstɚdˌeɪ.",
+    "ms": 2550,
+    "bytes": 9218
+   },
+   "Have you cut the bread?": {
+    "file": "am_michael-de9c597c8c769606.ogg",
+    "ipa": "hæv juː kˈʌt ðə bɹˈɛd?",
+    "ms": 2025,
+    "bytes": 7232
+   },
+   "put, put, put": {
+    "file": "am_michael-12360349a0610c2b.ogg",
+    "ipa": "pˈʊt, pˈʊt, pˈʊt",
+    "ms": 1675,
+    "bytes": 6646
+   },
+   "She put her bag on the table.": {
+    "file": "am_michael-39a6504a794d2e5d.ogg",
+    "ipa": "ʃiː pˈʊt hɜː bˈæɡ ɑːn ðə tˈeɪbəl.",
+    "ms": 2550,
+    "bytes": 9282
+   },
+   "Where have you put my keys?": {
+    "file": "am_michael-055322afe1318090.ogg",
+    "ipa": "wˈɛɹ hæv juː pˈʊt maɪ kˈiːz?",
+    "ms": 2325,
+    "bytes": 8450
+   },
+   "let, let, let": {
+    "file": "am_michael-e5c38e9cba442aec.ogg",
+    "ipa": "lˈɛt, lˈɛt, lˈɛt",
+    "ms": 1600,
+    "bytes": 5599
+   },
+   "My parents let me go to the party.": {
+    "file": "am_michael-330e1a76ae580397.ogg",
+    "ipa": "maɪ pˈɛɹənts lˈɛt miː ɡˈoʊ tə ðə pˈɑːɹɾi.",
+    "ms": 2950,
+    "bytes": 10852
+   },
+   "He has let the dog out.": {
+    "file": "am_michael-28cdbbd589cd8d52.ogg",
+    "ipa": "hiː hæz lˈɛt ðə dˈɔːɡ ˈaʊt.",
+    "ms": 2225,
+    "bytes": 8029
+   },
+   "hit, hit, hit": {
+    "file": "am_michael-98b2b6f1d0ede666.ogg",
+    "ipa": "hˈɪt, hˈɪt, hˈɪt",
+    "ms": 1625,
+    "bytes": 5615
+   },
+   "The ball hit the window.": {
+    "file": "am_michael-68a68dde8a0cc26a.ogg",
+    "ipa": "ðə bˈɔːl hˈɪt ðə wˈɪndoʊ.",
+    "ms": 2275,
+    "bytes": 9147
+   },
+   "A storm has hit the city.": {
+    "file": "am_michael-c48a426213202b21.ogg",
+    "ipa": "ə stˈɔːɹm hæz hˈɪt ðə sˈɪɾi.",
+    "ms": 2525,
+    "bytes": 9112
+   },
+   "cost, cost, cost": {
+    "file": "am_michael-229673a589cdcf92.ogg",
+    "ipa": "kˈɑːst, kˈɑːst, kˈɑːst",
+    "ms": 2100,
+    "bytes": 7520
+   },
+   "The tickets cost fifty euros.": {
+    "file": "am_michael-8ddb830a3ad6cac9.ogg",
+    "ipa": "ðə tˈɪkəts kˈɑːst fˈɪfti jˈuːɹˌoʊz.",
+    "ms": 2750,
+    "bytes": 10163
+   },
+   "This trip has cost a lot of money.": {
+    "file": "am_michael-7287350f871fc0f2.ogg",
+    "ipa": "ðˈɪs tɹˈɪp hæz kˈɑːst ə lˈɑːt ʌv mˈʌni.",
+    "ms": 2975,
+    "bytes": 10991
+   },
+   "shut, shut, shut": {
+    "file": "am_michael-e18f626b40182901.ogg",
+    "ipa": "ʃˈʌt, ʃˈʌt, ʃˈʌt",
+    "ms": 1725,
+    "bytes": 6024
+   },
+   "He shut the door quietly.": {
+    "file": "am_michael-574dd28171238afe.ogg",
+    "ipa": "hiː ʃˈʌt ðə dˈɔːɹ kwˈaɪətli.",
+    "ms": 2400,
+    "bytes": 8751
+   },
+   "The shop has shut for the day.": {
+    "file": "am_michael-5b396e77adbc62e7.ogg",
+    "ipa": "ðə ʃˈɑːp hæz ʃˈʌt fɔːɹ ðə dˈeɪ.",
+    "ms": 2400,
+    "bytes": 8685
+   },
+   "hurt, hurt, hurt": {
+    "file": "am_michael-a2e3a65c5d4015dc.ogg",
+    "ipa": "hˈɜːt, hˈɜːt, hˈɜːt",
+    "ms": 1825,
+    "bytes": 6352
+   },
+   "I hurt my leg last week.": {
+    "file": "am_michael-7f46a1f9a7239b01.ogg",
+    "ipa": "aɪ hˈɜːt maɪ lˈɛɡ lˈæst wˈiːk.",
+    "ms": 2550,
+    "bytes": 9244
+   },
+   "Have you hurt yourself?": {
+    "file": "am_michael-85890b7d3b19f2d0.ogg",
+    "ipa": "hæv juː hˈɜːt jɚsˈɛlf?",
+    "ms": 2200,
+    "bytes": 7833
+   },
+   "read, read, read": {
+    "file": "am_michael-9c33a5e11cf83fbf.ogg",
+    "ipa": "ɹˈiːd, ɹˈiːd, ɹˈiːd",
+    "ms": 2200,
+    "bytes": 7726
+   },
+   "I read a great book last month.": {
+    "file": "am_michael-dd2e182a57f5360e.ogg",
+    "ipa": "aɪ ɹˈiːd ə ɡɹˈeɪt bˈʊk lˈæst mˈʌnθ.",
+    "ms": 2700,
+    "bytes": 9941
+   },
+   "Have you read this book?": {
+    "file": "am_michael-beeec4c67844a508.ogg",
+    "ipa": "hæv juː ɹˈiːd ðˈɪs bˈʊk?",
+    "ms": 2175,
+    "bytes": 7825
+   },
+   "buy, bought, bought": {
+    "file": "am_michael-020cd1b895d4ac69.ogg",
+    "ipa": "bˈaɪ, bˈɑːt, bˈɑːt",
+    "ms": 1800,
+    "bytes": 7172
+   },
+   "I bought new shoes on Saturday.": {
+    "file": "am_michael-da03cdc9d87b1c15.ogg",
+    "ipa": "aɪ bˈɑːt nˈuː ʃˈuːz ɑːn sˈæɾɚdi.",
+    "ms": 2750,
+    "bytes": 10005
+   },
+   "Have you bought the tickets?": {
+    "file": "am_michael-9fc68a6b5a3821f6.ogg",
+    "ipa": "hæv juː bˈɑːt ðə tˈɪkəts?",
+    "ms": 2225,
+    "bytes": 8680
+   },
+   "bring, brought, brought": {
+    "file": "am_michael-fecd7a19168506fd.ogg",
+    "ipa": "bɹˈɪŋ, bɹˈɔːt, bɹˈɔːt",
+    "ms": 2025,
+    "bytes": 7270
+   },
+   "She brought a cake to the party.": {
+    "file": "am_michael-f29bed5640131559.ogg",
+    "ipa": "ʃiː bɹˈɔːt ə kˈeɪk tə ðə pˈɑːɹɾi.",
+    "ms": 2500,
+    "bytes": 9137
+   },
+   "I have brought you a coffee.": {
+    "file": "am_michael-57a254ebc1ae192d.ogg",
+    "ipa": "aɪ hæv bɹˈɔːt juː ə kˈɑːfi.",
+    "ms": 2350,
+    "bytes": 8451
+   },
+   "think, thought, thought": {
+    "file": "am_michael-77ccd68a31259afb.ogg",
+    "ipa": "θˈɪŋk, θˈɔːt, θˈɔːt",
+    "ms": 1525,
+    "bytes": 5387
+   },
+   "I thought you were at home.": {
+    "file": "am_michael-ea4a249b8843b28a.ogg",
+    "ipa": "aɪ θˈɔːt juː wɜː æt hˈoʊm.",
+    "ms": 2175,
+    "bytes": 7792
+   },
+   "Have you thought about it?": {
+    "file": "am_michael-7e066ba6dfc3a36c.ogg",
+    "ipa": "hæv juː θˈɔːt əbˈaʊt ɪt?",
+    "ms": 2100,
+    "bytes": 7491
+   },
+   "fight, fought, fought": {
+    "file": "am_michael-5adca43f4df5fb9b.ogg",
+    "ipa": "fˈaɪt, fˈɔːt, fˈɔːt",
+    "ms": 1950,
+    "bytes": 6876
+   },
+   "The two cats fought in the garden.": {
+    "file": "am_michael-f61b5a5e306615fe.ogg",
+    "ipa": "ðə tˈuː kˈæts fˈɔːt ɪn ðə ɡˈɑːɹdən.",
+    "ms": 2650,
+    "bytes": 9709
+   },
+   "They have never fought.": {
+    "file": "am_michael-f221f24d55ea9ac1.ogg",
+    "ipa": "ðeɪ hæv nˈɛvɚ fˈɔːt.",
+    "ms": 1975,
+    "bytes": 6950
+   },
+   "catch, caught, caught": {
+    "file": "am_michael-f851fd25fd2cb402.ogg",
+    "ipa": "kˈætʃ, kˈɑːt, kˈɑːt",
+    "ms": 1950,
+    "bytes": 6888
+   },
+   "He caught the last train.": {
+    "file": "am_michael-796532c6f4a68252.ogg",
+    "ipa": "hiː kˈɑːt ðə lˈæst tɹˈeɪn.",
+    "ms": 2300,
+    "bytes": 8321
+   },
+   "I have caught a cold.": {
+    "file": "am_michael-3bd63cf19cb7deb8.ogg",
+    "ipa": "aɪ hæv kˈɑːt ə kˈoʊld.",
+    "ms": 2075,
+    "bytes": 7404
+   },
+   "teach, taught, taught": {
+    "file": "am_michael-833952cef4238655.ogg",
+    "ipa": "tˈiːtʃ, tˈɔːt, tˈɔːt",
+    "ms": 1950,
+    "bytes": 6867
+   },
+   "My mother taught me to swim.": {
+    "file": "am_michael-f6211e8c15ce63fd.ogg",
+    "ipa": "maɪ mˈʌðɚ tˈɔːt miː tə swˈɪm.",
+    "ms": 2425,
+    "bytes": 8836
+   },
+   "She has taught English for ten years.": {
+    "file": "am_michael-665619aa82058c66.ogg",
+    "ipa": "ʃiː hæz tˈɔːt ˈɪŋɡlɪʃ fɔːɹ tˈɛn jˈɪɹz.",
+    "ms": 2875,
+    "bytes": 10587
+   },
+   "keep, kept, kept": {
+    "file": "am_michael-37afd972ceea3c90.ogg",
+    "ipa": "kˈiːp, kˈɛpt, kˈɛpt",
+    "ms": 1850,
+    "bytes": 6492
+   },
+   "He kept the secret.": {
+    "file": "am_michael-89439c01d82b2ece.ogg",
+    "ipa": "hiː kˈɛpt ðə sˈiːkɹət.",
+    "ms": 1950,
+    "bytes": 6927
+   },
+   "I have kept all your letters.": {
+    "file": "am_michael-f41ee71b765ea107.ogg",
+    "ipa": "aɪ hæv kˈɛpt ˈɔːl jʊɹ lˈɛɾɚz.",
+    "ms": 2400,
+    "bytes": 8734
+   },
+   "sleep, slept, slept": {
+    "file": "am_michael-95c6b933c2184e4f.ogg",
+    "ipa": "slˈiːp, slˈɛpt, slˈɛpt",
+    "ms": 2050,
+    "bytes": 7247
+   },
+   "I slept very well last night.": {
+    "file": "am_michael-734385af8bdadcab.ogg",
+    "ipa": "aɪ slˈɛpt vˈɛɹi wˈɛl lˈæst nˈaɪt.",
+    "ms": 2725,
+    "bytes": 9943
+   },
+   "Have you slept at all?": {
+    "file": "am_michael-a93c89ec043c9ada.ogg",
+    "ipa": "hæv juː slˈɛpt æt ˈɔːl?",
+    "ms": 2125,
+    "bytes": 7656
+   },
+   "feel, felt, felt": {
+    "file": "am_michael-a24cdf647062ce6c.ogg",
+    "ipa": "fˈiːl, fˈɛlt, fˈɛlt",
+    "ms": 1950,
+    "bytes": 6779
+   },
+   "I felt happy after the run.": {
+    "file": "am_michael-2087fcf4f34bdaa8.ogg",
+    "ipa": "aɪ fˈɛlt hˈæpi ˈæftɚ ðə ɹˈʌn.",
+    "ms": 2675,
+    "bytes": 9736
+   },
+   "I have never felt so tired.": {
+    "file": "am_michael-159ea5eae231cfc4.ogg",
+    "ipa": "aɪ hæv nˈɛvɚ fˈɛlt sˈoʊ tˈaɪɚd.",
+    "ms": 2600,
+    "bytes": 9443
+   },
+   "leave, left, left": {
+    "file": "am_michael-bb64e0eb21ad1cc1.ogg",
+    "ipa": "lˈiːv, lˈɛft, lˈɛft",
+    "ms": 1975,
+    "bytes": 6985
+   },
+   "We left the house at eight.": {
+    "file": "am_michael-47f92ecf275b4cc5.ogg",
+    "ipa": "wiː lˈɛft ðə hˈaʊs æt ˈeɪt.",
+    "ms": 2225,
+    "bytes": 7982
+   },
+   "Has the train left?": {
+    "file": "am_michael-0ffb7547af7399fa.ogg",
+    "ipa": "hæz ðə tɹˈeɪn lˈɛft?",
+    "ms": 2050,
+    "bytes": 7220
+   },
+   "meet, met, met": {
+    "file": "am_michael-001f957120535524.ogg",
+    "ipa": "mˈiːt, mˈɛt, mˈɛt",
+    "ms": 1825,
+    "bytes": 6388
+   },
+   "I met my best friend at school.": {
+    "file": "am_michael-d83cc3d60254afb7.ogg",
+    "ipa": "aɪ mˈɛt maɪ bˈɛst fɹˈɛnd æt skˈuːl.",
+    "ms": 2600,
+    "bytes": 9520
+   },
+   "Have you met my brother?": {
+    "file": "am_michael-54023d283c3fe146.ogg",
+    "ipa": "hæv juː mˈɛt maɪ bɹˈʌðɚ?",
+    "ms": 2150,
+    "bytes": 7696
+   },
+   "lose, lost, lost": {
+    "file": "am_michael-1a60a1811ee8296f.ogg",
+    "ipa": "lˈuːz, lˈɔːst, lˈɔːst",
+    "ms": 2250,
+    "bytes": 7968
+   },
+   "I have lost my phone again.": {
+    "file": "am_michael-f5cb5f33a0b06163.ogg",
+    "ipa": "aɪ hæv lˈɔːst maɪ fˈoʊn əɡˈɛn.",
+    "ms": 2525,
+    "bytes": 9170
+   },
+   "send, sent, sent": {
+    "file": "am_michael-506d16e4eab444fb.ogg",
+    "ipa": "sˈɛnd, sˈɛnt, sˈɛnt",
+    "ms": 1925,
+    "bytes": 6683
+   },
+   "She sent me a message.": {
+    "file": "am_michael-b6915acdcf599eb3.ogg",
+    "ipa": "ʃiː sˈɛnt miː ə mˈɛsədʒ.",
+    "ms": 2225,
+    "bytes": 7928
+   },
+   "Have you sent the email?": {
+    "file": "am_michael-63ddc220ca1c494d.ogg",
+    "ipa": "hæv juː sˈɛnt ði imˈeɪl?",
+    "ms": 2175,
+    "bytes": 7834
+   },
+   "spend, spent, spent": {
+    "file": "am_michael-23650cb8aa27b6ec.ogg",
+    "ipa": "spˈɛnd, spˈɛnt, spˈɛnt",
+    "ms": 1950,
+    "bytes": 7701
+   },
+   "We spent a week in Spain.": {
+    "file": "am_michael-f12bd9e0766fa6cd.ogg",
+    "ipa": "wiː spˈɛnt ə wˈiːk ɪn spˈeɪn.",
+    "ms": 2425,
+    "bytes": 8829
+   },
+   "I have spent all my money.": {
+    "file": "am_michael-bac38bda2bf043db.ogg",
+    "ipa": "aɪ hæv spˈɛnt ˈɔːl maɪ mˈʌni.",
+    "ms": 2375,
+    "bytes": 8656
+   },
+   "build, built, built": {
+    "file": "am_michael-24dad48525183b26.ogg",
+    "ipa": "bˈɪld, bˈɪlt, bˈɪlt",
+    "ms": 1875,
+    "bytes": 6659
+   },
+   "They built a new school in my town.": {
+    "file": "am_michael-5a73f9236c9904fd.ogg",
+    "ipa": "ðeɪ bˈɪlt ə nˈuː skˈuːl ɪn maɪ tˈaʊn.",
+    "ms": 2825,
+    "bytes": 10542
+   },
+   "My father has built a garden shed.": {
+    "file": "am_michael-e6f13f30df776637.ogg",
+    "ipa": "maɪ fˈɑːðɚ hæz bˈɪlt ə ɡˈɑːɹdən ʃˈɛd.",
+    "ms": 3150,
+    "bytes": 11620
+   },
+   "tell, told, told": {
+    "file": "am_michael-ac20d30903a24248.ogg",
+    "ipa": "tˈɛl, tˈoʊld, tˈoʊld",
+    "ms": 1950,
+    "bytes": 6917
+   },
+   "She told me a funny story.": {
+    "file": "am_michael-bffef62d76254f90.ogg",
+    "ipa": "ʃiː tˈoʊld miː ə fˈʌni stˈɔːɹi.",
+    "ms": 2600,
+    "bytes": 9522
+   },
+   "Have you told your parents?": {
+    "file": "am_michael-da0625406e2231d0.ogg",
+    "ipa": "hæv juː tˈoʊld jʊɹ pˈɛɹənts?",
+    "ms": 2275,
+    "bytes": 8198
+   },
+   "sell, sold, sold": {
+    "file": "am_michael-d8237ab547967b42.ogg",
+    "ipa": "sˈɛl, sˈoʊld, sˈoʊld",
+    "ms": 2050,
+    "bytes": 7263
+   },
+   "We sold our old car.": {
+    "file": "am_michael-476cef081e649568.ogg",
+    "ipa": "wiː sˈoʊld aʊɚ ˈoʊld kˈɑːɹ.",
+    "ms": 2425,
+    "bytes": 8727
+   },
+   "They have sold all the tickets.": {
+    "file": "am_michael-325925bed6e7bc6c.ogg",
+    "ipa": "ðeɪ hæv sˈoʊld ˈɔːl ðə tˈɪkəts.",
+    "ms": 2550,
+    "bytes": 9904
+   },
+   "find, found, found": {
+    "file": "am_michael-d804fce63a94ea02.ogg",
+    "ipa": "fˈaɪnd, fˈaʊnd, fˈaʊnd",
+    "ms": 2125,
+    "bytes": 7467
+   },
+   "I found a wallet in the street.": {
+    "file": "am_michael-53ebbbc37e2e2baf.ogg",
+    "ipa": "aɪ fˈaʊnd ə wˈɔːlət ɪn ðə stɹˈiːt.",
+    "ms": 2650,
+    "bytes": 9647
+   },
+   "Have you found your keys?": {
+    "file": "am_michael-7819d568acd84720.ogg",
+    "ipa": "hæv juː fˈaʊnd jʊɹ kˈiːz?",
+    "ms": 2225,
+    "bytes": 7997
+   },
+   "stand, stood, stood": {
+    "file": "am_michael-b8059c74d51eae79.ogg",
+    "ipa": "stˈænd, stˈʊd, stˈʊd",
+    "ms": 2025,
+    "bytes": 7171
+   },
+   "We stood in the rain for an hour.": {
+    "file": "am_michael-d64c99c8c3146f00.ogg",
+    "ipa": "wiː stˈʊd ɪn ðə ɹˈeɪn fɔːɹ ən ˈaʊɚ.",
+    "ms": 2675,
+    "bytes": 9849
+   },
+   "I have stood here all day.": {
+    "file": "am_michael-7639714f980eefbb.ogg",
+    "ipa": "aɪ hæv stˈʊd hˈiːɹ ˈɔːl dˈeɪ.",
+    "ms": 2400,
+    "bytes": 8712
+   },
+   "understand, understood, understood": {
+    "file": "am_michael-d00aa5695923208a.ogg",
+    "ipa": "ˌʌndɚstˈænd, ˌʌndɚstˈʊd, ˌʌndɚstˈʊd",
+    "ms": 2950,
+    "bytes": 10928
+   },
+   "I understood everything he said.": {
+    "file": "am_michael-dd7c20e3036f011e.ogg",
+    "ipa": "aɪ ˌʌndɚstˈʊd ˈɛvɹiθˌɪŋ hiː sˈɛd.",
+    "ms": 2750,
+    "bytes": 10060
+   },
+   "Have you understood the rule?": {
+    "file": "am_michael-f1439d0cb2dc8370.ogg",
+    "ipa": "hæv juː ˌʌndɚstˈʊd ðə ɹˈuːl?",
+    "ms": 2300,
+    "bytes": 8330
+   },
+   "hear, heard, heard": {
+    "file": "am_michael-6e8eb65de89231bd.ogg",
+    "ipa": "hˈiːɹ, hˈɜːd, hˈɜːd",
+    "ms": 1950,
+    "bytes": 6779
+   },
+   "I heard a strange noise.": {
+    "file": "am_michael-ef8e024117875ded.ogg",
+    "ipa": "aɪ hˈɜːd ə stɹˈeɪndʒ nˈɔɪz.",
+    "ms": 2475,
+    "bytes": 8963
+   },
+   "Have you heard the news?": {
+    "file": "am_michael-4cb986973358dd50.ogg",
+    "ipa": "hæv juː hˈɜːd ðə nˈuːz?",
+    "ms": 2100,
+    "bytes": 8069
+   },
+   "sit, sat, sat": {
+    "file": "am_michael-035b7ff9ad384695.ogg",
+    "ipa": "sˈɪt, sˈæt, sˈæt",
+    "ms": 1825,
+    "bytes": 6275
+   },
+   "She sat next to me on the bus.": {
+    "file": "am_michael-9e727cd7c868d83b.ogg",
+    "ipa": "ʃiː sˈæt nˈɛkst tə miː ɑːn ðə bˈʌs.",
+    "ms": 2625,
+    "bytes": 9615
+   },
+   "I have sat here for an hour.": {
+    "file": "am_michael-f88f184b1fbeafed.ogg",
+    "ipa": "aɪ hæv sˈæt hˈiːɹ fɔːɹ ən ˈaʊɚ.",
+    "ms": 2450,
+    "bytes": 8852
+   },
+   "win, won, won": {
+    "file": "am_michael-41325e617b456dfe.ogg",
+    "ipa": "wˈɪn, wˈʌn, wˈʌn",
+    "ms": 1800,
+    "bytes": 6296
+   },
+   "Our team won the match.": {
+    "file": "am_michael-4f170fe79002d941.ogg",
+    "ipa": "aʊɚ tˈiːm wˈʌn ðə mˈætʃ.",
+    "ms": 2100,
+    "bytes": 7582
+   },
+   "She has won three medals.": {
+    "file": "am_michael-9695397c5ce114fa.ogg",
+    "ipa": "ʃiː hæz wˈʌn θɹˈiː mˈɛdəlz.",
+    "ms": 2350,
+    "bytes": 8453
+   },
+   "pay, paid, paid": {
+    "file": "am_michael-02568b574285fd2b.ogg",
+    "ipa": "pˈeɪ, pˈeɪd, pˈeɪd",
+    "ms": 1925,
+    "bytes": 7560
+   },
+   "I paid for dinner.": {
+    "file": "am_michael-91d2a20811507df5.ogg",
+    "ipa": "aɪ pˈeɪd fɔːɹ dˈɪnɚ.",
+    "ms": 2025,
+    "bytes": 7156
+   },
+   "Have you paid the bill?": {
+    "file": "am_michael-11ef357675e9c3e9.ogg",
+    "ipa": "hæv juː pˈeɪd ðə bˈɪl?",
+    "ms": 1950,
+    "bytes": 7705
+   },
+   "hold, held, held": {
+    "file": "am_michael-ee98383dd339ca7c.ogg",
+    "ipa": "hˈoʊld, hˈɛld, hˈɛld",
+    "ms": 2025,
+    "bytes": 7075
+   },
+   "He held my hand.": {
+    "file": "am_michael-5bff7e9a3926444d.ogg",
+    "ipa": "hiː hˈɛld maɪ hˈænd.",
+    "ms": 2000,
+    "bytes": 7021
+   },
+   "She has held the record for years.": {
+    "file": "am_michael-feefdbb617ea02e5.ogg",
+    "ipa": "ʃiː hæz hˈɛld ðə ɹəkˈɔːɹd fɔːɹ jˈɪɹz.",
+    "ms": 2800,
+    "bytes": 10292
+   },
+   "begin, began, begun": {
+    "file": "am_michael-863d347b039fc16c.ogg",
+    "ipa": "bɪɡˈɪn, bɪɡˈæn, bɪɡˈʌn",
+    "ms": 2225,
+    "bytes": 7827
+   },
+   "The film began at nine.": {
+    "file": "am_michael-fdc42ba0c1715eba.ogg",
+    "ipa": "ðə fˈɪlm bɪɡˈæn æt nˈaɪn.",
+    "ms": 2425,
+    "bytes": 8743
+   },
+   "Has the meeting begun?": {
+    "file": "am_michael-52bbec3d0137256d.ogg",
+    "ipa": "hæz ðə mˈiːɾɪŋ bɪɡˈʌn?",
+    "ms": 2275,
+    "bytes": 8192
+   },
+   "drink, drank, drunk": {
+    "file": "am_michael-270865a2fd8bce4a.ogg",
+    "ipa": "dɹˈɪŋk, dɹˈæŋk, dɹˈʌŋk",
+    "ms": 2100,
+    "bytes": 7470
+   },
+   "I drank a lot of water.": {
+    "file": "am_michael-a96e060691204e5e.ogg",
+    "ipa": "aɪ dɹˈæŋk ə lˈɑːt ʌv wˈɔːɾɚ.",
+    "ms": 2425,
+    "bytes": 8790
+   },
+   "Have you drunk your tea?": {
+    "file": "am_michael-25aae2a254a7fa90.ogg",
+    "ipa": "hæv juː dɹˈʌŋk jʊɹ tˈiː?",
+    "ms": 2225,
+    "bytes": 7967
+   },
+   "sing, sang, sung": {
+    "file": "am_michael-c54c58db80594e50.ogg",
+    "ipa": "sˈɪŋ, sˈæŋ, sˈʌŋ",
+    "ms": 1925,
+    "bytes": 6556
+   },
+   "We sang songs around the fire.": {
+    "file": "am_michael-abeb5396d8c90b18.ogg",
+    "ipa": "wiː sˈæŋ sˈɔːŋz ɚɹˈaʊnd ðə fˈaɪɚ.",
+    "ms": 2750,
+    "bytes": 9939
+   },
+   "She has sung in a band.": {
+    "file": "am_michael-cf3c007196d9303e.ogg",
+    "ipa": "ʃiː hæz sˈʌŋ ɪn ə bˈænd.",
+    "ms": 2150,
+    "bytes": 7562
+   },
+   "swim, swam, swum": {
+    "file": "am_michael-f22bedee583bd2ca.ogg",
+    "ipa": "swˈɪm, swˈæm, swˈʌm",
+    "ms": 2175,
+    "bytes": 7624
+   },
+   "We swam in the sea.": {
+    "file": "am_michael-c1d6e7e07ec0b071.ogg",
+    "ipa": "wiː swˈæm ɪn ðə sˈiː.",
+    "ms": 2100,
+    "bytes": 7381
+   },
+   "I have never swum in a lake.": {
+    "file": "am_michael-6787df9676183590.ogg",
+    "ipa": "aɪ hæv nˈɛvɚ swˈʌm ɪn ə lˈeɪk.",
+    "ms": 2400,
+    "bytes": 8676
+   },
+   "ring, rang, rung": {
+    "file": "am_michael-e9415f1af746604e.ogg",
+    "ipa": "ɹˈɪŋ, ɹˈæŋ, ɹˈʌŋ",
+    "ms": 2075,
+    "bytes": 7221
+   },
+   "The phone rang twice.": {
+    "file": "am_michael-16bb8c700bb2cfef.ogg",
+    "ipa": "ðə fˈoʊn ɹˈæŋ twˈaɪs.",
+    "ms": 2225,
+    "bytes": 7911
+   },
+   "Has the bell rung?": {
+    "file": "am_michael-66a2c47eb475937a.ogg",
+    "ipa": "hæz ðə bˈɛl ɹˈʌŋ?",
+    "ms": 2000,
+    "bytes": 7083
+   },
+   "come, came, come": {
+    "file": "am_michael-b30f6daa9eeabbd7.ogg",
+    "ipa": "kˈʌm, kˈeɪm, kˈʌm",
+    "ms": 1825,
+    "bytes": 6311
+   },
+   "My sister came to see me.": {
+    "file": "am_michael-ce61708fa97f9e99.ogg",
+    "ipa": "maɪ sˈɪstɚ kˈeɪm tə sˈiː miː.",
+    "ms": 2450,
+    "bytes": 8856
+   },
+   "Spring has come.": {
+    "file": "am_michael-027b4ca718bb3356.ogg",
+    "ipa": "spɹˈɪŋ hæz kˈʌm.",
+    "ms": 1925,
+    "bytes": 6703
+   },
+   "become, became, become": {
+    "file": "am_michael-639adace23126157.ogg",
+    "ipa": "bɪkˈʌm, bɪkˈeɪm, bɪkˈʌm",
+    "ms": 2225,
+    "bytes": 8870
+   },
+   "He became a doctor.": {
+    "file": "am_michael-b1f2f85bddc32ac8.ogg",
+    "ipa": "hiː bɪkˈeɪm ə dˈɑːktɚ.",
+    "ms": 2075,
+    "bytes": 7389
+   },
+   "It has become very cold.": {
+    "file": "am_michael-aa32b41176a4d814.ogg",
+    "ipa": "ɪt hæz bɪkˈʌm vˈɛɹi kˈoʊld.",
+    "ms": 2575,
+    "bytes": 9372
+   },
+   "run, ran, run": {
+    "file": "am_michael-0eb6ebc4ebb5da26.ogg",
+    "ipa": "ɹˈʌn, ɹˈæn, ɹˈʌn",
+    "ms": 1575,
+    "bytes": 5617
+   },
+   "I ran to the station.": {
+    "file": "am_michael-5f1598f6b61370be.ogg",
+    "ipa": "aɪ ɹˈæn tə ðə stˈeɪʃən.",
+    "ms": 2225,
+    "bytes": 7977
+   },
+   "Have you ever run a marathon?": {
+    "file": "am_michael-fbc893a0c4a61313.ogg",
+    "ipa": "hæv juː ˈɛvɚ ɹˈʌn ə mˈɛɹəθˌɑːn?",
+    "ms": 2775,
+    "bytes": 10166
+   },
+   "know, knew, known": {
+    "file": "am_michael-a29af508747fa015.ogg",
+    "ipa": "nˈoʊ, nˈuː, nˈoʊn",
+    "ms": 1800,
+    "bytes": 6307
+   },
+   "I knew the answer.": {
+    "file": "am_michael-c4bb98099db84d46.ogg",
+    "ipa": "aɪ nˈuː ði ˈænsɚ.",
+    "ms": 1950,
+    "bytes": 6809
+   },
+   "I have known him for ten years.": {
+    "file": "am_michael-5d6313e6c962ce76.ogg",
+    "ipa": "aɪ hæv nˈoʊn hɪm fɔːɹ tˈɛn jˈɪɹz.",
+    "ms": 2625,
+    "bytes": 9566
+   },
+   "grow, grew, grown": {
+    "file": "am_michael-1247e7ac3747c204.ogg",
+    "ipa": "ɡɹˈoʊ, ɡɹˈuː, ɡɹˈoʊn",
+    "ms": 2150,
+    "bytes": 7963
+   },
+   "My little brother grew a lot this year.": {
+    "file": "am_michael-2108b2ccf7375a25.ogg",
+    "ipa": "maɪ lˈɪɾəl bɹˈʌðɚ ɡɹˈuː ə lˈɑːt ðˈɪs jˈɪɹ.",
+    "ms": 2975,
+    "bytes": 11046
+   },
+   "The city has grown fast.": {
+    "file": "am_michael-1ca26ca65219b9ff.ogg",
+    "ipa": "ðə sˈɪɾi hæz ɡɹˈoʊn fˈæst.",
+    "ms": 2400,
+    "bytes": 8578
+   },
+   "throw, threw, thrown": {
+    "file": "am_michael-d37ebd0fda635e4e.ogg",
+    "ipa": "θɹˈoʊ, θɹˈuː, θɹˈoʊn",
+    "ms": 2175,
+    "bytes": 7582
+   },
+   "He threw the ball to the dog.": {
+    "file": "am_michael-bd7f72f75cbff869.ogg",
+    "ipa": "hiː θɹˈuː ðə bˈɔːl tə ðə dˈɔːɡ.",
+    "ms": 2550,
+    "bytes": 9281
+   },
+   "Have you thrown the old milk away?": {
+    "file": "am_michael-f5fc79284fa00850.ogg",
+    "ipa": "hæv juː θɹˈoʊn ði ˈoʊld mˈɪlk əwˈeɪ?",
+    "ms": 2775,
+    "bytes": 10185
+   },
+   "fly, flew, flown": {
+    "file": "am_michael-9e047798445b8c27.ogg",
+    "ipa": "flˈaɪ, flˈuː, flˈoʊn",
+    "ms": 2075,
+    "bytes": 7258
+   },
+   "We flew to Rome last summer.": {
+    "file": "am_michael-64beb13ee92e7faa.ogg",
+    "ipa": "wiː flˈuː tə ɹˈoʊm lˈæst sˈʌmɚ.",
+    "ms": 2500,
+    "bytes": 9033
+   },
+   "Have you ever flown in a helicopter?": {
+    "file": "am_michael-cec5cac5d5214ab9.ogg",
+    "ipa": "hæv juː ˈɛvɚ flˈoʊn ɪn ə hˈɛlɪkˌɑːptɚ?",
+    "ms": 3025,
+    "bytes": 11077
+   },
+   "draw, drew, drawn": {
+    "file": "am_michael-2594234e084fee9c.ogg",
+    "ipa": "dɹˈɔː, dɹˈuː, dɹˈɔːn",
+    "ms": 1900,
+    "bytes": 6691
+   },
+   "My son drew a picture of our cat.": {
+    "file": "am_michael-362c8ca68a7da62e.ogg",
+    "ipa": "maɪ sˈʌn dɹˈuː ə pˈɪktʃɚ ʌv aʊɚ kˈæt.",
+    "ms": 2825,
+    "bytes": 10376
+   },
+   "I have drawn a map for you.": {
+    "file": "am_michael-47be7d8480b852f1.ogg",
+    "ipa": "aɪ hæv dɹˈɔːn ə mˈæp fɔːɹ juː.",
+    "ms": 2375,
+    "bytes": 8625
+   },
+   "blow, blew, blown": {
+    "file": "am_michael-57b1c83c7223efbc.ogg",
+    "ipa": "blˈoʊ, blˈuː, blˈoʊn",
+    "ms": 1975,
+    "bytes": 7845
+   },
+   "The wind blew all night.": {
+    "file": "am_michael-2d739753a1072093.ogg",
+    "ipa": "ðə wˈɪnd blˈuː ˈɔːl nˈaɪt.",
+    "ms": 2350,
+    "bytes": 9336
+   },
+   "The storm has blown the trees down.": {
+    "file": "am_michael-4598b9791a5f35c9.ogg",
+    "ipa": "ðə stˈɔːɹm hæz blˈoʊn ðə tɹˈiːz dˈaʊn.",
+    "ms": 3025,
+    "bytes": 11131
+   },
+   "speak, spoke, spoken": {
+    "file": "am_michael-9eadadd5931a18c6.ogg",
+    "ipa": "spˈiːk, spˈoʊk, spˈoʊkən",
+    "ms": 2250,
+    "bytes": 8146
+   },
+   "I spoke to the manager.": {
+    "file": "am_michael-3774a28089e7518e.ogg",
+    "ipa": "aɪ spˈoʊk tə ðə mˈænədʒɚ.",
+    "ms": 2300,
+    "bytes": 8284
+   },
+   "Have you spoken to her?": {
+    "file": "am_michael-cab0e8f10857913f.ogg",
+    "ipa": "hæv juː spˈoʊkən tə hɜː?",
+    "ms": 2100,
+    "bytes": 7554
+   },
+   "break, broke, broken": {
+    "file": "am_michael-68e601561907d053.ogg",
+    "ipa": "bɹˈeɪk, bɹˈoʊk, bɹˈoʊkən",
+    "ms": 2225,
+    "bytes": 8045
+   },
+   "I broke my glasses.": {
+    "file": "am_michael-43b7896c21e9e8af.ogg",
+    "ipa": "aɪ bɹˈoʊk maɪ ɡlˈæsəz.",
+    "ms": 2250,
+    "bytes": 8083
+   },
+   "Who has broken the window?": {
+    "file": "am_michael-0347e0dc962d965b.ogg",
+    "ipa": "hˈuː hæz bɹˈoʊkən ðə wˈɪndoʊ?",
+    "ms": 2350,
+    "bytes": 8522
+   },
+   "choose, chose, chosen": {
+    "file": "am_michael-d8c5958cf9995d79.ogg",
+    "ipa": "tʃˈuːz, tʃˈoʊz, tʃˈoʊzən",
+    "ms": 2225,
+    "bytes": 7946
+   },
+   "She chose the red dress.": {
+    "file": "am_michael-13e3eea969fe25c0.ogg",
+    "ipa": "ʃiː tʃˈoʊz ðə ɹˈɛd dɹˈɛs.",
+    "ms": 2350,
+    "bytes": 8368
+   },
+   "Have you chosen a name?": {
+    "file": "am_michael-3a06910c42b2d172.ogg",
+    "ipa": "hæv juː tʃˈoʊzən ə nˈeɪm?",
+    "ms": 2250,
+    "bytes": 8071
+   },
+   "wake, woke, woken": {
+    "file": "am_michael-adc662c5cf996422.ogg",
+    "ipa": "wˈeɪk, wˈoʊk, wˈoʊkən",
+    "ms": 2125,
+    "bytes": 7649
+   },
+   "I woke up at six.": {
+    "file": "am_michael-3d74366d39114ad3.ogg",
+    "ipa": "aɪ wˈoʊk ˈʌp æt sˈɪks.",
+    "ms": 1950,
+    "bytes": 6919
+   },
+   "The baby has woken up.": {
+    "file": "am_michael-f025fe1ca3630f2b.ogg",
+    "ipa": "ðə bˈeɪbi hæz wˈoʊkən ˈʌp.",
+    "ms": 2350,
+    "bytes": 9377
+   },
+   "forget, forgot, forgotten": {
+    "file": "am_michael-1ba2a3ec46b96c32.ogg",
+    "ipa": "fɚɡˈɛt, fɚɡˈɑːt, fɚɡˈɑːɾən",
+    "ms": 2425,
+    "bytes": 8762
+   },
+   "I forgot my umbrella.": {
+    "file": "am_michael-3915426f4ea54b8b.ogg",
+    "ipa": "aɪ fɚɡˈɑːt maɪ əmbɹˈɛlə.",
+    "ms": 2325,
+    "bytes": 8367
+   },
+   "I have forgotten his name.": {
+    "file": "am_michael-86e09b468683f662.ogg",
+    "ipa": "aɪ hæv fɚɡˈɑːɾən hɪz nˈeɪm.",
+    "ms": 2375,
+    "bytes": 8514
+   },
+   "write, wrote, written": {
+    "file": "am_michael-1581c7ad44ec54bc.ogg",
+    "ipa": "ɹˈaɪt, ɹˈoʊt, ɹˈɪɾən",
+    "ms": 1525,
+    "bytes": 5443
+   },
+   "He wrote me a long letter.": {
+    "file": "am_michael-67f25a46234515c3.ogg",
+    "ipa": "hiː ɹˈoʊt miː ə lˈɔːŋ lˈɛɾɚ.",
+    "ms": 2425,
+    "bytes": 9815
+   },
+   "Have you written to your grandmother?": {
+    "file": "am_michael-3cd3c4a617e66660.ogg",
+    "ipa": "hæv juː ɹˈɪɾən tə jʊɹ ɡɹˈændmˌʌðɚ?",
+    "ms": 2725,
+    "bytes": 10041
+   },
+   "drive, drove, driven": {
+    "file": "am_michael-377a987e0b3c5fed.ogg",
+    "ipa": "dɹˈaɪv, dɹˈoʊv, dɹˈɪvən",
+    "ms": 2325,
+    "bytes": 8319
+   },
+   "We drove to the mountains.": {
+    "file": "am_michael-63be5280911b973d.ogg",
+    "ipa": "wiː dɹˈoʊv tə ðə mˈaʊntənz.",
+    "ms": 2325,
+    "bytes": 8370
+   },
+   "I have never driven a truck.": {
+    "file": "am_michael-d10896d2d26393cd.ogg",
+    "ipa": "aɪ hæv nˈɛvɚ dɹˈɪvən ə tɹˈʌk.",
+    "ms": 2525,
+    "bytes": 9120
+   },
+   "ride, rode, ridden": {
+    "file": "am_michael-41af71d946f041f2.ogg",
+    "ipa": "ɹˈaɪd, ɹˈoʊd, ɹˈɪdən",
+    "ms": 2175,
+    "bytes": 7709
+   },
+   "I rode a horse on holiday.": {
+    "file": "am_michael-39c711ef0cafb3b6.ogg",
+    "ipa": "aɪ ɹˈoʊd ə hˈɔːɹs ɑːn hˈɑːlədˌeɪ.",
+    "ms": 2775,
+    "bytes": 10092
+   },
+   "Have you ever ridden a camel?": {
+    "file": "am_michael-7328f93cd18bdf22.ogg",
+    "ipa": "hæv juː ˈɛvɚ ɹˈɪdən ə kˈæməl?",
+    "ms": 2575,
+    "bytes": 9411
+   },
+   "fall, fell, fallen": {
+    "file": "am_michael-c39218ebab8c8a23.ogg",
+    "ipa": "fˈɔːl, fˈɛl, fˈɑːlən",
+    "ms": 2050,
+    "bytes": 7208
+   },
+   "She fell off her bike.": {
+    "file": "am_michael-54c2ee91e69142da.ogg",
+    "ipa": "ʃiː fˈɛl ˈɔːf hɜː bˈaɪk.",
+    "ms": 2100,
+    "bytes": 7428
+   },
+   "The prices have fallen.": {
+    "file": "am_michael-c0f718292e13aa29.ogg",
+    "ipa": "ðə pɹˈaɪsəz hæv fˈɑːlən.",
+    "ms": 2300,
+    "bytes": 8159
    }
   }
  }

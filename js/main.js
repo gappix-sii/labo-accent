@@ -1,5 +1,5 @@
 // Point d'entrée de l'appli : choisit l'écran selon l'adresse.
-//   #accueil (par défaut, onglet Parcours) · #entrainement · #profil · #lecon/<id> · #vocab · #ecoute · #grammaire[/<id>] · #fautes · #role[/<id>] · #compagnon · #boutique · #coffres · #transfert[/<code>] · #style (page d'exemple du thème) · #banc (banc de test du moteur)
+//   #accueil (par défaut, onglet Parcours) · #entrainement · #profil · #lecon/<id> · #vocab · #ecoute · #grammaire[/<id>] · #verbes[/<famille>] · #fautes · #role[/<id>] · #compagnon · #boutique · #coffres · #transfert[/<code>] · #style (page d'exemple du thème) · #banc (banc de test du moteur)
 import { $ } from "./core/dom.js";
 import { load, onSaveError, onStoreNotice, takeNotices, markStale, STORE_KEY, DAMAGED_KEY } from "./core/store.js";
 import { mountHome } from "./screens/home.js";
@@ -9,6 +9,7 @@ import { mountSay } from "./screens/say.js";
 import { mountVocab } from "./screens/vocab.js";
 import { mountListening } from "./screens/listening.js";
 import { mountGrammarList, mountGrammar } from "./screens/grammar.js";
+import { mountVerbList, mountVerbFamily } from "./screens/verbs.js";
 import { mountMistakes } from "./screens/mistakes.js";
 import { mountRoleList, mountRole } from "./screens/roleplay.js";
 import { mountSettings } from "./screens/settings.js";
@@ -33,6 +34,9 @@ export function route(hash) {
   const g = /^grammaire\/([a-z0-9-]{1,24})$/.exec(h);
   if (g) return { screen: "grammar", id: g[1] };
   if (h === "grammaire") return { screen: "grammarList" };
+  const vb = /^verbes\/([a-z]{1,8})$/.exec(h);
+  if (vb) return { screen: "verbs", id: vb[1] };
+  if (h === "verbes") return { screen: "verbList" };
   if (h === "fautes") return { screen: "mistakes" };
   const rf = /^role\/([a-z0-9-]{1,24})\/libre$/.exec(h);
   if (rf) return { screen: "roleFree", id: rf[1] };
@@ -89,6 +93,7 @@ function start() {
     view.replaceChildren(root); // nouvel élément : les écouteurs de l'écran précédent partent avec lui
     const screens = { lesson: () => mountLesson(root, S, r.id), bench: () => mountSay(root, S), vocab: () => mountVocab(root, S), listening: () => mountListening(root, S),
       grammarList: () => mountGrammarList(root, S), grammar: () => mountGrammar(root, S, r.id),
+      verbList: () => mountVerbList(root, S), verbs: () => mountVerbFamily(root, S, r.id),
       mistakes: () => mountMistakes(root, S),
       roleList: () => mountRoleList(root, S), role: () => mountRole(root, S, r.id), settings: () => mountSettings(root, S), chat: () => mountChat(root, S), roleFree: () => mountRoleFree(root, S, r.id), companion: () => mountCompanion(root, S), shop: () => mountShop(root, S), chests: () => mountChests(root, S), transfer: () => mountTransfer(root, S, r.code), style: () => mountStyle(root), training: () => mountTraining(root, S), profile: () => mountProfile(root, S), home: () => mountHome(root, S), boss: () => mountBoss(root, S, r.id) };
     cleanup = screens[r.screen]();
