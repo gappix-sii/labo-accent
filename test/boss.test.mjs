@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { buildAttacks, newFight, attack, currentAttack, finishFight, newBosses, sanitizeBosses, wonSet, wins, canFight,
-  PATTERN, BOSS_HP, HEARTS, HIT_MIN, CRIT, CRIT_MULT, LISTEN_DMG, XP_FIRST_WIN, XP_WIN_AGAIN } from "../js/core/boss.js";
+  PATTERN, BOSS_HP, HEARTS, HIT_MIN, HEAL_BELOW, HEART_BELOW, CRIT, CRIT_MULT, LISTEN_DMG, XP_FIRST_WIN, XP_WIN_AGAIN } from "../js/core/boss.js";
 import { REGIONS, lessonOpen } from "../js/content/regions.js";
 import { PAIRS } from "../js/content/pairs.js";
 import { mulberry32 } from "../js/core/game.js";
@@ -41,27 +41,48 @@ test("attaques tirées de la région : phrases de ses leçons, écoute de ses so
   assert.equal(newFight("inconnue"), null);
 });
 
-test("dégâts : la note, coup critique dès 85, raté sous 45 (un cœur perdu), écoute juste ou fausse", () => {
+test("règles du 2026-11-20 : touché dès 65 (critique dès 85), rien de 50 à 64, soin de 100 − la note sous 50, un cœur en moins sous 20", () => {
+  assert.deepEqual([HIT_MIN, HEAL_BELOW, HEART_BELOW, CRIT], [65, 50, 20, 85]);
   const F = newFight("couple", mulberry32(1));
   assert.equal(F.hp, BOSS_HP); assert.equal(F.hearts, HEARTS);
-  let r = attack(F, 70); assert.deepEqual([r.dmg, r.crit, r.lost], [70, false, false]);
+  let r = attack(F, 70); assert.deepEqual([r.dmg, r.heal, r.crit, r.lost], [70, 0, false, false]);
   r = attack(F, CRIT); assert.deepEqual([r.dmg, r.crit], [Math.round(CRIT * CRIT_MULT), true]);
   r = attack(F, true); assert.equal(r.kind, "listen"); assert.equal(r.dmg, LISTEN_DMG);
-  r = attack(F, HIT_MIN - 1); assert.deepEqual([r.dmg, r.lost], [0, true]); assert.equal(F.hearts, HEARTS - 1);
-  assert.equal(F.hp, BOSS_HP - 70 - Math.round(CRIT * CRIT_MULT) - LISTEN_DMG);
-  assert.equal(attack(F, "n'importe quoi").lost, true, "note illisible : raté");
+  let hp = BOSS_HP - 70 - Math.round(CRIT * CRIT_MULT) - LISTEN_DMG; assert.equal(F.hp, hp);
+  r = attack(F, HIT_MIN); assert.deepEqual([r.dmg, r.crit, r.weak], [HIT_MIN, false, false], "65 pile touche"); hp -= HIT_MIN;
+  r = attack(F, 64); assert.deepEqual([r.dmg, r.heal, r.lost, r.weak], [0, 0, false, false], "64 : coup raté, rien ne bouge"); assert.equal(F.hp, hp);
+  r = attack(F, 50); assert.deepEqual([r.dmg, r.heal, r.lost], [0, 0, false], "50 pile : coup raté");
+  r = attack(F, true); assert.equal(r.kind, "listen"); hp -= LISTEN_DMG;
+  r = attack(F, 49); assert.deepEqual([r.dmg, r.heal, r.lost, r.weak], [0, 51, false, true], "49 : le boss regagne 100 − 49 = 51 PV"); hp += 51; assert.equal(F.hp, hp);
+  assert.equal(F.hearts, HEARTS, "pas de cœur perdu de 20 à 49");
+  r = attack(F, 20); assert.deepEqual([r.heal, r.lost], [80, false], "20 pile : soin seulement"); hp += 80;
+  r = attack(F, 19); assert.deepEqual([r.heal, r.lost], [81, true], "19 : soin et un cœur perdu"); hp += 81;
+  assert.equal(F.hp, hp); assert.equal(F.hearts, HEARTS - 1);
+  assert.equal(F.i, PATTERN.length, "les 10 attaques ont servi");
+  const G = newFight("couple", mulberry32(1)); attack(G, 90);
+  assert.deepEqual([attack(G, "n'importe quoi").heal, G.hearts], [100, HEARTS - 1], "note illisible : comptée 0");
 });
 
-test("une moyenne de 60 suffit pour gagner ; une moyenne de 40 perd", () => {
+test("le soin ne dépasse jamais les PV de départ ; une écoute ratée ne soigne pas", () => {
+  const F = newFight("couple", mulberry32(1));
+  let r = attack(F, 30); assert.deepEqual([r.heal, F.hp], [0, BOSS_HP], "boss intact : rien à soigner");
+  attack(F, 90); assert.equal(F.hp, BOSS_HP - 135);
+  r = attack(F, false); assert.deepEqual([r.kind, r.heal, r.lost, F.hp], ["listen", 0, true, BOSS_HP - 135]);
+  r = attack(F, 0); assert.deepEqual([r.heal, F.hp], [100, BOSS_HP - 35]);
+  r = attack(F, 0); assert.deepEqual([r.heal, F.hp], [35, BOSS_HP], "plafonné à 460");
+});
+
+test("difficulté : une moyenne de 65 gagne ; 60 partout, ou 50 et 80 en alternance, perdent", () => {
   for (const r of REGIONS) for (let seed = 1; seed <= 10; seed++) {
-    assert.equal(play(newFight(r.id, mulberry32(seed)), () => 60), "won", `${r.id} : 60 partout`);
-    assert.equal(play(newFight(r.id, mulberry32(seed)), (i) => (i % 2 ? 70 : 50)), "won", `${r.id} : 50 et 70 en alternance`);
-    assert.equal(play(newFight(r.id, mulberry32(seed)), () => 60, (i) => i > 0), "won", `${r.id} : 60 et une écoute ratée`);
-    assert.equal(play(newFight(r.id, mulberry32(seed)), () => 40), "lost", `${r.id} : 40 partout`);
-    assert.equal(play(newFight(r.id, mulberry32(seed)), (i) => (i % 2 ? 50 : 30)), "lost", `${r.id} : 30 et 50 en alternance`);
+    assert.equal(play(newFight(r.id, mulberry32(seed)), () => 65), "won", `${r.id} : 65 partout`);
+    assert.equal(play(newFight(r.id, mulberry32(seed)), () => 70, (i) => i > 0), "won", `${r.id} : 70 et une écoute ratée`);
+    assert.equal(play(newFight(r.id, mulberry32(seed)), (i) => (i % 2 ? 90 : 66)), "won", `${r.id} : 66 et 90 en alternance`);
+    assert.equal(play(newFight(r.id, mulberry32(seed)), () => 60), "lost", `${r.id} : 60 partout`);
+    assert.equal(play(newFight(r.id, mulberry32(seed)), (i) => (i % 2 ? 80 : 50)), "lost", `${r.id} : 50 et 80 en alternance`);
+    assert.equal(play(newFight(r.id, mulberry32(seed)), (i) => (i % 2 ? 90 : 30)), "lost", `${r.id} : 30 (soin) et 90 en alternance`);
   }
   const F = newFight("travel", mulberry32(3));
-  play(F, () => 30);
+  play(F, () => 10);
   assert.equal(F.over, "lost"); assert.equal(F.hearts, 0); assert.equal(attack(F, 100), null, "combat fini : plus d'attaque");
 });
 
@@ -138,11 +159,11 @@ test("carte : la prochaine étape passe par le boss de chaque région ; cases de
   assert.equal(nextStep(P, wonSet(S.bosses)), null, "tout fini, tous les boss vaincus");
 });
 
-test("relecture de la phase 9 : 60 de moyenne gagne même avec les écoutes ratées ou des notes irrégulières", () => {
+// Relecture de la phase 9 : « 60 de moyenne gagne » — remplacé le 2026-11-20 par les règles plus dures demandées par l'utilisateur.
+test("règles du 2026-11-20 : 70 de moyenne gagne même avec les deux écoutes ratées ; 40 et 80 en alternance perdent", () => {
   for (const r of REGIONS) for (let seed = 1; seed <= 10; seed++) {
-    assert.equal(play(newFight(r.id, mulberry32(seed)), () => 60, () => false), "won", `${r.id} : 60 partout, deux écoutes ratées`);
-    assert.equal(play(newFight(r.id, mulberry32(seed)), (i) => (i % 2 ? 80 : 40)), "won", `${r.id} : 40 et 80 en alternance`);
-    assert.equal(play(newFight(r.id, mulberry32(seed)), (i) => (i % 2 ? 80 : 40), () => false), "won", `${r.id} : 40 et 80, deux écoutes ratées`);
+    assert.equal(play(newFight(r.id, mulberry32(seed)), () => 70, () => false), "won", `${r.id} : 70 partout, deux écoutes ratées`);
+    assert.equal(play(newFight(r.id, mulberry32(seed)), (i) => (i % 2 ? 80 : 40)), "lost", `${r.id} : 40 et 80 en alternance`);
   }
 });
 

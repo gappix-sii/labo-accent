@@ -24,7 +24,7 @@ Tout se passe **dans ton navigateur** : pas de compte, pas d'abonnement, pas de 
 ## Ce que tu y trouves
 
 - **Le parcours** : 50 leçons sur une carte de 9 régions (Le Jardin des Cœurs, Le Port des Voyageurs, Le Village de Bonjour…). Une leçon de son (le « h » soufflé, le « th »…), puis une leçon de phrases utiles qui le réutilise, et les bases : mots-questions, jours, mois, nombres, dates. De 1 à 3 étoiles par leçon.
-- **Les boss** : un boss garde la fin de chaque région. Chaque phrase bien dite lui fait des dégâts (coup critique au-dessus de 85), une phrase ratée te coûte un cœur.
+- **Les boss** : un boss garde la fin de chaque région. Il faut 65 pour le toucher (coup critique dès 85). Sous 50, il se soigne ; sous 20, il te prend aussi un cœur.
 - **Les défis** :
   - **vocabulaire** : 501 mots du A1 au C1, du français vers l'anglais au micro, avec révisions espacées ;
   - **écoute** : « ship » ou « sheep » ? 32 paires de mots que les Français confondent ;

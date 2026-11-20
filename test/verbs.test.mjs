@@ -187,9 +187,10 @@ test("mini-boss « Le Grimoire » (tâche 5) : combat tiré de la famille, ouver
   assert.equal(F.attacks[F.i].kind, "choose");
   assert.deepEqual([attack(F, true).dmg, F.hp], [LISTEN_DMG, BOSS_HP - 70 - LISTEN_DMG]);
   assert.equal(newVerbFight("nope"), null);
-  // difficulté comme les boss : une moyenne de 60 au micro et les bons choix gagnent ; 40 et un mauvais choix perdent
+  // difficulté comme les boss (règles du 2026-11-20) : 70 au micro et les bons choix gagnent ; 60 perd ; 40 et un mauvais choix perdent
   const run = (score, right) => { const G = newVerbFight("stars", seeded(2)); while (!G.over) attack(G, G.attacks[G.i].kind === "choose" ? right(G.i) : score); return G.over; };
-  assert.equal(run(60, () => true), "won");
+  assert.equal(run(70, () => true), "won");
+  assert.equal(run(60, () => true), "lost", "de 50 à 64 : le Grimoire n'est pas touché");
   assert.equal(run(40, (i) => i !== 5), "lost");
   // ouvert une fois la famille finie (pas d'ordre entre les familles)
   const P = newProgress(), aba = familyById("aba");

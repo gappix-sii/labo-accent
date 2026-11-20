@@ -287,6 +287,7 @@ table.bench, table.compare, table.odds { border-collapse: separate; border-spaci
 .boss-line { margin: 6px 0 0; font-weight: 800; font-style: italic; }
 .dmg-pop { position: absolute; top: 18%; left: 50%; transform: translateX(-50%); max-width: 100%; font-family: var(--font-display); font-style: italic; font-weight: 900; font-size: 2rem; color: var(--bad); -webkit-text-stroke: 1px var(--bg); text-shadow: 0 3px 0 var(--shadow); animation: dmgPop 1s ease-out both; pointer-events: none; white-space: nowrap; }
 .dmg-pop.crit { color: var(--gold); font-size: 2.3rem; }
+.dmg-pop.heal { color: var(--good); } /* le boss se soigne (règles du 2026-11-20) */
 @keyframes dmgPop { 0% { opacity: 0; transform: translate(-50%, 10px) scale(.6); } 20% { opacity: 1; transform: translate(-50%, 0) scale(1.15); } 100% { opacity: 0; transform: translate(-50%, -40px) scale(1); } }
 .fx-reduced .dmg-pop { opacity: 1; transform: translate(-50%, 0); }
 .sentence-fr { font-size: 1.25rem; font-weight: 800; margin: 4px 0 8px; }

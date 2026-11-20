@@ -208,6 +208,8 @@ Relecture complète et fluidité (2026-11-20, demandée par l'utilisateur après
 - profil et transfert : « Leçons finies » ne compte plus les règles de grammaire, dialogues et familles de verbes (`lessonsDone`, `js/content/lessons.js`).
 Laissé pour la phase 11 : tous les écrans sont chargés au démarrage, en cascade de modules ; le cache hors ligne (service worker) le rendra instantané après la première visite.
 
+Combat de boss plus dur (2026-11-20, demandé par l'utilisateur) : touché dès 65 (au lieu de 35), rien de 50 à 64, soin de 100 − la note sous 50, un cœur en moins sous 20 ; boss et mini-boss (`js/core/boss.js`, message et « +PV » vert dans `js/screens/boss.js`) ; tests : 65 de moyenne gagne, 60 perd (`test/boss.test.mjs`, `test/verbs.test.mjs`) ; essayé dans le navigateur sur `127.0.0.1` (soin +84 après une note de 16, cœur perdu).
+
 ## Phase 11 — Hors ligne, sécurité et publication V1 (détaillée le 2026-11-20)
 Objectif : vérifier d'abord que le moteur tient sur un vrai Android, puis rendre l'appli installable et utilisable en mode avion (service worker, `tools/build-sw.mjs`), revoir la CSP, réécrire README et SECURITY pour la nouvelle appli ; supprimer `ancien/` ; fusionner dans `main` et remettre Pages sur `main`.
 Livrable : la V1 installable, publiée.

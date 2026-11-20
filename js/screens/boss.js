@@ -5,7 +5,7 @@
 // avec en plus « Dis les 3 formes » et « Choisis la bonne forme ». mountFight reçoit ce qui change de l'un à l'autre.
 import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
-import { newFight, currentAttack, attack, finishFight, canFight, wins, wonSet, HEARTS, BOSS_HP, HIT_MIN, CRIT, ATTACKS, XP_FIRST_WIN,
+import { newFight, currentAttack, attack, finishFight, canFight, wins, wonSet, HEARTS, BOSS_HP, HIT_MIN, HEAL_BELOW, HEART_BELOW, CRIT, ATTACKS, XP_FIRST_WIN,
   newVerbFight, canFightFamily, familyWins, XP_MINI_FIRST } from "../core/boss.js";
 import { REGIONS, regionById } from "../content/regions.js";
 import { bossOf, bossSvg, GRIMOIRE, grimoireSvg } from "../content/bosses.js";
@@ -68,7 +68,7 @@ function mountFight(root, S, cfg) {
   function drawPanel() {
     const state = ui.phase === "end" ? (ui.F.over === "won" ? "ko" : "idle") : ui.out && ui.out.dmg ? "hit" : "idle";
     const hp = ui.F ? ui.F.hp : BOSS_HP, n = ui.F ? ui.F.hearts : HEARTS, w = cfg.wins();
-    const key = JSON.stringify([state, hp, n, ui.line, ui.out && ui.out.dmg, ui.out && ui.out.crit, ui.phase, w, ui.F && ui.F.i]);
+    const key = JSON.stringify([state, hp, n, ui.line, ui.out && ui.out.dmg, ui.out && ui.out.heal, ui.out && ui.out.crit, ui.phase, w, ui.F && ui.F.i]);
     if (key === panelKey) return;
     panelKey = key;
     render(top, bossPanel(state, hp, n, w));
@@ -78,7 +78,8 @@ function mountFight(root, S, cfg) {
     return html`<section class="${`card quest boss-panel${ui.phase === "fight" ? " fighting" : ""}`}"><span class="quest-title">${cfg.place}</span>
       ${w ? html`<p class="muted small boss-wins">👑 vaincu ${w} fois</p>` : ""}
       <div class="boss-stage"><span class="boss-big">${cfg.svg(state)}</span>
-        ${ui.out && ui.out.dmg ? html`<b class="${`dmg-pop${ui.out.crit ? " crit" : ""}`}" aria-hidden="true">${ui.out.crit ? "CRITIQUE ! " : ""}−${ui.out.dmg}</b>` : ""}</div>
+        ${ui.out && ui.out.dmg ? html`<b class="${`dmg-pop${ui.out.crit ? " crit" : ""}`}" aria-hidden="true">${ui.out.crit ? "CRITIQUE ! " : ""}−${ui.out.dmg}</b>` : ""}
+        ${ui.out && ui.out.heal ? html`<b class="dmg-pop heal" aria-hidden="true">+${ui.out.heal}</b>` : ""}</div>
       <h1 class="boss-name">${boss.name}</h1>
       <div class="bar boss-hp" data-css="${`--p:${pct}%`}" role="progressbar" aria-label="Points de vie du boss" aria-valuemin="0" aria-valuemax="${BOSS_HP}" aria-valuenow="${hp}"><i></i></div>
       <p class="row"><span class="small"><b>${hp}</b> / ${BOSS_HP} PV</span>${hearts(n)}</p>
@@ -114,9 +115,14 @@ function mountFight(root, S, cfg) {
 
   function outcome() {
     const o = ui.out;
-    const msg = o.lost ? (ui.a.kind === "listen" || ui.a.kind === "choose" ? "Raté : le boss contre-attaque ! −1 ❤️" : `Trop faible (moins de ${HIT_MIN}) : le boss contre-attaque ! −1 ❤️`)
-      : o.crit ? `Coup critique ! −${o.dmg} PV` : `Touché ! −${o.dmg} PV`;
-    return html`<section class="card" aria-live="polite"><p class="${`feedback${o.lost ? " error" : ""}`}" role="status">${msg}</p>
+    const said = !(ui.a.kind === "listen" || ui.a.kind === "choose"), care = o.heal ? ` Il se soigne : +${o.heal} PV.` : "";
+    const msg = !said ? (o.lost ? "Raté : le boss contre-attaque ! −1 ❤️" : `Touché ! −${o.dmg} PV`)
+      : o.dmg ? (o.crit ? `Coup critique ! −${o.dmg} PV` : `Touché ! −${o.dmg} PV`)
+      : o.lost ? `Beaucoup trop faible (moins de ${HEART_BELOW}) : le boss contre-attaque ! −1 ❤️${care}`
+      : o.weak ? `Trop faible (moins de ${HEAL_BELOW}) !${care || " Il est déjà au maximum de ses PV."}`
+      : `Presque (moins de ${HIT_MIN}) : le coup ne porte pas.`;
+    const bad = !o.dmg;
+    return html`<section class="card" aria-live="polite"><p class="${`feedback${bad ? " error" : ""}`}" role="status">${msg}</p>
       ${ui.last ? resultBlock(ui.last, S.game.avatar) : ""}
       <p class="row"><span></span><button class="btn" data-act="next" type="button">${o.over ? "Voir le résultat →" : "Attaque suivante →"}</button></p></section>`;
   }
@@ -143,7 +149,7 @@ function mountFight(root, S, cfg) {
       ${ui.phase === "intro" ? html`<section class="card">
           ${open() ? html`<h2>Combat de boss</h2>
               <p>${cfg.intro}</p>
-              <p class="muted small">Ta note fait les dégâts (coup critique dès ${CRIT}). Sous ${HIT_MIN}, ou une mauvaise réponse, le boss te prend un cœur. Une moyenne de 60 suffit pour gagner, si tu évites les notes sous ${HIT_MIN}.${w ? "" : ` Première victoire : ${cfg.firstPrize}.`}</p>
+              <p class="muted small">Il faut ${HIT_MIN} pour toucher le boss : ta note fait les dégâts (coup critique dès ${CRIT}). Sous ${HEAL_BELOW}, il se soigne de 100 moins ta note ; sous ${HEART_BELOW}, ou une mauvaise réponse, il te prend aussi un cœur.${w ? "" : ` Première victoire : ${cfg.firstPrize}.`}</p>
               ${mic.ready() ? html`<div class="mic-zone"><button class="btn big" data-act="start" type="button">⚔️ Combattre !</button></div>` : mic.block()}`
             : html`<h2>🔒 Pas encore</h2><p>${cfg.locked}</p>`}
         </section>${mic.errorBlock()}` : ""}
@@ -170,7 +176,7 @@ function mountFight(root, S, cfg) {
   // redraw : false quand la note vient du micro (practice redessine une seule fois juste après, relecture n° 1)
   function hitWith(value, redraw = true) {
     ui.out = attack(ui.F, value);
-    ui.line = ui.out.lost ? boss.taunt : ui.out.crit || ui.out.dmg >= 80 ? boss.hurt : "Grr… Tu ne m'auras pas si facilement !";
+    ui.line = ui.out.lost || ui.out.weak ? boss.taunt : !ui.out.dmg ? "Hé hé, même pas mal !" : ui.out.crit || ui.out.dmg >= 80 ? boss.hurt : "Grr… Tu ne m'auras pas si facilement !";
     if (ui.F.over) { ui.reward = finishFight(S, ui.F); persist(); }
     // les choix deviennent inactifs : le focus va au bouton suivant, sinon il retombe sur la page (relecture de la phase 10, n° 7)
     if (redraw) { draw(); root.querySelector('.boss-main [data-act="next"]')?.focus({ preventScroll: true }); }

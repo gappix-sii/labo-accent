@@ -1,12 +1,13 @@
 // Combats de boss (phase 9, tâche 3) : module pur, sans DOM, testé par test/boss.test.mjs.
 // Un combat = ATTACKS attaques tirées de la région : phrases de ses leçons à dire, paires d'écoute de ses sons,
 // phrases de ses thèmes à dire depuis le français. Le boss a BOSS_HP points de vie, toi HEARTS cœurs.
-// - phrase notée (0-100) : sous HIT_MIN, raté → tu perds un cœur ; sinon dégâts = la note (× CRIT_MULT dès CRIT) ;
+// - phrase notée (0-100), règles demandées par l'utilisateur le 2026-11-20 (combat jugé trop simple) :
+//   dès HIT_MIN (65) → dégâts = la note (× CRIT_MULT dès CRIT) ; de HEAL_BELOW (50) à HIT_MIN − 1 → coup raté, rien ne se passe ;
+//   sous HEAL_BELOW → le boss se soigne de 100 − la note (sans dépasser BOSS_HP) ; sous HEART_BELOW (20) → tu perds aussi un cœur ;
 // - écoute : bonne réponse → LISTEN_DMG dégâts ; mauvaise → tu perds un cœur ;
 // - victoire quand ses PV tombent à 0 ; défaite quand tes cœurs tombent à 0 ou que les attaques sont épuisées.
-// Difficulté (demande de l'utilisateur du 2026-11-19) : une moyenne de 60 suffit pour gagner, même avec les deux écoutes
-// ratées (8 phrases à 60 = 480 dégâts pour 460 PV) ou des notes irrégulières (40 et 80) ; une moyenne de 40 perd
-// (relecture de la phase 9, n° 2). Tous les réglages sont ici, à un seul endroit.
+// Difficulté : il faut une moyenne de 65 au micro (8 phrases à 65 = 520 dégâts pour 460 PV) ; une moyenne de 60 perd,
+// et des notes irrégulières (50 et 80) aussi. Les mini-boss des verbes suivent les mêmes règles. Tous les réglages sont ici.
 import { REGIONS, regionById, regionCleared } from "../content/regions.js";
 import { PAIRS } from "../content/pairs.js";
 import { addBonusXp } from "./progress.js";
@@ -16,7 +17,9 @@ import { familyDone, questionOf, sentenceOf } from "./verbs.js";
 
 export const HEARTS = 3;
 export const BOSS_HP = 460;
-export const HIT_MIN = 35;
+export const HIT_MIN = 65;
+export const HEAL_BELOW = 50;
+export const HEART_BELOW = 20;
 export const CRIT = 85;
 export const CRIT_MULT = 1.5;
 export const LISTEN_DMG = 60;
@@ -66,17 +69,18 @@ export const currentAttack = (F) => (F && !F.over ? F.attacks[F.i] : null);
 export function attack(F, value) {
   const a = currentAttack(F);
   if (!a) return null;
-  let dmg = 0, crit = false, lost = false;
+  let dmg = 0, heal = 0, crit = false, lost = false, weak = false;
   if (a.kind === "listen" || a.kind === "choose") { if (value === true) dmg = LISTEN_DMG; else lost = true; }
   else {
-    const s = Math.max(0, Math.min(100, Number(value) || 0));
-    if (s < HIT_MIN) lost = true; else { crit = s >= CRIT; dmg = Math.round(s * (crit ? CRIT_MULT : 1)); }
+    const s = Math.max(0, Math.min(100, Math.round(Number(value) || 0)));
+    if (s >= HIT_MIN) { crit = s >= CRIT; dmg = Math.round(s * (crit ? CRIT_MULT : 1)); }
+    else if (s < HEAL_BELOW) { weak = true; heal = Math.min(100 - s, BOSS_HP - F.hp); lost = s < HEART_BELOW; }
   }
-  F.hp = Math.max(0, F.hp - dmg);
+  F.hp = Math.max(0, F.hp - dmg) + heal;
   if (lost) F.hearts = Math.max(0, F.hearts - 1);
   F.i++;
   F.over = F.hp === 0 ? "won" : F.hearts === 0 || F.i >= F.attacks.length ? "lost" : null;
-  const out = { kind: a.kind, dmg, crit, lost, over: F.over };
+  const out = { kind: a.kind, dmg, heal, crit, lost, weak, over: F.over };
   F.log.push(out);
   return out;
 }
