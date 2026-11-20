@@ -10,7 +10,7 @@
 import { REGIONS, regionById, regionCleared } from "../content/regions.js";
 import { PAIRS } from "../content/pairs.js";
 import { addBonusXp } from "./progress.js";
-import { MAX_CHESTS, cryptoRng } from "./game.js";
+import { MAX_CHESTS, cryptoRng, shuffle } from "./game.js";
 import { FAMILIES, familyById, formsText } from "../content/verbs.js";
 import { familyDone, questionOf, sentenceOf } from "./verbs.js";
 
@@ -27,7 +27,6 @@ export const XP_FIRST_WIN = 50; // première victoire : + 50 XP, un coffre d'or 
 export const XP_WIN_AGAIN = 20; // victoires suivantes
 export const WIN_CHEST = "gold";
 
-const shuffle = (arr, rng) => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
 // Attaques d'un combat (fonction pure : même rng → même combat).
 export function buildAttacks(region, rng = cryptoRng()) {
@@ -38,12 +37,15 @@ export function buildAttacks(region, rng = cryptoRng()) {
   const pairs = shuffle(PAIRS.filter((p) => p.sounds.split("|").some((s) => sounds.includes(s))), rng);
   const say = [], translate = [], nSay = PATTERN.filter((x) => x === "say").length, themeEn = themeItems.map((x) => x.en);
   // phrases à dire : une sur deux tirée des leçons de sons, l'autre des leçons de thème et des bases ;
-  // « dis-le en anglais » : d'autres phrases de thème (celles qui ont une traduction)
+  // « dis-le en anglais » : d'autres phrases des leçons de thème (celles qui ont une traduction) ; jamais les bases,
+  // dont la question peut donner la réponse (« 2e (2nd) ») ou refuser une réponse juste (« fall » pour automne) :
+  // relecture de la phase 10, n° 6
   for (let k = 0; say.length < nSay && k < nSay * 4; k++) {
     const en = (k % 2 === 0 ? soundItems : themeEn).find((x) => !say.includes(x));
     if (en) say.push(en);
   }
-  for (const t of themeItems) if (translate.length < 2 && t.fr && !say.includes(t.en)) translate.push(t);
+  const themeOnly = new Set(theme.filter((l) => l.kind === "theme").flatMap((l) => l.items));
+  for (const t of themeItems) if (translate.length < 2 && t.fr && themeOnly.has(t) && !say.includes(t.en)) translate.push(t);
   let s = 0, t = 0, l = 0;
   return PATTERN.map((kind) => {
     if (kind === "say") return { kind, en: say[s++ % say.length] };

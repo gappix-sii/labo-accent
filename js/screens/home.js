@@ -28,12 +28,17 @@ export function dailyQuest(P, now = Date.now()) {
 // Prochaine étape du parcours (fonction pure, testée) : la 1re leçon ouverte pas encore finie, ou le boss d'une région
 // finie qui n'est pas encore vaincu (il garde le passage) ; null quand tout est fini.
 // Une leçon déjà commencée et pas finie passe d'abord (ancienne sauvegarde : on reprend où on en était, relecture n° 5).
+// Puis on cherche dans la région en cours (la 1re dont le boss n'est pas vaincu, les boss se battant dans l'ordre) avant
+// les régions d'avant : un ancien joueur n'est pas renvoyé aux leçons des bases ajoutées en région 1 (relecture de la
+// phase 10, n° 2, option A choisie le 2026-11-20).
 export function nextStep(P, won) {
   for (let i = 0; i < LESSONS.length; i++) {
     const L = Object.hasOwn(P.lessons, LESSONS[i].id) ? P.lessons[LESSONS[i].id] : null;
     if (L && L.done === 0 && L.best.length > 0 && lessonState(P, i, won).open) return { kind: "lesson", index: i };
   }
-  for (const r of REGIONS) {
+  let cur = 0;
+  while (cur < REGIONS.length - 1 && won.has(REGIONS[cur].id)) cur++;
+  for (const r of [...REGIONS.slice(cur), ...REGIONS.slice(0, cur)]) {
     for (let j = 0; j < r.lessons.length; j++) { const st = lessonState(P, r.from + j, won); if (st.open && st.done === 0) return { kind: "lesson", index: r.from + j }; }
     if (regionCleared(P, r) && !won.has(r.id)) return { kind: "boss", region: r.id };
   }

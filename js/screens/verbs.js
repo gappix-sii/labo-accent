@@ -8,7 +8,7 @@ import { html, render } from "../core/dom.js";
 import { save } from "../core/store.js";
 import { PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";
 import { STEPS, familySize, itemOf, textOf, recordVerb, familyState, questionOf, formsText } from "../core/verbs.js";
-import { FAMILIES, familyById } from "../content/verbs.js";
+import { FAMILIES, familyById, tuneLang } from "../content/verbs.js";
 import { GRIMOIRE, grimoireSvg } from "../content/bosses.js";
 import { familyWins, XP_MINI_FIRST } from "../core/boss.js";
 import { say, stopVoice } from "../engine/clips.js";
@@ -37,7 +37,7 @@ export function mountVerbList(root, S) {
     <section class="card"><h1 class="sentence">📜 Verbes irréguliers</h1>
       <p class="muted small">Les 67 verbes les plus utiles, rangés par familles qui se ressemblent à l'oreille. Pour chaque famille : les 3 formes à dire, puis des phrases au prétérit et au present perfect.</p></section>
     <section class="card"><ol class="path">${FAMILIES.map((f) => html`<li><button class="lesson${familyState(P, f).done ? " done" : ""}" data-act="open" data-id="${f.id}" type="button">
-      <span><b>${f.title}</b><br><span class="muted small" lang="${f.tune.includes("·") ? "en" : "fr"}">${f.tune}</span></span>
+      <span><b>${f.title}</b><br><span class="muted small" lang="${tuneLang(f)}">${f.tune}</span></span>
       <span class="muted small">${familyStatus(P, f) || `${f.verbs.length} verbes`}${familyWins(S.bosses, f.id) ? " · 👑" : ""}</span></button></li>`)}</ol></section>`);
   root.addEventListener("click", (e) => {
     const el = e.target.closest("[data-act]");
@@ -69,16 +69,20 @@ export function mountVerbFamily(root, S, id) {
   // Élément suivant : le prochain pas encore réussi de l'étape, sinon l'étape suivante.
   function next() {
     if (ui.finished) { voice.stop(); ui.view = "learn"; ui.finished = false; draw(); return; } // famille finie : retour à la fiche
-    const k = nextToDo(localRun(ui.step), ui.k, n);
-    if (k < n) return goTo(ui.step, k);
-    const step = (ui.step + 1) % STEPS.length;
-    goTo(step, firstToDo({ run: localRun(step) }, n));
+    // dans l'étape : le prochain verbe pas encore réussi ; sinon la prochaine étape où il en reste (relecture de la phase 10, n° 3)
+    const run = localRun(ui.step), k = nextToDo(run, ui.k, n);
+    if (k < n && !run.includes(k)) return goTo(ui.step, k);
+    for (let d = 1; d <= STEPS.length; d++) {
+      const step = (ui.step + d) % STEPS.length, r = localRun(step);
+      if (r.length < n) return goTo(step, firstToDo({ run: r }, n));
+    }
+    goTo((ui.step + 1) % STEPS.length, 0);
   }
 
   function learnView() {
     const st = familyState(P, fam);
     return html`
-      <section class="card"><p class="muted small">Famille · <span lang="${fam.tune.includes("·") ? "en" : "fr"}">${fam.tune}</span></p><h1 class="sentence">${fam.title}</h1><p>${fam.tip}</p></section>
+      <section class="card"><p class="muted small">Famille · <span lang="${tuneLang(fam)}">${fam.tune}</span></p><h1 class="sentence">${fam.title}</h1><p>${fam.tip}</p></section>
       <section class="card"><h2>Les ${n} verbes</h2><ul class="examples">${fam.verbs.map((v, i) => html`<li>
         <button class="btn soft small-btn" data-act="hear" data-i="${i}" type="button" aria-label="${`Écouter : ${formsText(v)}`}">🔊</button>
         <span><b lang="en">${v.base} · ${v.past} · ${v.pp}</b> <span class="muted small">${v.fr}</span><br>

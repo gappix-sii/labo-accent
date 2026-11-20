@@ -6,12 +6,9 @@
 import { html } from "../core/dom.js";
 import { answerOf } from "../content/grammar.js";
 
-// Mélange (Fisher-Yates) ; rnd() renvoie un nombre dans [0, 1).
-export function shuffle(list, rnd = Math.random) {
-  const a = [...list];
-  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
-}
+// Mélange : js/core/game.js (réexporté ici pour les écrans et les tests qui le prennent dans ce module).
+import { shuffle } from "../core/game.js";
+export { shuffle };
 
 // Mots d'une phrase à remettre dans l'ordre, sans rien qui donne la réponse : ni ponctuation (points,
 // virgules…, l'apostrophe reste), ni majuscule en début de phrase (sauf « I »), même au milieu (« nice. However, »).

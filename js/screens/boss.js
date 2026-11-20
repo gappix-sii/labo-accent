@@ -172,7 +172,8 @@ function mountFight(root, S, cfg) {
     ui.out = attack(ui.F, value);
     ui.line = ui.out.lost ? boss.taunt : ui.out.crit || ui.out.dmg >= 80 ? boss.hurt : "Grr… Tu ne m'auras pas si facilement !";
     if (ui.F.over) { ui.reward = finishFight(S, ui.F); persist(); }
-    if (redraw) draw();
+    // les choix deviennent inactifs : le focus va au bouton suivant, sinon il retombe sur la page (relecture de la phase 10, n° 7)
+    if (redraw) { draw(); root.querySelector('.boss-main [data-act="next"]')?.focus({ preventScroll: true }); }
   }
   function next() {
     voice.stop(); stopVoice();

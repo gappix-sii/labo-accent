@@ -8,6 +8,7 @@
 // - étapes 2 et 3 : on choisit d'abord la bonne forme dans la phrase à trou, puis on dit la phrase entière au micro.
 //   Seule la note au micro rapporte l'XP (comme les exercices de grammaire).
 import { recordItem } from "./progress.js";
+import { shuffle } from "./game.js";
 import { variants, formsText } from "../content/verbs.js";
 export { formsText };
 
@@ -47,7 +48,6 @@ export function familyState(P, fam) {
 export const familyDone = (P, fam) => familyState(P, fam).done > 0;
 
 // ---------- Questions « choisis la bonne forme » ----------
-const shuffle = (arr, rng) => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const word = (f) => new RegExp(`\\b${f}\\b`, "i");
 
 // La forme attendue dans une phrase : celle (parmi les variantes) qui y figure comme mot entier.

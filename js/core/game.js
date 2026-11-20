@@ -36,6 +36,14 @@ export function cryptoRng() {
 }
 // Hasard reproductible (offres du jour : les mêmes toute la journée).
 export function seedFrom(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+// Mélange (Fisher-Yates) d'une copie de la liste ; rng() renvoie un nombre dans [0, 1). Seul mélange de l'appli
+// (exercices, boss, verbes ; relecture de la phase 10, n° 8).
+export function shuffle(list, rng = Math.random) {
+  const a = [...list];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
 export function mulberry32(a) {
   return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }

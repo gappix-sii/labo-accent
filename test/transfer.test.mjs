@@ -145,7 +145,7 @@ test("import sur un appareil qui n'avait rien enregistré : « Annuler » ramèn
   assert.equal(backupOf(raw), raw, "sinon la sauvegarde telle quelle");
 });
 
-test("pistes : code d'avant (notes en clair) toujours lu ; nombre ou total de notes aberrant : piste ignorée", async () => {
+test("pistes : code d'avant (notes en clair) toujours lu ; notes aberrantes : la piste reste, sans ses notes (relecture de la phase 10, n° 4)", async () => {
   const data = pick(defaults());
   data.progress = { ...data.progress, lessons: {
     "s-h": { best: [90, 70], run: [], done: 1 },          // forme d'avant le 2026-11-20
@@ -157,5 +157,17 @@ test("pistes : code d'avant (notes en clair) toujours lu ; nombre ou total de no
   const got = receive(defaults(), r.data).progress.lessons;
   assert.deepEqual(got["s-h"], { best: [90, 70], run: [], done: 1 });
   assert.deepEqual(got["s-th"], { best: [84, 83, 83], run: [1], done: 2 });
-  assert.deepEqual(Object.keys(got).sort(), ["s-h", "s-th"]);
+  assert.deepEqual(Object.keys(got).sort(), ["s-h", "s-r", "s-th", "s-v", "s-w"], "aucune piste perdue");
+  assert.deepEqual([got["s-r"].done, got["s-r"].best.length, got["s-r"].best.reduce((a, b) => a + b, 0)], [1, 40, 10], "trop de notes : ramenées à 40");
+  assert.deepEqual(got["s-w"], { done: 1, run: [], best: [0, 0] }, "total impossible : notes à zéro");
+  assert.deepEqual(got["s-v"], { done: 1, run: [], best: [] });
+});
+
+test("transfert : seules les notes comptées par les étoiles partent (relecture de la phase 10, n° 5)", async () => {
+  const S = defaults(), l = LESSONS[0], n = l.items.length;
+  S.progress.lessons[l.id] = { done: 1, run: [], best: [...Array(n).fill(60), ...Array(n).fill(100)] }; // notes en trop (contenu raccourci) : lissées, elles donneraient 80 de moyenne
+  const got = receive(defaults(), (await unpack(await pack(sanitize(JSON.parse(JSON.stringify(S)))))).data).progress;
+  assert.equal(got.lessons[l.id].best.length, n);
+  assert.equal(starsOf(got, l.id, n), starsOf(S.progress, l.id, n), "mêmes étoiles");
+  assert.equal(starsOf(got, l.id, n), 1);
 });

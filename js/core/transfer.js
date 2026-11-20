@@ -9,6 +9,12 @@ import { seedFrom } from "./game.js";
 import { ALL_WORDS } from "../content/vocab.js";
 import { ITEMS, SPECIES, skinKey } from "../content/avatar.js";
 import { MAX_ITEMS } from "./progress.js";
+import { LESSONS } from "../content/lessons.js";
+import { GRAMMAR } from "../content/grammar.js";
+import { DIALOGUES } from "../content/dialogues.js";
+import { FAMILIES } from "../content/verbs.js";
+import { grammarKey, roleKey, myTurns } from "./tracks.js";
+import { verbKey, familySize } from "./verbs.js";
 
 export const FORMAT = "1"; // numéro du format du code, en tête : « 1.<données> »
 export const CODE_MAX = 12000; // caractères au plus dans un code reçu
@@ -54,14 +60,24 @@ function unpackCards(t, c) {
 // partout donnait un lien de 3 700 caractères, trop pour un QR code ; 2 660 ainsi). À l'arrivée, le total est réparti
 // sur les notes : la moyenne, donc les étoiles (starsOf), est exactement la même ; seul le détail note par note est lissé
 // (il n'est affiché nulle part).
-const packLessons = (lessons) => Object.fromEntries(Object.entries(lessons).map(([id, L]) => [id, [L.done, L.run, L.best.length, L.best.reduce((a, b) => a + b, 0)]]));
+// Seules les notes que comptent les étoiles partent : celles des éléments qui existent encore (un contenu raccourci depuis
+// laisse des notes en trop, qui fausseraient la moyenne une fois lissées ; relecture de la phase 10, n° 5).
+const SIZES = new Map([...LESSONS.map((l) => [l.id, l.items.length]), ...GRAMMAR.map((g) => [grammarKey(g.id), g.ex.length]),
+  ...DIALOGUES.map((d) => [roleKey(d.id), myTurns(d).length]), ...FAMILIES.map((f) => [verbKey(f), familySize(f)])]);
+const packLessons = (lessons) => Object.fromEntries(Object.entries(lessons).map(([id, L]) => {
+  const best = SIZES.has(id) ? L.best.slice(0, SIZES.get(id)) : L.best;
+  return [id, [L.done, L.run, best.length, best.reduce((a, b) => a + b, 0)]];
+}));
 function unpackLessons(lessons) {
   if (!lessons || typeof lessons !== "object" || Array.isArray(lessons)) return lessons;
   const out = {};
   for (const [id, v] of Object.entries(lessons)) {
     if (!Array.isArray(v)) { out[id] = v; continue; } // code d'avant le 2026-11-20 : notes en clair
-    const [done, run, n, sum] = v;
-    if (!Number.isInteger(n) || n < 0 || n > MAX_ITEMS || !Number.isInteger(sum) || sum < 0 || sum > 100 * n) continue;
+    // nombre ou total de notes aberrant (code abîmé ou d'une autre version) : la piste reste (fois finie, réussis du
+    // passage), seules les notes sont ramenées à MAX_ITEMS ou à zéro (relecture de la phase 10, n° 4)
+    const [done, run, n0, sum0] = v;
+    const n = Number.isInteger(n0) && n0 > 0 ? Math.min(n0, MAX_ITEMS) : 0;
+    const sum = Number.isInteger(sum0) && sum0 >= 0 && sum0 <= 100 * n0 ? Math.min(sum0, 100 * n) : 0;
     const q = n ? Math.floor(sum / n) : 0, r = n ? sum % n : 0;
     out[id] = { done, run, best: Array.from({ length: n }, (_, i) => q + (i < r ? 1 : 0)) };
   }

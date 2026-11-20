@@ -29,14 +29,15 @@ const IDS = LESSONS.map((l) => l.id);
 // - sinon, il faut avoir fini la précédente (règle de la phase 2) ;
 // - et pour la 1re leçon d'une région, avoir vaincu le boss d'avant. `won` : ensemble des régions dont le boss
 //   est vaincu (wonSet, js/core/boss.js) ; null : seule la règle de la phase 2 compte (tests, anciens appels).
+//   Le boss d'avant vaincu suffit, même si des leçons ont été ajoutées depuis à sa région (les bases, phase 10) :
+//   il prouve que la région était finie au moment du combat (relecture de la phase 10, n° 1).
 export function lessonOpen(P, index, won = null) {
   if (index < 0 || index >= LESSONS.length) return false;
   if (index === 0) return true;
   const L = Object.hasOwn(P.lessons, IDS[index]) ? P.lessons[IDS[index]] : null;
   if (L && (L.done > 0 || L.best.length > 0)) return true;
-  if (!unlocked(P, IDS, index)) return false;
   if (won && START.get(index) > 0) return won.has(REGIONS[START.get(index) - 1].id);
-  return true;
+  return unlocked(P, IDS, index);
 }
 
 // Toutes les leçons de la région finies : son boss peut être affronté.

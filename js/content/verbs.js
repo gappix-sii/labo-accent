@@ -9,7 +9,7 @@
 const v = (base, past, pp, fr, pron, note, ps, pps) => ({ base, past, pp, fr, pron, note, ps: { en: ps[0], fr: ps[1], form: "past" }, pps: { en: pps[0], fr: pps[1], form: "pp" } });
 
 export const FAMILIES = [
-  { id: "stars", title: "Les stars du quotidien", short: "Stars", tune: "à connaître par cœur",
+  { id: "stars", title: "Les stars du quotidien", short: "Stars", tune: "à connaître par cœur", tuneLang: "fr",
     tip: "Les plus fréquents de tous, et les plus irréguliers. Commence par eux : ils sont dans presque toutes les phrases.",
     verbs: [
       v("be", "was / were", "been", "être", ["BI", "OUOZ · OUEUR", "BIN"], "« was » avec I, he, she, it ; « were » avec you, we, they.", ["I was tired yesterday.", "J'étais fatigué hier."], ["Have you ever been to London?", "Tu es déjà allé à Londres ?"]),
@@ -114,6 +114,8 @@ export const FAMILIES = [
     ] }
 ];
 export const VERBS = FAMILIES.flatMap((f) => f.verbs.map((x) => ({ ...x, fam: f.id })));
+// Langue du « tune » (la musique de la famille) : l'anglais, sauf indication (relecture de la phase 10, n° 9).
+export const tuneLang = (f) => f.tuneLang || "en";
 export const familyById = (id) => FAMILIES.find((f) => f.id === id) || null;
 export const FORM_LABEL = { base: "infinitif", past: "prétérit", pp: "participe passé" };
 // Variantes d'une forme (« was / were » → was, were).
