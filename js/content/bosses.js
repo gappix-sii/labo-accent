@@ -185,19 +185,56 @@ export const BOSSES = {
 export const STATES = ["idle", "hit", "ko"];
 export const bossOf = (regionId) => (Object.hasOwn(BOSSES, regionId) ? BOSSES[regionId] : null);
 
-// Dessin d'un boss. label : texte lu par les lecteurs d'écran ("" pour un dessin décoratif).
-export function bossSvg(regionId, state = "idle", { label } = {}) {
-  const id = bossOf(regionId) ? regionId : "daily", b = BOSSES[id], st = STATES.includes(state) ? state : "idle";
+// Dessin d'un boss (gid : identifiant unique du dégradé). label : texte lu par les lecteurs d'écran ("" pour un dessin décoratif).
+function drawBoss(gid, b, state, label) {
+  const st = STATES.includes(state) ? state : "idle";
   const name = label === undefined ? (st === "ko" ? `${b.name}, vaincu` : b.name) : label;
   return html`<svg class="${`boss ${st}`}" viewBox="0 0 200 200" role="${name ? "img" : "presentation"}" aria-label="${name}" aria-hidden="${name ? "false" : "true"}">
-    <defs><radialGradient id="${`kb-${id}`}" cx=".38" cy=".3" r=".85"><stop offset="0" stop-color="${b.g[0]}"/><stop offset=".5" stop-color="${b.g[1]}"/><stop offset="1" stop-color="${b.g[2]}"/></radialGradient></defs>
+    <defs><radialGradient id="${gid}" cx=".38" cy=".3" r=".85"><stop offset="0" stop-color="${b.g[0]}"/><stop offset=".5" stop-color="${b.g[1]}"/><stop offset="1" stop-color="${b.g[2]}"/></radialGradient></defs>
     <ellipse cx="100" cy="186" rx="50" ry="7" fill="#000000" opacity=".3"/>
     ${st === "ko" ? "" : html`<g class="boss-aura">${b.aura()}</g>`}
     <g class="boss-body">
       ${b.back(st)}
-      <path d="${b.body}" fill="${`url(#kb-${id})`}" stroke="${INK}" stroke-width="4.5" stroke-linejoin="round"/>
+      <path d="${b.body}" fill="${`url(#${gid})`}" stroke="${INK}" stroke-width="4.5" stroke-linejoin="round"/>
       ${b.front(st)}
       <path class="boss-flash" d="${b.body}" fill="#ffffff"/>
     </g>
   </svg>`;
+}
+export function bossSvg(regionId, state = "idle", { label } = {}) {
+  const id = bossOf(regionId) ? regionId : "daily";
+  return drawBoss(`kb-${id}`, BOSSES[id], state, label);
+}
+
+// ---------- Mini-boss des familles de verbes (phase 10, tâche 5) : « Le Grimoire » ----------
+// Un seul personnage (choix du 2026-11-19) : un livre de sorts vivant, en style mignon, d'une couleur par famille.
+// Couverture arrondie avec coins dorés, pages crème sur le côté, fermoir, marque-page, plume magique et étincelles.
+export const GRIMOIRE_COLORS = {
+  stars: ["#fff4c2", "#ffd23f", "#e09a12"], aaa: ["#e3ffe9", "#7fe39a", "#2fae5c"], ought: ["#dffbff", "#6fdde6", "#2b9fb0"],
+  t: ["#e3ecff", "#8fb0ff", "#4a6fe0"], abb: ["#f0e6ff", "#b994ff", "#7b4fe0"], iau: ["#ffe3f3", "#ff9ccf", "#e0559c"],
+  aba: ["#ffeedd", "#ffb070", "#e0702a"], ew: ["#ffe5e5", "#ff8f8f", "#d94848"], en: ["#f6e8da", "#d2a27a", "#9a6640"]
+};
+const sparkle = (x, y, s, fill) => html`<path transform="${`translate(${x} ${y}) scale(${s})`}" d="M0 -8L2 -2L8 0L2 2L0 8L-2 2L-8 0L-2 -2Z" fill="${fill}" stroke="${INK}" stroke-width="${1.5 / s}" stroke-linejoin="round"/>`;
+export const GRIMOIRE = {
+  name: "Le Grimoire",
+  body: "M58 52H144Q156 52 156 64V166Q156 178 144 178H58Q46 178 46 166V64Q46 52 58 52Z",
+  back: () => html`<path d="M148 58H162Q168 58 168 64V166Q168 172 162 172H148Z" fill="#fff6dc" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M154 72h8M154 88h8M154 104h8M154 120h8M154 136h8M154 152h8" stroke="#d9c79a" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M118 176v16l7-6 7 6v-16" fill="#ff4f8b" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`,
+  front: (st) => html`<path d="M46 64Q46 52 58 52H66V178H58Q46 178 46 166Z" fill="#000000" opacity=".18"/>
+    ${shine("M76 70q20-8 46-6")}
+    <path d="M140 52h4q12 0 12 12v4zM140 178h4q12 0 12-12v-4z" fill="#ffd23f" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <rect x="148" y="104" width="16" height="22" rx="5" fill="#ffd23f" stroke="${INK}" stroke-width="3.5"/>
+    ${sparkle(106, 80, 1.3, "#ffffff")}
+    ${face(st, { y: 118, dx: 20 })}${feet(182, "#7a4b2a", 26)}
+    ${st === "ko" ? "" : html`<path d="M40 140q-14-6-14-22" stroke="${INK}" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M26 118q-8-22 10-36q2 20-10 36z" fill="#ffffff" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`}`,
+  aura: () => html`${sparkle(30, 60, 1.2, "#ffe58a")}${sparkle(176, 40, 1, "#ffe58a")}${sparkle(184, 120, 0.8, "#ffffff")}${sparkle(22, 168, 0.8, "#ffffff")}`,
+  line: "Hé hé… Je connais par cœur tous les verbes de cette famille. Et toi ?", taunt: "Faux ! Ce verbe n'a rien de régulier, voyons !",
+  hurt: "Aïe ! Mes pages ! Tu connais tes formes…", ko: "Tu sais ta famille par cœur… Je referme mon livre.",
+  win: "Retourne réviser tes formes, apprenti, et reviens me voir !"
+};
+export function grimoireSvg(famId, state = "idle", { label } = {}) {
+  const id = Object.hasOwn(GRIMOIRE_COLORS, famId) ? famId : "stars";
+  return drawBoss(`kg-${id}`, { ...GRIMOIRE, g: GRIMOIRE_COLORS[id] }, state, label);
 }

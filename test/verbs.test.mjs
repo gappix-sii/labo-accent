@@ -159,3 +159,80 @@ test("écran des verbes (tâche 4) : adresses, onglet, exercice « c » bien for
   for (let i = 1; i < 9; i++) recordVerb(P, f, i, 90, now);
   assert.equal(familyStatus(P, f), "✓");
 });
+
+test("mini-boss « Le Grimoire » (tâche 5) : combat tiré de la famille, ouvert une fois la famille finie", async () => {
+  const { buildVerbAttacks, newVerbFight, attack, canFightFamily, VERB_PATTERN, LISTEN_DMG, HEARTS, BOSS_HP } = await import("../js/core/boss.js");
+  const { verbTexts } = await import("../js/content/verbs.js");
+  const { fixedTexts } = await import("../js/content/fixed.js");
+  const clips = new Set(fixedTexts());
+  for (const f of FAMILIES) for (let seed = 1; seed < 6; seed++) {
+    const A = buildVerbAttacks(f, seeded(seed));
+    assert.deepEqual(A.map((a) => a.kind), VERB_PATTERN);
+    const mine = new Set(f.verbs.flatMap(verbTexts));
+    for (const a of A) {
+      assert.ok(mine.has(a.en), `${f.id} : « ${a.en} » n'est pas de la famille`);
+      assert.ok(clips.has(a.en), `« ${a.en} » sans son fabriqué`);
+      if (a.kind === "translate" || a.kind === "choose") assert.ok(a.fr);
+      if (a.kind === "choose") {
+        assert.equal(a.options.length, CHOICES); assert.ok(a.options.includes(a.answer));
+        assert.equal((a.before + a.answer + a.after).toLowerCase(), a.en.toLowerCase());
+      }
+    }
+    if (f.verbs.length <= 3) assert.equal(new Set(A.filter((a) => a.kind === "forms").map((a) => a.verb)).size, f.verbs.length, `${f.id} : chaque verbe a ses 3 formes à dire`);
+  }
+  // « choisis la bonne forme » : bonne réponse = dégâts d'une écoute, mauvaise = un cœur perdu
+  const F = newVerbFight("aba", seeded(4));
+  assert.equal(F.family, "aba"); assert.equal(F.hp, BOSS_HP); assert.equal(F.hearts, HEARTS);
+  attack(F, 70);
+  assert.equal(F.attacks[F.i].kind, "choose");
+  assert.deepEqual([attack(F, true).dmg, F.hp], [LISTEN_DMG, BOSS_HP - 70 - LISTEN_DMG]);
+  assert.equal(newVerbFight("nope"), null);
+  // difficulté comme les boss : une moyenne de 60 au micro et les bons choix gagnent ; 40 et un mauvais choix perdent
+  const run = (score, right) => { const G = newVerbFight("stars", seeded(2)); while (!G.over) attack(G, G.attacks[G.i].kind === "choose" ? right(G.i) : score); return G.over; };
+  assert.equal(run(60, () => true), "won");
+  assert.equal(run(40, (i) => i !== 5), "lost");
+  // ouvert une fois la famille finie (pas d'ordre entre les familles)
+  const P = newProgress(), aba = familyById("aba");
+  assert.equal(canFightFamily(P, "aba"), false);
+  for (let i = 0; i < familySize(aba); i++) recordVerb(P, aba, i, 90, now);
+  assert.equal(canFightFamily(P, "aba"), true); assert.equal(canFightFamily(P, "stars"), false); assert.equal(canFightFamily(P, "nope"), false);
+});
+
+test("mini-boss : récompense de première victoire une seule fois, victoires gardées dans la sauvegarde et le transfert", async () => {
+  const { newVerbFight, attack, finishFight, familyWins, newBosses, sanitizeBosses, XP_MINI_FIRST, XP_MINI_AGAIN, MINI_CHEST } = await import("../js/core/boss.js");
+  const { pick, receive } = await import("../js/core/transfer.js");
+  const S = defaults(), win = () => { const F = newVerbFight("aba", seeded(1)); while (!F.over) attack(F, F.attacks[F.i].kind === "choose" ? true : 100); return finishFight(S, F, now); };
+  const lose = newVerbFight("aba", seeded(1)); while (!lose.over) attack(lose, lose.attacks[lose.i].kind === "choose" ? false : 10);
+  assert.deepEqual(finishFight(S, lose, now), { won: false, first: false, xp: 0, chest: null });
+  assert.deepEqual(win(), { won: true, first: true, xp: XP_MINI_FIRST, chest: MINI_CHEST });
+  assert.deepEqual(win(), { won: true, first: false, xp: XP_MINI_AGAIN, chest: null });
+  assert.equal(S.progress.xp, XP_MINI_FIRST + XP_MINI_AGAIN);
+  assert.deepEqual(S.game.chests, [MINI_CHEST]);
+  assert.deepEqual(S.bosses.families, { aba: { wins: 2, tries: 3 } });
+  assert.deepEqual(S.bosses.regions, {}, "les boss du parcours ne bougent pas");
+  assert.equal(familyWins(S.bosses, "aba"), 2); assert.equal(familyWins(S.bosses, "stars"), 0);
+  // rechargement, transfert, sauvegarde abîmée ou d'avant les mini-boss
+  assert.deepEqual(sanitize(JSON.parse(JSON.stringify(S))).bosses, S.bosses);
+  assert.deepEqual(receive(defaults(), JSON.parse(JSON.stringify(pick(S)))).bosses, S.bosses);
+  assert.deepEqual(sanitizeBosses({ v: 1, regions: {}, families: { aba: { wins: 1, tries: 1 }, nope: { wins: 1, tries: 1 }, t: { wins: "x" } } }), { v: 1, regions: {}, families: { aba: { wins: 1, tries: 1 } } });
+  assert.deepEqual(sanitizeBosses({ v: 1, regions: { couple: { wins: 1, tries: 1 } } }).families, {}, "sauvegarde d'avant les mini-boss");
+  assert.equal(familyWins({ v: 1, regions: {} }, "aba"), 0);
+  assert.deepEqual(newBosses(), { v: 1, regions: {}, families: {} });
+  // adresse et onglet
+  const { route } = await import("../js/main.js");
+  const { tabFor, inExercise } = await import("../js/screens/shell.js");
+  assert.deepEqual(route("#grimoire/aba"), { screen: "grimoire", id: "aba" });
+  assert.equal(tabFor("grimoire"), "training"); assert.equal(inExercise("grimoire"), true);
+});
+
+test("Le Grimoire : une couleur par famille, dessin sûr dans les 3 états", async () => {
+  const { GRIMOIRE_COLORS, grimoireSvg, STATES } = await import("../js/content/bosses.js");
+  assert.deepEqual(Object.keys(GRIMOIRE_COLORS).sort(), FAMILIES.map((f) => f.id).sort());
+  assert.equal(new Set(Object.values(GRIMOIRE_COLORS).map((g) => g[1])).size, FAMILIES.length, "couleurs toutes différentes");
+  for (const id of Object.keys(GRIMOIRE_COLORS)) for (const st of STATES) {
+    const { toHTMLString } = await import("../js/core/dom.js");
+    const svg = toHTMLString(grimoireSvg(id, st));
+    assert.match(svg, new RegExp(`id="kg-${id}"`)); assert.match(svg, new RegExp(`class="boss ${st}"`));
+    assert.ok(!/<script|on\w+=/i.test(svg));
+  }
+});

@@ -96,7 +96,7 @@ test("sauvegarde : section bosses nettoyée au chargement, et transférée d'un 
   assert.deepEqual(sanitizeBosses(null), newBosses());
   assert.deepEqual(sanitizeBosses({ v: 2, regions: { couple: { wins: 1, tries: 1 } } }), newBosses(), "version inconnue");
   assert.deepEqual(sanitizeBosses({ v: 1, regions: { couple: { wins: 2, tries: 1 }, nulle: { wins: 1, tries: 1 }, __proto__: { wins: 1 }, travel: { wins: -3, tries: "x" }, past: null } }),
-    { v: 1, regions: { couple: { wins: 2, tries: 2 } } });
+    { v: 1, regions: { couple: { wins: 2, tries: 2 } }, families: {} }, "sauvegarde d'avant les mini-boss : families vide");
   const S = defaults(); S.bosses.regions.travel = { wins: 1, tries: 4 };
   const back = sanitize(JSON.parse(JSON.stringify(S)));
   assert.deepEqual(back.bosses, S.bosses);

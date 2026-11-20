@@ -11,6 +11,8 @@ import { REGIONS, regionById, regionCleared } from "../content/regions.js";
 import { PAIRS } from "../content/pairs.js";
 import { addBonusXp } from "./progress.js";
 import { MAX_CHESTS, cryptoRng } from "./game.js";
+import { FAMILIES, familyById, formsText } from "../content/verbs.js";
+import { familyDone, questionOf, sentenceOf } from "./verbs.js";
 
 export const HEARTS = 3;
 export const BOSS_HP = 460;
@@ -63,7 +65,7 @@ export function attack(F, value) {
   const a = currentAttack(F);
   if (!a) return null;
   let dmg = 0, crit = false, lost = false;
-  if (a.kind === "listen") { if (value === true) dmg = LISTEN_DMG; else lost = true; }
+  if (a.kind === "listen" || a.kind === "choose") { if (value === true) dmg = LISTEN_DMG; else lost = true; }
   else {
     const s = Math.max(0, Math.min(100, Number(value) || 0));
     if (s < HIT_MIN) lost = true; else { crit = s >= CRIT; dmg = Math.round(s * (crit ? CRIT_MULT : 1)); }
@@ -79,20 +81,27 @@ export function attack(F, value) {
 
 // ---------- Sauvegarde : section « bosses » de labo.v2 ----------
 // regions : { <région> : { wins, tries } } ; un boss vaincu au moins une fois donne la couronne de sa région.
-export function newBosses() { return { v: 1, regions: {} }; }
-const IDS = new Set(REGIONS.map((r) => r.id));
+// families : { <famille de verbes> : { wins, tries } } (mini-boss « Le Grimoire », phase 10, tâche 5).
+export function newBosses() { return { v: 1, regions: {}, families: {} }; }
+const IDS = new Set(REGIONS.map((r) => r.id)), FAM_IDS = new Set(FAMILIES.map((f) => f.id));
 const int = (x, max = 1e6) => (Number.isInteger(x) && x >= 0 ? Math.min(x, max) : 0);
 export function sanitizeBosses(raw) {
   const B = newBosses();
   if (!raw || typeof raw !== "object" || raw.v !== 1 || !raw.regions || typeof raw.regions !== "object") return B;
-  for (const [id, r] of Object.entries(raw.regions)) {
-    if (!IDS.has(id) || !r || typeof r !== "object") continue;
-    const wins = int(r.wins), tries = Math.max(int(r.tries), wins);
-    if (tries) B.regions[id] = { wins, tries };
-  }
+  const copy = (from, ids, to) => {
+    if (!from || typeof from !== "object") return; // sauvegarde d'avant les mini-boss : pas de « families »
+    for (const [id, r] of Object.entries(from)) {
+      if (!ids.has(id) || !r || typeof r !== "object") continue;
+      const wins = int(r.wins), tries = Math.max(int(r.tries), wins);
+      if (tries) to[id] = { wins, tries };
+    }
+  };
+  copy(raw.regions, IDS, B.regions);
+  copy(raw.families, FAM_IDS, B.families);
   return B;
 }
 export const wins = (B, id) => (Object.hasOwn(B.regions, id) ? B.regions[id].wins : 0);
+export const familyWins = (B, id) => (B.families && Object.hasOwn(B.families, id) ? B.families[id].wins : 0);
 export const wonSet = (B) => new Set(Object.keys(B.regions).filter((id) => B.regions[id].wins > 0));
 // Le boss d'une région peut être affronté quand toutes ses leçons sont finies et, si `won` est donné (ensemble des
 // régions dont le boss est vaincu), quand le boss de la région d'avant est vaincu : les boss se battent dans l'ordre
@@ -109,16 +118,51 @@ export function canFight(P, regionId, won = null) {
 export function finishFight(S, F, now = Date.now()) {
   if (!F || !F.over || F.done) return null;
   F.done = true;
-  const B = S.bosses, id = F.region;
-  if (!Object.hasOwn(B.regions, id)) B.regions[id] = { wins: 0, tries: 0 };
-  const R = B.regions[id];
+  const mini = !!F.family, id = mini ? F.family : F.region;
+  if (mini && !S.bosses.families) S.bosses.families = {};
+  const B = mini ? S.bosses.families : S.bosses.regions;
+  if (!Object.hasOwn(B, id)) B[id] = { wins: 0, tries: 0 };
+  const R = B[id];
   R.tries++;
   if (F.over !== "won") return { won: false, first: false, xp: 0, chest: null };
   const first = R.wins === 0;
   R.wins++;
-  const xp = first ? XP_FIRST_WIN : XP_WIN_AGAIN;
+  const xp = mini ? (first ? XP_MINI_FIRST : XP_MINI_AGAIN) : first ? XP_FIRST_WIN : XP_WIN_AGAIN;
   addBonusXp(S.progress, xp, now);
   let chest = null;
-  if (first) { chest = WIN_CHEST; S.game.chests = [...S.game.chests, chest].slice(-MAX_CHESTS); }
+  if (first) { chest = mini ? MINI_CHEST : WIN_CHEST; S.game.chests = [...S.game.chests, chest].slice(-MAX_CHESTS); }
   return { won: true, first, xp, chest };
 }
+
+// ---------- Mini-boss des familles de verbes : « Le Grimoire » (phase 10, tâche 5) ----------
+// Mêmes règles que les boss (PV, cœurs, dégâts = la note, critique, une moyenne de 60 suffit), avec des attaques tirées
+// de la famille : dire les 3 formes (forms), choisir la bonne forme dans une phrase à trou (choose : bonne réponse →
+// LISTEN_DMG dégâts, mauvaise → un cœur perdu), dire une phrase au prétérit ou au present perfect (say), la dire depuis
+// le français (translate). Ouvert une fois la famille finie ; pas d'ordre entre les familles.
+// Récompense (choix du 2026-11-20) : première victoire + 30 XP et un coffre d'argent ; victoires suivantes + 10 XP.
+export const VERB_PATTERN = ["forms", "choose", "say", "forms", "translate", "choose", "say", "forms", "choose", "say"];
+export const XP_MINI_FIRST = 30;
+export const XP_MINI_AGAIN = 10;
+export const MINI_CHEST = "silver";
+
+export function buildVerbAttacks(fam, rng = cryptoRng()) {
+  // chaque sorte d'attaque passe les verbes dans l'ordre, avec un décalage : dans une famille de 3, chaque verbe
+  // revient à chaque sorte d'attaque (les 3 formes de come, puis de become, puis de run…)
+  const verbs = shuffle(fam.verbs, rng), seen = {}, SHIFT = { forms: 0, choose: 1, say: 2, translate: 3 };
+  return VERB_PATTERN.map((kind) => {
+    const k = (seen[kind] = (seen[kind] ?? -1) + 1), verb = verbs[(k + SHIFT[kind]) % verbs.length], form = rng() < 0.5 ? "past" : "pp";
+    if (kind === "forms") return { kind, en: formsText(verb), verb: verb.base };
+    if (kind === "choose") {
+      const q = questionOf(verb, form, rng);
+      return { kind, en: q.en, fr: q.fr, before: q.before, after: q.after, options: q.options, answer: q.right, verb: verb.base, form };
+    }
+    const s = sentenceOf(verb, form);
+    return kind === "translate" ? { kind, en: s.en, fr: s.fr, verb: verb.base } : { kind, en: s.en, verb: verb.base };
+  });
+}
+export function newVerbFight(famId, rng = cryptoRng()) {
+  const fam = familyById(famId);
+  if (!fam) return null;
+  return { family: fam.id, attacks: buildVerbAttacks(fam, rng), i: 0, hp: BOSS_HP, hearts: HEARTS, log: [], over: null };
+}
+export const canFightFamily = (P, famId) => { const fam = familyById(famId); return !!fam && familyDone(P, fam); };

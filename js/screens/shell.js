@@ -18,13 +18,13 @@ export const TABS = [
 // Onglet allumé pour chaque écran (les écrans d'un onglet en dépendent).
 const TAB_OF = {
   home: "path", lesson: "path", boss: "path",
-  training: "training", vocab: "training", listening: "training", grammarList: "training", grammar: "training", verbList: "training", verbs: "training", mistakes: "training", roleList: "training", role: "training", roleFree: "training", chat: "training",
+  training: "training", vocab: "training", listening: "training", grammarList: "training", grammar: "training", verbList: "training", verbs: "training", grimoire: "training", mistakes: "training", roleList: "training", role: "training", roleFree: "training", chat: "training",
   companion: "companion", shop: "shop", chests: "shop",
   profile: "profile", settings: "profile", transfer: "profile", bench: "profile", style: "profile"
 };
 export const tabFor = (screen) => TAB_OF[screen] || "path";
 // Pendant un exercice, les onglets se cachent : on reste concentré (on sort par le bouton « ← » de l'écran).
-const EXERCISES = new Set(["lesson", "boss", "vocab", "listening", "grammar", "verbs", "mistakes", "role", "roleFree", "chat", "bench"]);
+const EXERCISES = new Set(["lesson", "boss", "vocab", "listening", "grammar", "verbs", "grimoire", "mistakes", "role", "roleFree", "chat", "bench"]);
 export const inExercise = (screen) => EXERCISES.has(screen);
 
 // Chiffres de la barre du haut (fonction pure, testée).

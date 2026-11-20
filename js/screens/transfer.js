@@ -16,7 +16,7 @@ export const backupOf = (raw) => (typeof raw === "string" && raw ? raw : JSON.st
 export function summary(S) {
   const lv = levelOf(S.progress.xp);
   return { level: lv.level, xp: S.progress.xp, lessons: Object.values(S.progress.lessons).filter((l) => l.done > 0).length,
-    words: Object.keys(S.srs.cards).length, bosses: Object.values(S.bosses.regions).filter((r) => r.wins > 0).length, coins: S.game.coins, items: S.game.owned.length, name: S.game.avatar.name };
+    words: Object.keys(S.srs.cards).length, bosses: [...Object.values(S.bosses.regions), ...Object.values(S.bosses.families || {})].filter((r) => r.wins > 0).length, /* boss et mini-boss */ coins: S.game.coins, items: S.game.owned.length, name: S.game.avatar.name };
 }
 // « Annuler l'import » ÉCHANGE les deux sauvegardes au lieu d'effacer la copie (relecture complète, n° 2) : la progression
 // actuelle devient la copie de côté, donc on peut encore revenir. La révision remise passe au-dessus de celle enregistrée,

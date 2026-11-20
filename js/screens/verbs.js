@@ -1,5 +1,6 @@
 // Défi « Verbes irréguliers » (phase 10, tâche 4) : #verbes = les 9 familles et leur avancement ;
-// #verbes/<famille> = la fiche de la famille, puis ses 3 étapes (règles : js/core/verbs.js) :
+// #verbes/<famille> = la fiche de la famille, puis ses 3 étapes (règles : js/core/verbs.js), et son mini-boss
+// « Le Grimoire » (#grimoire/<famille>, js/screens/boss.js) une fois la famille finie :
 //   1. les 3 formes : écouter, puis dire « go, went, gone » ;
 //   2. au prétérit et 3. au present perfect : choisir la bonne forme dans la phrase à trou (même affichage que les
 //      exercices de grammaire, js/screens/exercises.js), puis dire la phrase. Seule la note au micro rapporte l'XP.
@@ -8,6 +9,8 @@ import { save } from "../core/store.js";
 import { PASS, XP_ITEM, XP_LESSON } from "../core/progress.js";
 import { STEPS, familySize, itemOf, textOf, recordVerb, familyState, questionOf, formsText } from "../core/verbs.js";
 import { FAMILIES, familyById } from "../content/verbs.js";
+import { GRIMOIRE, grimoireSvg } from "../content/bosses.js";
+import { familyWins, XP_MINI_FIRST } from "../core/boss.js";
 import { say, stopVoice } from "../engine/clips.js";
 import { practice, resultBlock, progressBar } from "./practice.js";
 import { listenControls } from "./listen.js";
@@ -35,7 +38,7 @@ export function mountVerbList(root, S) {
       <p class="muted small">Les 67 verbes les plus utiles, rangés par familles qui se ressemblent à l'oreille. Pour chaque famille : les 3 formes à dire, puis des phrases au prétérit et au present perfect.</p></section>
     <section class="card"><ol class="path">${FAMILIES.map((f) => html`<li><button class="lesson${familyState(P, f).done ? " done" : ""}" data-act="open" data-id="${f.id}" type="button">
       <span><b>${f.title}</b><br><span class="muted small" lang="${f.tune.includes("·") ? "en" : "fr"}">${f.tune}</span></span>
-      <span class="muted small">${familyStatus(P, f) || `${f.verbs.length} verbes`}</span></button></li>`)}</ol></section>`);
+      <span class="muted small">${familyStatus(P, f) || `${f.verbs.length} verbes`}${familyWins(S.bosses, f.id) ? " · 👑" : ""}</span></button></li>`)}</ol></section>`);
   root.addEventListener("click", (e) => {
     const el = e.target.closest("[data-act]");
     if (!el) return;
@@ -81,7 +84,18 @@ export function mountVerbFamily(root, S, id) {
         <span><b lang="en">${v.base} · ${v.past} · ${v.pp}</b> <span class="muted small">${v.fr}</span><br>
         <span class="small pron"><span aria-hidden="true">🗣️</span> ${v.pron.join(" · ")}</span>${v.note ? html`<br><span class="small tip"><span aria-hidden="true">💡</span> ${v.note}</span>` : ""}</span></li>`)}</ul></section>
       <div class="choices">${st.steps.map((s, step) => html`<button class="btn choice" data-act="start" data-step="${step}" type="button">
-        <b>${s.icon} ${step + 1}. ${s.title}</b><span class="small">${s.got === s.size ? "✓ fait dans ce passage" : `${s.got} / ${s.size}`} · ${s.sub}</span></button>`)}</div>`;
+        <b>${s.icon} ${step + 1}. ${s.title}</b><span class="small">${s.got === s.size ? "✓ fait dans ce passage" : `${s.got} / ${s.size}`} · ${s.sub}</span></button>`)}</div>
+      ${grimoireCard()}`;
+  }
+
+  // Le mini-boss de la famille : ouvert une fois la famille finie au moins une fois.
+  function grimoireCard() {
+    const open = familyState(P, fam).done > 0, w = familyWins(S.bosses, fam.id), st = !open ? "locked" : w ? "won" : "open";
+    return html`<section class="card quest boss-card"><span class="quest-title">Mini-boss</span>
+      <div class="row start"><button class="${`boss-node ${st}`}" data-act="grimoire" type="button" ${open ? "" : "disabled"}
+          aria-label="${open ? `Affronter ${GRIMOIRE.name}` : `${GRIMOIRE.name} : finis les 3 étapes de la famille pour l'affronter`}">${grimoireSvg(fam.id, "idle", { label: "" })}${w ? html`<span class="boss-crown" aria-hidden="true">👑</span>` : ""}${open ? "" : html`<span class="boss-lock" aria-hidden="true">🔒</span>`}</button>
+        <span><b>${GRIMOIRE.name}</b><br><span class="small muted">${!open ? "Finis les 3 étapes de la famille pour l'affronter." : w ? `Vaincu ${w} fois. Tu peux le raffronter encore.` : `Bats-le : +${XP_MINI_FIRST} XP et un coffre d'argent.`}</span></span></div>
+      ${open ? html`<button class="btn big red" data-act="grimoire" type="button">⚔️ Affronter ${GRIMOIRE.name}</button>` : ""}</section>`;
   }
 
   function playView() {
@@ -92,7 +106,8 @@ export function mountVerbFamily(root, S, id) {
         ${dotsBlock(localRun(ui.step), ui.k, n, `Verbes de l'étape « ${s.title} »`, "Verbe")}</section>
       ${ui.finished ? html`<section class="card done-card" role="status"><h2>🎉 Famille finie !</h2>
         <p>+${XP_LESSON} XP de bonus. Tu as gagné ${ui.gained} XP sur cette famille.</p>
-        <div class="row start"><button class="btn" data-act="list" type="button">Autres familles</button>
+        <div class="row start"><button class="btn red" data-act="grimoire" type="button">⚔️ Affronter ${GRIMOIRE.name}</button>
+        <button class="btn ghost" data-act="list" type="button">Autres familles</button>
         <button class="btn ghost" data-act="learn" type="button">Revoir la famille</button></div></section>` : ""}
       ${ui.ex ? html`<section class="card"><p class="muted small">${ui.step === 1 ? "Mets le verbe au prétérit" : "Mets le verbe au participe passé"} · <b lang="en">${v.base}</b> (${v.fr})</p>
         ${exerciseBlock(ui.ex.e, ui.ex)}${ui.ex.answer !== null ? html`<p class="small muted">${sentenceFr(v)}</p>` : ""}</section>` : ""}
@@ -141,6 +156,7 @@ export function mountVerbFamily(root, S, id) {
     if (ui.say && (mic.handle(act) || voice.handle(act))) return;
     if (ui.view === "play" && ui.ex && exerciseClick(ui.ex.e, ui.ex, act, el)) { draw(); return; }
     if (act === "list") location.hash = "#verbes";
+    if (act === "grimoire" && familyState(P, fam).done > 0) location.hash = "#grimoire/" + fam.id;
     if (act === "hear") { const v = fam.verbs[Number(el.dataset.i)]; if (v) say(formsText(v), { voice: S.voiceId }).catch(() => {}); }
     if (act === "learn") { voice.stop(); ui.view = "learn"; draw(); }
     if (act === "start") { const step = Number(el.dataset.step) || 0; stopVoice(); ui.view = "play"; goTo(step, firstToDo({ run: localRun(step) }, n)); }

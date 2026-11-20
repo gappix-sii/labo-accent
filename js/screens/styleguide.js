@@ -2,7 +2,8 @@
 // (largeur de téléphone, thème clair ou sombre, effets réduits). Aucune donnée n'est lue ni enregistrée.
 import { html, render } from "../core/dom.js";
 import { RARITY, RARITY_ORDER } from "../content/avatar.js";
-import { BOSSES, STATES, bossSvg } from "../content/bosses.js";
+import { BOSSES, STATES, bossSvg, GRIMOIRE_COLORS, grimoireSvg } from "../content/bosses.js";
+import { familyById } from "../content/verbs.js";
 
 const COLORS = ["--bg", "--card", "--text", "--muted", "--gold", "--gold-fill", "--accent", "--violet", "--good", "--ok", "--bad", "--frame"];
 const ICONS = { common: "🧢", rare: "🕶️", epic: "🪄", legendary: "👑", mythic: "🐉" };
@@ -50,7 +51,9 @@ export function mountStyle(root) {
 
       <section class="card"><h2>Boss du parcours</h2>
         <p class="kind">${STATES.map((s) => html`<button class="chip${ui.boss === s ? " on" : ""}" data-act="boss" data-v="${s}" type="button" aria-pressed="${ui.boss === s ? "true" : "false"}">${{ idle: "Au repos", hit: "Touché", ko: "K.O." }[s]}</button>`)}</p>
-        <div class="boss-gallery">${Object.entries(BOSSES).map(([id, b]) => html`<figure><span class="boss-pic">${bossSvg(id, ui.boss)}</span><figcaption>${b.name}</figcaption></figure>`)}</div></section>
+        <div class="boss-gallery">${Object.entries(BOSSES).map(([id, b]) => html`<figure><span class="boss-pic">${bossSvg(id, ui.boss)}</span><figcaption>${b.name}</figcaption></figure>`)}</div>
+        <h3>Le Grimoire, mini-boss des verbes irréguliers</h3>
+        <div class="boss-gallery">${Object.keys(GRIMOIRE_COLORS).map((id) => html`<figure><span class="boss-pic">${grimoireSvg(id, ui.boss)}</span><figcaption>${familyById(id).title}</figcaption></figure>`)}</div></section>
 
       <section class="card"><h2>Note et messages</h2>
         <p class="score score-good">92 <span>/ 100</span></p>
