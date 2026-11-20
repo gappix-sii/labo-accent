@@ -19,7 +19,7 @@ test("(a) sw.js efface l'ancienne appli, se désinstalle et ne sert aucune page"
 test("(b) GitHub Pages ne publie ni ancien/, ni les tests, ni les outils", () => {
   assert.ok(!existsSync(new URL(".nojekyll", root)), "Jekyll doit lire _config.yml");
   const cfg = read("_config.yml");
-  for (const d of ["ancien/", "test/", "tools/", ".claude/"]) assert.ok(cfg.includes(`  - ${d}\n`), d);
+  for (const d of ["ancien/", "test/", "tools/", ".claude/", "docs/"]) assert.ok(cfg.includes(`  - ${d}\n`), d);
   // Jekyll ignore les fichiers en « _ » ou « . » et transforme ceux qui commencent par « --- » : aucun fichier publié ne doit en dépendre.
   const files = execFileSync("git", ["ls-files"], { cwd: root, encoding: "utf8" }).split("\n").filter(Boolean)
     .filter((f) => !/^(ancien|test|tools|\.claude)\//.test(f) && !f.endsWith(".md") && f !== "package.json");

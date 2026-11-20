@@ -7,5 +7,6 @@ exclude:
   - test/
   - tools/
   - .claude/
+  - docs/
   - package.json
   - "*.md"
