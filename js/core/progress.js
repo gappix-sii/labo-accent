@@ -18,7 +18,9 @@ export const SESSION_MIN = 5; // le bonus demande au moins 5 réponses dans la s
 export const GOALS = [20, 50, 100];
 export const DEFAULT_GOAL = 50;
 const DAYS_KEPT = 60; // historique des XP par jour
-const MAX_ITEMS = 20, MAX_LESSONS = 300;
+// 40 éléments au plus par piste : une famille de verbes irréguliers en a jusqu'à 33 (phase 10, js/core/verbs.js).
+export const MAX_ITEMS = 40;
+const MAX_LESSONS = 300;
 
 // Niveau n → n + 1 : 100 XP, puis 50 de plus à chaque niveau (100, 150, 200…).
 export const levelCost = (n) => 100 + 50 * (n - 1);
